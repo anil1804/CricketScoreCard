@@ -1,8 +1,8 @@
 package com.thenewcone.myscorecard.activity;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,12 +12,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.thenewcone.myscorecard.NavigationDrawerHandler;
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.fragment.HomeFragment;
+import com.thenewcone.myscorecard.fragment.LimitedOversFragment;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class HomeActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
+
+	private static final String FRAGMENT = "Fragment";
+	private static final String FRAGMENT_TAG = "FragmentTag";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +31,7 @@ public class HomeActivity extends AppCompatActivity
 		setContentView(R.layout.home_activity);
 		if (savedInstanceState == null) {
 			getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, HomeFragment.newInstance())
+					.replace(R.id.frame_container, HomeFragment.newInstance())
 					.commitNow();
 		}
 
@@ -59,7 +65,7 @@ public class HomeActivity extends AppCompatActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.menu_home, menu);
 		return true;
 	}
 
@@ -71,7 +77,7 @@ public class HomeActivity extends AppCompatActivity
 		int id = item.getItemId();
 
 		//noinspection SimplifiableIfStatement
-		if (id == R.id.action_settings) {
+		if (id == R.id.menu_settings) {
 			return true;
 		}
 
@@ -80,15 +86,56 @@ public class HomeActivity extends AppCompatActivity
 
 	@Override
 	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-		Intent intent = NavigationDrawerHandler.onNavigationItemSelected(
-				getApplicationContext(), item, this.getClass());
+		HashMap<String, Object> fragDtlMap = getFragmentDetails(item);
 
-		if(intent != null)
-			startActivity(intent);
+		if(fragDtlMap.size()  == 2) {
+			Fragment fragment = (Fragment) fragDtlMap.get(FRAGMENT);
+			String fragmentTag = (String) fragDtlMap.get(FRAGMENT_TAG);
+
+			if(fragment !=  null && fragmentTag != null) {
+				getSupportFragmentManager().beginTransaction()
+						.replace(R.id.frame_container, fragment, fragmentTag)
+						.addToBackStack(fragmentTag)
+						.commit();
+			}
+		}
 
 		DrawerLayout drawer =  findViewById(R.id.drawer_layout);
 		drawer.closeDrawer(GravityCompat.START);
 
 		return true;
+	}
+
+	private HashMap<String, Object> getFragmentDetails(@NonNull MenuItem item) {
+		HashMap<String, Object> respMap = new HashMap<>();
+
+		switch (item.getItemId()) {
+			case R.id.nav_home:
+				if(!isFragmentVisible(HomeFragment.class.getSimpleName())) {
+					respMap.put(FRAGMENT, HomeFragment.newInstance());
+					respMap.put(FRAGMENT_TAG, HomeFragment.class.getSimpleName());
+				}
+				break;
+
+			case R.id.nav_cricket_limited:
+				if(!isFragmentVisible(HomeFragment.class.getSimpleName())) {
+					respMap.put(FRAGMENT, LimitedOversFragment.newInstance());
+					respMap.put(FRAGMENT_TAG, LimitedOversFragment.class.getSimpleName());
+				}
+				break;
+		}
+
+		return respMap;
+	}
+
+	private boolean isFragmentVisible(@NonNull String fragmentTag) {
+		List<Fragment> fragList = getSupportFragmentManager().getFragments();
+
+		for(Fragment frag : fragList) {
+			if(frag != null && frag.isVisible() && fragmentTag.equals(frag.getTag()))
+				return true;
+		}
+
+		return false;
 	}
 }

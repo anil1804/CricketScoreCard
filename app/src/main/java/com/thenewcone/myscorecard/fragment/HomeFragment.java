@@ -36,10 +36,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 		if(getActivity() != null) {
 			FragmentManager fragMgr = getActivity().getSupportFragmentManager();
 
+
 			switch(view.getId()) {
 				case R.id.btnLimitedOvers :
+					String fragmentTag = LimitedOversFragment.class.getSimpleName();
 					fragMgr.beginTransaction()
-							.replace(R.id.container, LimitedOversFragment.instantiate(getContext(), "LimitedOversFragment"))
+							.replace(R.id.frame_container, LimitedOversFragment.newInstance(), fragmentTag)
+							.addToBackStack(fragmentTag)
 							.commit();
 					break;
 			}

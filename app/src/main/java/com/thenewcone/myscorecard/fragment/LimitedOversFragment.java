@@ -23,8 +23,12 @@ public class LimitedOversFragment extends Fragment
 
 	CricketCard card;
 
-	public LimitedOversFragment() {
+	/*public LimitedOversFragment() {
 		// Required empty public constructor
+	}*/
+
+	public static LimitedOversFragment newInstance() {
+		return new LimitedOversFragment();
 	}
 
 	@Override
