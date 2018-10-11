@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	app:layout_behavior="@string/appbar_scrolling_view_behavior"
+	tools:context=".activity.LimitedOversScorecardActivity"
+	tools:showIn="@layout/app_bar_limited_overs_scorecard"
+	android:orientation="vertical">
+
+	<!-- Table Having the Score Details -->
+	<TableLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<TableRow
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+
+			<TextView
+				android:id="@+id/tvBattingTeam"
+				style="@style/TextViewStyle.Big"/>
+
+			<TextView
+				android:id="@+id/tvScore"
+				style="@style/TextViewStyle.Big.Bold"
+				android:text="@string/defaultScore"/>
+
+			<TextView
+				android:id="@+id/tvOvers"
+				android:text="@string/tvOversText"
+				style="@style/TextViewStyle"/>
+
+			<TextView
+				style="@style/TextViewStyle.Bold"
+				android:layout_weight="1"
+				android:gravity="end"
+				android:text="@string/tvRRText" />
+
+			<TextView
+				android:id="@+id/tvCRR"
+				style="@style/TextViewStyle"
+				android:layout_marginEnd="30dp" />
+
+		</TableRow>
+
+		<TableRow
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+
+			<TextView
+				android:text="@string/tvTargetText"
+				style="@style/TextViewStyle.Bold"/>
+
+			<TextView
+				android:id="@+id/tvTarget"
+				style="@style/TextViewStyle"
+				android:text="@string/notApplicable"/>
+
+			<TextView
+				android:id="@+id/tvMaxOvers"
+				android:gravity="end"
+				android:text="@string/tvOversText"
+				style="@style/TextViewStyle"/>
+
+			<TextView
+				style="@style/TextViewStyle.Bold"
+				android:layout_weight="1"
+				android:gravity="end"
+				android:text="@string/tvRRRText" />
+
+			<TextView
+				android:id="@+id/tvRRR"
+				style="@style/TextViewStyle"
+				android:layout_marginEnd="30dp"
+				android:text="@string/notApplicable" />
+
+		</TableRow>
+
+	</TableLayout>
+
+	<!-- Table Having the Batsmen, Extras & Bowler details -->
+	<TableLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingTop="10dp"
+		android:paddingStart="6dp"
+		android:paddingEnd="6dp">
+
+		<View
+			android:layout_height="1dip"
+			android:background="@color/lineSeparator"/>
+
+		<!-- Batsman Header Row -->
+		<TableRow
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:background="@color/gray_200">
+
+			<TextView
+				android:layout_weight="1"
+				style="@style/TextViewStyle.TableRow.Header"
+				android:text="@string/headerBatsman"/>
+
+			<TextView
+				style="@style/TextViewStyle.TableRow.Header"
+				android:text="@string/headerRuns"/>
+
+			<TextView
+				style="@style/TextViewStyle.TableRow.Header"
+				android:text="@string/headerBalls"/>
+
+			<TextView
+				style="@style/TextViewStyle.TableRow.Header"
+				android:text="@string/headerFours"/>
+
+			<TextView
+				style="@style/TextViewStyle.TableRow.Header"
+				android:text="@string/headerSixes"/>
+
+			<TextView
+				style="@style/TextViewStyle.TableRow.Header"
+				android:text="@string/headerStrikeRate"/>
+
+		</TableRow>
+
+		<!-- Separator -->
+		<View
+			android:layout_margin="1dp"
+			android:layout_height="1dip"
+			android:background="@color/lineSeparator" />
+
+		<!-- Batsman-1 Details -->
+		<TableRow
+			android:id="@+id/trBatsman1"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content">
+
+			<TextView
+				android:id="@+id/tvBat1Name"
+				android:layout_weight="1"
+				style="@style/TextViewStyle.TableRow"/>
+
+			<TextView
+				android:id="@+id/tvBat1RunsScored"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+			<TextView
+				android:id="@+id/tvBat1BallsFaced"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+			<TextView
+				android:id="@+id/tvBat14sHit"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+			<TextView
+				android:id="@+id/tvBat16sHit"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+			<TextView
+				android:id="@+id/tvBat1SR"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+		</TableRow>
+
+		<!-- Batsman-2 Details -->
+		<TableRow
+			android:id="@+id/trBatsman2"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content">
+
+			<TextView
+				android:id="@+id/tvBat2Name"
+				android:layout_weight="1"
+				style="@style/TextViewStyle.TableRow"/>
+
+			<TextView
+				android:id="@+id/tvBat2RunsScored"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+			<TextView
+				android:id="@+id/tvBat2BallsFaced"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+			<TextView
+				android:id="@+id/tvBat24sHit"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+			<TextView
+				android:id="@+id/tvBat26sHit"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+			<TextView
+				android:id="@+id/tvBat2SR"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+		</TableRow>
+
+		<!-- Separator -->
+		<View
+			android:layout_height="1dip"
+			android:background="@color/lineSeparator" />
+
+		<!-- Extras -->
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:paddingTop="5dp"
+			android:paddingBottom="15dp"
+			android:background="@color/lime_100">
+
+			<TextView
+				style="@style/TextViewStyle"
+				android:text="@string/extrasText"/>
+
+			<TextView
+				android:id="@+id/tvLegByes"
+				style="@style/TextViewStyle"
+				android:text="@string/legByes"/>
+
+			<TextView
+				android:id="@+id/tvByes"
+				style="@style/TextViewStyle"
+				android:text="@string/byes"/>
+
+			<TextView
+				android:id="@+id/tvWides"
+				style="@style/TextViewStyle"
+				android:text="@string/wides"/>
+
+			<TextView
+				android:id="@+id/tvNoBalls"
+				style="@style/TextViewStyle"
+				android:text="@string/noBalls"/>
+
+		</LinearLayout>
+
+		<!-- Separator -->
+		<View
+			android:layout_height="1dip"
+			android:background="@color/lineSeparator" />
+
+		<!-- Bowler Header Details -->
+		<TableRow
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:background="@color/gray_200">
+
+			<TextView
+				android:layout_weight="1"
+				style="@style/TextViewStyle.TableRow.Header"
+				android:text="@string/headerBowler"/>
+
+			<TextView
+				style="@style/TextViewStyle.TableRow.Header"
+				android:text="@string/headerOvers"/>
+
+			<TextView
+				style="@style/TextViewStyle.TableRow.Header"
+				android:text="@string/headerMaidens"/>
+
+			<TextView
+				style="@style/TextViewStyle.TableRow.Header"
+				android:text="@string/headerRuns"/>
+
+			<TextView
+				style="@style/TextViewStyle.TableRow.Header"
+				android:text="@string/headerWickets"/>
+
+			<TextView
+				style="@style/TextViewStyle.TableRow.Header"
+				android:text="@string/headerEconomy"/>
+
+		</TableRow>
+
+		<!-- Separator -->
+		<View
+			android:layout_height="1dip"
+			android:background="@color/lineSeparator" />
+
+		<!-- Bowler Details -->
+		<TableRow
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content">
+
+			<TextView
+				android:id="@+id/tvBowlName"
+				android:layout_weight="1"
+				style="@style/TextViewStyle.TableRow"/>
+
+			<TextView
+				android:id="@+id/tvBowlOvers"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+			<TextView
+				android:id="@+id/tvBowlMaidens"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+			<TextView
+				android:id="@+id/tvBowlRuns"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+			<TextView
+				android:id="@+id/tvBowlWickets"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+			<TextView
+				android:id="@+id/tvBowlEconomy"
+				style="@style/TextViewStyle.TableRow"
+				android:text="@string/zero"/>
+
+		</TableRow>
+
+		<View
+			android:layout_height="1dip"
+			android:background="@color/lineSeparator" />
+
+	</TableLayout>
+
+	<!-- Scoring Buttons Row-1 -->
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:gravity="center_horizontal"
+		android:layout_marginTop="20dp">
+
+		<Button
+			android:id="@+id/btnRuns0"
+			style="@style/ButtonStyle.Round"
+			android:text="@string/zero"/>
+
+		<Button
+			android:id="@+id/btnRuns1"
+			style="@style/ButtonStyle.Round"
+			android:text="@string/one"/>
+
+		<Button
+			android:id="@+id/btnRuns2"
+			style="@style/ButtonStyle.Round"
+			android:text="@string/two"/>
+
+		<Button
+			android:id="@+id/btnRuns3"
+			style="@style/ButtonStyle.Round"
+			android:text="@string/three"/>
+
+	</LinearLayout>
+
+	<!-- Scoring Buttons Row-2 -->
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_horizontal"
+		android:orientation="horizontal">
+
+		<Button
+			android:id="@+id/btnRuns4"
+			style="@style/ButtonStyle.Round.Boundary"
+			android:text="@string/four"/>
+
+		<Button
+			android:id="@+id/btnRuns6"
+			style="@style/ButtonStyle.Round.Boundary"
+			android:text="@string/six"/>
+
+		<Button
+			android:id="@+id/btnWicket"
+			style="@style/ButtonStyle.Round.Wicket"
+			android:text="@string/wicket"/>
+
+		<Button
+			android:id="@+id/btnRuns5"
+			style="@style/ButtonStyle.Round"
+			android:text="@string/five"/>
+
+	</LinearLayout>
+
+	<!-- Scoring Buttons Row-3 -->
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_horizontal"
+		android:orientation="horizontal">
+
+		<Button
+			android:id="@+id/btnExtrasLegByes"
+			style="@style/ButtonStyle.Round.Extras"
+			android:text="@string/btnLegByeText"/>
+
+		<Button
+			android:id="@+id/btnExtrasByes"
+			style="@style/ButtonStyle.Round.Extras"
+			android:text="@string/btnByeText"/>
+
+		<Button
+			android:id="@+id/btnExtrasWides"
+			style="@style/ButtonStyle.Round.Extras"
+			android:text="@string/btnWideText"/>
+
+		<Button
+			android:id="@+id/btnExtrasNoBall"
+			style="@style/ButtonStyle.Round.Extras"
+			android:text="@string/btnNoBallText"/>
+
+	</LinearLayout>
+
+</LinearLayout>

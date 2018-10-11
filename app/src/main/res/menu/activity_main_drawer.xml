@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:showIn="navigation_view">
+
+	<group android:checkableBehavior="single">
+		<item
+			android:id="@+id/nav_home"
+			android:icon="@drawable/ic_cricket_test"
+			android:title="@string/nav_drawer_home" />
+		<item
+			android:id="@+id/nav_manage_player"
+			android:icon="@drawable/ic_cricket_test"
+			android:title="@string/nav_drawer_manage_player" />
+		<item
+			android:id="@+id/nav_cricket_test"
+			android:icon="@drawable/ic_cricket_test"
+			android:title="@string/nav_drawer_cricket_test" />
+		<item
+			android:id="@+id/nav_cricket_limited"
+			android:icon="@drawable/ic_cricket_limited_overs"
+			android:title="@string/nav_drawer_limited_overs" />
+	</group>
+
+</menu>
