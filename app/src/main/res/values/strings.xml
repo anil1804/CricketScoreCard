@@ -35,31 +35,42 @@
 	<string name="headerOvers">O</string>
 	<string name="headerMaidens">M</string>
 	<string name="headerWickets">W</string>
-	<string name="headerEconomy">Econ.</string>
+	<string name="headerEconomy">ER</string>
 
 	<string name="zero">0</string>
 
-	<string name="legByes"><b>Lb</b> - %1$d</string>
-	<string name="byes"><b>B</b> - %1$d</string>
-	<string name="wides"><b>Wd</b> - %1$d</string>
-	<string name="noBalls"><b>Nb</b> - %1$d</string>
+	<string name="extrasText">Extras :\t</string>
+	<string name="legByes">Lb - %1$d</string>
+	<string name="byes">B - %1$d</string>
+	<string name="wides">Wd - %1$d</string>
+	<string name="noBalls">Nb - %1$d</string>
+	<string name="penalty"> | Penalty - %1$d</string>
+
 	<string name="one">1</string>
 	<string name="two">2</string>
 	<string name="three">3</string>
 	<string name="four">4</string>
 	<string name="six">6</string>
 	<string name="wicket">W</string>
-	<string name="five">5</string>
 	<string name="btnLegByeText">Lb</string>
 	<string name="btnByeText">B</string>
 	<string name="btnWideText">Wd</string>
 	<string name="btnNoBallText">N</string>
-	<string name="extrasText">Extras :\t</string>
 	<string name="nav_drawer_home">Home</string>
 	<string name="nav_drawer_manage_player">Manage Player</string>
 	<string name="title_activity_manage_player">ManagePlayerActivity</string>
 
-	<!-- TODO: Remove or change this placeholder text -->
-	<string name="hello_blank_fragment">Hello blank fragment</string>
-
+	<string name="extrasDialogTitle">Select Runs</string>
+	<string name="extrasDialogTitleAdditional">Select Additional Runs</string>
+	<string name="extrasDialogTitleBatsman">Select Batsman Runs</string>
+	<string name="ok">OK</string>
+	<string name="cancel">Cancel</string>
+	<string name="btnPenaltyText">P</string>
+	<string name="extraDialogTitlePenalty">Select Favouring to</string>
+	<string-array name="numExtrasLB">
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+		<item>4</item>
+	</string-array>
 </resources>

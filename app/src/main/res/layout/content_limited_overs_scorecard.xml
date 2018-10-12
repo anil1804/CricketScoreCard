@@ -103,23 +103,24 @@
 				android:text="@string/headerBatsman"/>
 
 			<TextView
-				style="@style/TextViewStyle.TableRow.Header"
+				style="@style/TextViewStyle.TableRow.Data.Header"
 				android:text="@string/headerRuns"/>
 
 			<TextView
-				style="@style/TextViewStyle.TableRow.Header"
+				style="@style/TextViewStyle.TableRow.Data.Header"
 				android:text="@string/headerBalls"/>
 
 			<TextView
-				style="@style/TextViewStyle.TableRow.Header"
+				style="@style/TextViewStyle.TableRow.Data.Header"
 				android:text="@string/headerFours"/>
 
 			<TextView
-				style="@style/TextViewStyle.TableRow.Header"
+				style="@style/TextViewStyle.TableRow.Data.Header"
 				android:text="@string/headerSixes"/>
 
 			<TextView
-				style="@style/TextViewStyle.TableRow.Header"
+				style="@style/TextViewStyle.TableRow.Data.Header"
+				android:layout_width="50dp"
 				android:text="@string/headerStrikeRate"/>
 
 		</TableRow>
@@ -143,27 +144,27 @@
 
 			<TextView
 				android:id="@+id/tvBat1RunsScored"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 			<TextView
 				android:id="@+id/tvBat1BallsFaced"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 			<TextView
 				android:id="@+id/tvBat14sHit"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 			<TextView
 				android:id="@+id/tvBat16sHit"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 			<TextView
 				android:id="@+id/tvBat1SR"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 		</TableRow>
@@ -181,27 +182,27 @@
 
 			<TextView
 				android:id="@+id/tvBat2RunsScored"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 			<TextView
 				android:id="@+id/tvBat2BallsFaced"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 			<TextView
 				android:id="@+id/tvBat24sHit"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 			<TextView
 				android:id="@+id/tvBat26sHit"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 			<TextView
 				android:id="@+id/tvBat2SR"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 		</TableRow>
@@ -244,6 +245,11 @@
 				style="@style/TextViewStyle"
 				android:text="@string/noBalls"/>
 
+			<TextView
+				android:id="@+id/tvPenalty"
+				style="@style/TextViewStyle"
+				android:text="@string/penalty"/>
+
 		</LinearLayout>
 
 		<!-- Separator -->
@@ -263,23 +269,23 @@
 				android:text="@string/headerBowler"/>
 
 			<TextView
-				style="@style/TextViewStyle.TableRow.Header"
+				style="@style/TextViewStyle.TableRow.Data.Header"
 				android:text="@string/headerOvers"/>
 
 			<TextView
-				style="@style/TextViewStyle.TableRow.Header"
+				style="@style/TextViewStyle.TableRow.Data.Header"
 				android:text="@string/headerMaidens"/>
 
 			<TextView
-				style="@style/TextViewStyle.TableRow.Header"
+				style="@style/TextViewStyle.TableRow.Data.Header"
 				android:text="@string/headerRuns"/>
 
 			<TextView
-				style="@style/TextViewStyle.TableRow.Header"
+				style="@style/TextViewStyle.TableRow.Data.Header"
 				android:text="@string/headerWickets"/>
 
 			<TextView
-				style="@style/TextViewStyle.TableRow.Header"
+				style="@style/TextViewStyle.TableRow.Data.Header"
 				android:text="@string/headerEconomy"/>
 
 		</TableRow>
@@ -301,27 +307,27 @@
 
 			<TextView
 				android:id="@+id/tvBowlOvers"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 			<TextView
 				android:id="@+id/tvBowlMaidens"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 			<TextView
 				android:id="@+id/tvBowlRuns"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 			<TextView
 				android:id="@+id/tvBowlWickets"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 			<TextView
 				android:id="@+id/tvBowlEconomy"
-				style="@style/TextViewStyle.TableRow"
+				style="@style/TextViewStyle.TableRow.Data"
 				android:text="@string/zero"/>
 
 		</TableRow>
@@ -384,11 +390,6 @@
 			style="@style/ButtonStyle.Round.Wicket"
 			android:text="@string/wicket"/>
 
-		<Button
-			android:id="@+id/btnRuns5"
-			style="@style/ButtonStyle.Round"
-			android:text="@string/five"/>
-
 	</LinearLayout>
 
 	<!-- Scoring Buttons Row-3 -->
@@ -417,6 +418,11 @@
 			android:id="@+id/btnExtrasNoBall"
 			style="@style/ButtonStyle.Round.Extras"
 			android:text="@string/btnNoBallText"/>
+
+		<Button
+			android:id="@+id/btnExtraPenalty"
+			style="@style/ButtonStyle.Round.Extras"
+			android:text="@string/btnPenaltyText"/>
 
 	</LinearLayout>
 

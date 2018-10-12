@@ -2,22 +2,22 @@ package com.thenewcone.myscorecard.scorecard;
 
 public class Extra {
 	private ExtraType type;
-	private int runsScored;
+	private int runs;
 
 	public ExtraType getType() {
 		return type;
 	}
 
-	public int getRunsScored() {
-		return runsScored;
+	public int getRuns() {
+		return runs;
 	}
 
 	public Extra(ExtraType type, int runs) {
 		this.type = type;
-		this.runsScored = runs;
+		this.runs = runs;
 	}
 
 	public enum ExtraType {
-		WIDE, NO_BALL, LEG_BYE, BYE;
+		WIDE, NO_BALL, LEG_BYE, BYE, PENALTY
 	}
 }

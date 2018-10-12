@@ -3,6 +3,7 @@ package com.thenewcone.myscorecard.utils;
 import java.text.DecimalFormat;
 
 public class CommonUtils {
+	public static final String LOG_TAG = "MyScoreCard";
 
 	public static double calcRunRate(int score, double overs) {
 		double runRate = 0.00;
