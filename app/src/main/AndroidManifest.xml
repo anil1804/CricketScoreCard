@@ -19,6 +19,11 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		<activity
+			android:name=".activity.ExtraDialogActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth"></activity>
+		<activity android:name=".activity.WicketDialogActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth"></activity>
 	</application>
 
 </manifest>

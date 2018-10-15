@@ -1,17 +1,18 @@
 package com.thenewcone.myscorecard.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.thenewcone.myscorecard.ExtrasDialogFragment;
+import com.thenewcone.myscorecard.activity.ExtraDialogActivity;
 import com.thenewcone.myscorecard.R;
+import com.thenewcone.myscorecard.activity.WicketDialogActivity;
 import com.thenewcone.myscorecard.match.CricketCard;
 import com.thenewcone.myscorecard.match.CricketCardUtils;
 import com.thenewcone.myscorecard.player.BatsmanStats;
@@ -21,10 +22,12 @@ import com.thenewcone.myscorecard.scorecard.WicketData;
 import com.thenewcone.myscorecard.utils.CommonUtils;
 
 public class LimitedOversFragment extends Fragment
-	implements View.OnClickListener, ExtrasDialogFragment.ExtrasDialogListener {
+	implements View.OnClickListener{
 	View theView;
 
-	CricketCard card;
+	private static final int ACTIVITY_REQ_CODE_EXTRA_DIALOG = 1;
+	private static final int ACTIVITY_REQ_CODE_WICKET_DIALOG = 2;
+
 	CricketCardUtils ccUtils;
 
 	public LimitedOversFragment() {
@@ -72,7 +75,7 @@ public class LimitedOversFragment extends Fragment
 
 
 	private void initCricketCard() {
-		card = new CricketCard("Team1", "50.0", 5, 10, 10, 1);
+		CricketCard card = new CricketCard("Team1", "50.0", 5, 10, 10, 1);
 
 		ccUtils = new CricketCardUtils(card);
 
@@ -83,10 +86,12 @@ public class LimitedOversFragment extends Fragment
 	}
 
 	private void updateCardDetails(boolean isInitial) {
+		CricketCard currCard = ccUtils.getCard();
+
 		/* Main Score Details*/
 		if(isInitial) {
 			TextView tvBattingTeam = theView.findViewById(R.id.tvBattingTeam);
-			tvBattingTeam.setText(card.getBattingTeam());
+			tvBattingTeam.setText(currCard.getBattingTeam());
 
 		}
 
@@ -94,26 +99,27 @@ public class LimitedOversFragment extends Fragment
 		TextView tvOvers = theView.findViewById(R.id.tvOvers);
 		TextView tvCRR = theView.findViewById(R.id.tvCRR);
 
-		tvCurrScore.setText(String.valueOf(card.getScore() + "/" + card.getWicketsFallen()));
-		tvOvers.setText(String.format(getString(R.string.tvOversText), card.getTotalOversBowled()));
-		tvCRR.setText(CommonUtils.doubleToString(card.getRunRate(), "#.##"));
+		tvCurrScore.setText(String.valueOf(currCard.getScore() + "/" + currCard.getWicketsFallen()));
+		tvOvers.setText(String.format(getString(R.string.tvOversText), currCard.getTotalOversBowled()));
+		tvCRR.setText(CommonUtils.doubleToString(currCard.getRunRate(), "#.##"));
 
 		/* Chasing Score Details*/
 		TextView tvTarget = theView.findViewById(R.id.tvTarget);
 		TextView tvRRR = theView.findViewById(R.id.tvRRR);
 		TextView tvMaxOvers = theView.findViewById(R.id.tvMaxOvers);
-		if(card.getInnings() == 2) {
-			if (isInitial) {
-				tvTarget.setText(String.valueOf(card.getTarget()));
-
-				tvMaxOvers.setText(String.format(getString(R.string.tvOversText), card.getMaxOvers()));
+		if (isInitial) {
+			if (currCard.getInnings() == 2) {
+				tvTarget.setText(String.valueOf(currCard.getTarget()));
+				tvMaxOvers.setText(String.format(getString(R.string.tvOversText), currCard.getMaxOvers()));
+			} else {
+				tvTarget.setText("-");
+				tvRRR.setText("-");
+				tvMaxOvers.setText("");
 			}
-
-			tvRRR.setText(CommonUtils.doubleToString(card.getReqRate(), "#.##"));
 		} else {
-			tvTarget.setText("-");
-			tvRRR.setText("-");
-			tvMaxOvers.setText("");
+			if(currCard.getInnings() == 2) {
+				tvRRR.setText(CommonUtils.doubleToString(currCard.getReqRate(), "#.##"));
+			}
 		}
 
 		/* Batsman-1 Details*/
@@ -157,11 +163,11 @@ public class LimitedOversFragment extends Fragment
 		TextView tvNoBalls = theView.findViewById(R.id.tvNoBalls);
 		TextView tvPenalty = theView.findViewById(R.id.tvPenalty);
 
-		tvLegByes.setText(String.format(getString(R.string.legByes), card.getLegByes()));
-		tvByes.setText(String.format(getString(R.string.byes), card.getLegByes()));
-		tvWides.setText(String.format(getString(R.string.wides), card.getWides()));
-		tvNoBalls.setText(String.format(getString(R.string.noBalls), card.getNoBalls()));
-		tvPenalty.setText(card.getPenalty() > 0 ? String.format(getString(R.string.penalty), card.getPenalty()) : "");
+		tvLegByes.setText(String.format(getString(R.string.legByes), currCard.getLegByes()));
+		tvByes.setText(String.format(getString(R.string.byes), currCard.getByes()));
+		tvWides.setText(String.format(getString(R.string.wides), currCard.getWides()));
+		tvNoBalls.setText(String.format(getString(R.string.noBalls), currCard.getNoBalls()));
+		tvPenalty.setText(currCard.getPenalty() > 0 ? String.format(getString(R.string.penalty), currCard.getPenalty()) : "");
 
 		/* Bowler Details */
 		TextView tvBowlName = theView.findViewById(R.id.tvBowlName);
@@ -216,9 +222,7 @@ public class LimitedOversFragment extends Fragment
 				break;
 
 			case R.id.btnWicket:
-				WicketData wicketData = new WicketData(ccUtils.getCurrentFacing(),
-						WicketData.DismissalType.BOWLED, null, ccUtils.getBowler());
-				newBallBowled(0, null, wicketData);
+				displayWicketDialog();
 				break;
 
 			case R.id.btnExtraPenalty:
@@ -244,17 +248,40 @@ public class LimitedOversFragment extends Fragment
 	}
 
 	private void displayExtrasDialog(Extra.ExtraType type) {
-		if(getFragmentManager() != null) {
-			DialogFragment dialog = ExtrasDialogFragment.newInstance(type);
+		Intent dialogIntent = new Intent(getContext(), ExtraDialogActivity.class);
+		dialogIntent.putExtra(CommonUtils.ARG_EXTRA_TYPE, type);
+		startActivityForResult(dialogIntent, ACTIVITY_REQ_CODE_EXTRA_DIALOG);
+	}
 
-			dialog.setTargetFragment(this, 1);
-			dialog.show(getFragmentManager(), dialog.getClass().getSimpleName());
-		}
+	private void displayWicketDialog() {
+		Intent dialogIntent = new Intent(getContext(), WicketDialogActivity.class);
+		startActivityForResult(dialogIntent, ACTIVITY_REQ_CODE_WICKET_DIALOG);
 	}
 
 	@Override
-	public void getExtraDetails(Extra.ExtraType extraType, int numRuns, String team) {
-		ccUtils.processExtra(extraType, numRuns, team);
-		updateCardDetails(false);
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		switch (requestCode) {
+			case ACTIVITY_REQ_CODE_EXTRA_DIALOG:
+				if (resultCode == ExtraDialogActivity.RESULT_CODE_OK) {
+					Extra.ExtraType extraType = (Extra.ExtraType) data.getSerializableExtra(CommonUtils.ARG_EXTRA_TYPE);
+					Extra.ExtraType extraSubType = (Extra.ExtraType) data.getSerializableExtra(ExtraDialogActivity.ARG_NB_EXTRA);
+					int extraRuns = data.getIntExtra(ExtraDialogActivity.ARG_EXTRA_RUNS, -1);
+					String team = data.getStringExtra(ExtraDialogActivity.ARG_TEAM);
+
+					ccUtils.processExtra(extraType, extraRuns, team, extraSubType);
+					updateCardDetails(false);
+				}
+				break;
+
+			case ACTIVITY_REQ_CODE_WICKET_DIALOG:
+				if(resultCode == WicketDialogActivity.RESP_CODE_OK) {
+					WicketData wicketData = new WicketData(ccUtils.getCurrentFacing(),
+							WicketData.DismissalType.BOWLED, null, ccUtils.getBowler());
+					newBallBowled(0, null, wicketData);
+				}
+
+		}
 	}
 }

@@ -3,11 +3,14 @@ package com.thenewcone.myscorecard.match;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.thenewcone.myscorecard.ExtrasDialogFragment;
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
+import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.scorecard.Extra;
 import com.thenewcone.myscorecard.scorecard.WicketData;
+import com.thenewcone.myscorecard.utils.CommonUtils;
+
+import java.util.List;
 
 public class CricketCardUtils {
 
@@ -17,6 +20,8 @@ public class CricketCardUtils {
 	private CricketCard card;
 	private BowlerStats bowler;
 	private BatsmanStats currentFacing, batsman1, batsman2;
+
+	private List<Player> teamPlayers;
 
 	public BowlerStats getBowler() {
 		return bowler;
@@ -34,6 +39,18 @@ public class CricketCardUtils {
 		return batsman2;
 	}
 
+	public CricketCard getCard() {
+		return card;
+	}
+
+	public List<Player> getTeamPlayers() {
+		return teamPlayers;
+	}
+
+	public void addToTeam(Player player) {
+		teamPlayers.add(player);
+	}
+
 	public CricketCardUtils(CricketCard card) {
 		this.card = card;
 	}
@@ -48,11 +65,11 @@ public class CricketCardUtils {
 			currentFacing = batsman1;
 		}
 
-		card.appendToBatsmen(batsman);
-
-		if(wicketData != null && currentFacing != null && currentFacing.equals(wicketData.getBatsman())) {
+		if(wicketData != null && currentFacing.equals(wicketData.getBatsman())) {
 			currentFacing = batsman;
 		}
+
+		card.appendToBatsmen(batsman);
 	}
 
 	public void setBowler(BowlerStats bowler) {
@@ -172,7 +189,21 @@ public class CricketCardUtils {
 					break;
 				case NO_BALL:
 					bowlerBalls = 0;
-					bowlerRuns = runs + 1;
+					switch (extra.getSubType()) {
+						case NONE:
+							bowlerRuns = runs + 1;
+							break;
+						case BYE:
+							bowlerRuns = 1;
+							batsmanRuns = 0;
+							card.addByes(runs);
+							break;
+						case LEG_BYE:
+							bowlerRuns = 1;
+							batsmanRuns = 0;
+							card.addLegByes(runs);
+							break;
+					}
 					card.incNoBalls();
 					break;
 				case PENALTY:
@@ -206,7 +237,7 @@ public class CricketCardUtils {
 	}
 
 
-	public void processExtra(Extra.ExtraType extraType, int numExtraRuns, String penaltyFavouringTeam) {
+	public void processExtra(Extra.ExtraType extraType, int numExtraRuns, String penaltyFavouringTeam, Extra.ExtraType extraSubType) {
 		Extra extra;
 		switch (extraType) {
 			case PENALTY:
@@ -241,7 +272,7 @@ public class CricketCardUtils {
 
 			case NO_BALL:
 				if(numExtraRuns >= 0) {
-					extra = new Extra(Extra.ExtraType.NO_BALL, 0);
+					extra = new Extra(Extra.ExtraType.NO_BALL, 0, extraSubType);
 					processBallActivity(extra, numExtraRuns, null, false);
 				}
 				break;
@@ -251,17 +282,17 @@ public class CricketCardUtils {
 	public void addPenalty(Extra extra, @NonNull String favouringTeam) {
 		if(extra.getRuns() > 0) {
 			int penaltyRuns = extra.getRuns();
-			if(favouringTeam.equals(ExtrasDialogFragment.BATTING_TEAM)) {
+			if(favouringTeam.equals(CommonUtils.BATTING_TEAM)) {
 				card.addPenalty(penaltyRuns);
 				card.updateScore(0, extra);
-			} else if(favouringTeam.equals(ExtrasDialogFragment.BOWLING_TEAM)) {
+			} else if(favouringTeam.equals(CommonUtils.BOWLING_TEAM)) {
 				if(card.getInnings() == 1) {
 					card.addFuturePenalty(penaltyRuns);
 				} else if(card.getInnings() == 2) {
 					card.setTarget(card.getTarget() + penaltyRuns);
 					if(card.getPrevInningsCard() != null) {
 						CricketCardUtils ccUtils = new CricketCardUtils(card.getPrevInningsCard());
-						ccUtils.addPenalty(extra, ExtrasDialogFragment.BATTING_TEAM);
+						ccUtils.addPenalty(extra, CommonUtils.BATTING_TEAM);
 					}
 				}
 			}

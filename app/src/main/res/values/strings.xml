@@ -67,10 +67,26 @@
 	<string name="cancel">Cancel</string>
 	<string name="btnPenaltyText">P</string>
 	<string name="extraDialogTitlePenalty">Select Favouring to</string>
-	<string-array name="numExtrasLB">
-		<item>1</item>
-		<item>2</item>
-		<item>3</item>
-		<item>4</item>
+	<string name="extraNBText">Bye/LegBye for No-Ball?</string>
+	<string name="extraNBNone">None</string>
+	<string name="extraNBBye">Bye</string>
+	<string name="extraNBLegBye">Leg-Bye</string>
+	<string name="isExtra">Is Extra?</string>
+	<string name="runsScored">Runs Scored?</string>
+	<string name="caughtBy">Caught By</string>
+	<string name="runoutBy">Run Out By</string>
+	<string name="batsmanOutText">Batsman?</string>
+
+	<string-array name="wicketType">
+		<item>Bowled</item>
+		<item>Caught</item>
+		<item>LBW</item>
+		<item>Run Out</item>
+		<item>Stumped</item>
+		<item>Timed Out</item>
+		<item>Obstructing Field</item>
+		<item>Hit Wicket</item>
+		<item>Retired Hurt</item>
+		<item>Hit Ball Twice</item>
 	</string-array>
 </resources>

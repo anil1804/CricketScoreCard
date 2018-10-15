@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".activity.WicketDialogActivity"
+	android:orientation="vertical">
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<RadioGroup
+			android:id="@+id/rgWicket"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+
+		</RadioGroup>
+
+		<LinearLayout
+			android:id="@+id/llEffectedBy"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:visibility="gone">
+
+			<TextView
+				android:id="@+id/tvEffectedBy"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+
+			<Button
+				android:id="@+id/btnEffectedByText"
+				android:drawableStart="@drawable/ic_edit"
+				style="@style/ButtonStyle"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/llRunout"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:visibility="gone">
+
+			<TextView
+				android:id="@+id/tvBatsmanOut"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/batsmanOutText"/>
+
+			<Button
+				android:id="@+id/btnBatsmanOutText"
+				android:drawableStart="@drawable/ic_edit"
+				style="@style/ButtonStyle"/>
+
+			<CheckBox
+				android:id="@+id/cbRunsScored"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/runsScored"/>
+
+			<CheckBox
+				android:id="@+id/cbHasExtra"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:checked="false"
+				android:text="@string/isExtra"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_gravity="end">
+
+			<Button
+				style="@style/ButtonStyle"
+				android:id="@+id/btnWktCancel"
+				android:text="@string/cancel"/>
+
+			<Button
+				style="@style/ButtonStyle"
+				android:id="@+id/btnWktOK"
+				android:text="@string/ok"/>
+
+		</LinearLayout>
+
+	</LinearLayout>
+
+</ScrollView>

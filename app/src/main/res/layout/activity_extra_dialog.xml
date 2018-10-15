@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:layout_centerHorizontal="true">
+
+	<TextView
+		android:id="@+id/tvExtraNBText"
+		style="@style/TextViewStyle.Big.Bold"
+		android:text="@string/extraNBText"
+		android:visibility="gone" />
+
+	<RadioGroup
+		android:id="@+id/rgExtraNB"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:visibility="gone">
+
+		<RadioButton
+			android:id="@+id/rbExtraNBNone"
+			style="@style/RadioButtonStyle"
+			android:checked="true"
+			android:text="@string/extraNBNone" />
+
+		<RadioButton
+			android:id="@+id/rbExtraNBBye"
+			style="@style/RadioButtonStyle"
+			android:text="@string/extraNBBye" />
+
+		<RadioButton
+			android:id="@+id/rbExtraNBLegBye"
+			style="@style/RadioButtonStyle"
+			android:text="@string/extraNBLegBye" />
+
+	</RadioGroup>
+
+	<TextView
+		style="@style/TextViewStyle.Big.Bold"
+		android:id="@+id/tvExtraText"/>
+
+	<RadioGroup
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/rgExtraRuns"/>
+
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_gravity="end">
+
+		<Button
+			style="@style/ButtonStyle"
+			android:id="@+id/btnExtraCancel"
+			android:text="@string/cancel"/>
+
+		<Button
+			style="@style/ButtonStyle"
+			android:id="@+id/btnExtraOK"
+			android:text="@string/ok"/>
+
+	</LinearLayout>
+
+</LinearLayout>
