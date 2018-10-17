@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="horizontal"
+	android:orientation="vertical"
 	android:layout_width="match_parent"
-	android:layout_height="wrap_content">
+	android:layout_height="wrap_content"
+	android:id="@+id/llPlayerItem"
+	android:background="@drawable/item_selector">
 
 	<TextView
 		android:id="@+id/tvPlayerName"
-		style="@style/TextViewStyle"/>
+		style="@style/TextViewStyle.List"/>
+
+	<View style="@style/LineSeparator.Dark"/>
 
 </LinearLayout>

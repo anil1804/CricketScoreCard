@@ -70,7 +70,7 @@
 
 		</GridLayout>
 
-		<View style="@style/lineSeparator"/>
+		<View style="@style/LineSeparator"/>
 
 		<LinearLayout
 			android:id="@+id/llWicketDetails"

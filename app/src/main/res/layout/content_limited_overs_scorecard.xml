@@ -87,7 +87,7 @@
 		android:paddingStart="6dp"
 		android:paddingEnd="6dp">
 
-		<View style="@style/lineSeparator"/>
+		<View style="@style/LineSeparator"/>
 
 		<!-- Batsman Header Row -->
 		<TableRow
@@ -124,7 +124,7 @@
 		</TableRow>
 
 		<!-- Separator -->
-		<View style="@style/lineSeparator"/>
+		<View style="@style/LineSeparator"/>
 
 		<!-- Batsman-1 Details -->
 		<TableRow
@@ -203,7 +203,7 @@
 		</TableRow>
 
 		<!-- Separator -->
-		<View style="@style/lineSeparator"/>
+		<View style="@style/LineSeparator"/>
 
 		<!-- Extras -->
 		<LinearLayout
@@ -246,7 +246,7 @@
 		</LinearLayout>
 
 		<!-- Separator -->
-		<View style="@style/lineSeparator"/>
+		<View style="@style/LineSeparator"/>
 
 		<!-- Bowler Header Details -->
 		<TableRow
@@ -282,7 +282,7 @@
 		</TableRow>
 
 		<!-- Separator -->
-		<View style="@style/lineSeparator"/>
+		<View style="@style/LineSeparator"/>
 
 		<!-- Bowler Details -->
 		<TableRow
@@ -321,7 +321,7 @@
 
 		</TableRow>
 
-		<View style="@style/lineSeparator"/>
+		<View style="@style/LineSeparator"/>
 
 	</TableLayout>
 

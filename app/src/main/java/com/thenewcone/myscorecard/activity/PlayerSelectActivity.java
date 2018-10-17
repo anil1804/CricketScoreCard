@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -58,6 +59,9 @@ public class PlayerSelectActivity extends Activity
 			LinearLayoutManager llm = new LinearLayoutManager(this);
 			llm.setOrientation(LinearLayoutManager.VERTICAL);
 			rcvPlayerList.setLayoutManager(llm);
+
+			DividerItemDecoration itemDecor = new DividerItemDecoration(rcvPlayerList.getContext(), DividerItemDecoration.HORIZONTAL);
+			rcvPlayerList.addItemDecoration(itemDecor);
 
 			rcvPlayerList.setItemAnimator(new DefaultItemAnimator());
 		}

@@ -3,9 +3,11 @@ package com.thenewcone.myscorecard.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.thenewcone.myscorecard.R;
@@ -17,6 +19,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.My
 	private Player[] players;
 	private Context context;
 	private ItemClickListener clickListener;
+	private int selectedIndex = -1;
 
 	public PlayerListAdapter(@NonNull Context context, @NonNull Player[] players) {
 		this.context = context;
@@ -35,6 +38,11 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.My
 	public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int position) {
 		Player player = players[position];
 		myViewHolder.setData(player);
+
+		if(selectedIndex == position)
+			myViewHolder.llPlayerItem.setSelected(true);
+		else
+			myViewHolder.llPlayerItem.setSelected(false);
 	}
 
 	@Override
@@ -48,12 +56,14 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.My
 
 	public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 		TextView tvPlayerName;
+		LinearLayout llPlayerItem;
 
 		private MyViewHolder(@NonNull View itemView) {
 			super(itemView);
 
 			tvPlayerName = itemView.findViewById(R.id.tvPlayerName);
 			itemView.setOnClickListener(this);
+			llPlayerItem = itemView.findViewById(R.id.llPlayerItem);
 		}
 
 		public void setData(Player player) {
@@ -64,8 +74,12 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.My
 		@Override
 		public void onClick(View view)
 		{
+			notifyItemChanged(selectedIndex);
+			selectedIndex = getAdapterPosition();
+			notifyItemChanged(selectedIndex);
+
 			if(clickListener != null)
-			    clickListener.onClick(view, getAdapterPosition());
+			    clickListener.onClick(view, selectedIndex);
 		}
 	}
 }
