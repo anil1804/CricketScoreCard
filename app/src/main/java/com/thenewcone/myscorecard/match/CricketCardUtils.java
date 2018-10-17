@@ -21,7 +21,7 @@ public class CricketCardUtils {
 	private BowlerStats bowler;
 	private BatsmanStats currentFacing, batsman1, batsman2;
 
-	private List<Player> battingTeam, bowlingTeam;
+	private List<Player> teamPlayers;
 
 	public BowlerStats getBowler() {
 		return bowler;
@@ -43,20 +43,12 @@ public class CricketCardUtils {
 		return card;
 	}
 
-	public List<Player> getBattingTeam() {
-		return battingTeam;
+	public List<Player> getTeamPlayers() {
+		return teamPlayers;
 	}
 
-	public void addToBattingTeam(Player player) {
-		battingTeam.add(player);
-	}
-
-	public List<Player> getBowlingTeam() {
-		return bowlingTeam;
-	}
-
-	public void addToBowlingTeam(Player player) {
-		bowlingTeam.add(player);
+	public void addToTeam(Player player) {
+		teamPlayers.add(player);
 	}
 
 	public CricketCardUtils(CricketCard card) {
@@ -287,7 +279,7 @@ public class CricketCardUtils {
 		}
 	}
 
-	private void addPenalty(Extra extra, @NonNull String favouringTeam) {
+	public void addPenalty(Extra extra, @NonNull String favouringTeam) {
 		if(extra.getRuns() > 0) {
 			int penaltyRuns = extra.getRuns();
 			if(favouringTeam.equals(CommonUtils.BATTING_TEAM)) {

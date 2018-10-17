@@ -1,6 +1,5 @@
 package com.thenewcone.myscorecard.scorecard;
 
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -8,9 +7,7 @@ import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
 import com.thenewcone.myscorecard.player.Player;
 
-import java.io.Serializable;
-
-public class WicketData implements Serializable {
+public class WicketData {
 	private BatsmanStats batsman;
 	private DismissalType dismissalType;
 	private Player effectedBy;

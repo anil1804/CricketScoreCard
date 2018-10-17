@@ -2,29 +2,10 @@ package com.thenewcone.myscorecard.player;
 
 import android.support.annotation.NonNull;
 
-import java.io.Serializable;
-
-public class Player implements Serializable {
+public class Player {
 	String name;
 	int age;
 	BattingType battingType;
-
-	public String getName() {
-		return name;
-	}
-
-	public int getAge() {
-		return age;
-	}
-
-	public BattingType getBattingType() {
-		return battingType;
-	}
-
-	public BowlingType getBowlingType() {
-		return bowlingType;
-	}
-
 	BowlingType bowlingType;
 
 
