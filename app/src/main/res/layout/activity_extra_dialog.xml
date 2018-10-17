@@ -52,12 +52,12 @@
 		android:layout_gravity="end">
 
 		<Button
-			style="@style/ButtonStyle"
+			style="@style/ButtonStyle.Submit"
 			android:id="@+id/btnExtraCancel"
 			android:text="@string/cancel"/>
 
 		<Button
-			style="@style/ButtonStyle"
+			style="@style/ButtonStyle.Submit"
 			android:id="@+id/btnExtraOK"
 			android:text="@string/ok"/>
 

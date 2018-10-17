@@ -87,9 +87,7 @@
 		android:paddingStart="6dp"
 		android:paddingEnd="6dp">
 
-		<View
-			android:layout_height="1dip"
-			android:background="@color/lineSeparator"/>
+		<View style="@style/lineSeparator"/>
 
 		<!-- Batsman Header Row -->
 		<TableRow
@@ -126,10 +124,7 @@
 		</TableRow>
 
 		<!-- Separator -->
-		<View
-			android:layout_margin="1dp"
-			android:layout_height="1dip"
-			android:background="@color/lineSeparator" />
+		<View style="@style/lineSeparator"/>
 
 		<!-- Batsman-1 Details -->
 		<TableRow
@@ -208,9 +203,7 @@
 		</TableRow>
 
 		<!-- Separator -->
-		<View
-			android:layout_height="1dip"
-			android:background="@color/lineSeparator" />
+		<View style="@style/lineSeparator"/>
 
 		<!-- Extras -->
 		<LinearLayout
@@ -253,9 +246,7 @@
 		</LinearLayout>
 
 		<!-- Separator -->
-		<View
-			android:layout_height="1dip"
-			android:background="@color/lineSeparator" />
+		<View style="@style/lineSeparator"/>
 
 		<!-- Bowler Header Details -->
 		<TableRow
@@ -291,9 +282,7 @@
 		</TableRow>
 
 		<!-- Separator -->
-		<View
-			android:layout_height="1dip"
-			android:background="@color/lineSeparator" />
+		<View style="@style/lineSeparator"/>
 
 		<!-- Bowler Details -->
 		<TableRow
@@ -332,9 +321,7 @@
 
 		</TableRow>
 
-		<View
-			android:layout_height="1dip"
-			android:background="@color/lineSeparator" />
+		<View style="@style/lineSeparator"/>
 
 	</TableLayout>
 

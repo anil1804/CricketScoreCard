@@ -72,21 +72,27 @@
 	<string name="extraNBBye">Bye</string>
 	<string name="extraNBLegBye">Leg-Bye</string>
 	<string name="isExtra">Is Extra?</string>
-	<string name="runsScored">Runs Scored?</string>
+	<string name="runsScored">Runs Scored = %1$d</string>
 	<string name="caughtBy">Caught By</string>
 	<string name="runoutBy">Run Out By</string>
 	<string name="batsmanOutText">Batsman?</string>
 
-	<string-array name="wicketType">
-		<item>Bowled</item>
-		<item>Caught</item>
-		<item>LBW</item>
-		<item>Run Out</item>
-		<item>Stumped</item>
-		<item>Timed Out</item>
-		<item>Obstructing Field</item>
-		<item>Hit Wicket</item>
-		<item>Retired Hurt</item>
-		<item>Hit Ball Twice</item>
-	</string-array>
+	<string name="wicket_caught">Caught</string>
+	<string name="wicket_bowled">Bowled</string>
+	<string name="wicket_lbw">LBW</string>
+	<string name="wicket_stump">Stumped Out</string>
+	<string name="wicket_runOut">Run Out</string>
+	<string name="wicket_hitWicket">Hit Wicket</string>
+	<string name="wicket_obstruct">Obstructing Field</string>
+	<string name="wicket_retiredHurt">Retired Hurt</string>
+	<string name="wicket_hitTwice">Retired Hurt</string>
+	<string name="wicket_timedOut">Timed Out</string>
+	<string name="wide">Wide</string>
+	<string name="bye">Bye</string>
+	<string name="legBye">Leg-Bye</string>
+	<string name="noBall">No-Ball</string>
+	<string name="wicketDetails">Wicket Details</string>
+	<string name="onlyNoBall">Only NoBall</string>
+	<string name="noBallAndByes">NoBall + Byes</string>
+	<string name="noBallAndLB">NoBall + LegByes</string>
 </resources>
