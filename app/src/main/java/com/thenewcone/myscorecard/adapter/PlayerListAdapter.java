@@ -9,12 +9,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.thenewcone.myscorecard.R;
+import com.thenewcone.myscorecard.intf.ItemClickListener;
 import com.thenewcone.myscorecard.player.Player;
 
 public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.MyViewHolder> {
 
 	private Player[] players;
 	private Context context;
+	private ItemClickListener clickListener;
 
 	public PlayerListAdapter(@NonNull Context context, @NonNull Player[] players) {
 		this.context = context;
@@ -40,13 +42,18 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.My
 		return players.length;
 	}
 
-	public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+	public void setClickListener(ItemClickListener itemClickListener) {
+		this.clickListener = itemClickListener;
+	}
+
+	public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 		TextView tvPlayerName;
 
 		private MyViewHolder(@NonNull View itemView) {
 			super(itemView);
 
 			tvPlayerName = itemView.findViewById(R.id.tvPlayerName);
+			itemView.setOnClickListener(this);
 		}
 
 		public void setData(Player player) {
@@ -55,8 +62,10 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.My
 
 
 		@Override
-		public void onClick(View view) {
-			getAdapterPosition();
+		public void onClick(View view)
+		{
+			if(clickListener != null)
+			    clickListener.onClick(view, getAdapterPosition());
 		}
 	}
 }

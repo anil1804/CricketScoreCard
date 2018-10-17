@@ -1,5 +1,8 @@
 package com.thenewcone.myscorecard.utils;
 
+import com.thenewcone.myscorecard.player.BatsmanStats;
+import com.thenewcone.myscorecard.player.BowlerStats;
+import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.scorecard.Extra;
 
 import java.text.DecimalFormat;
@@ -108,5 +111,60 @@ public class CommonUtils {
 		}
 
 		return extraRunsArray;
+
 	}
+
+    public static Player[] objectArrToPlayerArr(Object[] objArr) {
+        Player[] players = null;
+
+        if(objArr != null) {
+            players = new Player[objArr.length];
+
+            int i=0;
+            for(Object obj : objArr) {
+                if(obj instanceof Player) {
+                    players[i] = (Player) obj;
+                    i++;
+                }
+            }
+        }
+
+        return players;
+    }
+
+    public static BatsmanStats[] objectArrToBatsmanArr(Object[] objArr) {
+        BatsmanStats[] players = null;
+
+        if(objArr != null) {
+            players = new BatsmanStats[objArr.length];
+
+            int i=0;
+            for(Object obj : objArr) {
+                if(obj instanceof BatsmanStats) {
+                    players[i] = (BatsmanStats) obj;
+                    i++;
+                }
+            }
+        }
+
+        return players;
+    }
+
+    public static BowlerStats[] objectArrToBowlerArr(Object[] objArr) {
+        BowlerStats[] players = null;
+
+        if(objArr != null) {
+            players = new BowlerStats[objArr.length];
+
+            int i=0;
+            for(Object obj : objArr) {
+                if(obj instanceof BowlerStats) {
+                    players[i] = (BowlerStats) obj;
+                    i++;
+                }
+            }
+        }
+
+        return players;
+    }
 }

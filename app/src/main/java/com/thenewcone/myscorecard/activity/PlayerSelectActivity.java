@@ -7,15 +7,17 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.thenewcone.myscorecard.adapter.PlayerListAdapter;
 import com.thenewcone.myscorecard.R;
-import com.thenewcone.myscorecard.intf.OnItemClickListener;
+import com.thenewcone.myscorecard.intf.ItemClickListener;
 import com.thenewcone.myscorecard.player.Player;
+import com.thenewcone.myscorecard.utils.CommonUtils;
 
 public class PlayerSelectActivity extends Activity
-	implements OnItemClickListener, View.OnClickListener {
+	implements ItemClickListener, View.OnClickListener {
 
 	public static final String ARG_PLAYER_LIST = "PlayerList";
 	public static final String ARG_EFFECTED_BY = "EffectedBy";
@@ -23,7 +25,12 @@ public class PlayerSelectActivity extends Activity
 	public static final int RESP_CODE_OK = 1;
 	public static final int RESP_CODE_CANCEL = -1;
 
-	Player[] players;
+    @Override
+    public void onBackPressed() {
+        //
+    }
+
+    Player[] players;
 	Player effectedBy;
 
 	@Override
@@ -34,14 +41,18 @@ public class PlayerSelectActivity extends Activity
 		RecyclerView rcvPlayerList = findViewById(R.id.rcvPlayerList);
 		rcvPlayerList.setHasFixedSize(false);
 
+        findViewById(R.id.btnSelPlayerOK).setOnClickListener(this);
+        findViewById(R.id.btnSelPlayerCancel).setOnClickListener(this);
+
 		Intent intent = getIntent();
 		if(intent != null) {
-			players = (Player[]) intent.getSerializableExtra(ARG_PLAYER_LIST);
+			players = CommonUtils.objectArrToPlayerArr((Object[]) intent.getSerializableExtra(ARG_PLAYER_LIST));
 		}
 
 		if(players != null && players.length > 0) {
 			rcvPlayerList.setLayoutManager(new LinearLayoutManager(this));
 			PlayerListAdapter adapter = new PlayerListAdapter(this, players);
+			adapter.setClickListener(this);
 			rcvPlayerList.setAdapter(adapter);
 
 			LinearLayoutManager llm = new LinearLayoutManager(this);

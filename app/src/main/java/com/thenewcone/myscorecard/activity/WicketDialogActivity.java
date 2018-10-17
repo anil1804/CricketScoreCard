@@ -21,6 +21,7 @@ import com.thenewcone.myscorecard.player.BowlerStats;
 import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.scorecard.Extra;
 import com.thenewcone.myscorecard.scorecard.WicketData;
+import com.thenewcone.myscorecard.utils.CommonUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +48,7 @@ public class WicketDialogActivity extends Activity
 	CheckBox cbIsExtra;
 	int minExtraRuns = 0;
 	SeekBar sbRORuns;
+    TextView tvEffectedBy;
 
 	public static final int RESP_CODE_OK = 1;
 	public static final int RESP_CODE_CANCEL = -1;
@@ -63,7 +65,7 @@ public class WicketDialogActivity extends Activity
 			facingBatsman = (BatsmanStats) incomingIntent.getSerializableExtra(ARG_FACING_BATSMAN);
 			otherBatsman = (BatsmanStats) incomingIntent.getSerializableExtra(ARG_OTHER_BATSMAN);
 			bowler = (BowlerStats) incomingIntent.getSerializableExtra(ARG_BOWLER);
-			fieldingTeam = (Player[]) incomingIntent.getSerializableExtra(ARG_FIELDING_TEAM);
+			fieldingTeam = CommonUtils.objectArrToPlayerArr((Object[]) incomingIntent.getSerializableExtra(ARG_FIELDING_TEAM));
 		}
 	}
 
@@ -159,19 +161,19 @@ public class WicketDialogActivity extends Activity
 	public void onClick(View view) {
 		glRORunsExtra = findViewById(R.id.glRORunsExtra);
 
-		TextView tvEffectedBy = findViewById(R.id.tvEffectedBy);
+		tvEffectedBy = findViewById(R.id.tvEffectedBy);
 
 		RadioGroup rgRONB = findViewById(R.id.rgRONB);
 
 		switch (view.getId()) {
 			/*Capturing the details of the Batsman who it out*/
 			case R.id.btnBatsmanOutText:
-				displayFieldingTeam();
+                Toast.makeText(getApplicationContext(), "Show Batsman Dialog", Toast.LENGTH_SHORT).show();
 				break;
 
 			/*Capturing the details of the Fielder who effected the dismissal*/
 			case R.id.btnEffectedByText:
-				Toast.makeText(getApplicationContext(), "Show Player Dialog", Toast.LENGTH_SHORT).show();
+                displayFieldingTeam();
 				break;
 
 			/*Capturing all details of the Wicket*/
@@ -371,6 +373,7 @@ public class WicketDialogActivity extends Activity
 			case ACTIVITY_REQ_CODE_FIELDER_SELECT:
 				if(resultCode == RESP_CODE_OK) {
 					effectedBy = (Player) data.getSerializableExtra(PlayerSelectActivity.ARG_EFFECTED_BY);
+					tvEffectedBy.setText(effectedBy.getName());
 				}
 				break;
 		}

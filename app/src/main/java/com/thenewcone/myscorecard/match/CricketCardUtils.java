@@ -10,6 +10,7 @@ import com.thenewcone.myscorecard.scorecard.Extra;
 import com.thenewcone.myscorecard.scorecard.WicketData;
 import com.thenewcone.myscorecard.utils.CommonUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CricketCardUtils {
@@ -48,6 +49,9 @@ public class CricketCardUtils {
 	}
 
 	public void addToBattingTeam(Player player) {
+	    if(battingTeam == null)
+	        battingTeam = new ArrayList<>();
+
 		battingTeam.add(player);
 	}
 
@@ -56,6 +60,9 @@ public class CricketCardUtils {
 	}
 
 	public void addToBowlingTeam(Player player) {
+        if(bowlingTeam == null)
+            bowlingTeam = new ArrayList<>();
+
 		bowlingTeam.add(player);
 	}
 

@@ -17,9 +17,14 @@ import com.thenewcone.myscorecard.match.CricketCard;
 import com.thenewcone.myscorecard.match.CricketCardUtils;
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
+import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.scorecard.Extra;
 import com.thenewcone.myscorecard.scorecard.WicketData;
 import com.thenewcone.myscorecard.utils.CommonUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class LimitedOversFragment extends Fragment
 	implements View.OnClickListener{
@@ -73,16 +78,33 @@ public class LimitedOversFragment extends Fragment
 		theView.findViewById(R.id.btnExtraPenalty).setOnClickListener(this);
 	}
 
-
 	private void initCricketCard() {
 		CricketCard card = new CricketCard("Team1", "50.0", 5, 10, 10, 1);
 
 		ccUtils = new CricketCardUtils(card);
 
-		ccUtils.newBatsman(new BatsmanStats("Batsman 1", 1), null);
-		ccUtils.newBatsman(new BatsmanStats("Batsman 2", 2), null);
-		ccUtils.setBowler(new BowlerStats("Bowler"));
+		ccUtils.newBatsman(new BatsmanStats("Player-11", 1), null);
+		ccUtils.newBatsman(new BatsmanStats("Player-12", 2), null);
+		ccUtils.setBowler(new BowlerStats("Player-28"));
 
+		ccUtils.addToBattingTeam(new Player("Player-11", (new Random().nextInt(20))+18, Player.BattingType.RHB, Player.BowlingType.NONE));
+        ccUtils.addToBattingTeam(new Player("Player-12", (new Random().nextInt(20))+18, Player.BattingType.LHB, Player.BowlingType.NONE));
+        ccUtils.addToBattingTeam(new Player("Player-13", (new Random().nextInt(20))+18, Player.BattingType.RHB, Player.BowlingType.OB));
+        ccUtils.addToBattingTeam(new Player("Player-14", (new Random().nextInt(20))+18, Player.BattingType.RHB, Player.BowlingType.NONE));
+        ccUtils.addToBattingTeam(new Player("Player-15", (new Random().nextInt(20))+18, Player.BattingType.LHB, Player.BowlingType.SLA));
+        ccUtils.addToBattingTeam(new Player("Player-16", (new Random().nextInt(20))+18, Player.BattingType.RHB, Player.BowlingType.RM));
+        ccUtils.addToBattingTeam(new Player("Player-17", (new Random().nextInt(20))+18, Player.BattingType.LHB, Player.BowlingType.LF));
+        ccUtils.addToBattingTeam(new Player("Player-18", (new Random().nextInt(20))+18, Player.BattingType.RHB, Player.BowlingType.RFM));
+
+
+        ccUtils.addToBowlingTeam(new Player("Player-21", (new Random().nextInt(20))+18, Player.BattingType.LHB, Player.BowlingType.NONE));
+        ccUtils.addToBowlingTeam(new Player("Player-22", (new Random().nextInt(20))+18, Player.BattingType.RHB, Player.BowlingType.NONE));
+        ccUtils.addToBowlingTeam(new Player("Player-23", (new Random().nextInt(20))+18, Player.BattingType.LHB, Player.BowlingType.SLC));
+        ccUtils.addToBowlingTeam(new Player("Player-24", (new Random().nextInt(20))+18, Player.BattingType.RHB, Player.BowlingType.LB));
+        ccUtils.addToBowlingTeam(new Player("Player-25", (new Random().nextInt(20))+18, Player.BattingType.LHB, Player.BowlingType.NONE));
+        ccUtils.addToBowlingTeam(new Player("Player-26", (new Random().nextInt(20))+18, Player.BattingType.RHB, Player.BowlingType.RM));
+        ccUtils.addToBowlingTeam(new Player("Player-27", (new Random().nextInt(20))+18, Player.BattingType.RHB, Player.BowlingType.RM));
+        ccUtils.addToBowlingTeam(new Player("Player-28", (new Random().nextInt(20))+18, Player.BattingType.LHB, Player.BowlingType.LFM));
 	}
 
 	private void updateCardDetails(boolean isInitial) {
