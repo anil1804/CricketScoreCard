@@ -21,9 +21,13 @@
 		</activity>
 		<activity
 			android:name=".activity.ExtraDialogActivity"
-			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth"></activity>
-		<activity android:name=".activity.WicketDialogActivity"
-			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth"></activity>
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
+		<activity
+			android:name=".activity.WicketDialogActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
+		<activity
+			android:name=".activity.PlayerSelectActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth"/>
 	</application>
 
 </manifest>

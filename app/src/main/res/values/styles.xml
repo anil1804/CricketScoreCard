@@ -29,6 +29,25 @@
 		<item name="android:radius">16dp</item>
 	</style>
 
+	<style name="ButtonStyle.Small">
+		<item name="android:layout_width">25dp</item>
+		<item name="android:layout_height">25dp</item>
+		<item name="android:padding">0dp</item>
+		<item name="android:layout_margin">2dp</item>
+		<item name="android:radius">0dp</item>
+	</style>
+
+	<style name="ButtonStyle.Submit">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:padding">0dp</item>
+		<item name="android:background">@android:color/transparent</item>
+		<item name="android:textColor">@android:color/holo_red_dark</item>
+		<item name="android:radius">0dp</item>
+		<item name="android:textAllCaps">true</item>
+		<item name="android:textSize">14sp</item>
+	</style>
+
 	<style name="ButtonStyle.Round">
 		<item name="android:padding">0dp</item>
 		<item name="android:layout_margin">@dimen/button_margin_round</item>
@@ -108,5 +127,11 @@
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:textSize">12sp</item>
 		<item name="android:padding">10dp</item>
+	</style>
+
+	<style name="lineSeparator">
+		<item name="android:layout_height">1dip</item>
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:background">@color/lineSeparator</item>
 	</style>
 </resources>

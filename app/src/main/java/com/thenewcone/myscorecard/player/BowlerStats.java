@@ -2,7 +2,9 @@ package com.thenewcone.myscorecard.player;
 
 import com.thenewcone.myscorecard.utils.CommonUtils;
 
-public class BowlerStats {
+import java.io.Serializable;
+
+public class BowlerStats implements Serializable {
 	private String bowlerName, oversBowled;
 	private double economy;
 	private int runsGiven, maidens, wickets;

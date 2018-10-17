@@ -8,4 +8,5 @@
 	<dimen name="button_padding">12dp</dimen>
 	<dimen name="button_margin_round">8dp</dimen>
 	<dimen name="round_button_size">40dp</dimen>
+	<dimen name="viewMarginDefault">5dp</dimen>
 </resources>

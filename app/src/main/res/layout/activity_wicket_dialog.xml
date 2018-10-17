@@ -5,68 +5,239 @@
 	android:layout_height="match_parent"
 	tools:context=".activity.WicketDialogActivity"
 	android:orientation="vertical">
+
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical">
 
-		<RadioGroup
-			android:id="@+id/rgWicket"
-			android:layout_width="wrap_content"
+		<GridLayout
+			android:id="@+id/glWicket"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:orientation="vertical">
+			android:columnCount="2"
+			android:columnOrderPreserved="true">
 
-		</RadioGroup>
+				<RadioButton
+					android:id="@+id/rbWktCaught"
+					style="@style/RadioButtonStyle"
+					android:text="@string/wicket_caught"/>
+
+				<RadioButton
+					android:id="@+id/rbWktBowled"
+					style="@style/RadioButtonStyle"
+					android:text="@string/wicket_bowled"/>
+
+				<RadioButton
+					android:id="@+id/rbWktLBW"
+					style="@style/RadioButtonStyle"
+					android:text="@string/wicket_lbw"/>
+
+				<RadioButton
+					android:id="@+id/rbWktStump"
+					style="@style/RadioButtonStyle"
+					android:text="@string/wicket_stump"/>
+
+				<RadioButton
+					android:id="@+id/rbWktRunOut"
+					style="@style/RadioButtonStyle"
+					android:text="@string/wicket_runOut"/>
+
+				<RadioButton
+					android:id="@+id/rbWktHitwicket"
+					style="@style/RadioButtonStyle"
+					android:text="@string/wicket_hitWicket"/>
+
+				<RadioButton
+					android:id="@+id/rbWktRetiredHurt"
+					style="@style/RadioButtonStyle"
+					android:text="@string/wicket_retiredHurt"/>
+
+				<RadioButton
+					android:id="@+id/rbWktObstruct"
+					style="@style/RadioButtonStyle"
+					android:text="@string/wicket_obstruct"/>
+
+				<RadioButton
+					android:id="@+id/rbWktHitTwice"
+					style="@style/RadioButtonStyle"
+					android:text="@string/wicket_hitTwice"/>
+
+				<RadioButton
+					android:id="@+id/rbWktTimedOut"
+					style="@style/RadioButtonStyle"
+					android:text="@string/wicket_timedOut"/>
+
+		</GridLayout>
+
+		<View style="@style/lineSeparator"/>
 
 		<LinearLayout
-			android:id="@+id/llEffectedBy"
-			android:layout_width="wrap_content"
+			android:id="@+id/llWicketDetails"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:orientation="horizontal"
+			android:orientation="vertical"
+			android:background="@color/lime_A100"
 			android:visibility="gone">
 
 			<TextView
-				android:id="@+id/tvEffectedBy"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" />
+				style="@style/TextViewStyle"
+				android:text="@string/wicketDetails"/>
 
-			<Button
-				android:id="@+id/btnEffectedByText"
-				android:drawableStart="@drawable/ic_edit"
-				style="@style/ButtonStyle"/>
-
-		</LinearLayout>
-
-		<LinearLayout
-			android:id="@+id/llRunout"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-			android:visibility="gone">
-
-			<TextView
-				android:id="@+id/tvBatsmanOut"
-				android:layout_width="wrap_content"
+			<LinearLayout
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@string/batsmanOutText"/>
+				android:orientation="horizontal">
 
-			<Button
-				android:id="@+id/btnBatsmanOutText"
-				android:drawableStart="@drawable/ic_edit"
-				style="@style/ButtonStyle"/>
+				<LinearLayout
+					android:id="@+id/llEffectedBy"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_margin="@dimen/viewMarginDefault"
+					android:orientation="horizontal">
 
-			<CheckBox
-				android:id="@+id/cbRunsScored"
-				android:layout_width="wrap_content"
+					<Button
+						android:id="@+id/btnEffectedByText"
+						android:drawableStart="@drawable/ic_edit"
+						style="@style/ButtonStyle.Small"/>
+
+					<TextView
+						android:id="@+id/tvEffectedBy"
+						style="@style/TextViewStyle"
+						android:text="@string/caughtBy"
+						android:layout_width="0dp"
+						android:layout_weight="1"/>
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:id="@+id/llOutBatsman"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_margin="@dimen/viewMarginDefault"
+					android:orientation="horizontal"
+					android:visibility="gone">
+
+					<Button
+						android:id="@+id/btnBatsmanOutText"
+						android:drawableStart="@drawable/ic_edit"
+						style="@style/ButtonStyle.Small"/>
+
+					<TextView
+						android:id="@+id/tvBatsmanOut"
+						style="@style/TextViewStyle"
+						android:text="@string/batsmanOutText"
+						android:layout_width="0dp"
+						android:layout_weight="1"/>
+
+				</LinearLayout>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:id="@+id/llRORuns"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@string/runsScored"/>
+				android:orientation="vertical">
 
-			<CheckBox
-				android:id="@+id/cbHasExtra"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:checked="false"
-				android:text="@string/isExtra"/>
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal">
+
+					<TextView
+						android:id="@+id/tvRORunsScoredText"
+						android:layout_margin="@dimen/viewMarginDefault"
+						style="@style/TextViewStyle"
+						android:text="@string/runsScored"/>
+
+					<SeekBar
+						android:id="@+id/sbRORuns"
+						android:layout_width="0dp"
+						android:layout_weight="1"
+						android:layout_height="match_parent"
+						android:max="3"
+						android:progress="1"/>
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_margin="@dimen/viewMarginDefault"
+					android:orientation="vertical">
+
+					<CheckBox
+						android:id="@+id/cbIsExtra"
+						style="@style/TextViewStyle"
+						android:checked="false"
+						android:text="@string/isExtra"/>
+
+					<GridLayout
+						android:id="@+id/glRORunsExtra"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:visibility="gone"
+						android:columnCount="4"
+						android:columnOrderPreserved="true">
+
+						<RadioButton
+							android:id="@+id/rbROWide"
+							style="@style/RadioButtonStyle"
+							android:text="@string/btnWideText"
+							android:checked="true"/>
+
+						<RadioButton
+							android:id="@+id/rbRONB"
+							style="@style/RadioButtonStyle"
+							android:text="@string/btnNoBallText" />
+
+						<RadioButton
+							android:id="@+id/rbROBye"
+							style="@style/RadioButtonStyle"
+							android:text="@string/btnByeText"/>
+
+						<RadioButton
+							android:id="@+id/rbROLegBye"
+							style="@style/RadioButtonStyle"
+							android:text="@string/btnLegByeText"/>
+
+					</GridLayout>
+
+					<RadioGroup
+						android:id="@+id/rgRONB"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:orientation="vertical"
+						android:visibility="gone">
+
+						<RadioButton
+							android:id="@+id/rbRONBNone"
+							style="@style/RadioButtonStyle"
+							android:padding="0dp"
+							android:layout_margin="0dp"
+							android:checked="true"
+							android:text="@string/onlyNoBall"/>
+
+						<RadioButton
+							android:id="@+id/rbRONBBye"
+							android:padding="0dp"
+							android:layout_margin="0dp"
+							style="@style/RadioButtonStyle"
+							android:text="@string/noBallAndByes"/>
+
+						<RadioButton
+							android:id="@+id/rbRONBLB"
+							android:padding="0dp"
+							android:layout_margin="0dp"
+							style="@style/RadioButtonStyle"
+							android:text="@string/noBallAndLB"/>
+
+					</RadioGroup>
+
+				</LinearLayout>
+
+			</LinearLayout>
 
 		</LinearLayout>
 
@@ -77,12 +248,12 @@
 			android:layout_gravity="end">
 
 			<Button
-				style="@style/ButtonStyle"
+				style="@style/ButtonStyle.Submit"
 				android:id="@+id/btnWktCancel"
 				android:text="@string/cancel"/>
 
 			<Button
-				style="@style/ButtonStyle"
+				style="@style/ButtonStyle.Submit"
 				android:id="@+id/btnWktOK"
 				android:text="@string/ok"/>
 

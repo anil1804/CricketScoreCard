@@ -255,6 +255,16 @@ public class LimitedOversFragment extends Fragment
 
 	private void displayWicketDialog() {
 		Intent dialogIntent = new Intent(getContext(), WicketDialogActivity.class);
+
+		BatsmanStats otherBatmsan = (ccUtils.getCurrentFacing().getPosition() == ccUtils.getBatsman1().getPosition())
+				? ccUtils.getBatsman2()
+				: ccUtils.getBatsman1();
+
+		dialogIntent.putExtra(WicketDialogActivity.ARG_FACING_BATSMAN, ccUtils.getCurrentFacing());
+		dialogIntent.putExtra(WicketDialogActivity.ARG_OTHER_BATSMAN, otherBatmsan);
+		dialogIntent.putExtra(WicketDialogActivity.ARG_BOWLER, ccUtils.getBowler());
+		dialogIntent.putExtra(WicketDialogActivity.ARG_FIELDING_TEAM, ccUtils.getBowlingTeam().toArray());
+
 		startActivityForResult(dialogIntent, ACTIVITY_REQ_CODE_WICKET_DIALOG);
 	}
 
