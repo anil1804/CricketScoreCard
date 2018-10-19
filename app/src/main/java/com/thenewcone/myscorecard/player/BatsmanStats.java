@@ -5,7 +5,6 @@ import com.thenewcone.myscorecard.utils.CommonUtils;
 import java.io.Serializable;
 
 public class BatsmanStats implements Serializable {
-	private String batsmanName;
 	private int ballsPlayed;
 
 	private int runsScored;
@@ -16,11 +15,11 @@ public class BatsmanStats implements Serializable {
 	private int dots, singles, twos, threes;
 	private double strikeRate;
 	private boolean notOut = true;
-	private Player wicketEffectedBy;
+	private Player wicketEffectedBy, player;
 	private BowlerStats wicketTakenBy;
 
 	public String getBatsmanName() {
-		return batsmanName;
+		return player.getName();
 	}
 
 	public void incBallsPlayed(int ballsPlayed) {
@@ -51,6 +50,10 @@ public class BatsmanStats implements Serializable {
 		return strikeRate;
 	}
 
+	public Player getPlayer() {
+	    return player;
+    }
+
 	public void setNotOut(boolean notOut) {
 		this.notOut = notOut;
 	}
@@ -64,8 +67,8 @@ public class BatsmanStats implements Serializable {
 	}
 
 
-	public BatsmanStats(String batsmanName, int position) {
-		this.batsmanName = batsmanName;
+	public BatsmanStats(Player player, int position) {
+		this.player = player;
 		this.position = position;
 		this.strikeRate = CommonUtils.getStrikeRate(runsScored, ballsPlayed);
 	}

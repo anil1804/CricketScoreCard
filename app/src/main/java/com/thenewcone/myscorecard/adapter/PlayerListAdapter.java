@@ -3,7 +3,6 @@ package com.thenewcone.myscorecard.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +78,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.My
 			notifyItemChanged(selectedIndex);
 
 			if(clickListener != null)
-			    clickListener.onClick(view, selectedIndex);
+			    clickListener.onItemClick(view, selectedIndex);
 		}
 	}
 }

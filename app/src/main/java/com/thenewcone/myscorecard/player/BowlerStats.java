@@ -5,12 +5,14 @@ import com.thenewcone.myscorecard.utils.CommonUtils;
 import java.io.Serializable;
 
 public class BowlerStats implements Serializable {
-	private String bowlerName, oversBowled;
+	private String oversBowled;
 	private double economy;
 	private int runsGiven, maidens, wickets;
 
+    private Player player;
+
 	public String getBowlerName() {
-		return bowlerName;
+		return player.getName();
 	}
 
 	public String getOversBowled() {
@@ -23,10 +25,6 @@ public class BowlerStats implements Serializable {
 
 	public double getEconomy() {
 		return economy;
-	}
-
-	public void setEconomy(double economy) {
-		this.economy = economy;
 	}
 
 	public int getRunsGiven() {
@@ -53,8 +51,12 @@ public class BowlerStats implements Serializable {
 		this.wickets++;
 	}
 
-	public BowlerStats(String bowlerName) {
-		this.bowlerName = bowlerName;
+    public Player getPlayer() {
+        return player;
+    }
+
+	public BowlerStats(Player player) {
+		this.player = player;
 		this.oversBowled = "0.0";
 		this.economy = CommonUtils.calcRunRate(runsGiven, Double.parseDouble(oversBowled));
 	}

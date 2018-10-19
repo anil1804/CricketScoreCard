@@ -30,6 +30,7 @@ public class WicketDialogActivity extends Activity
 	implements View.OnClickListener{
 
 	private static final int ACTIVITY_REQ_CODE_FIELDER_SELECT = 1;
+    private static final int ACTIVITY_REQ_CODE_OUT_BATSMAN_SELECT = 2;
 
 	public static final String ARG_FACING_BATSMAN = "FacingBatsman";
 	public static final String ARG_OTHER_BATSMAN = "OtherBatsman";
@@ -168,7 +169,7 @@ public class WicketDialogActivity extends Activity
 		switch (view.getId()) {
 			/*Capturing the details of the Batsman who it out*/
 			case R.id.btnBatsmanOutText:
-                Toast.makeText(getApplicationContext(), "Show Batsman Dialog", Toast.LENGTH_SHORT).show();
+                displayBatsmen();
 				break;
 
 			/*Capturing the details of the Fielder who effected the dismissal*/
@@ -321,19 +322,6 @@ public class WicketDialogActivity extends Activity
 			sbRORuns.setProgress(minExtraRuns);
 	}
 
-	private void sendResponse(int responseCode) {
-		setResult(responseCode);
-
-		WicketData wicketData;
-		wicketData = new WicketData(outBatsman, dismissalType, null, bowler);
-
-		Intent respIntent = new Intent();
-		respIntent.putExtra(ARG_WICKET_DATA, wicketData);
-		setResult(responseCode, respIntent);
-
-		finish();
-	}
-
 	private void clearOtherCheckedRadioButtons(ViewGroup viewGroup, int selectedViewID) {
 		for(int i=0; i<viewGroup.getChildCount(); i++) {
 			RadioButton radioButton = findViewById(viewGroup.getChildAt(i).getId());
@@ -365,6 +353,13 @@ public class WicketDialogActivity extends Activity
 		startActivityForResult(playerIntent, ACTIVITY_REQ_CODE_FIELDER_SELECT);
 	}
 
+	private void displayBatsmen() {
+	    Intent batsmanIntent = new Intent(this, BatsmanSelectActivity.class);
+	    BatsmanStats[] batsmen = {facingBatsman, otherBatsman};
+	    batsmanIntent.putExtra(BatsmanSelectActivity.ARG_BATSMAN_LIST, batsmen);
+	    startActivityForResult(batsmanIntent, ACTIVITY_REQ_CODE_OUT_BATSMAN_SELECT);
+    }
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -376,6 +371,27 @@ public class WicketDialogActivity extends Activity
 					tvEffectedBy.setText(effectedBy.getName());
 				}
 				break;
+
+            case ACTIVITY_REQ_CODE_OUT_BATSMAN_SELECT:
+                if(resultCode == RESP_CODE_OK) {
+                    outBatsman = (BatsmanStats) data.getSerializableExtra(BatsmanSelectActivity.ARG_SEL_BATSMAN);
+                    TextView tvOutBatsman = findViewById(R.id.tvBatsmanOut);
+                    tvOutBatsman.setText(outBatsman.getBatsmanName());
+                }
+                break;
 		}
 	}
+
+    private void sendResponse(int responseCode) {
+        setResult(responseCode);
+
+        WicketData wicketData;
+        wicketData = new WicketData(outBatsman, dismissalType, effectedBy, bowler);
+
+        Intent respIntent = new Intent();
+        respIntent.putExtra(ARG_WICKET_DATA, wicketData);
+        setResult(responseCode, respIntent);
+
+        finish();
+    }
 }

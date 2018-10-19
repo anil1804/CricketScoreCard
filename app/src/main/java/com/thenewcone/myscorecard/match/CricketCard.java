@@ -19,7 +19,7 @@ public class CricketCard {
 	private int maxBowlers, maxPerBowler;
 	private boolean inningsComplete;
 
-	private int futurePenalty;
+    private int futurePenalty;
 
 	private CricketCard prevInningsCard;
 
@@ -40,7 +40,7 @@ public class CricketCard {
 		return target;
 	}
 
-	public void setTarget(int target) {
+	void setTarget(int target) {
 		this.target = target;
 	}
 
@@ -48,7 +48,7 @@ public class CricketCard {
 		return wicketsFallen;
 	}
 
-	public void incWicketsFallen() {
+	void incWicketsFallen() {
 		this.wicketsFallen++;
 	}
 
@@ -96,7 +96,11 @@ public class CricketCard {
 		return totalOversBowled;
 	}
 
-	public void updateTotalOversBowled() {
+    public int getMaxPerBowler() {
+        return maxPerBowler;
+    }
+
+    void updateTotalOversBowled() {
 		this.totalOversBowled = incrementOvers(totalOversBowled);
 	}
 
@@ -104,7 +108,7 @@ public class CricketCard {
 		return bowlerMap;
 	}
 
-	public void updateBowlerInBowlerMap(BowlerStats bowler) {
+	void updateBowlerInBowlerMap(BowlerStats bowler) {
 		this.bowlerMap.remove(bowler.getBowlerName());
 		this.bowlerMap.put(bowler.getBowlerName(), bowler);
 	}
@@ -113,19 +117,24 @@ public class CricketCard {
 		return batsmen;
 	}
 
-	public void appendToBatsmen(BatsmanStats batsman) {
+	void appendToBatsmen(BatsmanStats batsman) {
 		this.batsmen.append(batsman.getPosition(), batsman);
 	}
+
+	void updateBatsmenData (BatsmanStats batsmanStats) {
+	    this.batsmen.remove(batsmanStats.getPosition());
+	    appendToBatsmen(batsmanStats);
+    }
 
 	public int getFuturePenalty() {
 		return futurePenalty;
 	}
 
-	public void addFuturePenalty(int futurePenalty) {
+	void addFuturePenalty(int futurePenalty) {
 		this.futurePenalty += futurePenalty;
 	}
 
-	public CricketCard getPrevInningsCard() {
+	CricketCard getPrevInningsCard() {
 		return prevInningsCard;
 	}
 
@@ -139,27 +148,27 @@ public class CricketCard {
 		this.totalOversBowled = "0.0";
 	}
 
-	public void addWides(int wides) {
+	void addWides(int wides) {
 		this.wides += wides;
 	}
 
-	public void incNoBalls() {
+	void incNoBalls() {
 		this.noBalls++;
 	}
 
-	public void addByes(int byes) {
+	void addByes(int byes) {
 		this.byes += byes;
 	}
 
-	public void addLegByes(int legByes) {
+	void addLegByes(int legByes) {
 		this.legByes += legByes;
 	}
 
-	public void addPenalty(int runs) {
+	void addPenalty(int runs) {
 		this.penalty += runs;
 	}
 
-	public String incrementOvers(String oversBowled) {
+	String incrementOvers(String oversBowled) {
 		String[] overDetails = oversBowled.split("\\.");
 		int overs = Integer.parseInt(overDetails[0]), balls = Integer.parseInt(overDetails[1]);
 
@@ -172,7 +181,7 @@ public class CricketCard {
 		return overs + "." + balls;
 	}
 
-	public void inningsCheck() {
+	void inningsCheck() {
 		if(totalOversBowled.equals(maxOvers) || wicketsFallen == maxWickets) {
 			inningsComplete = true;
 			if(innings == 1) {
@@ -182,7 +191,7 @@ public class CricketCard {
 		}
 	}
 
-	public void updateScore(int runsScored, @Nullable Extra extra) {
+	void updateScore(int runsScored, @Nullable Extra extra) {
 		int runs = runsScored;
 		if(extra != null) {
 			runs += extra.getRuns();
@@ -193,7 +202,7 @@ public class CricketCard {
 		score += runs;
 	}
 
-	public void updateRunRate(){
+	void updateRunRate(){
 		runRate = CommonUtils.calcRunRate(score, Double.parseDouble(totalOversBowled));
 		if(innings == 2) {
 			reqRate = CommonUtils.calReqRate(score, Double.parseDouble(totalOversBowled), target, Double.parseDouble(maxOvers));

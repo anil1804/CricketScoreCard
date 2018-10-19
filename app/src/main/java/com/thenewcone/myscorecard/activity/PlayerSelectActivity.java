@@ -68,7 +68,7 @@ public class PlayerSelectActivity extends Activity
 	}
 
 	@Override
-	public void onClick(View view, int position) {
+	public void onItemClick(View view, int position) {
 		effectedBy = players[position];
 	}
 

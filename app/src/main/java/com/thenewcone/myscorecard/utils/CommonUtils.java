@@ -45,7 +45,7 @@ public class CommonUtils {
 		return (oversRem > 0) ? calcRunRate(reqRuns, oversRem) : oversRem;
 	}
 
-	private static int oversToBalls(double overs) {
+    public static int oversToBalls(double overs) {
 		int ballsBowled;
 
 		String[] oversArr = String.valueOf(overs).split("\\.");
@@ -56,7 +56,7 @@ public class CommonUtils {
 		return ballsBowled;
 	}
 
-	private static double ballsToOvers(int balls) {
+    public static double ballsToOvers(int balls) {
 		return Double.parseDouble((balls / 6) + "." + balls % 6);
 	}
 

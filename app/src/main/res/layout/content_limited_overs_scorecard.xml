@@ -325,92 +325,121 @@
 
 	</TableLayout>
 
-	<!-- Scoring Buttons Row-1 -->
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:gravity="center_horizontal"
-		android:layout_marginTop="20dp">
+    <LinearLayout
+        android:id="@+id/llScoring"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-		<Button
-			android:id="@+id/btnRuns0"
-			style="@style/ButtonStyle.Round"
-			android:text="@string/zero"/>
+        <!-- Scoring Buttons Row-1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="20dp">
 
-		<Button
-			android:id="@+id/btnRuns1"
-			style="@style/ButtonStyle.Round"
-			android:text="@string/one"/>
+            <Button
+                android:id="@+id/btnRuns0"
+                style="@style/ButtonStyle.Round"
+                android:text="@string/zero"/>
 
-		<Button
-			android:id="@+id/btnRuns2"
-			style="@style/ButtonStyle.Round"
-			android:text="@string/two"/>
+            <Button
+                android:id="@+id/btnRuns1"
+                style="@style/ButtonStyle.Round"
+                android:text="@string/one"/>
 
-		<Button
-			android:id="@+id/btnRuns3"
-			style="@style/ButtonStyle.Round"
-			android:text="@string/three"/>
+            <Button
+                android:id="@+id/btnRuns2"
+                style="@style/ButtonStyle.Round"
+                android:text="@string/two"/>
 
-	</LinearLayout>
+            <Button
+                android:id="@+id/btnRuns3"
+                style="@style/ButtonStyle.Round"
+                android:text="@string/three"/>
 
-	<!-- Scoring Buttons Row-2 -->
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:gravity="center_horizontal"
-		android:orientation="horizontal">
+        </LinearLayout>
 
-		<Button
-			android:id="@+id/btnRuns4"
-			style="@style/ButtonStyle.Round.Boundary"
-			android:text="@string/four"/>
+        <!-- Scoring Buttons Row-2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
 
-		<Button
-			android:id="@+id/btnRuns6"
-			style="@style/ButtonStyle.Round.Boundary"
-			android:text="@string/six"/>
+            <Button
+                android:id="@+id/btnRuns4"
+                style="@style/ButtonStyle.Round.Boundary"
+                android:text="@string/four"/>
 
-		<Button
-			android:id="@+id/btnWicket"
-			style="@style/ButtonStyle.Round.Wicket"
-			android:text="@string/wicket"/>
+            <Button
+                android:id="@+id/btnRuns6"
+                style="@style/ButtonStyle.Round.Boundary"
+                android:text="@string/six"/>
 
-	</LinearLayout>
+            <Button
+                android:id="@+id/btnWicket"
+                style="@style/ButtonStyle.Round.Wicket"
+                android:text="@string/wicket"/>
 
-	<!-- Scoring Buttons Row-3 -->
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:gravity="center_horizontal"
-		android:orientation="horizontal">
+        </LinearLayout>
 
-		<Button
-			android:id="@+id/btnExtrasLegByes"
-			style="@style/ButtonStyle.Round.Extras"
-			android:text="@string/btnLegByeText"/>
+        <!-- Scoring Buttons Row-3 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
 
-		<Button
-			android:id="@+id/btnExtrasByes"
-			style="@style/ButtonStyle.Round.Extras"
-			android:text="@string/btnByeText"/>
+            <Button
+                android:id="@+id/btnExtrasLegByes"
+                style="@style/ButtonStyle.Round.Extras"
+                android:text="@string/btnLegByeText"/>
 
-		<Button
-			android:id="@+id/btnExtrasWides"
-			style="@style/ButtonStyle.Round.Extras"
-			android:text="@string/btnWideText"/>
+            <Button
+                android:id="@+id/btnExtrasByes"
+                style="@style/ButtonStyle.Round.Extras"
+                android:text="@string/btnByeText"/>
 
-		<Button
-			android:id="@+id/btnExtrasNoBall"
-			style="@style/ButtonStyle.Round.Extras"
-			android:text="@string/btnNoBallText"/>
+            <Button
+                android:id="@+id/btnExtrasWides"
+                style="@style/ButtonStyle.Round.Extras"
+                android:text="@string/btnWideText"/>
 
-		<Button
-			android:id="@+id/btnExtraPenalty"
-			style="@style/ButtonStyle.Round.Extras"
-			android:text="@string/btnPenaltyText"/>
+            <Button
+                android:id="@+id/btnExtrasNoBall"
+                style="@style/ButtonStyle.Round.Extras"
+                android:text="@string/btnNoBallText"/>
 
-	</LinearLayout>
+            <Button
+                android:id="@+id/btnExtraPenalty"
+                style="@style/ButtonStyle.Round.Extras"
+                android:text="@string/btnPenaltyText"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnSelBatsman"
+        style="@style/ButtonStyle"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/selBatsman"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btnSelFacingBatsman"
+        style="@style/ButtonStyle"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/selFacingBatsman"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btnSelBowler"
+        style="@style/ButtonStyle"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/selBowler"
+        android:visibility="gone"/>
 
 </LinearLayout>

@@ -111,14 +111,14 @@ public class HomeActivity extends AppCompatActivity
 
 		switch (item.getItemId()) {
 			case R.id.nav_home:
-				if(!isFragmentVisible(HomeFragment.class.getSimpleName())) {
+				if(isFragmentHidden(HomeFragment.class.getSimpleName())) {
 					respMap.put(FRAGMENT, HomeFragment.newInstance());
 					respMap.put(FRAGMENT_TAG, HomeFragment.class.getSimpleName());
 				}
 				break;
 
 			case R.id.nav_cricket_limited:
-				if(!isFragmentVisible(HomeFragment.class.getSimpleName())) {
+				if(isFragmentHidden(HomeFragment.class.getSimpleName())) {
 					respMap.put(FRAGMENT, LimitedOversFragment.newInstance());
 					respMap.put(FRAGMENT_TAG, LimitedOversFragment.class.getSimpleName());
 				}
@@ -128,14 +128,14 @@ public class HomeActivity extends AppCompatActivity
 		return respMap;
 	}
 
-	private boolean isFragmentVisible(@NonNull String fragmentTag) {
+	private boolean isFragmentHidden(@NonNull String fragmentTag) {
 		List<Fragment> fragList = getSupportFragmentManager().getFragments();
 
 		for(Fragment frag : fragList) {
 			if(frag != null && frag.isVisible() && fragmentTag.equals(frag.getTag()))
-				return true;
+				return false;
 		}
 
-		return false;
+		return true;
 	}
 }

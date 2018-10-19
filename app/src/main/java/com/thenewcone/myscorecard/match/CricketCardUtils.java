@@ -19,8 +19,8 @@ public class CricketCardUtils {
 	private boolean newOver = false;
 
 	private CricketCard card;
-	private BowlerStats bowler;
-	private BatsmanStats currentFacing, batsman1, batsman2;
+	private BowlerStats bowler, nextBowler, prevBowler;
+	private BatsmanStats currentFacing, otherBatsman;
 
 	private List<Player> battingTeam, bowlingTeam;
 
@@ -28,17 +28,17 @@ public class CricketCardUtils {
 		return bowler;
 	}
 
+	public BowlerStats getPrevBowler() {
+	    return prevBowler;
+    }
+
 	public BatsmanStats getCurrentFacing() {
 		return currentFacing;
 	}
 
-	public BatsmanStats getBatsman1() {
-		return batsman1;
-	}
-
-	public BatsmanStats getBatsman2() {
-		return batsman2;
-	}
+    public BatsmanStats getOtherBatsman() {
+        return otherBatsman;
+    }
 
 	public CricketCard getCard() {
 		return card;
@@ -49,8 +49,9 @@ public class CricketCardUtils {
 	}
 
 	public void addToBattingTeam(Player player) {
-	    if(battingTeam == null)
-	        battingTeam = new ArrayList<>();
+	    if(battingTeam == null) {
+            battingTeam = new ArrayList<>();
+        }
 
 		battingTeam.add(player);
 	}
@@ -70,22 +71,34 @@ public class CricketCardUtils {
 		this.card = card;
 	}
 
-	public void newBatsman(@NonNull BatsmanStats batsman, @Nullable WicketData wicketData) {
-		if(batsman1 == null) {
-			batsman1 = batsman;
-		} else {
-			batsman2 = batsman;
-		}
-		if(currentFacing == null) {
-			currentFacing = batsman1;
-		}
+	public void updateFacingBatsman(BatsmanStats batsman) {
+	    if(currentFacing != null)
+	        otherBatsman = currentFacing;
 
-		if(wicketData != null && currentFacing.equals(wicketData.getBatsman())) {
-			currentFacing = batsman;
-		}
+	    currentFacing = batsman;
+    }
+
+	public void newBatsman(@NonNull BatsmanStats batsman) {
+	    if(currentFacing == null)
+	        currentFacing = batsman;
+	    else
+	        otherBatsman = batsman;
 
 		card.appendToBatsmen(batsman);
 	}
+
+	private void setNextBowler() {
+        prevBowler = nextBowler;
+
+        nextBowler = (Double.parseDouble(bowler.getOversBowled()) == (double) card.getMaxPerBowler())
+                ? null
+                : bowler;
+
+        if(prevBowler != null) {
+            setBowler(prevBowler);
+        }
+    }
+
 
 	public void setBowler(BowlerStats bowler) {
 		this.bowler = bowler;
@@ -149,34 +162,35 @@ public class CricketCardUtils {
 			}
 		}
 
-		if(wicketData != null && batsman.equals(wicketData.getBatsman())) {
-			batsman.setNotOut(false);
-			batsman.setWicketEffectedBy(wicketData.getEffectedBy());
-			batsman.setWicketTakenBy(wicketData.getBowler());
-		}
+		if(wicketData != null) {
+            if(currentFacing.getPosition() == wicketData.getBatsman().getPosition()) {
+                currentFacing.setNotOut(false);
+                currentFacing.setWicketEffectedBy(wicketData.getEffectedBy());
+                currentFacing.setWicketTakenBy(wicketData.getBowler());
+                currentFacing.evaluateStrikeRate();
+                card.updateBatsmenData(currentFacing);
+                currentFacing = null;
+            } else {
+                otherBatsman.setNotOut(false);
+                otherBatsman.setWicketEffectedBy(wicketData.getEffectedBy());
+                otherBatsman.setWicketTakenBy(wicketData.getBowler());
+                otherBatsman.evaluateStrikeRate();
+                card.updateBatsmenData(otherBatsman);
+                otherBatsman = null;
+            }
+		} else {
+            batsman.evaluateStrikeRate();
+        }
 
-		batsman.evaluateStrikeRate();
-
-		checkNextBatsmanFacingBall(runs, batsman);
+		checkNextBatsmanFacingBall(runs);
 	}
 
-	private void checkNextBatsmanFacingBall(int runs, @Nullable BatsmanStats batsman) {
-		if(batsman1.getPosition() == currentFacing.getPosition()) {
-			batsman1 = (batsman != null) ? batsman : batsman1;
-			if((runs % 2 == 1 && !newOver)  || (runs % 2 == 0 && newOver)) {
-				currentFacing = batsman2;
-			} else {
-				currentFacing = batsman1;
-			}
-		}
-		else if(batsman2.getPosition() == currentFacing.getPosition()) {
-			batsman2 = (batsman != null) ? batsman : batsman2;
-			if((runs % 2 == 1 && !newOver) || (runs % 2 == 0 && newOver)) {
-				currentFacing = batsman1;
-			} else {
-				currentFacing = batsman2;
-			}
-		}
+	private void checkNextBatsmanFacingBall(int runs) {
+        if((runs % 2 == 1 && !newOver)  || (runs % 2 == 0 && newOver)) {
+            BatsmanStats tempBatsman = otherBatsman;
+            otherBatsman = currentFacing;
+            currentFacing = tempBatsman;
+        }
 	}
 
 	public void processBallActivity(@Nullable Extra extra, int runs, @Nullable WicketData wicketData, boolean bowlerChanged) {
@@ -189,12 +203,13 @@ public class CricketCardUtils {
 					bowlerRuns = 0;
 					card.addByes(extra.getRuns());
 					break;
+
 				case LEG_BYE:
 					batsmanRuns = 0;
 					bowlerRuns = 0;
-
 					card.addLegByes(extra.getRuns());
 					break;
+
 				case WIDE:
 					batsmanRuns = 0;
 					batsmanBalls = 0;
@@ -202,6 +217,7 @@ public class CricketCardUtils {
 					bowlerBalls = 0;
 					card.addWides(extra.getRuns() + 1);
 					break;
+
 				case NO_BALL:
 					bowlerBalls = 0;
 					switch (extra.getSubType()) {
@@ -221,6 +237,7 @@ public class CricketCardUtils {
 					}
 					card.incNoBalls();
 					break;
+
 				case PENALTY:
 					batsmanBalls = 0;
 					batsmanRuns = 0;
@@ -236,6 +253,9 @@ public class CricketCardUtils {
 		} else {
 			newOver = false;
 		}
+
+		if(newOver)
+		    setNextBowler();
 
 		if(bowlerChanged)
 			numConsecutiveDots = 0;
@@ -266,7 +286,7 @@ public class CricketCardUtils {
 				if(numExtraRuns > 0) {
 					extra = new Extra(Extra.ExtraType.LEG_BYE, numExtraRuns);
 					processBallActivity(extra, 0, null, false);
-					checkNextBatsmanFacingBall(extra.getRuns(), null);
+					checkNextBatsmanFacingBall(extra.getRuns());
 				}
 				break;
 
@@ -274,7 +294,7 @@ public class CricketCardUtils {
 				if(numExtraRuns > 0) {
 					extra = new Extra(Extra.ExtraType.BYE, numExtraRuns);
 					processBallActivity(extra, 0, null, false);
-					checkNextBatsmanFacingBall(extra.getRuns(), null);
+					checkNextBatsmanFacingBall(extra.getRuns());
 				}
 				break;
 

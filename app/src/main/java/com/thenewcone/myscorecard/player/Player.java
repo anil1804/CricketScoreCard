@@ -5,9 +5,10 @@ import android.support.annotation.NonNull;
 import java.io.Serializable;
 
 public class Player implements Serializable {
-	String name;
-	int age;
-	BattingType battingType;
+	private String name;
+    private int age;
+    private BattingType battingStyle;
+    private BowlingType bowlingStyle;
 
 	public String getName() {
 		return name;
@@ -17,22 +18,20 @@ public class Player implements Serializable {
 		return age;
 	}
 
-	public BattingType getBattingType() {
-		return battingType;
+	public BattingType getBattingStyle() {
+		return battingStyle;
 	}
 
-	public BowlingType getBowlingType() {
-		return bowlingType;
+	public BowlingType getBowlingStyle() {
+		return bowlingStyle;
 	}
 
-	BowlingType bowlingType;
 
-
-	public Player (@NonNull String name, int age, @NonNull BattingType battingType, @NonNull BowlingType bowlingType) {
+	public Player (@NonNull String name, int age, @NonNull BattingType battingStyle, @NonNull BowlingType bowlingStyle) {
 		this.name = name;
 		this.age = age;
-		this.battingType = battingType;
-		this.bowlingType = bowlingType;
+		this.battingStyle = battingStyle;
+		this.bowlingStyle = bowlingStyle;
 	}
 
 	public enum BattingType {
