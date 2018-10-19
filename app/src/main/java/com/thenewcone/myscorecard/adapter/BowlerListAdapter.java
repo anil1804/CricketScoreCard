@@ -91,10 +91,10 @@ public class BowlerListAdapter extends RecyclerView.Adapter<BowlerListAdapter.My
                 llBowlerItem.setEnabled(false);
             }
 
-            if(bowler.getBowlerName().equals(prevBowler.getBowlerName() ))
+            if(prevBowler != null && bowler.getBowlerName().equals(prevBowler.getBowlerName() ))
                 llBowlerItem.setEnabled(false);
 
-            if(selectedIndex < 0 && bowler.equals(nextBowler)) {
+            if(selectedIndex < 0 && nextBowler != null && bowler.getBowlerName().equals(nextBowler.getBowlerName())) {
                 selectedIndex = getAdapterPosition();
                 llBowlerItem.setSelected(true);
                 if(clickListener != null)

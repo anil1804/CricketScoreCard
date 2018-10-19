@@ -6,9 +6,9 @@
 			<stroke android:color="@color/colorPrimaryDark"/>
 			<corners android:radius="32dp"/>
 			<padding android:bottom="@dimen/button_padding"
-				android:left="@dimen/button_padding"
-				android:right="@dimen/button_padding"
-				android:top="@dimen/button_padding"/>
+                android:top="@dimen/button_padding"
+				android:left="@dimen/button_padding_high"
+				android:right="@dimen/button_padding_high"/>
 		</shape>
 	</item>
 </selector>
