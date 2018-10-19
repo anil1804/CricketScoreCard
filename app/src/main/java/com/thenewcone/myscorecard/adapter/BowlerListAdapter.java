@@ -23,19 +23,20 @@ public class BowlerListAdapter extends RecyclerView.Adapter<BowlerListAdapter.My
 	private ItemClickListener clickListener;
 	private int selectedIndex = -1;
     private int maxPerBowler;
-    private BowlerStats prevBowler;
+    private BowlerStats prevBowler, nextBowler;
 
-	public BowlerListAdapter(@NonNull Context context, @NonNull List<BowlerStats> bowlers, int maxPerBowler, BowlerStats prevBowler) {
+	public BowlerListAdapter(@NonNull Context context, @NonNull List<BowlerStats> bowlers, int maxPerBowler, BowlerStats prevBowler, BowlerStats nextBowler) {
 		this.context = context;
 		this.bowlers = bowlers;
 		this.maxPerBowler = maxPerBowler;
 		this.prevBowler = prevBowler;
+		this.nextBowler = nextBowler;
 	}
 
 	@NonNull
 	@Override
 	public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View playerView = LayoutInflater.from(context).inflate(R.layout.activity_batsman_list_item, parent, false);
+		View playerView = LayoutInflater.from(context).inflate(R.layout.activity_bowler_list_item, parent, false);
 
 		return new MyViewHolder(playerView);
 	}
@@ -90,15 +91,24 @@ public class BowlerListAdapter extends RecyclerView.Adapter<BowlerListAdapter.My
                 llBowlerItem.setEnabled(false);
             }
 
-            if(prevBowler.equals(bowler))
+            if(bowler.getBowlerName().equals(prevBowler.getBowlerName() ))
                 llBowlerItem.setEnabled(false);
+
+            if(selectedIndex < 0 && bowler.equals(nextBowler)) {
+                selectedIndex = getAdapterPosition();
+                llBowlerItem.setSelected(true);
+                if(clickListener != null)
+                    clickListener.onItemClick(llBowlerItem, selectedIndex);
+            }
 		}
 
 
 		@Override
 		public void onClick(View view)
 		{
-			notifyItemChanged(selectedIndex);
+		    if(selectedIndex > -1)
+			    notifyItemChanged(selectedIndex);
+
 			selectedIndex = getAdapterPosition();
 			notifyItemChanged(selectedIndex);
 

@@ -18,7 +18,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.My
 	private Player[] players;
 	private Context context;
 	private ItemClickListener clickListener;
-	private int selectedIndex = -1;
+	private int selectedIndex = 0;
 
 	public PlayerListAdapter(@NonNull Context context, @NonNull Player[] players) {
 		this.context = context;
@@ -67,6 +67,12 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.My
 
 		public void setData(Player player) {
 			tvPlayerName.setText(player.getName());
+			if(getAdapterPosition() == 0) {
+			    llPlayerItem.setSelected(true);
+
+                if(clickListener != null)
+                    clickListener.onItemClick(llPlayerItem, selectedIndex);
+            }
 		}
 
 

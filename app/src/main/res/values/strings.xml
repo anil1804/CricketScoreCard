@@ -98,4 +98,5 @@
     <string name="selBatsman">Select Next Batsman</string>
     <string name="selBowler">Select Next Bowler</string>
     <string name="selFacingBatsman">Confirm Facing Batsman</string>
+    <string name="startNextInnings">Start Next Innings</string>
 </resources>

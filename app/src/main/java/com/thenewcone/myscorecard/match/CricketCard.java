@@ -5,10 +5,13 @@ import android.util.SparseArray;
 
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
+import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.scorecard.Extra;
 import com.thenewcone.myscorecard.utils.CommonUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class CricketCard {
 	private int maxWickets;
@@ -16,12 +19,10 @@ public class CricketCard {
 	private HashMap<String, BowlerStats> bowlerMap = new HashMap<>();
 	private SparseArray<BatsmanStats> batsmen = new SparseArray<>();
 
-	private int maxBowlers, maxPerBowler;
+	private int maxPerBowler;
 	private boolean inningsComplete;
 
     private int futurePenalty;
-
-	private CricketCard prevInningsCard;
 
 	private int score;
 	private int target = -1;
@@ -30,7 +31,9 @@ public class CricketCard {
 	private int innings;
 	private int byes, legByes, wides, noBalls, penalty;
 	private double runRate, reqRate = -1.00;
-	private String battingTeam, maxOvers, totalOversBowled;
+	private String battingTeamName, maxOvers, totalOversBowled;
+
+    private List<Player> battingTeam, bowlingTeam;
 
 	public int getScore() {
 		return score;
@@ -84,9 +87,13 @@ public class CricketCard {
 		return reqRate;
 	}
 
-	public String getBattingTeam() {
-		return battingTeam;
+	public String getBattingTeamName() {
+		return battingTeamName;
 	}
+
+	int getMaxWickets() {
+	    return maxWickets;
+    }
 
 	public String getMaxOvers() {
 		return maxOvers;
@@ -98,6 +105,10 @@ public class CricketCard {
 
     public int getMaxPerBowler() {
         return maxPerBowler;
+    }
+
+    public boolean isInningsComplete() {
+        return inningsComplete;
     }
 
     void updateTotalOversBowled() {
@@ -117,6 +128,10 @@ public class CricketCard {
 		return batsmen;
 	}
 
+	void setBattingTeam (List<Player> battingTeam) {
+	    this.battingTeam = battingTeam;
+    }
+
 	void appendToBatsmen(BatsmanStats batsman) {
 		this.batsmen.append(batsman.getPosition(), batsman);
 	}
@@ -126,7 +141,35 @@ public class CricketCard {
 	    appendToBatsmen(batsmanStats);
     }
 
-	public int getFuturePenalty() {
+    public List<Player> getBattingTeam() {
+        return battingTeam;
+    }
+
+    public void addToBattingTeam(Player player) {
+        if(battingTeam == null) {
+            battingTeam = new ArrayList<>();
+        }
+
+        battingTeam.add(player);
+    }
+
+    public List<Player> getBowlingTeam() {
+        return bowlingTeam;
+    }
+
+    void setBowlingTeam(List<Player> bowlingTeam) {
+	    this.bowlingTeam = bowlingTeam;
+    }
+
+    public void addToBowlingTeam(Player player) {
+        if(bowlingTeam == null)
+            bowlingTeam = new ArrayList<>();
+
+        bowlingTeam.add(player);
+    }
+
+
+    public int getFuturePenalty() {
 		return futurePenalty;
 	}
 
@@ -134,14 +177,9 @@ public class CricketCard {
 		this.futurePenalty += futurePenalty;
 	}
 
-	CricketCard getPrevInningsCard() {
-		return prevInningsCard;
-	}
-
-	public CricketCard(String battingTeam, String maxOvers, int maxBowlers, int maxPerBowler, int maxWickets, int innings) {
-		this.battingTeam = battingTeam;
+	public CricketCard(String battingTeamName, String maxOvers, int maxPerBowler, int maxWickets, int innings) {
+		this.battingTeamName = battingTeamName;
 		this.maxOvers = maxOvers.indexOf(",") >  0 ? maxOvers : maxOvers + ".0";
-		this.maxBowlers = maxBowlers;
 		this.maxPerBowler = maxPerBowler;
 		this.maxWickets = maxWickets;
 		this.innings = innings;

@@ -9,6 +9,7 @@ public class Player implements Serializable {
     private int age;
     private BattingType battingStyle;
     private BowlingType bowlingStyle;
+    private boolean isWicketKeeper;
 
 	public String getName() {
 		return name;
@@ -22,16 +23,21 @@ public class Player implements Serializable {
 		return battingStyle;
 	}
 
-	public BowlingType getBowlingStyle() {
+    public boolean isWicketKeeper() {
+        return isWicketKeeper;
+    }
+
+    public BowlingType getBowlingStyle() {
 		return bowlingStyle;
 	}
 
 
-	public Player (@NonNull String name, int age, @NonNull BattingType battingStyle, @NonNull BowlingType bowlingStyle) {
+	public Player (@NonNull String name, int age, @NonNull BattingType battingStyle, @NonNull BowlingType bowlingStyle, boolean isWicketKeeper) {
 		this.name = name;
 		this.age = age;
 		this.battingStyle = battingStyle;
 		this.bowlingStyle = bowlingStyle;
+		this.isWicketKeeper = isWicketKeeper;
 	}
 
 	public enum BattingType {

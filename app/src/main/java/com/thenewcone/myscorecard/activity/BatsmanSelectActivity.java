@@ -27,6 +27,7 @@ public class BatsmanSelectActivity extends Activity
     public static final String ARG_PLAYER_LIST = "PlayerList";
     public static final String ARG_BATSMAN_LIST = "BatsmanList";
     public static final String ARG_SEL_BATSMAN = "SelectedBatsman";
+    public static final String ARG_DEFAULT_SEL_INDEX = "DefaultIndex";
 
     public static final int RESP_CODE_OK = 1;
     public static final int RESP_CODE_CANCEL = -1;
@@ -54,16 +55,18 @@ public class BatsmanSelectActivity extends Activity
         findViewById(R.id.btnSelPlayerCancel).setOnClickListener(this);
 
         Intent intent = getIntent();
+        int defaultSelectIx = -1;
         if(intent != null) {
             players = CommonUtils.objectArrToPlayerArr((Object[]) intent.getSerializableExtra(ARG_PLAYER_LIST));
             batsmen = CommonUtils.objectArrToBatsmanArr((Object[]) intent.getSerializableExtra(ARG_BATSMAN_LIST));
+            defaultSelectIx = intent.getIntExtra(ARG_DEFAULT_SEL_INDEX, -1);
 
             dispBatsmen = getDisplayBatsmanList(players, batsmen);
         }
 
         if(dispBatsmen != null && dispBatsmen.size() > 0) {
             rcvPlayerList.setLayoutManager(new LinearLayoutManager(this));
-            BatsmanListAdapter adapter = new BatsmanListAdapter(this, dispBatsmen, currBattingPosn);
+            BatsmanListAdapter adapter = new BatsmanListAdapter(this, dispBatsmen, currBattingPosn, defaultSelectIx);
             adapter.setClickListener(this);
             rcvPlayerList.setAdapter(adapter);
 

@@ -1,6 +1,8 @@
 package com.thenewcone.myscorecard.scorecard;
 
-public class Extra {
+import java.io.Serializable;
+
+public class Extra implements Serializable {
 	private ExtraType type, subType;
 	private int runs;
 
@@ -11,6 +13,10 @@ public class Extra {
 	public int getRuns() {
 		return runs;
 	}
+
+    public void setRuns(int runs) {
+        this.runs =  runs;
+    }
 
 	public Extra(ExtraType type, int runs) {
 		this.type = type;

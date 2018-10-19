@@ -13,7 +13,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.player.BatsmanStats;
@@ -23,8 +22,6 @@ import com.thenewcone.myscorecard.scorecard.Extra;
 import com.thenewcone.myscorecard.scorecard.WicketData;
 import com.thenewcone.myscorecard.utils.CommonUtils;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class WicketDialogActivity extends Activity
 	implements View.OnClickListener{
@@ -37,6 +34,7 @@ public class WicketDialogActivity extends Activity
 	public static final String ARG_BOWLER = "Bowler";
 	public static final String ARG_FIELDING_TEAM = "FieldingTeam";
 	public static final String ARG_WICKET_DATA = "WicketData";
+    public static final String ARG_EXTRA_DATA = "ExtraData";
 
 	BatsmanStats facingBatsman, otherBatsman, outBatsman;
 	BowlerStats bowler;
@@ -86,11 +84,14 @@ public class WicketDialogActivity extends Activity
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
 				if(sbRORuns.getProgress() < minExtraRuns) {
-					Toast.makeText(getApplicationContext(), String.format("Minimum runs '%d' for the Extra Type Selected", minExtraRuns), Toast.LENGTH_SHORT).show();
 					sbRORuns.setProgress(minExtraRuns);
 				}
 
 				tvRORunsScoredText.setText(String.format(getString(R.string.runsScored), sbRORuns.getProgress()));
+
+				if(extraData != null) {
+				    extraData.setRuns(sbRORuns.getProgress());
+                }
 			}
 
 			@Override
@@ -268,29 +269,53 @@ public class WicketDialogActivity extends Activity
 
 			/*Capturing details if the runs scored as extras, during a Run-out/Field Obstruction*/
 			case R.id.cbIsExtra:
-				if(cbIsExtra.isChecked())
-					glRORunsExtra.setVisibility(View.VISIBLE);
-				else
-					glRORunsExtra.setVisibility(View.GONE);
+				if(cbIsExtra.isChecked()) {
+                    glRORunsExtra.setVisibility(View.VISIBLE);
+                    extraData = new Extra(Extra.ExtraType.WIDE, sbRORuns.getProgress());
+                }
+				else {
+                    glRORunsExtra.setVisibility(View.GONE);
+                }
 				break;
 
 			case R.id.rbROWide:
+			    extraData = new Extra(Extra.ExtraType.WIDE, sbRORuns.getProgress());
+                adjustROExtraRuns(view);
+                rgRONB.setVisibility(View.GONE);
+			    break;
+
 			case R.id.rbROBye:
-			case R.id.rbROLegBye:
+                extraData = new Extra(Extra.ExtraType.BYE, sbRORuns.getProgress());
+                adjustROExtraRuns(view);
+                rgRONB.setVisibility(View.GONE);
+                break;
+
+            case R.id.rbROLegBye:
+                extraData = new Extra(Extra.ExtraType.LEG_BYE, sbRORuns.getProgress());
 				adjustROExtraRuns(view);
 				rgRONB.setVisibility(View.GONE);
 				break;
 
 			case R.id.rbRONB:
+                extraData = new Extra(Extra.ExtraType.NO_BALL, sbRORuns.getProgress(), Extra.ExtraType.NONE);
 				adjustROExtraRuns(view);
 				rgRONB.setVisibility(View.VISIBLE);
 				break;
 
 			case R.id.rbRONBNone:
+                extraData = new Extra(Extra.ExtraType.NO_BALL, sbRORuns.getProgress(), Extra.ExtraType.NONE);
+                adjustROExtraRuns(view);
+                break;
+
 			case R.id.rbRONBBye:
+                extraData = new Extra(Extra.ExtraType.NO_BALL, sbRORuns.getProgress(), Extra.ExtraType.BYE);
+                adjustROExtraRuns(view);
+                break;
+
 			case R.id.rbRONBLB:
-				adjustROExtraRuns(view);
-				break;
+                extraData = new Extra(Extra.ExtraType.NO_BALL, sbRORuns.getProgress(), Extra.ExtraType.LEG_BYE);
+                adjustROExtraRuns(view);
+                break;
 		}
 	}
 
@@ -357,6 +382,7 @@ public class WicketDialogActivity extends Activity
 	    Intent batsmanIntent = new Intent(this, BatsmanSelectActivity.class);
 	    BatsmanStats[] batsmen = {facingBatsman, otherBatsman};
 	    batsmanIntent.putExtra(BatsmanSelectActivity.ARG_BATSMAN_LIST, batsmen);
+        batsmanIntent.putExtra(BatsmanSelectActivity.ARG_DEFAULT_SEL_INDEX, 0);
 	    startActivityForResult(batsmanIntent, ACTIVITY_REQ_CODE_OUT_BATSMAN_SELECT);
     }
 
@@ -390,6 +416,10 @@ public class WicketDialogActivity extends Activity
 
         Intent respIntent = new Intent();
         respIntent.putExtra(ARG_WICKET_DATA, wicketData);
+
+        if(extraData != null)
+            respIntent.putExtra(ARG_EXTRA_DATA, extraData);
+
         setResult(responseCode, respIntent);
 
         finish();

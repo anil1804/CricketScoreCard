@@ -442,4 +442,11 @@
         android:text="@string/selBowler"
         android:visibility="gone"/>
 
+    <Button
+        android:id="@+id/btnStartNextInnings"
+        style="@style/ButtonStyle"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/startNextInnings"
+        android:visibility="gone"/>
+
 </LinearLayout>

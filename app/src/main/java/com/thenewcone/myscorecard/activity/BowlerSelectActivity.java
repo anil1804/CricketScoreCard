@@ -27,6 +27,7 @@ public class BowlerSelectActivity extends Activity
     public static final String ARG_PLAYER_LIST = "PlayerList";
     public static final String ARG_BOWLER_LIST = "BowlerList";
     public static final String ARG_PREV_BOWLER = "PreviousBowler";
+    public static final String ARG_NEXT_BOWLER = "NextBowler";
     public static final String ARG_MAX_OVERS_PER_BOWLER = "MaxOversPerBowler";
     public static final String ARG_SEL_BOWLER = "SelectedBowler";
 
@@ -35,7 +36,7 @@ public class BowlerSelectActivity extends Activity
 
     BowlerStats[] bowlers;
     Player[] players;
-    BowlerStats selBowler, prevBowler;
+    BowlerStats selBowler, prevBowler, nextBowler;
     int maxOversPerBowler = -1;
     List<BowlerStats> dispBowlers;
 
@@ -55,6 +56,7 @@ public class BowlerSelectActivity extends Activity
             players = CommonUtils.objectArrToPlayerArr((Object[]) intent.getSerializableExtra(ARG_PLAYER_LIST));
             bowlers = CommonUtils.objectArrToBowlerArr((Object[]) intent.getSerializableExtra(ARG_BOWLER_LIST));
             prevBowler = (BowlerStats) intent.getSerializableExtra(ARG_PREV_BOWLER);
+            nextBowler = (BowlerStats) intent.getSerializableExtra(ARG_NEXT_BOWLER);
             maxOversPerBowler = intent.getIntExtra(ARG_MAX_OVERS_PER_BOWLER, 10);
 
             dispBowlers = getDispBowlers(players, bowlers);
@@ -62,7 +64,7 @@ public class BowlerSelectActivity extends Activity
 
         if(dispBowlers != null && dispBowlers.size() > 0) {
             rcvPlayerList.setLayoutManager(new LinearLayoutManager(this));
-            BowlerListAdapter adapter = new BowlerListAdapter(this, dispBowlers, maxOversPerBowler, prevBowler);
+            BowlerListAdapter adapter = new BowlerListAdapter(this, dispBowlers, maxOversPerBowler, prevBowler, nextBowler);
             adapter.setClickListener(this);
             rcvPlayerList.setAdapter(adapter);
 
@@ -78,14 +80,16 @@ public class BowlerSelectActivity extends Activity
     }
 
     private List<BowlerStats> getDispBowlers(Player[] players, BowlerStats[] bowlers) {
-        List<BowlerStats> dispBowlers = Arrays.asList(bowlers);
+        List<BowlerStats> dispBowlers = new ArrayList<>();
+
+        dispBowlers.addAll(Arrays.asList(bowlers));
 
         List<String> bowledBowlers;
         if(players != null && players.length > 0) {
             bowledBowlers = getPlayedBowlers(bowlers);
 
             for(Player player : players) {
-                if(!bowledBowlers.contains(player.getName())) {
+                if(!bowledBowlers.contains(player.getName()) && !player.isWicketKeeper()) {
                     dispBowlers.add(new BowlerStats(player));
                 }
             }

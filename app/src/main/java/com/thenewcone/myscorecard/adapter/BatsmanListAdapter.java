@@ -20,13 +20,13 @@ public class BatsmanListAdapter extends RecyclerView.Adapter<BatsmanListAdapter.
 	private List<BatsmanStats> batsmen;
 	private Context context;
 	private ItemClickListener clickListener;
-	private int selectedIndex = -1;
-	private int newBatsmanPosn = -1;
+	private int selectedIndex = -1, newBatsmanPosn = -1, defaultSelectedIx;
 
-	public BatsmanListAdapter(@NonNull Context context, @NonNull List<BatsmanStats> batsmen, int position) {
+	public BatsmanListAdapter(@NonNull Context context, @NonNull List<BatsmanStats> batsmen, int position, int defaultSelIx) {
 		this.context = context;
 		this.batsmen = batsmen;
 		this.newBatsmanPosn = position;
+		this.defaultSelectedIx = defaultSelIx;
 	}
 
 	@NonNull
@@ -42,10 +42,10 @@ public class BatsmanListAdapter extends RecyclerView.Adapter<BatsmanListAdapter.
         BatsmanStats batsman = batsmen.get(position);
 		myViewHolder.setData(batsman);
 
-		if(selectedIndex == position)
-			myViewHolder.llBatsmanItem.setSelected(true);
-		else
-			myViewHolder.llBatsmanItem.setSelected(false);
+        if (selectedIndex == position)
+            myViewHolder.llBatsmanItem.setSelected(true);
+        else
+            myViewHolder.llBatsmanItem.setSelected(false);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class BatsmanListAdapter extends RecyclerView.Adapter<BatsmanListAdapter.
 		TextView tvBatsmanName, tvBattingStyle;
 		LinearLayout llBatsmanItem;
 
-		private MyViewHolder(@NonNull View itemView) {
+        private MyViewHolder(@NonNull View itemView) {
 			super(itemView);
 
             tvBatsmanName = itemView.findViewById(R.id.tvBatsmanName);
@@ -81,13 +81,22 @@ public class BatsmanListAdapter extends RecyclerView.Adapter<BatsmanListAdapter.
             if (newBatsmanPosn > batsman.getPosition()) {
                 llBatsmanItem.setEnabled(false);
             }
+
+            if(selectedIndex < 0 && getAdapterPosition() == defaultSelectedIx) {
+                 selectedIndex = defaultSelectedIx;
+                 llBatsmanItem.setSelected(true);
+                if(clickListener != null)
+                    clickListener.onItemClick(llBatsmanItem, selectedIndex);
+            }
 		}
 
 
 		@Override
 		public void onClick(View view)
 		{
-			notifyItemChanged(selectedIndex);
+		    if(selectedIndex > -1)
+                notifyItemChanged(selectedIndex);
+
 			selectedIndex = getAdapterPosition();
 			notifyItemChanged(selectedIndex);
 
