@@ -1,11 +1,20 @@
 package com.thenewcone.myscorecard.utils;
 
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.thenewcone.myscorecard.match.CricketCardUtils;
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
 import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.scorecard.Extra;
 
+import java.lang.reflect.Type;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class CommonUtils {
 	public static final String LOG_TAG = "MyScoreCard";
@@ -166,5 +175,31 @@ public class CommonUtils {
         }
 
         return players;
+    }
+
+    public static String convertToJSON(CricketCardUtils ccUtilsObj) {
+        Gson gson = new Gson();
+        Type type = new TypeToken<CricketCardUtils>(){}.getType();
+
+        String jsonString = gson.toJson(ccUtilsObj, type);
+
+        Log.i("JSON", jsonString);
+
+        return jsonString;
+    }
+
+    public static CricketCardUtils convertToCCUtils(String jsonString) {
+	    Gson gson = new Gson();
+        Type type = new TypeToken<CricketCardUtils>(){}.getType();
+
+        return gson.fromJson(jsonString, type);
+    }
+
+    public static String currTimestamp() {
+        Date date = new Date();
+        String format = "yyyyMMdd_HHmmss";
+        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
+
+        return sdf.format(date);
     }
 }

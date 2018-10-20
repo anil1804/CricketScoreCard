@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -484,15 +485,35 @@ public class LimitedOversFragment extends Fragment
 	}
 
 	private void checkChangeOfBowler() {
-	    if(ccUtils.isNewOver())
-	        updateScreenForBowlerSelect(View.GONE, View.VISIBLE);
+	    if(ccUtils.isNewOver()) {
+            updateScreenForBowlerSelect(View.GONE, View.VISIBLE);
+
+            String jsonStr = CommonUtils.convertToJSON(ccUtils);
+
+            ccUtils = null;
+            Log.i("JSON", String.format("Is CCUtils NULL ?  %b", (ccUtils == null)));
+            ccUtils = CommonUtils.convertToCCUtils(jsonStr);
+            Log.i("JSON", String.format("Is CCUtils NULL ?  %b", (ccUtils == null)));
+        }
     }
 
     private boolean checkInningsComplete() {
 	    return ccUtils.getCard().isInningsComplete();
     }
 
-	private void updateScreenForBatsmanSelect(int scoringButtonsVisibility, int batsmanSelectionVisibility, int currentFacingSelectVisibility) {
+    @Override
+    public void onDetach() {
+        //TODO: Implement logic to ensure that the state is saved before destroying the view.
+        super.onDetach();
+    }
+
+    @Override
+        public void onDestroyView() {
+	    //TODO: Implement logic to ensure that the state is saved before destroying the view.
+        super.onDestroyView();
+    }
+
+    private void updateScreenForBatsmanSelect(int scoringButtonsVisibility, int batsmanSelectionVisibility, int currentFacingSelectVisibility) {
         LinearLayout llScoring = theView.findViewById(R.id.llScoring);
         Button btnSelBatsman = theView.findViewById(R.id.btnSelBatsman);
         Button btnSelFacing = theView.findViewById(R.id.btnSelFacingBatsman);
