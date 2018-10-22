@@ -15,9 +15,10 @@ import java.util.List;
 import java.util.Random;
 
 public class CricketCardUtils {
-
-	private int numConsecutiveDots = 0;
+    private int numConsecutiveDots = 0, matchStateID = -1;
 	private boolean newOver = false;
+
+	private String matchName;
 
 	private CricketCard card, prevInningsCard;
 
@@ -51,8 +52,22 @@ public class CricketCardUtils {
 	public CricketCard getCard() {
 		return card;
 	}
-	public CricketCardUtils(CricketCard card) {
+
+	public String getMatchName() {
+        return matchName;
+    }
+
+    public int getMatchStateID() {
+        return matchStateID;
+    }
+
+    public void setMatchStateID(int matchStateID) {
+        this.matchStateID = matchStateID;
+    }
+
+    public CricketCardUtils(CricketCard card, String team1, String team2) {
 		this.card = card;
+		this.matchName = team1 + "-vs-" + team2 + CommonUtils.currTimestamp("yyyyMMM");
 	}
 
 	public void updateFacingBatsman(BatsmanStats batsman) {
@@ -82,7 +97,6 @@ public class CricketCardUtils {
             setBowler(prevBowler);
         }
     }
-
 
 	public void setBowler(BowlerStats bowler) {
 		this.bowler = bowler;
@@ -267,8 +281,8 @@ public class CricketCardUtils {
 				} else if(card.getInnings() == 2) {
 					card.setTarget(card.getTarget() + penaltyRuns);
 					if(prevInningsCard != null) {
-						CricketCardUtils ccUtils = new CricketCardUtils(prevInningsCard);
-						ccUtils.addPenalty(extra, CommonUtils.BATTING_TEAM);
+						prevInningsCard.addPenalty(penaltyRuns);
+						prevInningsCard.updateScore(0, extra);
 					}
 				}
 			}

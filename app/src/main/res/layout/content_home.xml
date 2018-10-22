@@ -15,15 +15,14 @@
 		<Button
 			android:id="@+id/btnLimitedOvers"
 			android:text="@string/limited_overs_cricket"
-			android:layout_above="@id/btnTest"
+			android:layout_above="@id/btnManagePlayer"
 			android:drawableStart="@drawable/ic_cricket_limited_overs"
 			android:layout_centerHorizontal="true"
 			style="@style/ButtonStyle"/>
 
 		<Button
-			android:id="@+id/btnTest"
-			android:text="@string/test_cricket"
-			android:drawableStart="@drawable/ic_cricket_test"
+			android:id="@+id/btnManagePlayer"
+			android:text="@string/managePlayer"
 			android:layout_centerInParent="true"
 			style="@style/ButtonStyle"/>
 

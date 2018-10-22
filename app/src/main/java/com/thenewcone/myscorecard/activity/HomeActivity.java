@@ -94,9 +94,9 @@ public class HomeActivity extends AppCompatActivity
 
 			if(fragment !=  null && fragmentTag != null) {
 				getSupportFragmentManager().beginTransaction()
-						.replace(R.id.frame_container, fragment, fragmentTag)
-						.addToBackStack(fragmentTag)
-						.commit();
+                        .replace(R.id.frame_container, fragment, fragmentTag)
+                        .addToBackStack(fragmentTag)
+                        .commit();
 			}
 		}
 

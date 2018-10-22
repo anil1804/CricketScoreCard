@@ -13,8 +13,6 @@ import com.thenewcone.myscorecard.R;
 
 public class HomeFragment extends Fragment implements View.OnClickListener{
 
-	private View theView;
-
 	public static HomeFragment newInstance() {
 		return new HomeFragment();
 	}
@@ -23,10 +21,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
 							 @Nullable Bundle savedInstanceState) {
+        View theView;
 		theView = inflater.inflate(R.layout.home_fragment, container, false);
 
 		theView.findViewById(R.id.btnLimitedOvers).setOnClickListener(this);
-		theView.findViewById(R.id.btnTest).setOnClickListener(this);
+		theView.findViewById(R.id.btnManagePlayer).setOnClickListener(this);
 
 		return theView;
 	}
@@ -35,16 +34,25 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 	public void onClick(View view) {
 		if(getActivity() != null) {
 			FragmentManager fragMgr = getActivity().getSupportFragmentManager();
-
+            String fragmentTag;
 
 			switch(view.getId()) {
 				case R.id.btnLimitedOvers :
-					String fragmentTag = LimitedOversFragment.class.getSimpleName();
+                    fragmentTag = LimitedOversFragment.class.getSimpleName();
 					fragMgr.beginTransaction()
 							.replace(R.id.frame_container, LimitedOversFragment.newInstance(), fragmentTag)
 							.addToBackStack(fragmentTag)
 							.commit();
 					break;
+
+                case R.id.btnManagePlayer:
+                    fragmentTag = PlayerFragment.class.getSimpleName();
+                    fragMgr.beginTransaction()
+                            .replace(R.id.frame_container, PlayerFragment.newInstance(), fragmentTag)
+                            .addToBackStack(fragmentTag)
+                            .commit();
+                    break;
+
 			}
 		}
 	}

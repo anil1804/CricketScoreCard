@@ -30,10 +30,10 @@
             android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
         <activity
             android:name=".activity.BatsmanSelectActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth"/>
+            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
         <activity
             android:name=".activity.BowlerSelectActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth"/>
+            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
     </application>
 
 </manifest>

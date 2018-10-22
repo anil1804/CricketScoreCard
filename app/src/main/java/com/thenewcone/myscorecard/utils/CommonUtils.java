@@ -196,8 +196,11 @@ public class CommonUtils {
     }
 
     public static String currTimestamp() {
+        return currTimestamp("yyyyMMdd_HHmmss");
+    }
+
+    public static String currTimestamp(String format) {
         Date date = new Date();
-        String format = "yyyyMMdd_HHmmss";
         SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
 
         return sdf.format(date);

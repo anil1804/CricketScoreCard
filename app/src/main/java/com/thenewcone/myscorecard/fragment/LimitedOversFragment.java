@@ -28,6 +28,7 @@ import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.scorecard.Extra;
 import com.thenewcone.myscorecard.scorecard.WicketData;
 import com.thenewcone.myscorecard.utils.CommonUtils;
+import com.thenewcone.myscorecard.utils.database.DatabaseHandler;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,8 +38,9 @@ public class LimitedOversFragment extends Fragment
 	implements View.OnClickListener{
 	View theView;
 	WicketData.DismissalType dismissalType;
+    DatabaseHandler dbHandler;
 
-	private static final int ACTIVITY_REQ_CODE_EXTRA_DIALOG = 1;
+    private static final int ACTIVITY_REQ_CODE_EXTRA_DIALOG = 1;
 	private static final int ACTIVITY_REQ_CODE_WICKET_DIALOG = 2;
     private static final int ACTIVITY_REQ_CODE_BATSMAN_DIALOG = 3;
     private static final int ACTIVITY_REQ_CODE_BOWLER_DIALOG = 4;
@@ -65,7 +67,7 @@ public class LimitedOversFragment extends Fragment
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+        dbHandler = new DatabaseHandler(getContext());
 	}
 
 	@Override
@@ -103,7 +105,7 @@ public class LimitedOversFragment extends Fragment
 	private void initCricketCard() {
 		CricketCard card = new CricketCard("Team1", "50.0", 10, 10, 1);
 
-		ccUtils = new CricketCardUtils(card);
+		ccUtils = new CricketCardUtils(card, "Team1", "Team2");
 
 		ccUtils.setFirstInnings();
 	}
@@ -543,5 +545,9 @@ public class LimitedOversFragment extends Fragment
 
     private void showResult() {
 
+    }
+
+    private void saveMatch(String saveName){
+        dbHandler.saveMatchState(ccUtils.getMatchStateID(), CommonUtils.convertToJSON(ccUtils), saveName);
     }
 }

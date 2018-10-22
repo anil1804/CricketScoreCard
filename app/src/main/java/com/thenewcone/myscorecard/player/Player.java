@@ -6,13 +6,17 @@ import java.io.Serializable;
 
 public class Player implements Serializable {
 	private String name;
-    private int age;
+    private int age, id;
     private BattingType battingStyle;
     private BowlingType bowlingStyle;
     private boolean isWicketKeeper;
 
 	public String getName() {
 		return name;
+	}
+
+	public int getID() {
+		return id;
 	}
 
 	public int getAge() {
@@ -31,8 +35,21 @@ public class Player implements Serializable {
 		return bowlingStyle;
 	}
 
+	public void setPlayerID(int id) {
+	    this.id = id;
+    }
 
 	public Player (@NonNull String name, int age, @NonNull BattingType battingStyle, @NonNull BowlingType bowlingStyle, boolean isWicketKeeper) {
+	    this.id = -1;
+		this.name = name;
+		this.age = age;
+		this.battingStyle = battingStyle;
+		this.bowlingStyle = bowlingStyle;
+		this.isWicketKeeper = isWicketKeeper;
+	}
+
+	public Player (int id, @NonNull String name, int age, @NonNull BattingType battingStyle, @NonNull BowlingType bowlingStyle, boolean isWicketKeeper) {
+	    this.id = id;
 		this.name = name;
 		this.age = age;
 		this.battingStyle = battingStyle;

@@ -99,4 +99,21 @@
     <string name="selBowler">Select Next Bowler</string>
     <string name="selFacingBatsman">Confirm Facing Batsman</string>
     <string name="startNextInnings">Start Next Innings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="playerName">Name</string>
+    <string name="playerAge">Age</string>
+    <string name="playerBattingStyle">Batting Style</string>
+    <string name="playerBowlingStyle">Bowling Style</string>
+    <string name="isPlayerWK">is Wicket Keeper?</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="managePlayer">Manage Player</string>
+    <string name="reset">Reset</string>
+    <string name="selectBatStyle">Click to Select Batting Style</string>
+    <string name="selectBowlStyle">Click to Select Bowling Sytle</string>
+    <string name="getPlayerList">Get Player List</string>
+    <string name="noPlayersFound">No Saved Players</string>
+    <string name="clear">Clear</string>
 </resources>
