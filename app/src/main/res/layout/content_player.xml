@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:columnOrderPreserved="true">
+
+        <TextView
+            style="@style/TextViewStyle.Bold.Medium.MorePadding"
+            android:labelFor="@id/etPlayerName"
+            android:text="@string/playerName"/>
+
+        <EditText
+            style="@style/EditTextStyle"
+            android:id="@+id/etPlayerName"
+            android:layout_width="250dp"
+            android:inputType="text"
+            android:maxLength="30"/>
+
+        <TextView
+            style="@style/TextViewStyle.Bold.Medium.MorePadding"
+            android:labelFor="@id/etPlayerAge"
+            android:text="@string/playerAge"/>
+
+        <EditText
+            android:id="@+id/etPlayerAge"
+            style="@style/EditTextStyle"
+            android:layout_width="50dp"
+            android:inputType="number"
+            android:maxLength="2" />
+
+        <TextView
+            style="@style/TextViewStyle.Bold.Medium.MorePadding"
+            android:labelFor="@id/etPlayerAge"
+            android:text="@string/playerBattingStyle"/>
+
+        <TextView
+            style="@style/TextViewStyle"
+            android:id="@+id/tvPlayerBatStyle"
+            android:text="@string/selectBatStyle"/>
+
+        <TextView
+            style="@style/TextViewStyle.Bold.Medium.MorePadding"
+            android:labelFor="@id/etPlayerAge"
+            android:text="@string/playerBowlingStyle"/>
+
+        <TextView
+            style="@style/TextViewStyle"
+            android:id="@+id/tvPlayerBowlStyle"
+            android:text="@string/selectBowlStyle"/>
+
+        <CheckBox
+            style="@style/TextViewStyle.Bold.Medium.MorePadding"
+            android:id="@+id/cbIsPlayerWK"
+            android:checked="false"
+            android:text="@string/isPlayerWK"
+            android:layout_columnSpan="2"/>
+
+    </GridLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnPlayerClear"
+            style="@style/ButtonStyle"
+            android:text="@string/clear" />
+
+        <Button
+            android:id="@+id/btnPlayerDelete"
+            style="@style/ButtonStyle"
+            android:text="@string/delete"
+            android:visibility="invisible"/>
+
+        <Button
+            android:id="@+id/btnPlayerSave"
+            style="@style/ButtonStyle"
+            android:text="@string/save" />
+
+    </LinearLayout>
+
+    <TextView
+        style="@style/TextViewStyle"
+        android:id="@+id/tvPlayerId"
+        android:visibility="gone"/>
+
+</LinearLayout>
