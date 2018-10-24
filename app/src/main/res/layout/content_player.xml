@@ -70,15 +70,15 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btnPlayerClear"
-            style="@style/ButtonStyle"
-            android:text="@string/clear" />
-
-        <Button
             android:id="@+id/btnPlayerDelete"
             style="@style/ButtonStyle"
             android:text="@string/delete"
             android:visibility="invisible"/>
+
+        <Button
+            android:id="@+id/btnPlayerClear"
+            style="@style/ButtonStyle"
+            android:text="@string/clear" />
 
         <Button
             android:id="@+id/btnPlayerSave"

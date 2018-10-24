@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/llNewMatch">
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:columnOrderPreserved="true">
+
+            <TextView
+                style="@style/TextViewStyle.Bold.Medium.MorePadding"
+                android:labelFor="@id/etMatchName"
+                android:text="@string/playerName"/>
+
+            <EditText
+                style="@style/EditTextStyle"
+                android:id="@+id/etMatchName"
+                android:layout_width="250dp"
+                android:inputType="text"
+                android:maxLength="30"/>
+
+            <TextView
+                style="@style/TextViewStyle.Bold.Medium.MorePadding"
+                android:labelFor="@id/tvTeam1"
+                android:text="@string/team1"/>
+
+            <TextView
+                android:id="@+id/tvTeam1"
+                style="@style/TextViewStyle"
+                android:text="@string/selectTeam"/>
+
+            <TextView
+                style="@style/TextViewStyle.Bold.Medium.MorePadding"
+                android:labelFor="@id/tvTeam2"
+                android:text="@string/team2"/>
+
+            <TextView
+                android:id="@+id/tvTeam2"
+                style="@style/TextViewStyle"
+                android:text="@string/selectTeam"/>
+
+        </GridLayout>
+
+        <TextView
+            style="@style/TextViewStyle"
+            android:id="@+id/tvMatchID"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnMatchCancel"
+                style="@style/ButtonStyle"
+                android:text="@string/cancel" />
+
+            <Button
+                android:id="@+id/btnMatchSave"
+                style="@style/ButtonStyle"
+                android:text="@string/save" />
+
+            <Button
+                android:id="@+id/btnStartMatch"
+                style="@style/ButtonStyle"
+                android:text="@string/startMatch"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/llInsufficientTeams"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/TextViewStyle.Big"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:id="@+id/tvInsufficientTeams"/>
+
+        <Button
+            style="@style/ButtonStyle"
+            android:id="@+id/btnAddTeam"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/addNewTeam"/>
+
+    </LinearLayout>
+
+</LinearLayout>

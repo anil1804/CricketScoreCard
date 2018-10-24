@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.fragment.HomeFragment;
 import com.thenewcone.myscorecard.fragment.LimitedOversFragment;
+import com.thenewcone.myscorecard.fragment.PlayerListFragment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +59,9 @@ public class HomeActivity extends AppCompatActivity
 		if (drawer.isDrawerOpen(GravityCompat.START)) {
 			drawer.closeDrawer(GravityCompat.START);
 		} else {
-			super.onBackPressed();
+            if (isFragmentHidden(PlayerListFragment.class.getSimpleName())) {
+                super.onBackPressed();
+            }
 		}
 	}
 

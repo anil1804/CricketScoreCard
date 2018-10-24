@@ -25,7 +25,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 		theView = inflater.inflate(R.layout.home_fragment, container, false);
 
 		theView.findViewById(R.id.btnLimitedOvers).setOnClickListener(this);
+		theView.findViewById(R.id.btnNewMatch).setOnClickListener(this);
 		theView.findViewById(R.id.btnManagePlayer).setOnClickListener(this);
+        theView.findViewById(R.id.btnManageTeam).setOnClickListener(this);
 
 		return theView;
 	}
@@ -44,6 +46,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 							.addToBackStack(fragmentTag)
 							.commit();
 					break;
+
+                case R.id.btnNewMatch:
+                    fragmentTag = NewMatchFragment.class.getSimpleName();
+                    fragMgr.beginTransaction()
+                            .replace(R.id.frame_container, NewMatchFragment.newInstance(), fragmentTag)
+                            .addToBackStack(fragmentTag)
+                            .commit();
+                    break;
+
+                case R.id.btnManageTeam:
+                    fragmentTag = ManageTeamFragment.class.getSimpleName();
+                    fragMgr.beginTransaction()
+                            .replace(R.id.frame_container, ManageTeamFragment.newInstance(), fragmentTag)
+                            .addToBackStack(fragmentTag)
+                            .commit();
+                    break;
 
                 case R.id.btnManagePlayer:
                     fragmentTag = PlayerFragment.class.getSimpleName();

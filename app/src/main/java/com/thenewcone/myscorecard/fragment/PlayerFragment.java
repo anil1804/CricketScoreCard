@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -118,9 +117,9 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
             for(Player.BattingType type : battingTypes)
                 battingStyles[i++] = type.toString();
 
-            EnumDialog dialog = EnumDialog.newInstance("Select Batting Style", battingStyles, EnumDialog.ARG_ENUM_TYPE_BAT_STYLE);
+            StringDialog dialog = StringDialog.newInstance("Select Batting Style", battingStyles, StringDialog.ARG_ENUM_TYPE_BAT_STYLE);
             dialog.setDialogItemClickListener(this);
-            dialog.show(getFragmentManager(), EnumDialog.ARG_ENUM_TYPE_BAT_STYLE + "Dialog");
+            dialog.show(getFragmentManager(), StringDialog.ARG_ENUM_TYPE_BAT_STYLE + "Dialog");
         }
     }
 
@@ -133,9 +132,9 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
             for(Player.BowlingType type : bowlingTypes)
                 bowlingStyles[i++] = type.toString();
 
-            EnumDialog dialog = EnumDialog.newInstance("Select Bowling Style", bowlingStyles, EnumDialog.ARG_ENUM_TYPE_BOWL_STYLE);
+            StringDialog dialog = StringDialog.newInstance("Select Bowling Style", bowlingStyles, StringDialog.ARG_ENUM_TYPE_BOWL_STYLE);
             dialog.setDialogItemClickListener(this);
-            dialog.show(getFragmentManager(), EnumDialog.ARG_ENUM_TYPE_BOWL_STYLE + "Dialog");
+            dialog.show(getFragmentManager(), StringDialog.ARG_ENUM_TYPE_BOWL_STYLE + "Dialog");
         }
     }
 
@@ -153,13 +152,13 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
     }
 
     @Override
-    public void onItemSelect(String enumType, String value) {
+    public void onItemSelect(String enumType, String value, int position) {
         switch (enumType) {
-            case EnumDialog.ARG_ENUM_TYPE_BAT_STYLE:
+            case StringDialog.ARG_ENUM_TYPE_BAT_STYLE:
                 tvBatStyle.setText(value);
                 break;
 
-            case EnumDialog.ARG_ENUM_TYPE_BOWL_STYLE:
+            case StringDialog.ARG_ENUM_TYPE_BOWL_STYLE:
                 tvBowlStyle.setText(value);
                 break;
         }

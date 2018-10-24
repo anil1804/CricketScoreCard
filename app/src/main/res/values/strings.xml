@@ -116,4 +116,16 @@
     <string name="getPlayerList">Get Player List</string>
     <string name="noPlayersFound">No Saved Players</string>
     <string name="clear">Clear</string>
+    <string name="enterMatchName">Match Name</string>
+    <string name="matchNameCD">Match Name</string>
+    <string name="team1">Team-1</string>
+    <string name="team2">Team-2</string>
+    <string name="selectTeam">Select Team</string>
+    <string name="addNewTeam">Add Team</string>
+    <string name="newMatch">Play Match</string>
+    <string name="startMatch">Start Match</string>
+    <string name="btnAddTeam">Add Team</string>
+    <string name="btnDeleteTeams">Delete Teams</string>
+    <string name="updateTeamPlayers">Update Team Players</string>
+    <string name="manageTeam">Manage Team</string>
 </resources>
