@@ -14,6 +14,7 @@ import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class CommonUtils {
@@ -178,21 +179,30 @@ public class CommonUtils {
     }
 
     public static String convertToJSON(CricketCardUtils ccUtilsObj) {
-        Gson gson = new Gson();
-        Type type = new TypeToken<CricketCardUtils>(){}.getType();
+		if(ccUtilsObj != null) {
+			Gson gson = new Gson();
+			Type type = new TypeToken<CricketCardUtils>() {
+			}.getType();
 
-        String jsonString = gson.toJson(ccUtilsObj, type);
+			String jsonString = gson.toJson(ccUtilsObj, type);
 
-        Log.i("JSON", jsonString);
+			Log.i("JSON", jsonString);
 
-        return jsonString;
+			return jsonString;
+		}
+
+		return null;
     }
 
     public static CricketCardUtils convertToCCUtils(String jsonString) {
-	    Gson gson = new Gson();
-        Type type = new TypeToken<CricketCardUtils>(){}.getType();
+		if(jsonString != null) {
+			Gson gson = new Gson();
+			Type type = new TypeToken<CricketCardUtils>(){}.getType();
 
-        return gson.fromJson(jsonString, type);
+			return gson.fromJson(jsonString, type);
+		}
+
+		return null;
     }
 
     public static String currTimestamp() {
@@ -205,4 +215,32 @@ public class CommonUtils {
 
         return sdf.format(date);
     }
+
+    public static List<Integer> jsonToIntList(String jsonString)  {
+		if(jsonString != null) {
+			Gson gson = new Gson();
+			Type type = new TypeToken<List<Integer>>() {
+			}.getType();
+
+			return gson.fromJson(jsonString, type);
+		}
+
+		return null;
+	}
+
+	public static String intListToJSON(List<Integer> intList) {
+		if(intList != null) {
+			Gson gson = new Gson();
+			Type type = new TypeToken<List<Integer>>() {
+			}.getType();
+
+			String jsonString = gson.toJson(intList, type);
+
+			Log.i("JSON", jsonString);
+
+			return jsonString;
+		}
+
+		return null;
+	}
 }

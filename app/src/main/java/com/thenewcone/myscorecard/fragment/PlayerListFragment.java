@@ -74,7 +74,12 @@ public class PlayerListFragment extends Fragment
         gotoPlayerFragment();
     }
 
-    private void gotoPlayerFragment() {
+	@Override
+	public void onListFragmentMultiSelect(List<Object> selItemList) {
+		playerViewModel.selectPlayerList(selItemList);
+	}
+
+	private void gotoPlayerFragment() {
         if(getActivity() != null) {
             String fragmentTag = PlayerFragment.class.getSimpleName();
             getActivity().getSupportFragmentManager().beginTransaction()

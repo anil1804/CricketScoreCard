@@ -139,4 +139,6 @@
     <string name="maxOversValue">50</string>
     <string name="maxWicketsValue">10</string>
     <string name="numPlayers">Player Count</string>
+    <string name="teams">Teams</string>
+    <string name="none">None</string>
 </resources>

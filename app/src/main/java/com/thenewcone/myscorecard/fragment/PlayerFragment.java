@@ -21,15 +21,20 @@ import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.intf.DialogItemClickListener;
+import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.utils.database.DatabaseHandler;
 import com.thenewcone.myscorecard.viewModel.PlayerViewModel;
+import com.thenewcone.myscorecard.viewModel.TeamViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class PlayerFragment extends Fragment implements DialogItemClickListener, View.OnClickListener {
-    TextView tvBatStyle, tvBowlStyle;
+    TextView tvBatStyle, tvBowlStyle, tvTeams;
     EditText etName, etAge;
     CheckBox cbIsWK;
     Player selPlayer;
@@ -50,8 +55,8 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         if(getActivity() != null) {
-            PlayerViewModel model = ViewModelProviders.of(getActivity()).get(PlayerViewModel.class);
-            model.getSelectedPlayer().observe(this, new Observer<Player>() {
+            PlayerViewModel playerViewModel = ViewModelProviders.of(getActivity()).get(PlayerViewModel.class);
+            playerViewModel.getSelectedPlayer().observe(this, new Observer<Player>() {
                 @Override
                 public void onChanged(@Nullable Player selPlayer) {
                     if (selPlayer != null) {
@@ -60,6 +65,21 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
                     }
                 }
             });
+
+			TeamViewModel teamViewModel = ViewModelProviders.of(getActivity()).get(TeamViewModel.class);
+			teamViewModel.getSelectedTeams().observe(this, new Observer<List<Team>>() {
+				@Override
+				public void onChanged(@Nullable List<Team> teamList) {
+					if(teamList != null) {
+						List<Integer> teamIDList = new ArrayList<>();
+						for(Team team : teamList)
+							teamIDList.add(team.getId());
+
+						selPlayer.setTeamsAssociatedTo(teamIDList);
+						populateData();
+					}
+				}
+			});
         }
     }
 
@@ -94,17 +114,24 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 
         tvBatStyle = theView.findViewById(R.id.tvPlayerBatStyle);
         tvBowlStyle = theView.findViewById(R.id.tvPlayerBowlStyle);
+        tvTeams = theView.findViewById(R.id.tvTeams);
+
         etName = theView.findViewById(R.id.etPlayerName);
         etAge = theView.findViewById(R.id.etPlayerAge);
+
         cbIsWK = theView.findViewById(R.id.cbIsPlayerWK);
+
         btnDelete = theView.findViewById(R.id.btnPlayerDelete);
 
         tvBatStyle.setOnClickListener(this);
         tvBowlStyle.setOnClickListener(this);
+        tvTeams.setOnClickListener(this);
 
         theView.findViewById(R.id.btnPlayerSave).setOnClickListener(this);
         theView.findViewById(R.id.btnPlayerClear).setOnClickListener(this);
         btnDelete.setOnClickListener(this);
+
+		populateData();
 
         return theView;
     }
@@ -140,15 +167,30 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
     }
 
     private void populateData() {
-        etName.setText(selPlayer.getName());
-        etAge.setText(String.valueOf(selPlayer.getAge()));
-        tvBatStyle.setText(selPlayer.getBattingStyle().toString());
-        tvBowlStyle.setText(selPlayer.getBowlingStyle().toString());
-        cbIsWK.setChecked(selPlayer.isWicketKeeper());
+    	if(selPlayer != null) {
+			etName.setText(selPlayer.getName());
+			etAge.setText(String.valueOf(selPlayer.getAge()));
+			tvBatStyle.setText(selPlayer.getBattingStyle() == Player.BattingType.NOT_SELECTED
+					? getString(R.string.selectBatStyle)
+					: selPlayer.getBattingStyle().toString());
+			tvBowlStyle.setText(selPlayer.getBowlingStyle() == Player.BowlingType.NOT_SELECTED
+					? getString(R.string.selectBowlStyle)
+					: selPlayer.getBowlingStyle().toString());
+			cbIsWK.setChecked(selPlayer.isWicketKeeper());
+			tvTeams.setText(selPlayer.getTeamsAssociatedTo() != null ? String.valueOf(selPlayer.getTeamsAssociatedTo().size()) : "None");
 
-        if(selPlayer.getID() >= 0) {
-            btnDelete.setVisibility(View.VISIBLE);
-        }
+			if (selPlayer.getID() >= 0) {
+				btnDelete.setVisibility(View.VISIBLE);
+			}
+		} else {
+			etName.setText("");
+			etAge.setText("");
+			tvBatStyle.setText(R.string.selectBatStyle);
+			tvBowlStyle.setText(R.string.selectBowlStyle);
+			cbIsWK.setChecked(false);
+			btnDelete.setVisibility(View.INVISIBLE);
+			tvTeams.setText("");
+		}
     }
 
     @Override
@@ -186,10 +228,39 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
             case R.id.btnPlayerDelete:
                 deletePlayer();
                 break;
+
+			case R.id.tvTeams:
+				showTeamsSelectDialog();
+				break;
         }
     }
 
-    private void savePlayer() {
+	private void showTeamsSelectDialog() {
+		if(getActivity() != null) {
+			String fragmentTag = TeamListFragment.class.getSimpleName();
+			TeamListFragment fragment = TeamListFragment.newInstance(true);
+
+			getActivity().getSupportFragmentManager().beginTransaction()
+					.replace(R.id.frame_container, fragment, fragmentTag)
+					.addToBackStack(fragmentTag)
+					.commit();
+		}
+    }
+
+    private void storePlayer() {
+    	int playerID = selPlayer != null ? selPlayer.getID() : -1;
+    	int age = (etAge.getText().toString().trim().length() > 0) ? Integer.parseInt(etAge.getText().toString()) : -1;
+    	Player.BattingType batStyle = tvBatStyle.getText().toString().equals(R.string.selectBatStyle)
+				? Player.BattingType.NOT_SELECTED
+				: Player.BattingType.valueOf(tvBatStyle.getText().toString());
+    	Player.BowlingType bowlStyle = tvBowlStyle.getText().toString().equals(R.string.selectBowlStyle)
+				? Player.BowlingType.NOT_SELECTED
+				: Player.BowlingType.valueOf(tvBowlStyle.getText().toString());
+
+    	selPlayer = new Player(playerID, etName.getText().toString(), age, batStyle, bowlStyle, cbIsWK.isChecked());
+    }
+
+	private void savePlayer() {
         DatabaseHandler dbHandler = new DatabaseHandler(getContext());
 
         StringBuilder errorSB = new StringBuilder();
@@ -204,26 +275,14 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
             errorSB.append("Select Bowling Style\n");
 
         if(errorSB.toString().trim().length() == 0) {
-            Player currPlayer =
-                    new Player(-1,
-                            etName.getText().toString(),
-                            Integer.parseInt(etAge.getText().toString()),
-                            Player.BattingType.valueOf(tvBatStyle.getText().toString()),
-                            Player.BowlingType.valueOf(tvBowlStyle.getText().toString()),
-                            cbIsWK.isChecked());
-
-            if(selPlayer != null)
-                currPlayer.setPlayerID(selPlayer.getID());
-
-            int playerID = dbHandler.upsertPlayer(currPlayer);
+            int playerID = dbHandler.upsertPlayer(selPlayer);
 
             if (playerID == dbHandler.CODE_INS_PLAYER_DUP_RECORD) {
                 Toast.makeText(getContext(), "Player with same name exists.\nChange name or update/delete existing team.", Toast.LENGTH_LONG).show();
             } else {
-                currPlayer.setPlayerID(playerID);
+                selPlayer.setPlayerID(playerID);
 
                 Toast.makeText(getContext(), "Player Saved Successfully", Toast.LENGTH_SHORT).show();
-                selPlayer = currPlayer;
             }
         } else {
             Toast.makeText(getContext(), errorSB.toString().trim(), Toast.LENGTH_LONG).show();
@@ -231,13 +290,8 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
     }
 
     private void clearScreen() {
-        etName.setText("");
-        etAge.setText("");
-        tvBatStyle.setText(R.string.selectBatStyle);
-        tvBowlStyle.setText(R.string.selectBowlStyle);
-        cbIsWK.setChecked(false);
-        btnDelete.setVisibility(View.INVISIBLE);
         selPlayer = null;
+        populateData();
     }
 
     private void deletePlayer() {

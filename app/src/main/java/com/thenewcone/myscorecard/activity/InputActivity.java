@@ -46,6 +46,7 @@ public class InputActivity extends Activity
                 break;
 
             case R.id.btnInputCancel:
+
                 setResult(RESP_CODE_CANCEL);
                 finish();
                 break;

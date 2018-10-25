@@ -75,7 +75,7 @@ public class TeamFragment extends Fragment
 					getTeams();
 
 					String fragmentTag = TeamListFragment.class.getSimpleName();
-					TeamListFragment fragment = TeamListFragment.newInstance();
+					TeamListFragment fragment = TeamListFragment.newInstance(false);
 
 					getActivity().getSupportFragmentManager().beginTransaction()
 							.replace(R.id.frame_container, fragment, fragmentTag)

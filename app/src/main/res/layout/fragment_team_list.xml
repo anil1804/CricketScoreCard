@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -18,16 +17,44 @@
         tools:listitem="@layout/fragment_team_view" />
     </ScrollView>
 
-    <TextView
-        style="@style/TextViewStyle.Big.Bold"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/tvNoTeams"
-        android:text="@string/noTeamsFound"
-        android:visibility="gone"/>
 
-    <Button
-        style="@style/ButtonStyle"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:id="@+id/btnCancel"
-        android:text="@string/cancel"/>
+        android:id="@+id/llTeamSelectButtons"
+        android:orientation="horizontal">
+
+        <Button
+            style="@style/ButtonStyle.Submit"
+            android:id="@+id/btnTeamSelectOK"
+            android:text="@string/ok"/>
+
+        <Button
+            style="@style/ButtonStyle.Submit"
+            android:id="@+id/btnTeamSelectCancel"
+            android:text="@string/cancel"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/llNoTeams"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/TextViewStyle.Big.Bold"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/tvNoTeams"
+            android:text="@string/noTeamsFound"/>
+
+        <Button
+            style="@style/ButtonStyle"
+            android:id="@+id/btnCancel"
+            android:text="@string/cancel"/>
+
+    </LinearLayout>
+
 </LinearLayout>

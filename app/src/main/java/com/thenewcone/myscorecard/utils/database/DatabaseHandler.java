@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -42,6 +43,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private final String TBL_PLAYER_BAT_STYLE = "BattingStyle";
     private final String TBL_PLAYER_BOWL_STYLE = "BowlingStyle";
     private final String TBL_PLAYER_IS_WK = "IsWK";
+    private final String TBL_PLAYER_TEAM_ASSOCIATION = "TeamAssociation";
 
     private final String TBL_TEAM = "Team";
     private final String TBL_TEAM_ID = "ID";
@@ -97,7 +99,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         + TBL_PLAYER_AGE + " TEXT, "
                         + TBL_PLAYER_BAT_STYLE + " TEXT, "
                         + TBL_PLAYER_BOWL_STYLE + " TEXT, "
-                        + TBL_PLAYER_IS_WK + " INTEGER "
+                        + TBL_PLAYER_IS_WK + " INTEGER, "
+						+ TBL_PLAYER_TEAM_ASSOCIATION + " TEXT "
                         + ")";
 
         db.execSQL(createTableSQL);
@@ -240,23 +243,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public Player getPlayer(int playerID) {
-        Player player = null;
 
         String selectQuery = "SELECT * FROM " + TBL_PLAYER + " WHERE " + TBL_PLAYER_ID + " = " + playerID;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        if(cursor.moveToFirst()) {
-            int id = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_ID));
-            String name = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_NAME));
-            int age = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_AGE));
-            String batStyle = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_BAT_STYLE));
-            String bowlStyle = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_BOWL_STYLE));
-            int isWK = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_IS_WK));
+		Player player = null;
+		List<Player> playerList = getPlayersFromCursor(cursor);
+		if(playerList.size() > 0)
+			player = playerList.get(0);
 
-            player = new Player(id, name, age, Player.BattingType.valueOf(batStyle), Player.BowlingType.valueOf(bowlStyle), isWK == 1);
-        }
         cursor.close();
         db.close();
 
@@ -264,8 +261,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public List<Player> getMatchingPlayers(String playerName, boolean exactMatch) {
-        List<Player> playerList = new ArrayList<>();
-
         String selectQuery = "SELECT * FROM " + TBL_PLAYER + " WHERE " + TBL_PLAYER_NAME;
         selectQuery += (exactMatch)
                         ? String.format(" = '%s'", playerName)
@@ -276,21 +271,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        if(cursor.moveToFirst()) {
-            do {
-                Player player;
-
-                int id = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_ID));
-                String name = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_NAME));
-                int age = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_AGE));
-                String batStyle = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_BAT_STYLE));
-                String bowlStyle = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_BOWL_STYLE));
-                int isWK = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_IS_WK));
-
-                player = new Player(id, name, age, Player.BattingType.valueOf(batStyle), Player.BowlingType.valueOf(bowlStyle), isWK == 1);
-                playerList.add(player);
-            } while (cursor.moveToNext());
-        }
+		List<Player> playerList = getPlayersFromCursor(cursor);
 
         cursor.close();
         db.close();
@@ -299,30 +280,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public List<Player> getAllPlayers() {
-        List<Player> playerList = new ArrayList<>();
-
         String selectQuery = "SELECT * FROM " + TBL_PLAYER;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        if(cursor.moveToFirst()) {
+		List<Player> playerList = getPlayersFromCursor(cursor);
 
-            do {
-                Player player;
-
-                int id = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_ID));
-                String name = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_NAME));
-                int age = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_AGE));
-                String batStyle = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_BAT_STYLE));
-                String bowlStyle = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_BOWL_STYLE));
-                int isWK = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_IS_WK));
-
-                player = new Player(id, name, age, Player.BattingType.valueOf(batStyle), Player.BowlingType.valueOf(bowlStyle), isWK == 1);
-
-                playerList.add(player);
-            } while(cursor.moveToNext());
-        }
         cursor.close();
         db.close();
 
@@ -344,6 +308,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(TBL_PLAYER_BAT_STYLE, player.getBattingStyle().toString());
         values.put(TBL_PLAYER_BOWL_STYLE, player.getBowlingStyle().toString());
         values.put(TBL_PLAYER_IS_WK, player.isWicketKeeper() ? 1 : 0);
+        values.put(TBL_PLAYER_TEAM_ASSOCIATION, player.getTeamsAssociatedToJSON());
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -356,6 +321,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return (int) rowID;
     }
+
+    private List<Player> getPlayersFromCursor(Cursor cursor) {
+		List<Player> playerList = new ArrayList<>();
+
+		if(cursor != null && cursor.moveToFirst()) {
+			do {
+				Player player;
+
+				int id = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_ID));
+				String name = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_NAME));
+				int age = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_AGE));
+				String batStyle = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_BAT_STYLE));
+				String bowlStyle = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_BOWL_STYLE));
+				int isWK = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_IS_WK));
+				String teamAssociation = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_TEAM_ASSOCIATION));
+
+				player = new Player(id, name, age, Player.BattingType.valueOf(batStyle), Player.BowlingType.valueOf(bowlStyle), isWK == 1);
+				player.setTeamsAssociatedToFromJSON(teamAssociation);
+
+				playerList.add(player);
+			} while(cursor.moveToNext());
+		}
+
+		return playerList;
+	}
 
     public boolean deletePlayer(int playerID) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -431,19 +421,83 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return teamList;
     }
 
-    public void updateTeamList(Team team, List<Integer> playerIDs) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_TEAM_ID + "=?", new String[]{String.valueOf(team.getId())});
+    public void updateTeamList(@NonNull Team team, List<Integer> newPlayers, List<Integer> deletedPlayers) {
+    	if((newPlayers != null && newPlayers.size() > 0)
+				|| (deletedPlayers != null && deletedPlayers.size() > 0)) {
+			SQLiteDatabase db = this.getWritableDatabase();
 
-        for(int playerID : playerIDs) {
-            ContentValues values = new ContentValues();
-            values.put(TBL_TEAM_PLAYERS_TEAM_ID, team.getId());
-            values.put(TBL_TEAM_PLAYERS_PLAYER_ID, playerID);
+			for (int playerID : newPlayers) {
+				ContentValues values = new ContentValues();
+				values.put(TBL_TEAM_PLAYERS_TEAM_ID, team.getId());
+				values.put(TBL_TEAM_PLAYERS_PLAYER_ID, playerID);
 
-            db.insert(TBL_TEAM_PLAYERS, null, values);
-        }
+				db.insert(TBL_TEAM_PLAYERS, null, values);
 
-        db.close();
+				Player player = getPlayer(playerID);
+				List<Integer> teamsAssociatedTo = player.getTeamsAssociatedTo();
+				if (teamsAssociatedTo == null || !teamsAssociatedTo.contains(team.getId())) {
+					teamsAssociatedTo.add(team.getId());
+					player.setTeamsAssociatedTo(teamsAssociatedTo);
+					upsertPlayer(player);
+				}
+			}
+
+			for (int playerID : deletedPlayers) {
+				db.delete(TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_PLAYER_ID + " = ? AND " + TBL_TEAM_PLAYERS_TEAM_ID + " = ?",
+						new String[]{String.valueOf(playerID), String.valueOf(team.getId())});
+
+				Player player = getPlayer(playerID);
+				List<Integer> teamsAssociatedTo = player.getTeamsAssociatedTo();
+				if (teamsAssociatedTo == null && teamsAssociatedTo.contains(team.getId())) {
+					for (int i = 0; i < teamsAssociatedTo.size(); i++) {
+						if (teamsAssociatedTo.get(i) == team.getId()) {
+							teamsAssociatedTo.remove(i);
+							player.setTeamsAssociatedTo(teamsAssociatedTo);
+							upsertPlayer(player);
+							break;
+						}
+					}
+				}
+			}
+
+			db.close();
+		}
+    }
+
+    public void updateTeamList(@NonNull Player player, List<Integer> newTeams, List<Integer> deletedTeams) {
+    	if((newTeams != null && newTeams.size() > 0)
+				|| (deletedTeams != null && deletedTeams.size() > 0)) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			List<Integer> teamsAssociatedTo = player.getTeamsAssociatedTo();
+
+			for (int teamID : newTeams) {
+				if (teamsAssociatedTo == null || !teamsAssociatedTo.contains(teamID)) {
+					ContentValues values = new ContentValues();
+					values.put(TBL_TEAM_PLAYERS_TEAM_ID, teamID);
+					values.put(TBL_TEAM_PLAYERS_PLAYER_ID, player.getID());
+
+					db.insert(TBL_TEAM_PLAYERS, null, values);
+
+					teamsAssociatedTo.add(teamID);
+				}
+			}
+
+			for (int teamID : deletedTeams) {
+				db.delete(TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_PLAYER_ID + " = ? AND " + TBL_TEAM_PLAYERS_TEAM_ID + " = ?",
+						new String[]{String.valueOf(player.getID()), String.valueOf(teamID)});
+
+				if (teamsAssociatedTo == null && teamsAssociatedTo.contains(teamID)) {
+					for (int i = 0; i < teamsAssociatedTo.size(); i++) {
+						if (teamsAssociatedTo.get(i) == teamID) {
+							teamsAssociatedTo.remove(i);
+							break;
+						}
+					}
+				}
+			}
+
+			db.close();
+		}
     }
 
     public int addNewMatch(Match match) {

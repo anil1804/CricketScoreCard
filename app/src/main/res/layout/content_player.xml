@@ -62,6 +62,16 @@
             android:text="@string/isPlayerWK"
             android:layout_columnSpan="2"/>
 
+        <TextView
+            style="@style/TextViewStyle.Bold.Medium.MorePadding"
+            android:labelFor="@id/tvTeams"
+            android:text="@string/teams"/>
+
+        <TextView
+            style="@style/TextViewStyle"
+            android:id="@+id/tvTeams"
+            android:text="@string/none"/>
+
     </GridLayout>
 
 	<Button
