@@ -46,6 +46,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private final String TBL_TEAM = "Team";
     private final String TBL_TEAM_ID = "ID";
     private final String TBL_TEAM_NAME = "Name";
+    private final String TBL_TEAM_SHORT_NAME = "ShortName";
 
     private final String TBL_TEAM_PLAYERS = "TeamPlayers";
     private final String TBL_TEAM_PLAYERS_TEAM_ID = "TeamID";
@@ -106,7 +107,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String createTableSQL =
                 "CREATE TABLE " + TBL_TEAM + "("
                         + TBL_TEAM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                        + TBL_TEAM_NAME + " TEXT "
+                        + TBL_TEAM_NAME + " TEXT, "
+                        + TBL_TEAM_SHORT_NAME + " TEXT "
                         + ")";
 
         db.execSQL(createTableSQL);
@@ -335,8 +337,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             if(getMatchingPlayers(player.getName(), true).size() > 0) {
                 return CODE_INS_PLAYER_DUP_RECORD;
             }
-        } else {
-            values.put(TBL_PLAYER_ID, player.getID());
         }
 
         values.put(TBL_PLAYER_NAME, player.getName());
@@ -346,7 +346,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(TBL_PLAYER_IS_WK, player.isWicketKeeper() ? 1 : 0);
 
         SQLiteDatabase db = this.getWritableDatabase();
-        long rowID = db.replace(TBL_PLAYER, null, values);
+
+		long rowID;
+		if(player.getID() == -1)
+			rowID = db.insert(TBL_PLAYER, null, values);
+		else
+			rowID = db.update(TBL_PLAYER, values, TBL_PLAYER_ID + " = ?", new String[]{String.valueOf(player.getID())});
         db.close();
 
         return (int) rowID;
@@ -360,37 +365,38 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return (rowsDeleted > 0);
     }
 
-    public int addNewTeam(String teamName) {
+    public int upsertTeam(Team team) {
         ContentValues values = new ContentValues();
-        values.put(TBL_TEAM_NAME, teamName);
 
-        SQLiteDatabase db = this.getWritableDatabase();
+        if(team.getId() == -1) {
+			if (getTeams(team.getName(), -1).size() > 0) {
+				return CODE_NEW_TEAM_DUP_RECORD;
+			}
+		}
 
-        long rowID = CODE_NEW_TEAM_DUP_RECORD;
-        if(getTeams(teamName, -1).size() > 0)
-            rowID = db.insert(TBL_TEAM, null, values);
+		values.put(TBL_TEAM_NAME, team.getName());
+		values.put(TBL_TEAM_SHORT_NAME, team.getShortName());
+
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		long rowID;
+		if(team.getId() == -1)
+			rowID = db.insert(TBL_TEAM, null, values);
+		else
+			rowID = db.update(TBL_TEAM, values, TBL_TEAM_ID + " = ?", new String[]{String.valueOf(team.getId())});
 
         db.close();
 
         return (int) rowID;
     }
 
-    public boolean deleteTeam(int[] teamIDs) {
+    public boolean deleteTeam(int teamID) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        StringBuilder whereClauseSB = new StringBuilder(TBL_TEAM_ID + " IN (");
-        for(int i=0; i<teamIDs.length; i++) {
-            whereClauseSB.append(teamIDs[i]);
-            if(i < teamIDs.length - 1) {
-                whereClauseSB.append(", ");
-            }
-        }
-        whereClauseSB.append(")");
-
-        int rowsDeleted = db.delete(TBL_TEAM, whereClauseSB.toString(), null);
+        int rowsDeleted = db.delete(TBL_TEAM, TBL_TEAM_ID + "= ?", new String[] {String.valueOf(teamID)});
         db.close();
 
-        return (rowsDeleted == teamIDs.length);
+        return (rowsDeleted > 0);
     }
 
     public List<Team> getTeams(String teamNamePattern, int teamID) {
@@ -414,8 +420,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             do {
                 int id = cursor.getInt(cursor.getColumnIndex(TBL_TEAM_ID));
                 String name = cursor.getString(cursor.getColumnIndex(TBL_TEAM_NAME));
+                String shortName = cursor.getString(cursor.getColumnIndex(TBL_TEAM_SHORT_NAME));
 
-                teamList.add(new Team(id, name));
+                teamList.add(new Team(id, name, shortName));
             } while(cursor.moveToNext());
         }
         cursor.close();

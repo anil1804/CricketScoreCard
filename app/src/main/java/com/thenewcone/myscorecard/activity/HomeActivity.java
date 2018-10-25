@@ -15,7 +15,11 @@ import android.view.MenuItem;
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.fragment.HomeFragment;
 import com.thenewcone.myscorecard.fragment.LimitedOversFragment;
+import com.thenewcone.myscorecard.fragment.NewMatchFragment;
+import com.thenewcone.myscorecard.fragment.PlayerFragment;
 import com.thenewcone.myscorecard.fragment.PlayerListFragment;
+import com.thenewcone.myscorecard.fragment.TeamFragment;
+import com.thenewcone.myscorecard.fragment.TeamListFragment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -59,9 +63,7 @@ public class HomeActivity extends AppCompatActivity
 		if (drawer.isDrawerOpen(GravityCompat.START)) {
 			drawer.closeDrawer(GravityCompat.START);
 		} else {
-            if (isFragmentHidden(PlayerListFragment.class.getSimpleName())) {
-                super.onBackPressed();
-            }
+			super.onBackPressed();
 		}
 	}
 
@@ -113,17 +115,24 @@ public class HomeActivity extends AppCompatActivity
 		HashMap<String, Object> respMap = new HashMap<>();
 
 		switch (item.getItemId()) {
-			case R.id.nav_home:
-				if(isFragmentHidden(HomeFragment.class.getSimpleName())) {
-					respMap.put(FRAGMENT, HomeFragment.newInstance());
-					respMap.put(FRAGMENT_TAG, HomeFragment.class.getSimpleName());
+			case R.id.nav_manage_player:
+				if(isFragmentHidden(PlayerFragment.class.getSimpleName())) {
+					respMap.put(FRAGMENT, PlayerFragment.newInstance());
+					respMap.put(FRAGMENT_TAG, PlayerFragment.class.getSimpleName());
 				}
 				break;
 
-			case R.id.nav_cricket_limited:
-				if(isFragmentHidden(HomeFragment.class.getSimpleName())) {
-					respMap.put(FRAGMENT, LimitedOversFragment.newInstance());
-					respMap.put(FRAGMENT_TAG, LimitedOversFragment.class.getSimpleName());
+			case R.id.nav_manage_team:
+				if(isFragmentHidden(TeamFragment.class.getSimpleName())) {
+					respMap.put(FRAGMENT, TeamFragment.newInstance());
+					respMap.put(FRAGMENT_TAG, TeamFragment.class.getSimpleName());
+				}
+				break;
+
+			case R.id.nav_new_match:
+				if(isFragmentHidden(NewMatchFragment.class.getSimpleName())) {
+					respMap.put(FRAGMENT, NewMatchFragment.newInstance());
+					respMap.put(FRAGMENT_TAG, NewMatchFragment.class.getSimpleName());
 				}
 				break;
 		}

@@ -9,17 +9,17 @@ import android.widget.TextView;
 
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.intf.ListInteractionListener;
-import com.thenewcone.myscorecard.player.Player;
+import com.thenewcone.myscorecard.match.Team;
 
 import java.util.List;
 
-public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.ViewHolder> {
+public class TeamViewAdapter extends RecyclerView.Adapter<TeamViewAdapter.ViewHolder> {
 
-    private final List<Player> playerList;
+    private final List<Team> teamList;
     private final ListInteractionListener mListener;
 
-    public PlayerViewAdapter(List<Player> playerList, ListInteractionListener listener) {
-        this.playerList = playerList;
+    public TeamViewAdapter(List<Team> teamList, ListInteractionListener listener) {
+        this.teamList = teamList;
         mListener = listener;
     }
 
@@ -27,17 +27,16 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
     @NonNull
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_player_view, parent, false);
+                .inflate(R.layout.fragment_team_view, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull  final ViewHolder holder, int position) {
 
-        holder.player = playerList.get(position);
-        holder.tvPlayerName.setText(holder.player.getName());
-        holder.tvBatStyle.setText(holder.player.getBattingStyle().toString());
-        holder.tvBowlStyle.setText(holder.player.getBowlingStyle().toString());
+        holder.team = teamList.get(position);
+        holder.tvTeamName.setText(holder.team.getName());
+        holder.tvTeamShortName.setText(holder.team.getShortName());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +44,7 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.player);
+                    mListener.onListFragmentInteraction(holder.team);
                 }
             }
         });
@@ -53,20 +52,19 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return playerList.size();
+        return teamList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public Player player;
+        public Team team;
         final View mView;
-        final TextView tvPlayerName, tvBatStyle, tvBowlStyle;
+        final TextView tvTeamName, tvTeamShortName;
 
         ViewHolder(View view) {
             super(view);
             mView = view;
-            tvPlayerName = view.findViewById(R.id.tvPlayerName);
-            tvBatStyle = view.findViewById(R.id.tvBattingStyle);
-            tvBowlStyle = view.findViewById(R.id.tvBowlingStyle);
+            tvTeamName = view.findViewById(R.id.tvTeamName);
+            tvTeamShortName = view.findViewById(R.id.tvTeamShortName);
         }
     }
 }

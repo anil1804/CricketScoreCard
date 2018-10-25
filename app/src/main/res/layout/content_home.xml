@@ -9,12 +9,6 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/btnLimitedOvers"
-        android:text="@string/limited_overs_cricket"
-        android:drawableStart="@drawable/ic_cricket_limited_overs"
-        style="@style/ButtonStyle"/>
-
-    <Button
         android:id="@+id/btnNewMatch"
         android:text="@string/newMatch"
         style="@style/ButtonStyle"/>

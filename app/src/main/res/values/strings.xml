@@ -7,8 +7,8 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="nav_header_limitedOvers">Limited Overs</string>
-    <string name="nav_drawer_cricket_test">Test</string>
-    <string name="nav_drawer_limited_overs">Limited Overs</string>
+    <string name="nav_drawer_manage_team">Manage Team</string>
+    <string name="nav_drawer_new_match">Play New Match</string>
     <string name="title_activity_limited_overs_scorecard">Limited Overs</string>
     <string name="title_activity_test_cricket_scorecard">Test Cricket</string>
 
@@ -124,8 +124,19 @@
     <string name="addNewTeam">Add Team</string>
     <string name="newMatch">Play Match</string>
     <string name="startMatch">Start Match</string>
-    <string name="btnAddTeam">Add Team</string>
-    <string name="btnDeleteTeams">Delete Teams</string>
-    <string name="updateTeamPlayers">Update Team Players</string>
+    <string name="updateTeamPlayers">Update Players</string>
     <string name="manageTeam">Manage Team</string>
+    <string name="teamName">Team Name</string>
+    <string name="teamShortName">Short Name</string>
+	<string name="noTeamsFound">No Teams Found</string>
+    <string name="getTeamList">Get Team List</string>
+    <string name="updatePlayers">Update Players</string>
+    <string name="goBack">Back</string>
+    <string name="validate">Validate</string>
+    <string name="maxOvers">Maximum Overs</string>
+    <string name="maxWickets">Max Wickets</string>
+    <string name="maxOversPerBowler">Max per Bowler</string>
+    <string name="maxOversValue">50</string>
+    <string name="maxWicketsValue">10</string>
+    <string name="numPlayers">Player Count</string>
 </resources>

@@ -179,7 +179,7 @@ public class CricketCard {
 
 	public CricketCard(String battingTeamName, String maxOvers, int maxPerBowler, int maxWickets, int innings) {
 		this.battingTeamName = battingTeamName;
-		this.maxOvers = maxOvers.indexOf(",") >  0 ? maxOvers : maxOvers + ".0";
+		this.maxOvers = maxOvers.indexOf(".") >  0 ? maxOvers : maxOvers + ".0";
 		this.maxPerBowler = maxPerBowler;
 		this.maxWickets = maxWickets;
 		this.innings = innings;

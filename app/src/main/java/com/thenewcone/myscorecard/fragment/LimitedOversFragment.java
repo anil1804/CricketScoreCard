@@ -22,6 +22,7 @@ import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.activity.WicketDialogActivity;
 import com.thenewcone.myscorecard.match.CricketCard;
 import com.thenewcone.myscorecard.match.CricketCardUtils;
+import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
 import com.thenewcone.myscorecard.player.Player;
@@ -57,11 +58,16 @@ public class LimitedOversFragment extends Fragment
     TextView tvBowlName, tvBowlOvers, tvBowlMaidens, tvBowlRuns, tvBowlWickets, tvBowlEconomy;
 
 	public LimitedOversFragment() {
-		// Required empty public constructor
 	}
 
-	public static LimitedOversFragment newInstance() {
-		return new LimitedOversFragment();
+	public static LimitedOversFragment newInstance
+			(Team battingTeam, Team bowlingTeam, Team tossWonBy,
+			 int maxOvers, int maxWickets, int maxPerBowler, int maxPlayers) {
+		LimitedOversFragment fragment = new LimitedOversFragment();
+
+		fragment.initCricketCard(battingTeam, bowlingTeam, tossWonBy, maxOvers, maxWickets, maxPerBowler);
+
+		return fragment;
 	}
 
 	@Override
@@ -76,7 +82,6 @@ public class LimitedOversFragment extends Fragment
 		// Inflate the layout for this fragment
 		theView = inflater.inflate(R.layout.fragment_limited_overs, container, false);
 
-		initCricketCard();
 		initialSetup();
 
 		return theView;
@@ -102,10 +107,15 @@ public class LimitedOversFragment extends Fragment
         theView.findViewById(R.id.btnSelFacingBatsman).setOnClickListener(this);
 	}
 
-	private void initCricketCard() {
-		CricketCard card = new CricketCard("Team1", "50.0", 10, 10, 1);
+	private void initCricketCard(Team battingTeam, Team bowlingTeam, Team tossWonBy, int maxOvers, int maxWickets, int maxPerBowler) {
+		CricketCard card =
+				new CricketCard(battingTeam.getShortName(),
+						String.valueOf(maxOvers),
+						maxPerBowler,
+						maxWickets,
+						1);
 
-		ccUtils = new CricketCardUtils(card, "Team1", "Team2");
+		ccUtils = new CricketCardUtils(card, battingTeam.getShortName(), bowlingTeam.getShortName());
 
 		ccUtils.setFirstInnings();
 	}

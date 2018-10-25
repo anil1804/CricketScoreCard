@@ -12,24 +12,24 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.thenewcone.myscorecard.R;
-import com.thenewcone.myscorecard.adapter.PlayerViewAdapter;
+import com.thenewcone.myscorecard.adapter.TeamViewAdapter;
 import com.thenewcone.myscorecard.intf.ListInteractionListener;
-import com.thenewcone.myscorecard.player.Player;
+import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.utils.database.DatabaseHandler;
-import com.thenewcone.myscorecard.viewModel.PlayerViewModel;
+import com.thenewcone.myscorecard.viewModel.TeamViewModel;
 
 import java.util.List;
 
-public class PlayerListFragment extends Fragment
+public class TeamListFragment extends Fragment
     implements ListInteractionListener, View.OnClickListener {
 
-    private PlayerViewModel playerViewModel;
+    private TeamViewModel teamViewModel;
 
-    public PlayerListFragment() {
+    public TeamListFragment() {
     }
 
-    public static PlayerListFragment newInstance() {
-        return new PlayerListFragment();
+    public static TeamListFragment newInstance() {
+        return new TeamListFragment();
     }
 
     @Override
@@ -37,25 +37,25 @@ public class PlayerListFragment extends Fragment
         super.onCreate(savedInstanceState);
 
         if(getActivity() !=  null)
-            playerViewModel = ViewModelProviders.of(getActivity()).get(PlayerViewModel.class);
+            teamViewModel = ViewModelProviders.of(getActivity()).get(TeamViewModel.class);
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_player_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_team_list, container, false);
 
         // Set the adapter
         Context context = view.getContext();
-        List<Player> playerList = getPlayerList();
+        List<Team> teamList = getTeamList();
 
-        RecyclerView recyclerView = view.findViewById(R.id.rcvPlayerList);
-        if(playerList.size() > 0) {
+        RecyclerView recyclerView = view.findViewById(R.id.rcvTeamList);
+        if(teamList.size() > 0) {
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new PlayerViewAdapter(playerList, this));
+            recyclerView.setAdapter(new TeamViewAdapter(teamList, this));
         } else {
             recyclerView.setVisibility(View.GONE);
-            view.findViewById(R.id.tvNoPlayers).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.tvNoTeams).setVisibility(View.VISIBLE);
         }
 
         view.findViewById(R.id.btnCancel).setOnClickListener(this);
@@ -63,22 +63,22 @@ public class PlayerListFragment extends Fragment
         return view;
     }
 
-    private List<Player> getPlayerList() {
+    private List<Team> getTeamList() {
         DatabaseHandler dbHandler = new DatabaseHandler(getContext());
-        return dbHandler.getAllPlayers();
+        return dbHandler.getTeams(null, -1);
     }
 
     @Override
     public void onListFragmentInteraction(Object selObject) {
-        playerViewModel.selectPlayer((Player) selObject);
-        gotoPlayerFragment();
+        teamViewModel.selectTeam((Team) selObject);
+        gotoTeamFragment();
     }
 
-    private void gotoPlayerFragment() {
+    private void gotoTeamFragment() {
         if(getActivity() != null) {
-            String fragmentTag = PlayerFragment.class.getSimpleName();
+            String fragmentTag = TeamFragment.class.getSimpleName();
             getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.frame_container, PlayerFragment.newInstance(), fragmentTag)
+                    .replace(R.id.frame_container, TeamFragment.newInstance(), fragmentTag)
                     .commit();
         }
     }
@@ -87,7 +87,7 @@ public class PlayerListFragment extends Fragment
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnCancel:
-                gotoPlayerFragment();
+                gotoTeamFragment();
                 break;
         }
     }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.RecyclerView
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/rcvTeamList"
+            android:name="fragment.TeamListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".fragment.TeamListFragment"
+        tools:listitem="@layout/fragment_team_view" />
+    </ScrollView>
+
+    <TextView
+        style="@style/TextViewStyle.Big.Bold"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/tvNoTeams"
+        android:text="@string/noTeamsFound"
+        android:visibility="gone"/>
+
+    <Button
+        style="@style/ButtonStyle"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/btnCancel"
+        android:text="@string/cancel"/>
+</LinearLayout>

@@ -37,7 +37,7 @@
         <activity
             android:name=".activity.InputActivity"
             android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
-        <activity android:name=".fragment.ManageTeamFragment"></activity>
+        <activity android:name=".fragment.TeamFragment"></activity>
     </application>
 
 </manifest>

@@ -17,16 +17,16 @@ public class Match {
         return team1.getId();
     }
 
-    public String getTeam1Name() {
-        return team1.getName();
+    public String getTeam1ShortName() {
+        return team1.getShortName();
     }
 
     public int getTeam2ID() {
         return team2.getId();
     }
 
-    public String getTeam2Name() {
-        return team2.getName();
+    public String getTeam2ShortName() {
+        return team2.getShortName();
     }
 
     public Match(String name, Team team1, Team team2) {
