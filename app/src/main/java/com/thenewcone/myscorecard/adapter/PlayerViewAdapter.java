@@ -2,6 +2,7 @@ package com.thenewcone.myscorecard.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +18,22 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
 
     private final List<Player> playerList;
     private final ListInteractionListener mListener;
+    private final boolean isMultiSelect;
 
-    public PlayerViewAdapter(List<Player> playerList, ListInteractionListener listener) {
+	private SparseBooleanArray selPlayerIDs;
+
+    public PlayerViewAdapter(List<Player> playerList, ListInteractionListener listener, boolean isMultiSelect, List<Integer> associatedPlayers) {
         this.playerList = playerList;
         mListener = listener;
+        this.isMultiSelect = isMultiSelect;
+
+        selPlayerIDs = new SparseBooleanArray();
+		for(Player player : playerList) {
+			if (associatedPlayers == null || !associatedPlayers.contains(player.getID()))
+				selPlayerIDs.put(player.getID(), true);
+			else
+				selPlayerIDs.put(player.getID(), false);
+		}
     }
 
     @Override
@@ -32,23 +45,38 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull  final ViewHolder holder, int position) {
-
+    public void onBindViewHolder(@NonNull  final ViewHolder holder, final int position) {
         holder.player = playerList.get(position);
         holder.tvPlayerName.setText(holder.player.getName());
         holder.tvBatStyle.setText(holder.player.getBattingStyle().toString());
         holder.tvBowlStyle.setText(holder.player.getBowlingStyle().toString());
 
+		if (selPlayerIDs.get(holder.player.getID())) {
+			selPlayerIDs.put(holder.player.getID(), false);
+			holder.mView.setSelected(false);
+		} else {
+			selPlayerIDs.put(holder.player.getID(), true);
+			holder.mView.setSelected(true);
+		}
+
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.player);
-                }
-            }
-        });
+						if(!isMultiSelect) {
+							// Notify the active callbacks interface (the activity, if the
+							// fragment is attached to one) that an item has been selected.
+
+							mListener.onListFragmentInteraction(holder.player);
+						} else {
+
+							boolean isPresent = selPlayerIDs.get(holder.player.getID());
+							mListener.onListFragmentMultiSelect(holder.player, isPresent);
+						}
+						notifyItemChanged(position);
+					}
+				}
+	        });
     }
 
     @Override

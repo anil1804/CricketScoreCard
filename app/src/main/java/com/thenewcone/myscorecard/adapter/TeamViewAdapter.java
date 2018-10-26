@@ -2,7 +2,7 @@ package com.thenewcone.myscorecard.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseArray;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.intf.ListInteractionListener;
 import com.thenewcone.myscorecard.match.Team;
+
 import java.util.List;
 
 public class TeamViewAdapter extends RecyclerView.Adapter<TeamViewAdapter.ViewHolder> {
@@ -19,12 +20,20 @@ public class TeamViewAdapter extends RecyclerView.Adapter<TeamViewAdapter.ViewHo
     private final ListInteractionListener mListener;
     private final boolean isMultiSelect;
 
-    private SparseArray<Team> selTeam = new SparseArray<>();
+    private SparseBooleanArray selTeamIDs;
 
-    public TeamViewAdapter(List<Team> teamList, ListInteractionListener listener, boolean isMultiSelect) {
+    public TeamViewAdapter(List<Team> teamList, List<Integer> currentlyAssociatedTo, ListInteractionListener listener, boolean isMultiSelect) {
         this.teamList = teamList;
         mListener = listener;
         this.isMultiSelect = isMultiSelect;
+
+		selTeamIDs = new SparseBooleanArray();
+        for(Team team : teamList) {
+			if (currentlyAssociatedTo == null || !currentlyAssociatedTo.contains(team.getId()))
+				selTeamIDs.put(team.getId(), true);
+			else
+				selTeamIDs.put(team.getId(), false);
+		}
     }
 
     @Override
@@ -42,29 +51,32 @@ public class TeamViewAdapter extends RecyclerView.Adapter<TeamViewAdapter.ViewHo
         holder.tvTeamName.setText(holder.team.getName());
         holder.tvTeamShortName.setText(holder.team.getShortName());
 
-		Team team = teamList.get(position);
-		if (selTeam.get(team.getId()) != null) {
+		if (selTeamIDs.get(holder.team.getId())) {
+			selTeamIDs.put(holder.team.getId(), false);
 			holder.mView.setSelected(false);
-			selTeam.remove(team.getId());
 		} else {
+			selTeamIDs.put(holder.team.getId(), true);
 			holder.mView.setSelected(true);
-			selTeam.append(team.getId(), team);
 		}
 
 		holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            	if(!isMultiSelect) {
-					if (null != mListener) {
-						// Notify the active callbacks interface (the activity, if the
-						// fragment is attached to one) that an item has been selected.
-						mListener.onListFragmentInteraction(holder.team);
+				if (null != mListener) {
+					if(!isMultiSelect) {
+							// Notify the active callbacks interface (the activity, if the
+							// fragment is attached to one) that an item has been selected.
+
+								mListener.onListFragmentInteraction(holder.team);
+					} else {
+
+							boolean isPresent = selTeamIDs.get(holder.team.getId());
+							mListener.onListFragmentMultiSelect(holder.team, isPresent);
+						}
+						notifyItemChanged(position);
 					}
-				} else {
-					notifyItemChanged(position);
 				}
-            }
-        });
+	        });
     }
 
     @Override

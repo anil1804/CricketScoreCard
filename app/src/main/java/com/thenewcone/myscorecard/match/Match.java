@@ -1,9 +1,11 @@
 package com.thenewcone.myscorecard.match;
 
-public class Match {
-    String name;
-    int id;
-    Team team1, team2;
+import java.io.Serializable;
+
+public class Match implements Serializable {
+    private String name;
+    private int id;
+    private Team team1, team2;
 
     public int getId() {
         return id;

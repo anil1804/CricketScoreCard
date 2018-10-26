@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thenewcone.myscorecard.match.CricketCardUtils;
+import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
 import com.thenewcone.myscorecard.player.Player;
@@ -176,6 +177,24 @@ public class CommonUtils {
         }
 
         return players;
+    }
+
+    public static Team[] objectArrToTeamArr(Object[] objArr) {
+        Team[] teams = null;
+
+        if(objArr != null) {
+            teams = new Team[objArr.length];
+
+            int i=0;
+            for(Object obj : objArr) {
+                if(obj instanceof Team) {
+                    teams[i] = (Team) obj;
+                    i++;
+                }
+            }
+        }
+
+        return teams;
     }
 
     public static String convertToJSON(CricketCardUtils ccUtilsObj) {

@@ -1,8 +1,8 @@
 package com.thenewcone.myscorecard.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,6 +15,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.thenewcone.myscorecard.R;
+import com.thenewcone.myscorecard.fragment.StringDialog;
+import com.thenewcone.myscorecard.intf.DialogItemClickListener;
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
 import com.thenewcone.myscorecard.player.Player;
@@ -23,8 +25,8 @@ import com.thenewcone.myscorecard.scorecard.WicketData;
 import com.thenewcone.myscorecard.utils.CommonUtils;
 
 
-public class WicketDialogActivity extends Activity
-	implements View.OnClickListener{
+public class WicketDialogActivity extends FragmentActivity
+	implements View.OnClickListener, DialogItemClickListener {
 
 	private static final int ACTIVITY_REQ_CODE_FIELDER_SELECT = 1;
     private static final int ACTIVITY_REQ_CODE_OUT_BATSMAN_SELECT = 2;
@@ -175,7 +177,8 @@ public class WicketDialogActivity extends Activity
 
 			/*Capturing the details of the Fielder who effected the dismissal*/
 			case R.id.btnEffectedByText:
-                displayFieldingTeam();
+                //displayFieldingTeam();
+				showFielderDialog();
 				break;
 
 			/*Capturing all details of the Wicket*/
@@ -372,6 +375,20 @@ public class WicketDialogActivity extends Activity
 		llRORuns.setVisibility(runoutRunsVisibility);
 	}
 
+	private void showFielderDialog() {
+		if(getSupportFragmentManager() != null) {
+			String[] fielders = new String[fieldingTeam.length];
+
+			int i=0;
+			for(Player fielder : fieldingTeam)
+				fielders[i++] = fielder.getName();
+
+			StringDialog dialog = StringDialog.newInstance("Select Fielder", fielders, null);
+			dialog.setDialogItemClickListener(this);
+			dialog.show(getSupportFragmentManager(), "EffectedByDialog");
+		}
+	}
+
 	private void displayFieldingTeam() {
 		Intent playerIntent = new Intent(this, PlayerSelectActivity.class);
 		playerIntent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, fieldingTeam);
@@ -393,7 +410,7 @@ public class WicketDialogActivity extends Activity
 		switch (requestCode) {
 			case ACTIVITY_REQ_CODE_FIELDER_SELECT:
 				if(resultCode == RESP_CODE_OK) {
-					effectedBy = (Player) data.getSerializableExtra(PlayerSelectActivity.ARG_EFFECTED_BY);
+					effectedBy = (Player) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYER);
 					tvEffectedBy.setText(effectedBy.getName());
 				}
 				break;
@@ -424,4 +441,10 @@ public class WicketDialogActivity extends Activity
 
         finish();
     }
+
+	@Override
+	public void onItemSelect(String enumType, String value, int position) {
+		effectedBy = fieldingTeam[position];
+		tvEffectedBy.setText(effectedBy.getName());
+	}
 }

@@ -7,30 +7,29 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
         <TextView
             android:layout_width="0dp"
             android:layout_weight="5"
-            android:gravity="left"
+            android:gravity="start"
             android:id="@+id/tvPlayerName"
-            style="@style/TextViewStyle"
-            android:text="PlayerName"/>
+            style="@style/TextViewStyle"/>
 
         <TextView
+            android:layout_width="0dp"
             android:layout_weight="1"
             android:id="@+id/tvBattingStyle"
             android:gravity="center_horizontal"
-            style="@style/TextViewStyle"
-            android:text="RHB"/>
+            style="@style/TextViewStyle"/>
 
         <TextView
+            android:layout_width="0dp"
             android:layout_weight="1"
             android:id="@+id/tvBowlingStyle"
             android:gravity="center_horizontal"
-            style="@style/TextViewStyle"
-            android:text="OB"/>
+            style="@style/TextViewStyle"/>
 
     </LinearLayout>
 

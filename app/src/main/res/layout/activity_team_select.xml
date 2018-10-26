@@ -1,36 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:orientation="vertical">
 
-	<android.support.v7.widget.RecyclerView
-		android:id="@+id/rcvPlayerList"
-		xmlns:tools="http://schemas.android.com/tools"
+	<ScrollView
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		tools:context=".activity.PlayerSelectActivity">
-
-	</android.support.v7.widget.RecyclerView>
-
+		android:layout_height="wrap_content">
+		<android.support.v7.widget.RecyclerView
+			xmlns:tools="http://schemas.android.com/tools"
+			android:id="@+id/rcvTeamList"
+			android:name="activity.TeamSelectActivity"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			tools:context=".activity.TeamSelectActivity"
+			tools:listitem="@layout/fragment_team_view" />
+	</ScrollView>
 
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center_horizontal"
-		android:id="@+id/llPlayerSelectButtons"
+		android:id="@+id/llTeamSelectButtons"
 		android:orientation="horizontal">
 
 		<Button
 			style="@style/ButtonStyle.Submit"
-			android:id="@+id/btnSelPlayerCancel"
-			android:text="@string/cancel"/>
+			android:id="@+id/btnTeamSelectOK"
+			android:text="@string/ok"/>
 
 		<Button
 			style="@style/ButtonStyle.Submit"
-			android:id="@+id/btnSelPlayerOK"
-			android:text="@string/ok"/>
+			android:id="@+id/btnTeamSelectCancel"
+			android:text="@string/cancel"/>
 
 	</LinearLayout>
 
@@ -38,14 +40,14 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical"
-		android:id="@+id/llNoPlayers"
+		android:id="@+id/llNoTeams"
 		android:visibility="gone">
 
 		<TextView
 			style="@style/TextViewStyle.Big.Bold"
 			android:layout_gravity="center_horizontal"
-			android:id="@+id/tvNoPlayers"
-			android:text="@string/noPlayersFound"/>
+			android:id="@+id/tvNoTeams"
+			android:text="@string/noTeamsFound"/>
 
 		<Button
 			style="@style/ButtonStyle"

@@ -1,8 +1,7 @@
 package com.thenewcone.myscorecard.fragment;
 
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,12 +19,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
+import com.thenewcone.myscorecard.activity.PlayerSelectActivity;
+import com.thenewcone.myscorecard.activity.TeamSelectActivity;
 import com.thenewcone.myscorecard.intf.DialogItemClickListener;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.Player;
+import com.thenewcone.myscorecard.utils.CommonUtils;
 import com.thenewcone.myscorecard.utils.database.DatabaseHandler;
-import com.thenewcone.myscorecard.viewModel.PlayerViewModel;
-import com.thenewcone.myscorecard.viewModel.TeamViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +41,9 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 
     Button btnDelete;
 
+    private static final int REQ_CODE_TEAM_SELECT = 1;
+	private static final int REQ_CODE_DISP_ALL_PLAYERS = 2;
+
     public PlayerFragment() {
         setHasOptionsMenu(true);
         // Required empty public constructor
@@ -54,33 +57,6 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        if(getActivity() != null) {
-            PlayerViewModel playerViewModel = ViewModelProviders.of(getActivity()).get(PlayerViewModel.class);
-            playerViewModel.getSelectedPlayer().observe(this, new Observer<Player>() {
-                @Override
-                public void onChanged(@Nullable Player selPlayer) {
-                    if (selPlayer != null) {
-                        PlayerFragment.this.selPlayer = selPlayer;
-                        populateData();
-                    }
-                }
-            });
-
-			TeamViewModel teamViewModel = ViewModelProviders.of(getActivity()).get(TeamViewModel.class);
-			teamViewModel.getSelectedTeams().observe(this, new Observer<List<Team>>() {
-				@Override
-				public void onChanged(@Nullable List<Team> teamList) {
-					if(teamList != null) {
-						List<Integer> teamIDList = new ArrayList<>();
-						for(Team team : teamList)
-							teamIDList.add(team.getId());
-
-						selPlayer.setTeamsAssociatedTo(teamIDList);
-						populateData();
-					}
-				}
-			});
-        }
     }
 
     @Override
@@ -93,15 +69,9 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_getPlayerList:
-                if(getActivity() != null) {
-                    String fragmentTag = PlayerListFragment.class.getSimpleName();
-                    PlayerListFragment fragment = PlayerListFragment.newInstance();
-
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.frame_container, fragment, fragmentTag)
-							.addToBackStack(fragmentTag)
-                            .commit();
-                }
+            	Intent intent = new Intent(getContext(), PlayerSelectActivity.class);
+            	intent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, new DatabaseHandler(getContext()).getAllPlayers().toArray());
+            	startActivityForResult(intent, REQ_CODE_DISP_ALL_PLAYERS);
                 break;
         }
 
@@ -139,11 +109,12 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
     private void showBattingStyleDialog() {
         if(getFragmentManager() != null) {
             Player.BattingType[] battingTypes = Player.BattingType.values();
-            String[] battingStyles = new String[battingTypes.length];
+            String[] battingStyles = new String[battingTypes.length-1];
 
             int i=0;
             for(Player.BattingType type : battingTypes)
-                battingStyles[i++] = type.toString();
+            	if(type != Player.BattingType.NOT_SELECTED)
+                	battingStyles[i++] = type.toString();
 
             StringDialog dialog = StringDialog.newInstance("Select Batting Style", battingStyles, StringDialog.ARG_ENUM_TYPE_BAT_STYLE);
             dialog.setDialogItemClickListener(this);
@@ -154,11 +125,12 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
     private void showBowlingStyleDialog() {
         if(getFragmentManager() != null) {
             Player.BowlingType[] bowlingTypes = Player.BowlingType.values();
-            String[] bowlingStyles = new String[bowlingTypes.length];
+            String[] bowlingStyles = new String[bowlingTypes.length-1];
 
             int i=0;
             for(Player.BowlingType type : bowlingTypes)
-                bowlingStyles[i++] = type.toString();
+            	if(type != Player.BowlingType.NOT_SELECTED)
+                	bowlingStyles[i++] = type.toString();
 
             StringDialog dialog = StringDialog.newInstance("Select Bowling Style", bowlingStyles, StringDialog.ARG_ENUM_TYPE_BOWL_STYLE);
             dialog.setDialogItemClickListener(this);
@@ -169,7 +141,7 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
     private void populateData() {
     	if(selPlayer != null) {
 			etName.setText(selPlayer.getName());
-			etAge.setText(String.valueOf(selPlayer.getAge()));
+			etAge.setText(selPlayer.getAge() > 0 ? String.valueOf(selPlayer.getAge()) : "");
 			tvBatStyle.setText(selPlayer.getBattingStyle() == Player.BattingType.NOT_SELECTED
 					? getString(R.string.selectBatStyle)
 					: selPlayer.getBattingStyle().toString());
@@ -189,7 +161,7 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 			tvBowlStyle.setText(R.string.selectBowlStyle);
 			cbIsWK.setChecked(false);
 			btnDelete.setVisibility(View.INVISIBLE);
-			tvTeams.setText("");
+			tvTeams.setText(getString(R.string.none));
 		}
     }
 
@@ -236,31 +208,36 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
     }
 
 	private void showTeamsSelectDialog() {
-		if(getActivity() != null) {
-			String fragmentTag = TeamListFragment.class.getSimpleName();
-			TeamListFragment fragment = TeamListFragment.newInstance(true);
+		storePlayer();
 
-			getActivity().getSupportFragmentManager().beginTransaction()
-					.replace(R.id.frame_container, fragment, fragmentTag)
-					.addToBackStack(fragmentTag)
-					.commit();
-		}
+		Intent batsmanIntent = new Intent(getContext(), TeamSelectActivity.class);
+
+		batsmanIntent.putExtra(TeamSelectActivity.ARG_IS_MULTI, true);
+		if(selPlayer.getTeamsAssociatedTo() !=  null)
+			batsmanIntent.putIntegerArrayListExtra(TeamSelectActivity.ARG_EXISTING_TEAMS, (ArrayList<Integer>) selPlayer.getTeamsAssociatedTo());
+
+		startActivityForResult(batsmanIntent, REQ_CODE_TEAM_SELECT);
     }
 
     private void storePlayer() {
     	int playerID = selPlayer != null ? selPlayer.getID() : -1;
     	int age = (etAge.getText().toString().trim().length() > 0) ? Integer.parseInt(etAge.getText().toString()) : -1;
-    	Player.BattingType batStyle = tvBatStyle.getText().toString().equals(R.string.selectBatStyle)
+    	Player.BattingType batStyle = tvBatStyle.getText().toString().equals(getString(R.string.selectBatStyle))
 				? Player.BattingType.NOT_SELECTED
 				: Player.BattingType.valueOf(tvBatStyle.getText().toString());
-    	Player.BowlingType bowlStyle = tvBowlStyle.getText().toString().equals(R.string.selectBowlStyle)
+    	Player.BowlingType bowlStyle = tvBowlStyle.getText().toString().equals(getString(R.string.selectBowlStyle))
 				? Player.BowlingType.NOT_SELECTED
 				: Player.BowlingType.valueOf(tvBowlStyle.getText().toString());
 
+    	List<Integer> teamIDList = selPlayer != null ? selPlayer.getTeamsAssociatedTo() : null;
+
     	selPlayer = new Player(playerID, etName.getText().toString(), age, batStyle, bowlStyle, cbIsWK.isChecked());
+    	selPlayer.setTeamsAssociatedTo(teamIDList);
     }
 
 	private void savePlayer() {
+		storePlayer();
+
         DatabaseHandler dbHandler = new DatabaseHandler(getContext());
 
         StringBuilder errorSB = new StringBuilder();
@@ -305,4 +282,39 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
             Toast.makeText(getContext(), "Problem deleting Data", Toast.LENGTH_SHORT).show();
         }
     }
+
+	@Override
+	public void onDestroyView() {
+    	selPlayer = null;
+		super.onDestroyView();
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		switch (requestCode) {
+			case REQ_CODE_TEAM_SELECT:
+				if(resultCode == TeamSelectActivity.RESP_CODE_OK) {
+					Team[] teams = CommonUtils.objectArrToTeamArr((Object []) data.getSerializableExtra(TeamSelectActivity.ARG_RESP_TEAMS));
+
+					if(teams !=  null) {
+						List<Integer> teamIDList = new ArrayList<>();
+						for (Team team : teams)
+							teamIDList.add(team.getId());
+
+						selPlayer.setTeamsAssociatedTo(teamIDList);
+						populateData();
+					}
+				}
+				break;
+
+			case REQ_CODE_DISP_ALL_PLAYERS:
+				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
+					selPlayer = (Player) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYER);
+					populateData();
+				}
+				break;
+		}
+	}
 }

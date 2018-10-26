@@ -279,6 +279,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return playerList;
     }
 
+    public List<Player> getPlayers(List<Integer> playerIDList) {
+		List<Player> playerList = new ArrayList<>();
+
+		if(playerIDList != null && playerIDList.size() > 0) {
+			StringBuilder whereClauseSB = new StringBuilder(" WHERE " + TBL_PLAYER_ID + " IN (");
+
+			for (int playerID : playerIDList) {
+				whereClauseSB.append(String.format("%s, ", playerID));
+			}
+
+			whereClauseSB.delete(whereClauseSB.length() - 2, whereClauseSB.length());
+			whereClauseSB.append(")");
+
+			String selectQuery = "SELECT * FROM " + TBL_PLAYER + whereClauseSB.toString();
+
+			SQLiteDatabase db = this.getReadableDatabase();
+			Cursor cursor = db.rawQuery(selectQuery, null);
+
+			playerList = getPlayersFromCursor(cursor);
+
+			cursor.close();
+			db.close();
+		}
+
+		return playerList;
+	}
+
     public List<Player> getAllPlayers() {
         String selectQuery = "SELECT * FROM " + TBL_PLAYER;
 
@@ -390,14 +417,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public List<Team> getTeams(String teamNamePattern, int teamID) {
-        List<Team> teamList = new ArrayList<>();
-
         StringBuilder whereClauseSB = new StringBuilder();
         if(teamID > 0) {
-            whereClauseSB.append(TBL_TEAM_ID + " = " + teamID);
+            whereClauseSB.append(String.format("%s = %s", TBL_TEAM_ID, teamID));
         } else if(teamNamePattern != null) {
             whereClauseSB.append(whereClauseSB.toString().length() == 0 ? " WHERE " : " AND ");
-            whereClauseSB.append(TBL_TEAM_NAME + " LIKE '%" + teamNamePattern + "%'");
+            whereClauseSB.append(TBL_TEAM_NAME);
+            whereClauseSB.append(" LIKE '%");
+            whereClauseSB.append(teamNamePattern);
+            whereClauseSB.append("%'");
         }
 
         String selectQuery = "SELECT * FROM " + TBL_TEAM + (whereClauseSB.toString().length() > 0 ? whereClauseSB.toString() : "");
@@ -406,25 +434,80 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        if(cursor.moveToFirst()) {
-            do {
-                int id = cursor.getInt(cursor.getColumnIndex(TBL_TEAM_ID));
-                String name = cursor.getString(cursor.getColumnIndex(TBL_TEAM_NAME));
-                String shortName = cursor.getString(cursor.getColumnIndex(TBL_TEAM_SHORT_NAME));
+		List<Team> teamList = getTeamsFromCursor(cursor);
 
-                teamList.add(new Team(id, name, shortName));
-            } while(cursor.moveToNext());
-        }
         cursor.close();
         db.close();
 
         return teamList;
     }
 
+    public List<Team> getTeams(List<Integer> teamIDList) {
+		List<Team> teamList = new ArrayList<>();
+
+		if(teamIDList != null && teamIDList.size() > 0) {
+			StringBuilder whereClauseSB = new StringBuilder(" WHERE " + TBL_TEAM_ID + " IN (");
+
+			for (int teamID : teamIDList) {
+				whereClauseSB.append(String.format("%s, ", teamID));
+			}
+
+			whereClauseSB.delete(whereClauseSB.length() - 2, whereClauseSB.length());
+			whereClauseSB.append(")");
+
+			String selectQuery = "SELECT * FROM " + TBL_TEAM + whereClauseSB.toString();
+
+			SQLiteDatabase db = this.getReadableDatabase();
+			Cursor cursor = db.rawQuery(selectQuery, null);
+
+			teamList = getTeamsFromCursor(cursor);
+
+			cursor.close();
+			db.close();
+		}
+
+		return teamList;
+	}
+
+	private List<Team> getTeamsFromCursor(Cursor cursor) {
+		List<Team> teamList = new ArrayList<>();
+    	if(cursor != null && cursor.moveToFirst()) {
+			do {
+				int id = cursor.getInt(cursor.getColumnIndex(TBL_TEAM_ID));
+				String name = cursor.getString(cursor.getColumnIndex(TBL_TEAM_NAME));
+				String shortName = cursor.getString(cursor.getColumnIndex(TBL_TEAM_SHORT_NAME));
+
+				teamList.add(new Team(id, name, shortName));
+			} while(cursor.moveToNext());
+		}
+
+		return teamList;
+	}
+
+	public List<Integer> getAssociatedPlayers(int teamID) {
+    	List<Integer> playerIDList = new ArrayList<>();
+
+    	String selectQuery = "SELECT * FROM " + TBL_TEAM_PLAYERS + " WHERE " + TBL_TEAM_PLAYERS_TEAM_ID + " = " + teamID;
+
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	Cursor cursor = db.rawQuery(selectQuery, null);
+
+    	if(cursor.moveToFirst()) {
+    		do {
+    			playerIDList.add(cursor.getInt(cursor.getColumnIndex(TBL_TEAM_PLAYERS_PLAYER_ID)));
+			} while (cursor.moveToNext());
+		}
+
+		cursor.close();
+    	db.close();
+
+    	return playerIDList;
+	}
+
     public void updateTeamList(@NonNull Team team, List<Integer> newPlayers, List<Integer> deletedPlayers) {
-    	if((newPlayers != null && newPlayers.size() > 0)
-				|| (deletedPlayers != null && deletedPlayers.size() > 0)) {
-			SQLiteDatabase db = this.getWritableDatabase();
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		if(newPlayers != null && newPlayers.size() > 0) {
 
 			for (int playerID : newPlayers) {
 				ContentValues values = new ContentValues();
@@ -435,12 +518,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 				Player player = getPlayer(playerID);
 				List<Integer> teamsAssociatedTo = player.getTeamsAssociatedTo();
-				if (teamsAssociatedTo == null || !teamsAssociatedTo.contains(team.getId())) {
+				if(teamsAssociatedTo == null)
+					teamsAssociatedTo = new ArrayList<>();
+				if (!teamsAssociatedTo.contains(team.getId())) {
 					teamsAssociatedTo.add(team.getId());
 					player.setTeamsAssociatedTo(teamsAssociatedTo);
 					upsertPlayer(player);
 				}
 			}
+		}
+
+		if(deletedPlayers != null && deletedPlayers.size() > 0) {
 
 			for (int playerID : deletedPlayers) {
 				db.delete(TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_PLAYER_ID + " = ? AND " + TBL_TEAM_PLAYERS_TEAM_ID + " = ?",
@@ -448,7 +536,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 				Player player = getPlayer(playerID);
 				List<Integer> teamsAssociatedTo = player.getTeamsAssociatedTo();
-				if (teamsAssociatedTo == null && teamsAssociatedTo.contains(team.getId())) {
+				if (teamsAssociatedTo != null && teamsAssociatedTo.contains(team.getId())) {
 					for (int i = 0; i < teamsAssociatedTo.size(); i++) {
 						if (teamsAssociatedTo.get(i) == team.getId()) {
 							teamsAssociatedTo.remove(i);
@@ -465,13 +553,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void updateTeamList(@NonNull Player player, List<Integer> newTeams, List<Integer> deletedTeams) {
-    	if((newTeams != null && newTeams.size() > 0)
-				|| (deletedTeams != null && deletedTeams.size() > 0)) {
-			SQLiteDatabase db = this.getWritableDatabase();
-			List<Integer> teamsAssociatedTo = player.getTeamsAssociatedTo();
+		SQLiteDatabase db = this.getWritableDatabase();
+		List<Integer> teamsAssociatedTo = player.getTeamsAssociatedTo();
+
+		if(newTeams != null && newTeams.size() > 0) {
+
 
 			for (int teamID : newTeams) {
-				if (teamsAssociatedTo == null || !teamsAssociatedTo.contains(teamID)) {
+				if(teamsAssociatedTo == null)
+					teamsAssociatedTo = new ArrayList<>();
+				if (!teamsAssociatedTo.contains(teamID)) {
 					ContentValues values = new ContentValues();
 					values.put(TBL_TEAM_PLAYERS_TEAM_ID, teamID);
 					values.put(TBL_TEAM_PLAYERS_PLAYER_ID, player.getID());
@@ -481,12 +572,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 					teamsAssociatedTo.add(teamID);
 				}
 			}
+		}
 
+		if(deletedTeams != null && deletedTeams.size() > 0) {
 			for (int teamID : deletedTeams) {
 				db.delete(TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_PLAYER_ID + " = ? AND " + TBL_TEAM_PLAYERS_TEAM_ID + " = ?",
 						new String[]{String.valueOf(player.getID()), String.valueOf(teamID)});
 
-				if (teamsAssociatedTo == null && teamsAssociatedTo.contains(teamID)) {
+				if (teamsAssociatedTo != null && teamsAssociatedTo.contains(teamID)) {
 					for (int i = 0; i < teamsAssociatedTo.size(); i++) {
 						if (teamsAssociatedTo.get(i) == teamID) {
 							teamsAssociatedTo.remove(i);
@@ -520,12 +613,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         StringBuilder whereClauseSB = new StringBuilder();
         if(matchNamePattern != null) {
             whereClauseSB.append(whereClauseSB.toString().length() == 0 ? " WHERE " : " AND ");
-            whereClauseSB.append(TBL_MATCH_NAME + " LIKE '%" + matchNamePattern + "%'");
+            whereClauseSB.append(TBL_MATCH_NAME);
+            whereClauseSB.append(" LIKE '%");
+            whereClauseSB.append(matchNamePattern);
+            whereClauseSB.append("%'");
         }
         if(team != null) {
             whereClauseSB.append(whereClauseSB.toString().length() == 0 ? " WHERE " : " AND ");
-            whereClauseSB.append("(" + TBL_MATCH_TEAM1 + " = " + team);
-            whereClauseSB.append(" OR " + TBL_MATCH_TEAM2 + " = " + team + ")");
+            whereClauseSB.append(String.format("(%s = %s OR %s = %s)", TBL_MATCH_TEAM1, team, TBL_MATCH_TEAM2, team));
         }
 
         String selectQuery = "SELECT *, " +

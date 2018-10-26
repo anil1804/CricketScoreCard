@@ -1,7 +1,6 @@
 package com.thenewcone.myscorecard.fragment;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,26 +13,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
+import com.thenewcone.myscorecard.activity.PlayerSelectActivity;
+import com.thenewcone.myscorecard.activity.TeamSelectActivity;
 import com.thenewcone.myscorecard.intf.DialogItemClickListener;
 import com.thenewcone.myscorecard.match.Team;
+import com.thenewcone.myscorecard.player.Player;
+import com.thenewcone.myscorecard.utils.CommonUtils;
 import com.thenewcone.myscorecard.utils.database.DatabaseHandler;
-import com.thenewcone.myscorecard.viewModel.TeamViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TeamFragment extends Fragment
     implements View.OnClickListener, DialogItemClickListener {
 
+	private final int REQ_CODE_TEAM_SELECT = 1;
+	private final int REQ_CODE_UPDATE_PLAYERS = 2;
+
     Button btnSaveTeam, btnDeleteTeam, btnReset;
     EditText etTeamName, etShortName;
 
-    String[] teams;
     List<Team> teamList;
     Team selTeam;
+    List<Integer> associatedPlayers = new ArrayList<>();
 
     public TeamFragment() {
 		setHasOptionsMenu(true);
@@ -47,18 +52,6 @@ public class TeamFragment extends Fragment
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-		if(getActivity() != null) {
-			TeamViewModel model = ViewModelProviders.of(getActivity()).get(TeamViewModel.class);
-			model.getSelectedTeam().observe(this, new Observer<Team>() {
-				@Override
-				public void onChanged(@Nullable Team selTeam) {
-					if (selTeam != null) {
-						TeamFragment.this.selTeam = selTeam;
-						populateData();
-					}
-				}
-			});
-		}
 	}
 
 	@Override
@@ -71,21 +64,14 @@ public class TeamFragment extends Fragment
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_getTeamList:
-				if(getActivity() != null) {
-					getTeams();
-
-					String fragmentTag = TeamListFragment.class.getSimpleName();
-					TeamListFragment fragment = TeamListFragment.newInstance(false);
-
-					getActivity().getSupportFragmentManager().beginTransaction()
-							.replace(R.id.frame_container, fragment, fragmentTag)
-							.addToBackStack(fragmentTag)
-							.commit();
-				}
+				showTeamsSelectDialog();
 				break;
 
 			case R.id.menu_updatePlayers:
-				Toast.makeText(getContext(), "Show Player List", Toast.LENGTH_SHORT).show();
+				if(selTeam != null && selTeam.getId() > 0)
+					showPlayerListDialog();
+				else
+					Toast.makeText(getContext(), "Select/Create a team to update player list", Toast.LENGTH_SHORT).show();
 				break;
 		}
 
@@ -144,16 +130,6 @@ public class TeamFragment extends Fragment
 		}
 	}
 
-    public void getTeams() {
-        DatabaseHandler dbHandler = new DatabaseHandler(getContext());
-        teamList = dbHandler.getTeams(null, -1);
-
-        teams = new String[teamList.size()];
-        int i=0;
-        for(Team team : teamList)
-            teams[i] = team.getName();
-    }
-
     @Override
     public void onItemSelect(String enumType, String value, int position) {
         selTeam = teamList.get(position);
@@ -189,5 +165,81 @@ public class TeamFragment extends Fragment
 		} else {
 			Toast.makeText(getContext(), "Team deletion failed", Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	private void showTeamsSelectDialog() {
+		Intent batsmanIntent = new Intent(getContext(), TeamSelectActivity.class);
+
+		batsmanIntent.putExtra(TeamSelectActivity.ARG_IS_MULTI, false);
+
+		startActivityForResult(batsmanIntent, REQ_CODE_TEAM_SELECT);
+	}
+
+	private void showPlayerListDialog() {
+    	Intent updPlayersIntent = new Intent(getContext(), PlayerSelectActivity.class);
+    	DatabaseHandler dbh = new DatabaseHandler(getContext());
+		associatedPlayers = dbh.getAssociatedPlayers(selTeam.getId());
+    	updPlayersIntent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, dbh.getAllPlayers().toArray());
+    	updPlayersIntent.putExtra(PlayerSelectActivity.ARG_IS_MULTI_SELECT, true);
+    	updPlayersIntent.putIntegerArrayListExtra(PlayerSelectActivity.ARG_ASSOCIATED_PLAYERS,
+				(ArrayList<Integer>) associatedPlayers);
+
+    	startActivityForResult(updPlayersIntent, REQ_CODE_UPDATE_PLAYERS);
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		switch (requestCode) {
+			case REQ_CODE_TEAM_SELECT:
+				if(resultCode == TeamSelectActivity.RESP_CODE_OK) {
+					selTeam = (Team) data.getSerializableExtra(TeamSelectActivity.ARG_RESP_TEAM);
+					populateData();
+				}
+				break;
+
+			case REQ_CODE_UPDATE_PLAYERS:
+				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
+					Player[] selPlayers =
+							CommonUtils.objectArrToPlayerArr((Object[]) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYERS));
+
+					List<Integer> addedPlayers = getAddedPlayers(selPlayers, associatedPlayers);
+					List<Integer> removedPlayers = getRemovedPlayers(selPlayers, associatedPlayers);
+
+					new DatabaseHandler(getContext()).updateTeamList(selTeam, addedPlayers, removedPlayers);
+				}
+		}
+	}
+
+	private List<Integer> getAddedPlayers(Player[] selPlayers, List<Integer> pastPlayers) {
+    	List<Integer> newPlayers = new ArrayList<>();
+
+    	if(selPlayers != null) {
+			for (Player player : selPlayers) {
+				if (!pastPlayers.contains(player.getID())) {
+					newPlayers.add(player.getID());
+				}
+			}
+		}
+
+		return newPlayers;
+	}
+
+	private List<Integer> getRemovedPlayers(Player[] selPlayers, List<Integer> pastPlayers) {
+    	List<Integer> removedPlayers = new ArrayList<>();
+
+    	List<Integer> selPlayerIDs = new ArrayList<>();
+    	if(selPlayers != null) {
+			for (Player player : selPlayers)
+				selPlayerIDs.add(player.getID());
+		}
+
+		for(int pastPlayer : pastPlayers) {
+    		if(!selPlayerIDs.contains(pastPlayer))
+    			removedPlayers.add(pastPlayer);
+		}
+
+		return removedPlayers;
 	}
 }

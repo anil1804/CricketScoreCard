@@ -2,12 +2,13 @@ package com.thenewcone.myscorecard.match;
 
 import com.thenewcone.myscorecard.player.Player;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Team {
-    int id;
-    String name, shortName;
-    List<Player> matchPlayers;
+public class Team implements Serializable {
+    private int id;
+    private String name, shortName;
+    private List<Player> matchPlayers;
 
     public int getId() {
         return id;
