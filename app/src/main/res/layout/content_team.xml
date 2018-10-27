@@ -34,30 +34,32 @@
 
     </GridLayout>
 
-	<Button
-		style="@style/ButtonStyle"
-		android:layout_width="match_parent"
-		android:text="@string/save"
-		android:id="@+id/btnSaveTeam"/>
-
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
 		android:orientation="horizontal">
 
-		<Button
-			style="@style/ButtonStyle"
-			android:layout_width="0dp"
-			android:layout_weight="1"
-			android:id="@+id/btnResetData"
-			android:text="@string/reset"/>
+        <Button
+            android:id="@+id/btnSaveTeam"
+            style="@style/ButtonStyle.Medium"
+            android:drawableTop="@drawable/ic_save"
+            android:contentDescription="@string/save"
+            android:text="@string/save"/>
 
 		<Button
-			style="@style/ButtonStyle"
-			android:layout_width="0dp"
-			android:layout_weight="1"
-			android:text="@string/delete"
-			android:id="@+id/btnDeleteTeam"
+            android:id="@+id/btnResetData"
+            style="@style/ButtonStyle.Medium"
+            android:drawableTop="@drawable/ic_clear"
+            android:contentDescription="@string/clear"
+            android:text="@string/clear"/>
+
+		<Button
+            android:id="@+id/btnDeleteTeam"
+            style="@style/ButtonStyle.Medium"
+            android:drawableTop="@drawable/ic_delete"
+            android:contentDescription="@string/delete"
+            android:text="@string/delete"
 			android:visibility="gone"/>
 
 	</LinearLayout>

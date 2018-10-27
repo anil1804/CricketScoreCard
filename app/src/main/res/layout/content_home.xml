@@ -5,22 +5,77 @@
 	android:layout_height="match_parent"
 	tools:context=".activity.HomeActivity"
 	tools:showIn="@layout/app_bar_home"
-    android:gravity="center"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnNewMatch"
-        android:text="@string/newMatch"
-        style="@style/ButtonStyle"/>
+    <TextView
+        android:layout_marginTop="20dp"
+        style="@style/TextViewStyle.Bold.Medium"
+        android:text="@string/matchData"/>
 
-    <Button
-        android:id="@+id/btnManageTeam"
-        android:text="@string/manageTeam"
-        style="@style/ButtonStyle"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btnManagePlayer"
-        android:text="@string/managePlayer"
-        style="@style/ButtonStyle"/>
+        <Button
+            android:id="@+id/btnNewMatch"
+            style="@style/ButtonStyle.Medium"
+            android:drawableTop="@drawable/ic_add_screen"
+            android:contentDescription="@string/newMatch"
+            android:text="@string/newMatch"/>
+
+        <Button
+            android:id="@+id/btnLoadMatch"
+            style="@style/ButtonStyle.Medium"
+            android:drawableTop="@drawable/ic_download"
+            android:contentDescription="@string/loadMatch"
+            android:text="@string/loadMatch"/>
+
+    </LinearLayout>
+
+    <!-- Separator -->
+    <View style="@style/LineSeparator.Dark.Margin"/>
+
+    <TextView
+        style="@style/TextViewStyle.Bold.Medium"
+        android:text="@string/teamData"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnManageTeam"
+            android:drawableTop="@drawable/ic_manage"
+            android:contentDescription="@string/manageTeam"
+            android:text="@string/manageTeam"
+            style="@style/ImageButtonStyle"/>
+
+    </LinearLayout>
+
+    <!-- Separator -->
+    <View style="@style/LineSeparator.Dark.Margin"/>
+
+    <TextView
+        style="@style/TextViewStyle.Bold.Medium"
+        android:text="@string/playerData"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnManagePlayer"
+            android:drawableTop="@drawable/ic_manage"
+            android:contentDescription="@string/managePlayer"
+            android:text="@string/managePlayer"
+            style="@style/ImageButtonStyle"/>
+
+    </LinearLayout>
 
 </LinearLayout>

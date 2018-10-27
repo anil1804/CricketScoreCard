@@ -122,7 +122,7 @@
 	<string name="team2">Team-2</string>
 	<string name="selectTeam">Select Team</string>
 	<string name="addNewTeam">Add Team</string>
-	<string name="newMatch">Play Match</string>
+	<string name="newMatch">New</string>
 	<string name="startMatch">Start Match</string>
 	<string name="updateTeamPlayers">Update Players</string>
 	<string name="manageTeam">Manage Team</string>
@@ -141,4 +141,8 @@
 	<string name="numPlayers">Player Count</string>
 	<string name="teams">Teams</string>
 	<string name="none">None</string>
+    <string name="matchData">Match</string>
+    <string name="loadMatch">Load</string>
+    <string name="playerData">Player</string>
+    <string name="teamData">Team</string>
 </resources>

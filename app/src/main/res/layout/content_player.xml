@@ -60,6 +60,7 @@
             android:id="@+id/cbIsPlayerWK"
             android:checked="false"
             android:text="@string/isPlayerWK"
+            android:textAlignment="viewStart"
             android:layout_columnSpan="2"/>
 
         <TextView
@@ -74,30 +75,32 @@
 
     </GridLayout>
 
-	<Button
-		android:id="@+id/btnPlayerSave"
-		style="@style/ButtonStyle"
-		android:text="@string/save" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/btnPlayerSave"
+            style="@style/ButtonStyle.Medium"
+            android:drawableTop="@drawable/ic_save"
+            android:contentDescription="@string/save"
+            android:text="@string/save"/>
+
+        <Button
             android:id="@+id/btnPlayerDelete"
-			android:layout_width="0dp"
-			android:layout_weight="1"
-            style="@style/ButtonStyle"
+            style="@style/ButtonStyle.Medium"
+            android:drawableTop="@drawable/ic_delete"
+            android:contentDescription="@string/delete"
             android:text="@string/delete"
 			android:visibility="gone"/>
 
         <Button
             android:id="@+id/btnPlayerClear"
-			android:layout_width="0dp"
-			android:layout_weight="1"
-            style="@style/ButtonStyle"
-            android:text="@string/clear" />
+            style="@style/ButtonStyle.Medium"
+            android:drawableTop="@drawable/ic_clear"
+            android:contentDescription="@string/clear"/>
 
     </LinearLayout>
 

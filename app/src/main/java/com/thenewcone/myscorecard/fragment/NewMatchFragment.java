@@ -27,14 +27,12 @@ import java.util.List;
 public class NewMatchFragment extends Fragment
     implements View.OnClickListener, DialogItemClickListener {
 
-    EditText etMatchName, etMaxOvers, etMaxWickes, etMaxPerBowler, etNumPlayers;
+    EditText etMatchName, etMaxOvers, etMaxWickets, etMaxPerBowler, etNumPlayers;
     TextView tvTeam1, tvTeam2;
     Button btnCancel, btnValidate, btnStartMatch, btnManageTeam;
     List<Team> teams;
     Team team1, team2;
 
-    private final int REQ_CODE_TEAM1_SELECT = 1;
-    private final int REQ_CODE_TEAM2_SELECT = 2;
     private final String ENUM_TYPE_TEAM1 = "Team1Select";
     private final String ENUM_TYPE_TEAM2 = "Team2Select";
 
@@ -56,11 +54,11 @@ public class NewMatchFragment extends Fragment
 
         etMatchName = theView.findViewById(R.id.etMatchName);
         etMaxOvers = theView.findViewById(R.id.etMaxOvers);
-        etMaxWickes = theView.findViewById(R.id.etMaxWickets);
+        etMaxWickets = theView.findViewById(R.id.etMaxWickets);
         etMaxPerBowler = theView.findViewById(R.id.etMaxPerBowler);
 		etNumPlayers = theView.findViewById(R.id.etNumPlayers);
 
-		etMaxWickes.addTextChangedListener(new TextWatcher() {
+		etMaxWickets.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 			}
@@ -136,7 +134,7 @@ public class NewMatchFragment extends Fragment
             tvInsufficientTeams.setText(insufficientTeamsText);
         } else {
 			maxOvers = Integer.parseInt(etMaxOvers.getText().toString());
-			maxWickets = Integer.parseInt(etMaxWickes.getText().toString());
+			maxWickets = Integer.parseInt(etMaxWickets.getText().toString());
 			updateNumPlayers();
         	updateMaxPerBowler();
 		}
@@ -164,11 +162,11 @@ public class NewMatchFragment extends Fragment
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tvTeam1:
-                displayTeamSelect(REQ_CODE_TEAM1_SELECT, ENUM_TYPE_TEAM1);
+                displayTeamSelect(ENUM_TYPE_TEAM1);
                 break;
 
             case R.id.tvTeam2:
-                displayTeamSelect(REQ_CODE_TEAM2_SELECT, ENUM_TYPE_TEAM2);
+                displayTeamSelect(ENUM_TYPE_TEAM2);
                 break;
 
             case R.id.btnValidate:
@@ -200,9 +198,10 @@ public class NewMatchFragment extends Fragment
 
 	private void validateInput() {
     	maxOvers = Integer.parseInt(etMaxOvers.getText().toString());
-    	maxWickets = Integer.parseInt(etMaxWickes.getText().toString());
+    	maxWickets = Integer.parseInt(etMaxWickets.getText().toString());
     	maxPerBowler = Integer.parseInt(etMaxPerBowler.getText().toString());
     	numPlayers = Integer.parseInt(etNumPlayers.getText().toString());
+		String deficientTeam = getDeficientTeam(numPlayers);
 
 		if(team1 == null || team2 == null) {
 			Toast.makeText(getContext(), "Both teams need to be selected to continue", Toast.LENGTH_LONG).show();
@@ -214,8 +213,12 @@ public class NewMatchFragment extends Fragment
 			Toast.makeText(getContext(), "Players, Overs, Wickets cannot be zero", Toast.LENGTH_LONG).show();
 		} else if(maxWickets >= numPlayers) {
 			Toast.makeText(getContext(), "Number of Players has to be greater than Maximum Wickets", Toast.LENGTH_LONG).show();
+		} else if(maxPerBowler > maxOvers) {
+			Toast.makeText(getContext(), "Max overs per bowler cannot be more than max overs", Toast.LENGTH_LONG).show();
 		} else if(maxPerBowler < ((maxOvers % numPlayers == 0) ? maxOvers/numPlayers : (maxOvers/numPlayers + 1))) {
 			Toast.makeText(getContext(), "Not enough Players/Max Overs per Bowler to complete full quota of Overs", Toast.LENGTH_LONG).show();
+		} else if(deficientTeam != null) {
+			Toast.makeText(getContext(), String.format("Not enough players in %s", (deficientTeam.equals("TEAM1") ? team1.getShortName() : team2.getShortName())), Toast.LENGTH_LONG).show();
 		} else {
 			setLayoutForMatchStart();
 		}
@@ -234,7 +237,7 @@ public class NewMatchFragment extends Fragment
         teams = dbHandler.getTeams(null, -1);
     }
 
-    private void displayTeamSelect(int reqCode, String teamSelect) {
+    private void displayTeamSelect(String teamSelect) {
         if(getFragmentManager() != null) {
             String[] teamDetails = new String[teams.size()];
 
@@ -274,5 +277,16 @@ public class NewMatchFragment extends Fragment
 				etMatchName.requestFocus();
 			}
 		}
+	}
+
+	private String getDeficientTeam(int numPlayers) {
+    	DatabaseHandler dbh = new DatabaseHandler(getContext());
+
+    	if(dbh.getAssociatedPlayers(team1.getId()).size() < numPlayers)
+    		return "TEAM1";
+    	else if(dbh.getAssociatedPlayers(team2.getId()).size() < numPlayers)
+    		return "TEAM2";
+    	else
+    		return null;
 	}
 }

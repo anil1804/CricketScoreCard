@@ -123,7 +123,7 @@ public class WicketDialogActivity extends FragmentActivity
 		RadioButton rbWktLBW = findViewById(R.id.rbWktLBW);
 		RadioButton rbWktStump = findViewById(R.id.rbWktStump);
 		RadioButton rbWktRunOut = findViewById(R.id.rbWktRunOut);
-		RadioButton rbWktHitwicket = findViewById(R.id.rbWktHitwicket);
+		RadioButton rbWktHitwicket = findViewById(R.id.rbWktHitWicket);
 		RadioButton rbWktRetiredHurt = findViewById(R.id.rbWktRetiredHurt);
 		RadioButton rbWktObstruct = findViewById(R.id.rbWktObstruct);
 		RadioButton rbWktHitTwice = findViewById(R.id.rbWktHitTwice);
@@ -142,7 +142,7 @@ public class WicketDialogActivity extends FragmentActivity
 
 		cbIsExtra = findViewById(R.id.cbIsExtra);
 		RadioButton rbROWide = findViewById(R.id.rbROWide);
-		RadioButton rbRONB = findViewById(R.id.rbRONB);
+		RadioButton rbRONB = findViewById(R.id.rbRONoBall);
 		RadioButton rbROBye = findViewById(R.id.rbROBye);
 		RadioButton rbROLegBye = findViewById(R.id.rbROLegBye);
 
@@ -152,9 +152,9 @@ public class WicketDialogActivity extends FragmentActivity
 		rbROBye.setOnClickListener(this);
 		rbROLegBye.setOnClickListener(this);
 
-		RadioButton rbRONBNone = findViewById(R.id.rbRONBNone);
-		RadioButton rbRONBBye = findViewById(R.id.rbRONBBye);
-		RadioButton rbRONBLB = findViewById(R.id.rbRONBLB);
+		RadioButton rbRONBNone = findViewById(R.id.rbRONoBallNone);
+		RadioButton rbRONBBye = findViewById(R.id.rbRONoBallBye);
+		RadioButton rbRONBLB = findViewById(R.id.rbRONoBallLegBye);
 
 		rbRONBNone.setOnClickListener(this);
 		rbRONBBye.setOnClickListener(this);
@@ -167,7 +167,7 @@ public class WicketDialogActivity extends FragmentActivity
 
 		tvEffectedBy = findViewById(R.id.tvEffectedBy);
 
-		RadioGroup rgRONB = findViewById(R.id.rgRONB);
+		RadioGroup rgRONB = findViewById(R.id.rgRONoBall);
 
 		switch (view.getId()) {
 			/*Capturing the details of the Batsman who it out*/
@@ -232,7 +232,7 @@ public class WicketDialogActivity extends FragmentActivity
 				outBatsman = facingBatsman;
 				break;
 
-			case R.id.rbWktHitwicket:
+			case R.id.rbWktHitWicket:
 				clearOtherCheckedRadioButtons(glWicket, view.getId());
 				setViewVisibility(View.GONE, View.GONE, View.GONE);
 
@@ -299,23 +299,23 @@ public class WicketDialogActivity extends FragmentActivity
 				rgRONB.setVisibility(View.GONE);
 				break;
 
-			case R.id.rbRONB:
+			case R.id.rbRONoBall:
                 extraData = new Extra(Extra.ExtraType.NO_BALL, sbRORuns.getProgress(), Extra.ExtraType.NONE);
 				adjustROExtraRuns(view);
 				rgRONB.setVisibility(View.VISIBLE);
 				break;
 
-			case R.id.rbRONBNone:
+			case R.id.rbRONoBallNone:
                 extraData = new Extra(Extra.ExtraType.NO_BALL, sbRORuns.getProgress(), Extra.ExtraType.NONE);
                 adjustROExtraRuns(view);
                 break;
 
-			case R.id.rbRONBBye:
+			case R.id.rbRONoBallBye:
                 extraData = new Extra(Extra.ExtraType.NO_BALL, sbRORuns.getProgress(), Extra.ExtraType.BYE);
                 adjustROExtraRuns(view);
                 break;
 
-			case R.id.rbRONBLB:
+			case R.id.rbRONoBallLegBye:
                 extraData = new Extra(Extra.ExtraType.NO_BALL, sbRORuns.getProgress(), Extra.ExtraType.LEG_BYE);
                 adjustROExtraRuns(view);
                 break;
@@ -331,17 +331,17 @@ public class WicketDialogActivity extends FragmentActivity
 				break;
 
 			case R.id.rbROWide:
-			case R.id.rbRONB:
+			case R.id.rbRONoBall:
 				clearOtherCheckedRadioButtons(glRORunsExtra, view.getId());
 				minExtraRuns = 0;
 				break;
 
-			case R.id.rbRONBNone:
+			case R.id.rbRONoBallNone:
 				minExtraRuns = 1;
 				break;
 
-			case R.id.rbRONBBye:
-			case R.id.rbRONBLB:
+			case R.id.rbRONoBallBye:
+			case R.id.rbRONoBallLegBye:
 				minExtraRuns = 1;
 				break;
 		}

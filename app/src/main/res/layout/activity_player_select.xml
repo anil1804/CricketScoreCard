@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:orientation="vertical">
 
-	<android.support.v7.widget.RecyclerView
-		android:id="@+id/rcvPlayerList"
-		xmlns:tools="http://schemas.android.com/tools"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		tools:context=".activity.PlayerSelectActivity">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-	</android.support.v7.widget.RecyclerView>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rcvPlayerList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".activity.PlayerSelectActivity"/>
 
+    </ScrollView>
 
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_gravity="center_horizontal"
+		android:layout_gravity="end"
 		android:id="@+id/llPlayerSelectButtons"
 		android:orientation="horizontal">
 
@@ -35,15 +38,16 @@
 	</LinearLayout>
 
 	<LinearLayout
-		android:layout_width="match_parent"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
 		android:id="@+id/llNoPlayers"
 		android:visibility="gone">
 
 		<TextView
 			style="@style/TextViewStyle.Big.Bold"
-			android:layout_gravity="center_horizontal"
 			android:id="@+id/tvNoPlayers"
 			android:text="@string/noPlayersFound"/>
 

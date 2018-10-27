@@ -547,9 +547,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 					}
 				}
 			}
-
-			db.close();
 		}
+		db.close();
     }
 
     public void updateTeamList(@NonNull Player player, List<Integer> newTeams, List<Integer> deletedTeams) {
@@ -589,8 +588,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				}
 			}
 
-			db.close();
 		}
+		db.close();
     }
 
     public int addNewMatch(Match match) {
@@ -605,6 +604,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if(getAllMatches(match.getName(), null).size() == 0)
             rowID = db.insert(TBL_MATCH, null, values);
+
+        db.close();
 
         return (int) rowID;
     }

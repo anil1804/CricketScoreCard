@@ -40,6 +40,7 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
     Player selPlayer;
 
     Button btnDelete;
+    List<Integer> associatedToTeams;
 
     private static final int REQ_CODE_TEAM_SELECT = 1;
 	private static final int REQ_CODE_DISP_ALL_PLAYERS = 2;
@@ -213,8 +214,10 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 		Intent batsmanIntent = new Intent(getContext(), TeamSelectActivity.class);
 
 		batsmanIntent.putExtra(TeamSelectActivity.ARG_IS_MULTI, true);
-		if(selPlayer.getTeamsAssociatedTo() !=  null)
-			batsmanIntent.putIntegerArrayListExtra(TeamSelectActivity.ARG_EXISTING_TEAMS, (ArrayList<Integer>) selPlayer.getTeamsAssociatedTo());
+		associatedToTeams = selPlayer.getTeamsAssociatedTo();
+		if(associatedToTeams !=  null) {
+			batsmanIntent.putIntegerArrayListExtra(TeamSelectActivity.ARG_EXISTING_TEAMS, (ArrayList<Integer>) associatedToTeams);
+		}
 
 		startActivityForResult(batsmanIntent, REQ_CODE_TEAM_SELECT);
     }
@@ -257,9 +260,9 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
             if (playerID == dbHandler.CODE_INS_PLAYER_DUP_RECORD) {
                 Toast.makeText(getContext(), "Player with same name exists.\nChange name or update/delete existing team.", Toast.LENGTH_LONG).show();
             } else {
-                selPlayer.setPlayerID(playerID);
-
                 Toast.makeText(getContext(), "Player Saved Successfully", Toast.LENGTH_SHORT).show();
+                selPlayer = null;
+                populateData();
             }
         } else {
             Toast.makeText(getContext(), errorSB.toString().trim(), Toast.LENGTH_LONG).show();
@@ -304,6 +307,10 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 							teamIDList.add(team.getId());
 
 						selPlayer.setTeamsAssociatedTo(teamIDList);
+
+						new DatabaseHandler(getContext()).updateTeamList(selPlayer,
+								getAddedTeams(teams, associatedToTeams), getRemovedTeams(teams, associatedToTeams));
+
 						populateData();
 					}
 				}
@@ -316,5 +323,40 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 				}
 				break;
 		}
+	}
+
+	private List<Integer> getAddedTeams(Team[] selTeams, List<Integer> pastTeams) {
+		List<Integer> newTeams = new ArrayList<>();
+		if(pastTeams == null)
+			pastTeams = new ArrayList<>();
+
+		if(selTeams != null) {
+			for (Team team : selTeams) {
+				if (!pastTeams.contains(team.getId())) {
+					newTeams.add(team.getId());
+				}
+			}
+		}
+
+		return newTeams;
+	}
+
+	private List<Integer> getRemovedTeams(Team[] selTeams, List<Integer> pastTeams) {
+		List<Integer> removedTeams = new ArrayList<>();
+		if(pastTeams == null)
+			pastTeams = new ArrayList<>();
+
+		List<Integer> selPlayerIDs = new ArrayList<>();
+		if(selTeams != null) {
+			for (Team teamT : selTeams)
+				selPlayerIDs.add(teamT.getId());
+		}
+
+		for(int pastPlayer : pastTeams) {
+			if(!selPlayerIDs.contains(pastPlayer))
+				removedTeams.add(pastPlayer);
+		}
+
+		return removedTeams;
 	}
 }

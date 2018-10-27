@@ -140,18 +140,18 @@ public class TeamFragment extends Fragment
 		String shortName = etShortName.getText().toString();
 		DatabaseHandler dbh = new DatabaseHandler(getContext());
 
-		Team tempTeam = new Team(teamName, shortName);
-		if(selTeam != null)
-			tempTeam.setId(selTeam.getId());
+		int teamID = selTeam != null ? selTeam.getId() : -1;
+		selTeam = new Team(teamName, shortName);
+		if(teamID > -1)
+			selTeam.setId(teamID);
 
-		int rowID = dbh.upsertTeam(tempTeam);
+		int rowID = dbh.upsertTeam(selTeam);
 
 		if(rowID == dbh.CODE_NEW_TEAM_DUP_RECORD) {
 			Toast.makeText(getContext(), "Team with same name already exists. Choose a different name.", Toast.LENGTH_SHORT).show();
 		} else {
 			Toast.makeText(getContext(), "Team created successfully.", Toast.LENGTH_SHORT).show();
-			tempTeam.setId(rowID);
-			selTeam = tempTeam;
+			selTeam = null;
 			populateData();
 		}
 	}
@@ -214,6 +214,8 @@ public class TeamFragment extends Fragment
 
 	private List<Integer> getAddedPlayers(Player[] selPlayers, List<Integer> pastPlayers) {
     	List<Integer> newPlayers = new ArrayList<>();
+		if(pastPlayers == null)
+			pastPlayers = new ArrayList<>();
 
     	if(selPlayers != null) {
 			for (Player player : selPlayers) {
@@ -228,6 +230,8 @@ public class TeamFragment extends Fragment
 
 	private List<Integer> getRemovedPlayers(Player[] selPlayers, List<Integer> pastPlayers) {
     	List<Integer> removedPlayers = new ArrayList<>();
+		if(pastPlayers == null)
+			pastPlayers = new ArrayList<>();
 
     	List<Integer> selPlayerIDs = new ArrayList<>();
     	if(selPlayers != null) {

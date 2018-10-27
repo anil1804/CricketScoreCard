@@ -44,7 +44,7 @@
 					android:text="@string/wicket_runOut"/>
 
 				<RadioButton
-					android:id="@+id/rbWktHitwicket"
+					android:id="@+id/rbWktHitWicket"
 					style="@style/RadioButtonStyle"
 					android:text="@string/wicket_hitWicket"/>
 
@@ -188,7 +188,7 @@
 							android:checked="true"/>
 
 						<RadioButton
-							android:id="@+id/rbRONB"
+							android:id="@+id/rbRONoBall"
 							style="@style/RadioButtonStyle"
 							android:text="@string/btnNoBallText" />
 
@@ -205,14 +205,14 @@
 					</GridLayout>
 
 					<RadioGroup
-						android:id="@+id/rgRONB"
+						android:id="@+id/rgRONoBall"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:orientation="vertical"
 						android:visibility="gone">
 
 						<RadioButton
-							android:id="@+id/rbRONBNone"
+							android:id="@+id/rbRONoBallNone"
 							style="@style/RadioButtonStyle"
 							android:padding="0dp"
 							android:layout_margin="0dp"
@@ -220,14 +220,14 @@
 							android:text="@string/onlyNoBall"/>
 
 						<RadioButton
-							android:id="@+id/rbRONBBye"
+							android:id="@+id/rbRONoBallBye"
 							android:padding="0dp"
 							android:layout_margin="0dp"
 							style="@style/RadioButtonStyle"
 							android:text="@string/noBallAndByes"/>
 
 						<RadioButton
-							android:id="@+id/rbRONBLB"
+							android:id="@+id/rbRONoBallLegBye"
 							android:padding="0dp"
 							android:layout_margin="0dp"
 							style="@style/RadioButtonStyle"
