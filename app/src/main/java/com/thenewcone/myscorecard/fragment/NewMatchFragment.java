@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.activity.PlayerSelectActivity;
+import com.thenewcone.myscorecard.comparator.TeamComparator;
 import com.thenewcone.myscorecard.intf.DialogItemClickListener;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.Player;
@@ -28,6 +29,7 @@ import com.thenewcone.myscorecard.utils.database.DatabaseHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -315,6 +317,7 @@ public class NewMatchFragment extends Fragment
     public void getTeams() {
         DatabaseHandler dbHandler = new DatabaseHandler(getContext());
         teams = dbHandler.getTeams(null, -1);
+		Collections.sort(teams, new TeamComparator(null));
     }
 
     private void displayTeamSelect(String teamSelect) {
@@ -337,12 +340,14 @@ public class NewMatchFragment extends Fragment
             case ENUM_TYPE_TEAM1:
                 team1 = teams.get(position);
                 tvTeam1.setText(value);
+                rbTossTeam1.setText(team1.getShortName());
                 setTeamName();
                 break;
 
             case ENUM_TYPE_TEAM2:
                 team2 = teams.get(position);
                 tvTeam2.setText(value);
+				rbTossTeam2.setText(team2.getShortName());
 				setTeamName();
                 break;
         }
@@ -378,8 +383,14 @@ public class NewMatchFragment extends Fragment
 			associatedPlayers.add(dispPlayerList.get(i).getID());
 
 			if(reqCode == REQ_CODE_PLAYER_SELECT_TEAM1) {
+				if(team1Players == null)
+					team1Players = new ArrayList<>();
+
 				team1Players.add(dispPlayerList.get(i));
 			}else if(reqCode == REQ_CODE_PLAYER_SELECT_TEAM2) {
+				if(team2Players == null)
+					team2Players = new ArrayList<>();
+
 				team2Players.add(dispPlayerList.get(i));
 			}
 		}

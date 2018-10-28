@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.activity.PlayerSelectActivity;
 import com.thenewcone.myscorecard.activity.TeamSelectActivity;
+import com.thenewcone.myscorecard.intf.ConfirmationDialogClickListener;
 import com.thenewcone.myscorecard.intf.DialogItemClickListener;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.Player;
@@ -33,7 +34,8 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlayerFragment extends Fragment implements DialogItemClickListener, View.OnClickListener {
+public class PlayerFragment extends Fragment
+		implements DialogItemClickListener, View.OnClickListener, ConfirmationDialogClickListener {
     TextView tvBatStyle, tvBowlStyle, tvTeams;
     EditText etName, etAge;
     CheckBox cbIsWK;
@@ -41,9 +43,12 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 
     Button btnDelete;
     List<Integer> associatedToTeams;
+    Team[] selTeams;
 
     private static final int REQ_CODE_TEAM_SELECT = 1;
 	private static final int REQ_CODE_DISPLAY_ALL_PLAYERS = 2;
+
+	private static final int CONFIRMATION_DELETE_PLAYER = 1;
 
     public PlayerFragment() {
         setHasOptionsMenu(true);
@@ -130,8 +135,10 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 
             int i=0;
             for(Player.BowlingType type : bowlingTypes)
-            	if(type != Player.BowlingType.NOT_SELECTED)
+            	if(type != Player.BowlingType.NOT_SELECTED && type != Player.BowlingType.NONE)
                 	bowlingStyles[i++] = type.toString();
+
+            bowlingStyles[i] = Player.BowlingType.NONE.toString();
 
             StringDialog dialog = StringDialog.newInstance("Select Bowling Style", bowlingStyles, StringDialog.ARG_ENUM_TYPE_BOWL_STYLE);
             dialog.setDialogItemClickListener(this);
@@ -150,7 +157,12 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 					? getString(R.string.selectBowlStyle)
 					: selPlayer.getBowlingStyle().toString());
 			cbIsWK.setChecked(selPlayer.isWicketKeeper());
-			tvTeams.setText(selPlayer.getTeamsAssociatedTo() != null ? String.valueOf(selPlayer.getTeamsAssociatedTo().size()) : "None");
+
+			int numPlayers = (selPlayer.getTeamsAssociatedTo() != null)
+					? selPlayer.getTeamsAssociatedTo().size()
+					: (associatedToTeams != null ? associatedToTeams.size() : -1);
+
+			tvTeams.setText(numPlayers > -1 ? String.valueOf(numPlayers) : "None");
 
 			if (selPlayer.getID() >= 0) {
 				btnDelete.setVisibility(View.VISIBLE);
@@ -163,6 +175,8 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 			cbIsWK.setChecked(false);
 			btnDelete.setVisibility(View.INVISIBLE);
 			tvTeams.setText(getString(R.string.none));
+
+			etName.requestFocus();
 		}
     }
 
@@ -199,7 +213,7 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
                 break;
 
             case R.id.btnPlayerDelete:
-                deletePlayer();
+                confirmDeletePlayer();
                 break;
 
 			case R.id.tvTeams:
@@ -255,13 +269,18 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
             errorSB.append("Select Bowling Style\n");
 
         if(errorSB.toString().trim().length() == 0) {
+        	boolean isNew = selPlayer.getID() < 0;
             int playerID = dbHandler.upsertPlayer(selPlayer);
 
             if (playerID == dbHandler.CODE_INS_PLAYER_DUP_RECORD) {
                 Toast.makeText(getContext(), "Player with same name exists.\nChange name or update/delete existing team.", Toast.LENGTH_LONG).show();
             } else {
+				selPlayer.setPlayerID(playerID);
+				new DatabaseHandler(getContext()).updateTeamList(selPlayer,
+						getAddedTeams(selTeams, associatedToTeams), getRemovedTeams(selTeams, associatedToTeams));
+
                 Toast.makeText(getContext(), "Player Saved Successfully", Toast.LENGTH_SHORT).show();
-                selPlayer = null;
+                selPlayer = isNew ? null : selPlayer;
                 populateData();
             }
         } else {
@@ -303,13 +322,12 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 
 					if(teams !=  null) {
 						List<Integer> teamIDList = new ArrayList<>();
+						selTeams = teams;
+
 						for (Team team : teams)
 							teamIDList.add(team.getId());
 
-						selPlayer.setTeamsAssociatedTo(teamIDList);
-
-						new DatabaseHandler(getContext()).updateTeamList(selPlayer,
-								getAddedTeams(teams, associatedToTeams), getRemovedTeams(teams, associatedToTeams));
+						associatedToTeams = teamIDList;
 
 						populateData();
 					}
@@ -358,5 +376,22 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 		}
 
 		return removedTeams;
+	}
+
+	private void confirmDeletePlayer() {
+    	if(getFragmentManager() != null) {
+			ConfirmationDialog dialog = ConfirmationDialog.newInstance(CONFIRMATION_DELETE_PLAYER, "Confirm Delete", "Are you sure you want to delete the player?");
+			dialog.setDialogConfirmationClickListener(this);
+			dialog.show(getFragmentManager(), "ConfirmPlayerDeleteDialog");
+		}
+	}
+
+	@Override
+	public void onConfirmationClick(int confirmationCode, boolean accepted) {
+		switch (confirmationCode) {
+			case CONFIRMATION_DELETE_PLAYER:
+				if(accepted)
+					deletePlayer();
+		}
 	}
 }

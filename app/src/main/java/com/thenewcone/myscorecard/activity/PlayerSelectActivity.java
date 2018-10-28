@@ -33,11 +33,6 @@ public class PlayerSelectActivity extends Activity
 	public static final int RESP_CODE_OK = 1;
 	public static final int RESP_CODE_CANCEL = -1;
 
-    @Override
-    public void onBackPressed() {
-        //
-    }
-
     List<Player> playerList = new ArrayList<>();
 	ArrayList<Integer> associatedPlayers;
 	boolean isMultiSelect = false;

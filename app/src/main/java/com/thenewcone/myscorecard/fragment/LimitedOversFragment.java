@@ -64,7 +64,7 @@ public class LimitedOversFragment extends Fragment
     TextView tvResult;
 
     int maxWickets;
-    boolean closeMatch = false;
+    boolean startInnings = true;
 
 	public LimitedOversFragment() {
 	}
@@ -91,6 +91,7 @@ public class LimitedOversFragment extends Fragment
 		theView = inflater.inflate(R.layout.fragment_limited_overs, container, false);
 
 		initialSetup();
+		updateScreenForBatsmanSelect(View.GONE, View.VISIBLE, View.GONE);
 
 		return theView;
 	}
@@ -247,12 +248,14 @@ public class LimitedOversFragment extends Fragment
             tvBowlEconomy = theView.findViewById(R.id.tvBowlEconomy);
         }
 
-		tvBowlName.setText(ccUtils.getBowler().getBowlerName());
-		tvBowlOvers.setText(ccUtils.getBowler().getOversBowled());
-		tvBowlMaidens.setText(String.valueOf(ccUtils.getBowler().getMaidens()));
-		tvBowlRuns.setText(String.valueOf(ccUtils.getBowler().getRunsGiven()));
-		tvBowlWickets.setText(String.valueOf(ccUtils.getBowler().getWickets()));
-		tvBowlEconomy.setText(CommonUtils.doubleToString(ccUtils.getBowler().getEconomy(), "#.##"));
+        if(ccUtils.getBowler() != null) {
+			tvBowlName.setText(ccUtils.getBowler().getBowlerName());
+			tvBowlOvers.setText(ccUtils.getBowler().getOversBowled());
+			tvBowlMaidens.setText(String.valueOf(ccUtils.getBowler().getMaidens()));
+			tvBowlRuns.setText(String.valueOf(ccUtils.getBowler().getRunsGiven()));
+			tvBowlWickets.setText(String.valueOf(ccUtils.getBowler().getWickets()));
+			tvBowlEconomy.setText(CommonUtils.doubleToString(ccUtils.getBowler().getEconomy(), "#.##"));
+		}
 
 		if(isInitial) {
 			tvResult = theView.findViewById(R.id.tvResult);
@@ -366,14 +369,7 @@ public class LimitedOversFragment extends Fragment
 				break;
 
             case R.id.btnSelBatsman:
-                SparseArray<BatsmanStats> batsmen = ccUtils.getCard().getBatsmen();
-                BatsmanStats[] batsmenPlayed = new BatsmanStats[batsmen.size()];
-
-                for(int i=0; i<batsmen.size(); i++) {
-                    batsmenPlayed[i] = batsmen.get(i+1);
-                }
-
-                displayBatsmanSelect(ccUtils.getCard().getBattingTeam(), batsmenPlayed, REQ_CODE_BATSMAN_DIALOG, batsmen.size());
+            	selectBatsman();
                 break;
 
             case R.id.btnSelBowler:
@@ -386,6 +382,17 @@ public class LimitedOversFragment extends Fragment
 						REQ_CODE_CURRENT_FACING_DIALOG, 0);
                 break;
 		}
+	}
+
+	private void selectBatsman() {
+		SparseArray<BatsmanStats> batsmen = ccUtils.getCard().getBatsmen();
+		BatsmanStats[] batsmenPlayed = new BatsmanStats[batsmen.size()];
+
+		for(int i=0; i<batsmen.size(); i++) {
+			batsmenPlayed[i] = batsmen.get(i+1);
+		}
+
+		displayBatsmanSelect(ccUtils.getCard().getBattingTeam(), batsmenPlayed, REQ_CODE_BATSMAN_DIALOG, batsmen.size());
 	}
 
 	private void displayExtrasDialog(Extra.ExtraType type) {
@@ -471,21 +478,33 @@ public class LimitedOversFragment extends Fragment
             case REQ_CODE_BATSMAN_DIALOG:
                 if(resultCode == BatsmanSelectActivity.RESP_CODE_OK) {
                     newBatsman = (BatsmanStats) data.getSerializableExtra(BatsmanSelectActivity.ARG_SEL_BATSMAN);
+
                     if(newBatsman != null) {
-                        switch (dismissalType) {
-                            case RUN_OUT:
-                            case RETIRED:
-                            case OBSTRUCTING_FIELD:
-                                updateScreenForBatsmanSelect(View.GONE, View.GONE, View.VISIBLE);
-                                break;
+						ccUtils.newBatsman(newBatsman);
 
-                            default:
-                                updateScreenForBatsmanSelect(View.VISIBLE, View.GONE, View.GONE);
-                                break;
-                        }
-                        dismissalType = null;
+                    	if(dismissalType != null) {
+							switch (dismissalType) {
+								case RUN_OUT:
+								case RETIRED:
+								case OBSTRUCTING_FIELD:
+									updateScreenForBatsmanSelect(View.GONE, View.GONE, View.VISIBLE);
+									break;
 
-                        ccUtils.newBatsman(newBatsman);
+								default:
+									updateScreenForBatsmanSelect(View.VISIBLE, View.GONE, View.GONE);
+									break;
+							}
+							dismissalType = null;
+						} else {
+                    		if(startInnings) {
+								if (ccUtils.getCurrentFacing() != null && ccUtils.getOtherBatsman() != null) {
+									updateScreenForBatsmanSelect(View.GONE, View.GONE, View.VISIBLE);
+								} else {
+									updateScreenForBatsmanSelect(View.GONE, View.VISIBLE, View.GONE);
+								}
+							}
+						}
+
                         updateCardDetails(false);
                     }
                 }
@@ -499,7 +518,12 @@ public class LimitedOversFragment extends Fragment
                         updateCardDetails(false);
                     }
 
-                    updateScreenForBatsmanSelect(View.VISIBLE, View.GONE, View.GONE);
+                    if(startInnings) {
+						updateScreenForBatsmanSelect(View.GONE, View.GONE, View.GONE);
+						updateScreenForBowlerSelect(View.GONE, View.VISIBLE);
+					} else {
+						updateScreenForBatsmanSelect(View.VISIBLE, View.GONE, View.GONE);
+					}
                 }
                 break;
 
@@ -512,6 +536,7 @@ public class LimitedOversFragment extends Fragment
                     }
 
                     updateScreenForBowlerSelect(View.VISIBLE, View.GONE);
+                    startInnings = false;
                 }
                 break;
 
@@ -578,10 +603,13 @@ public class LimitedOversFragment extends Fragment
         theView.findViewById(R.id.llScoring).setVisibility(View.GONE);
         theView.findViewById(R.id.btnStartNextInnings).setVisibility(View.VISIBLE);
 
-        if(ccUtils.getCard().getInnings() == 1)
-            ccUtils.setNewInnings();
-        else
-            showResult();
+        if(ccUtils.getCard().getInnings() == 1) {
+			ccUtils.setNewInnings();
+			startInnings = true;
+		}
+        else {
+			showResult();
+		}
     }
 
     private void showResult() {
@@ -607,7 +635,6 @@ public class LimitedOversFragment extends Fragment
     }
 
     private void confirmSaveMatch() {
-		closeMatch = true;
 
 	}
 

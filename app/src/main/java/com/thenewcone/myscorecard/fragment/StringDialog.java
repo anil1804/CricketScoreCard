@@ -58,7 +58,6 @@ public class StringDialog extends DialogFragment{
             this.enumType = args.getString(ARG_ENUM_TYPE);
 
             List<String> valueList = Arrays.asList(values);
-            Collections.sort(valueList);
             this.values = (String []) valueList.toArray();
         }
     }

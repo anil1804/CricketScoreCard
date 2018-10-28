@@ -55,11 +55,11 @@ public class BatsmanSelectActivity extends Activity
         findViewById(R.id.btnSelPlayerCancel).setOnClickListener(this);
 
         Intent intent = getIntent();
-        int defaultSelectIx = -1;
+        int defaultSelectIx = 0;
         if(intent != null) {
             players = CommonUtils.objectArrToPlayerArr((Object[]) intent.getSerializableExtra(ARG_PLAYER_LIST));
             batsmen = CommonUtils.objectArrToBatsmanArr((Object[]) intent.getSerializableExtra(ARG_BATSMAN_LIST));
-            defaultSelectIx = intent.getIntExtra(ARG_DEFAULT_SEL_INDEX, -1);
+            defaultSelectIx = intent.getIntExtra(ARG_DEFAULT_SEL_INDEX, 0);
 
             dispBatsmen = getDisplayBatsmanList(players, batsmen);
         }
@@ -82,9 +82,9 @@ public class BatsmanSelectActivity extends Activity
     }
 
     private List<BatsmanStats> getDisplayBatsmanList(Player[] players, BatsmanStats[] batsmenPlayed) {
-        List<BatsmanStats> dispBatsmen = new ArrayList<>();
+        List<BatsmanStats> dispBatsmen = new ArrayList<>(Arrays.asList(batsmenPlayed));
 
-        dispBatsmen.addAll(Arrays.asList(batsmenPlayed));
+        //dispBatsmen.addAll(Arrays.asList(batsmenPlayed));
 
         List<String> playedBatsmen;
         if(players != null && players.length > 0) {

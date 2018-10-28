@@ -378,9 +378,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public boolean deletePlayer(int playerID) {
         SQLiteDatabase db = this.getWritableDatabase();
         int rowsDeleted = db.delete(TBL_PLAYER, TBL_PLAYER_ID + "=?", new String[]{String.valueOf(playerID)});
+        boolean success = rowsDeleted > 0;
+
+        db.delete(TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_PLAYER_ID + " = ?", new String[]{String.valueOf(playerID)});
+
         db.close();
 
-        return (rowsDeleted > 0);
+        return success;
     }
 
     public int upsertTeam(Team team) {
@@ -412,9 +416,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         int rowsDeleted = db.delete(TBL_TEAM, TBL_TEAM_ID + "= ?", new String[] {String.valueOf(teamID)});
+        boolean success = rowsDeleted > 0;
+
+        db.delete(TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_TEAM_ID + "= ?", new String[] {String.valueOf(teamID)});
         db.close();
 
-        return (rowsDeleted > 0);
+        return success;
     }
 
     public List<Team> getTeams(String teamNamePattern, int teamID) {

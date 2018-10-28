@@ -337,10 +337,6 @@ public class CricketCardUtils {
 		}
 		card.setBowlingTeam(bowlTeam);
 
-        newBatsman(new BatsmanStats(batTeam.get(0), 1));
-        newBatsman(new BatsmanStats(batTeam.get(1), 2));
-        setBowler(new BowlerStats(bowlTeam.get(bowlTeam.size() - 1)));
-
     }
 
     public void setNewInnings() {

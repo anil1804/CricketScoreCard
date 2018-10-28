@@ -125,6 +125,7 @@ public class TeamFragment extends Fragment
 		} else {
 			etTeamName.setText("");
 			etShortName.setText("");
+			etTeamName.requestFocus();
 
 			btnDeleteTeam.setVisibility(View.GONE);
 		}
@@ -145,13 +146,14 @@ public class TeamFragment extends Fragment
 		if(teamID > -1)
 			selTeam.setId(teamID);
 
+		boolean isNew = teamID < 0;
 		int rowID = dbh.upsertTeam(selTeam);
 
 		if(rowID == dbh.CODE_NEW_TEAM_DUP_RECORD) {
 			Toast.makeText(getContext(), "Team with same name already exists. Choose a different name.", Toast.LENGTH_SHORT).show();
 		} else {
 			Toast.makeText(getContext(), "Team created successfully.", Toast.LENGTH_SHORT).show();
-			selTeam = null;
+			selTeam = isNew ? null : selTeam;
 			populateData();
 		}
 	}
