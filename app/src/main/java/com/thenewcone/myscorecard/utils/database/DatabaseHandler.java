@@ -155,6 +155,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     int suffix = getSavedMatches(SAVE_MANUAL, saveName).size();
                     saveName = (suffix > 0) ? saveName + "-" + suffix : saveName;
                     break;
+
                 case 1:
                     SparseArray<String> savedMatches = getSavedMatches(matchName);
                     if(savedMatches != null && savedMatches.size() > 0) {
@@ -504,10 +505,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	return playerIDList;
 	}
 
+	public List<Player> getTeamPlayers(int teamID) {
+    	String selectQuery = String.format("SELECT * FROM %s WHERE %s IN (SELECT %s FROM %s WHERE %s = %s)",
+								TBL_PLAYER, TBL_PLAYER_ID, TBL_TEAM_PLAYERS_PLAYER_ID,
+								TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_TEAM_ID, teamID);
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		List<Player> playerList = getPlayersFromCursor(cursor);
+
+		cursor.close();
+		db.close();
+
+		return playerList;
+	}
+
     public void updateTeamList(@NonNull Team team, List<Integer> newPlayers, List<Integer> deletedPlayers) {
-		SQLiteDatabase db = this.getWritableDatabase();
 
 		if(newPlayers != null && newPlayers.size() > 0) {
+			SQLiteDatabase db = this.getWritableDatabase();
 
 			for (int playerID : newPlayers) {
 				ContentValues values = new ContentValues();
@@ -526,9 +543,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 					upsertPlayer(player);
 				}
 			}
+			db.close();
 		}
 
 		if(deletedPlayers != null && deletedPlayers.size() > 0) {
+			SQLiteDatabase db = this.getWritableDatabase();
 
 			for (int playerID : deletedPlayers) {
 				db.delete(TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_PLAYER_ID + " = ? AND " + TBL_TEAM_PLAYERS_TEAM_ID + " = ?",
@@ -547,17 +566,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 					}
 				}
 			}
+			db.close();
 		}
-		db.close();
     }
 
     public void updateTeamList(@NonNull Player player, List<Integer> newTeams, List<Integer> deletedTeams) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		List<Integer> teamsAssociatedTo = player.getTeamsAssociatedTo();
+		List<Integer> teamsAssociatedTo = getPlayer(player.getID()).getTeamsAssociatedTo();
 
 		if(newTeams != null && newTeams.size() > 0) {
-
-
+			SQLiteDatabase db = this.getWritableDatabase();
 			for (int teamID : newTeams) {
 				if(teamsAssociatedTo == null)
 					teamsAssociatedTo = new ArrayList<>();
@@ -571,9 +588,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 					teamsAssociatedTo.add(teamID);
 				}
 			}
+			db.close();
 		}
 
 		if(deletedTeams != null && deletedTeams.size() > 0) {
+			SQLiteDatabase db = this.getWritableDatabase();
 			for (int teamID : deletedTeams) {
 				db.delete(TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_PLAYER_ID + " = ? AND " + TBL_TEAM_PLAYERS_TEAM_ID + " = ?",
 						new String[]{String.valueOf(player.getID()), String.valueOf(teamID)});
@@ -587,9 +606,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 					}
 				}
 			}
-
+			db.close();
 		}
-		db.close();
     }
 
     public int addNewMatch(Match match) {

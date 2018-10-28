@@ -43,7 +43,7 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
     List<Integer> associatedToTeams;
 
     private static final int REQ_CODE_TEAM_SELECT = 1;
-	private static final int REQ_CODE_DISP_ALL_PLAYERS = 2;
+	private static final int REQ_CODE_DISPLAY_ALL_PLAYERS = 2;
 
     public PlayerFragment() {
         setHasOptionsMenu(true);
@@ -72,7 +72,7 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
             case R.id.menu_getPlayerList:
             	Intent intent = new Intent(getContext(), PlayerSelectActivity.class);
             	intent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, new DatabaseHandler(getContext()).getAllPlayers().toArray());
-            	startActivityForResult(intent, REQ_CODE_DISP_ALL_PLAYERS);
+            	startActivityForResult(intent, REQ_CODE_DISPLAY_ALL_PLAYERS);
                 break;
         }
 
@@ -316,7 +316,7 @@ public class PlayerFragment extends Fragment implements DialogItemClickListener,
 				}
 				break;
 
-			case REQ_CODE_DISP_ALL_PLAYERS:
+			case REQ_CODE_DISPLAY_ALL_PLAYERS:
 				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
 					selPlayer = (Player) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYER);
 					populateData();

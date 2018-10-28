@@ -109,7 +109,7 @@
 	<string name="isPlayerWK">is Wicket Keeper?</string>
 	<string name="save">Save</string>
 	<string name="delete">Delete</string>
-	<string name="managePlayer">Manage Player</string>
+	<string name="managePlayer">Manage</string>
 	<string name="reset">Reset</string>
 	<string name="selectBatStyle">Click to Select Batting Style</string>
 	<string name="selectBowlStyle">Click to Select Bowling Style</string>
@@ -125,7 +125,7 @@
 	<string name="newMatch">New</string>
 	<string name="startMatch">Start Match</string>
 	<string name="updateTeamPlayers">Update Players</string>
-	<string name="manageTeam">Manage Team</string>
+	<string name="manageTeam">Manage</string>
 	<string name="teamName">Team Name</string>
 	<string name="teamShortName">Short Name</string>
 	<string name="noTeamsFound">No Teams Found</string>
@@ -133,7 +133,7 @@
 	<string name="updatePlayers">Update Players</string>
 	<string name="goBack">Back</string>
 	<string name="validate">Validate</string>
-	<string name="maxOvers">Maximum Overs</string>
+	<string name="maxOvers">Max Overs</string>
 	<string name="maxWickets">Max Wickets</string>
 	<string name="maxOversPerBowler">Max per Bowler</string>
 	<string name="maxOversValue">50</string>
@@ -145,4 +145,10 @@
     <string name="loadMatch">Load</string>
     <string name="playerData">Player</string>
     <string name="teamData">Team</string>
+    <string name="runsInBalls">Require %1$d runs in %2$d balls</string>
+    <string name="tvTossWonBy">Toss Won By</string>
+    <string name="choose">Choose</string>
+    <string name="batting">Bat</string>
+    <string name="bowling">Bowl</string>
+    <string name="yes">Yes</string>
 </resources>

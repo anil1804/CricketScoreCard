@@ -128,10 +128,6 @@ public class CricketCard {
 		return batsmen;
 	}
 
-	void setBattingTeam (List<Player> battingTeam) {
-	    this.battingTeam = battingTeam;
-    }
-
 	void appendToBatsmen(BatsmanStats batsman) {
 		this.batsmen.append(batsman.getPosition(), batsman);
 	}
@@ -145,13 +141,9 @@ public class CricketCard {
         return battingTeam;
     }
 
-    public void addToBattingTeam(Player player) {
-        if(battingTeam == null) {
-            battingTeam = new ArrayList<>();
-        }
-
-        battingTeam.add(player);
-    }
+	void setBattingTeam (List<Player> battingTeam) {
+		this.battingTeam = battingTeam;
+	}
 
     public List<Player> getBowlingTeam() {
         return bowlingTeam;
@@ -161,15 +153,7 @@ public class CricketCard {
 	    this.bowlingTeam = bowlingTeam;
     }
 
-    public void addToBowlingTeam(Player player) {
-        if(bowlingTeam == null)
-            bowlingTeam = new ArrayList<>();
-
-        bowlingTeam.add(player);
-    }
-
-
-    public int getFuturePenalty() {
+    int getFuturePenalty() {
 		return futurePenalty;
 	}
 
@@ -220,11 +204,13 @@ public class CricketCard {
 	}
 
 	void inningsCheck() {
-		if(totalOversBowled.equals(maxOvers) || wicketsFallen == maxWickets) {
-			inningsComplete = true;
-			if(innings == 1) {
-				innings++;
-				target = score;
+		if(innings == 1) {
+			if (totalOversBowled.equals(maxOvers) || wicketsFallen == maxWickets) {
+				inningsComplete = true;
+			}
+		} else if(innings == 2) {
+			if (totalOversBowled.equals(maxOvers) || wicketsFallen == maxWickets || score >= target) {
+				inningsComplete = true;
 			}
 		}
 	}

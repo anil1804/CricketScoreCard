@@ -5,6 +5,6 @@
 	android:layout_height="match_parent"
 	tools:context=".fragment.LimitedOversFragment">
 
-	<include layout="@layout/content_limited_overs_scorecard"/>
+	<include layout="@layout/content_scorecard_limited_overs"/>
 
 </FrameLayout>

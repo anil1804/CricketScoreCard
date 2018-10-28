@@ -19,7 +19,7 @@
 			<GridLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:columnCount="2"
+				android:columnCount="3"
 				android:columnOrderPreserved="true">
 
 				<TextView
@@ -30,6 +30,7 @@
 				<EditText
 					style="@style/EditTextStyle"
 					android:id="@+id/etMatchName"
+                    android:layout_columnSpan="2"
 					android:layout_width="250dp"
 					android:inputType="text"
 					android:maxLength="30"/>
@@ -44,6 +45,11 @@
 					style="@style/TextViewStyle"
 					android:text="@string/selectTeam"/>
 
+                <Button
+                    android:id="@+id/btnNMSelectTeam1"
+                    style="@style/ButtonStyle.Small"
+                    android:drawableStart="@drawable/ic_edit"/>
+
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
 					android:labelFor="@id/tvTeam2"
@@ -54,17 +60,23 @@
 					style="@style/TextViewStyle"
 					android:text="@string/selectTeam"/>
 
+                <Button
+                    android:id="@+id/btnNMSelectTeam2"
+                    style="@style/ButtonStyle.Small"
+                    android:drawableStart="@drawable/ic_edit"/>
+
 			</GridLayout>
 
 			<GridLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:columnCount="2"
+				android:columnCount="4"
 				android:columnOrderPreserved="true">
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
-					android:text="@string/maxOvers"/>
+					android:text="@string/maxOvers"
+                    android:labelFor="@id/etMaxOvers"/>
 
 				<EditText
 					style="@style/EditTextStyle"
@@ -75,9 +87,23 @@
 					android:maxLength="2"
 					android:text="@string/maxOversValue"/>
 
+                <TextView
+                    style="@style/TextViewStyle.Bold.Medium.MorePadding"
+                    android:text="@string/maxOversPerBowler"
+                    android:labelFor="@id/etMaxPerBowler"/>
+
+                <EditText
+                    style="@style/EditTextStyle"
+                    android:gravity="center_horizontal"
+                    android:id="@+id/etMaxPerBowler"
+                    android:layout_width="50dp"
+                    android:inputType="text"
+                    android:maxLength="2"/>
+
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
-					android:text="@string/maxWickets"/>
+					android:text="@string/maxWickets"
+                    android:labelFor="@id/etMaxWickets"/>
 
 				<EditText
 					style="@style/EditTextStyle"
@@ -90,19 +116,8 @@
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
-					android:text="@string/maxOversPerBowler"/>
-
-				<EditText
-					style="@style/EditTextStyle"
-					android:gravity="center_horizontal"
-					android:id="@+id/etMaxPerBowler"
-					android:layout_width="50dp"
-					android:inputType="text"
-					android:maxLength="2"/>
-
-				<TextView
-					style="@style/TextViewStyle.Bold.Medium.MorePadding"
-					android:text="@string/numPlayers"/>
+					android:text="@string/numPlayers"
+                    android:labelFor="@id/etNumPlayers"/>
 
 				<EditText
 					style="@style/EditTextStyle"
@@ -127,28 +142,79 @@
 
 				<Button
 					android:id="@+id/btnMatchCancel"
-					android:layout_width="0dp"
-					android:layout_weight="1"
-					style="@style/ButtonStyle"
-					android:text="@string/cancel" />
+					style="@style/ButtonStyle.Medium"
+					android:text="@string/cancel"
+                    android:visibility="gone"/>
 
 				<Button
 					android:id="@+id/btnValidate"
-					android:layout_width="0dp"
-					android:layout_weight="1"
-					style="@style/ButtonStyle"
+					style="@style/ButtonStyle.Medium"
+                    android:drawableTop="@drawable/ic_check"
 					android:text="@string/validate" />
 
 			</LinearLayout>
 
-			<Button
-				android:id="@+id/btnStartMatch"
-				android:layout_width="match_parent"
-				style="@style/ButtonStyle"
-				android:text="@string/startMatch"
-				android:visibility="gone"/>
-
 		</LinearLayout>
+
+        <!-- Toss Won By -->
+        <RadioGroup
+            android:id="@+id/rgToss"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/TextViewStyle"
+                android:text="@string/tvTossWonBy"
+                android:layout_width="100dp"/>
+
+            <RadioButton
+                android:id="@+id/rbTossTeam1"
+                style="@style/RadioButtonStyle"
+                android:layout_width="100dp"/>
+
+            <RadioButton
+                android:id="@+id/rbTossTeam2"
+                style="@style/RadioButtonStyle"
+                android:layout_width="100dp"/>
+
+        </RadioGroup>
+
+        <!-- Choose Batting/Bowling -->
+        <RadioGroup
+            android:id="@+id/rgTossChoose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/TextViewStyle"
+                android:text="@string/choose"
+                android:layout_width="100dp"/>
+
+            <RadioButton
+                android:id="@+id/rbTossBat"
+                style="@style/RadioButtonStyle"
+                android:layout_width="100dp"
+                android:text="@string/batting"/>
+
+            <RadioButton
+                android:id="@+id/rbTossBowl"
+                style="@style/RadioButtonStyle"
+                android:layout_width="100dp"
+                android:text="@string/bowling"/>
+
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/btnStartMatch"
+            style="@style/ButtonStyle.Medium"
+            android:layout_gravity="center_horizontal"
+            android:drawableTop="@drawable/ic_start"
+            android:text="@string/startMatch"
+            android:visibility="gone"/>
 
 		<LinearLayout
 			android:layout_width="match_parent"

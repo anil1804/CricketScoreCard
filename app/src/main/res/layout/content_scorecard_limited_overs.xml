@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	app:layout_behavior="@string/appbar_scrolling_view_behavior"
+	android:orientation="vertical">
+
+	<!-- Layout Having the Score Details -->
+    <include layout="@layout/content_scorecard_score" />
+
+    <!-- Table Having the Batsmen, Extras & Bowler details -->
+    <include layout="@layout/content_scorecard_player_extra_details" />
+
+    <LinearLayout
+        android:id="@+id/llScoring"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Scoring Buttons Row-1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:id="@+id/btnRuns0"
+                style="@style/ButtonStyle.Round"
+                android:text="@string/zero"/>
+
+            <Button
+                android:id="@+id/btnRuns1"
+                style="@style/ButtonStyle.Round"
+                android:text="@string/one"/>
+
+            <Button
+                android:id="@+id/btnRuns2"
+                style="@style/ButtonStyle.Round"
+                android:text="@string/two"/>
+
+            <Button
+                android:id="@+id/btnRuns3"
+                style="@style/ButtonStyle.Round"
+                android:text="@string/three"/>
+
+        </LinearLayout>
+
+        <!-- Scoring Buttons Row-2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnRuns4"
+                style="@style/ButtonStyle.Round.Boundary"
+                android:text="@string/four"/>
+
+            <Button
+                android:id="@+id/btnRuns6"
+                style="@style/ButtonStyle.Round.Boundary"
+                android:text="@string/six"/>
+
+            <Button
+                android:id="@+id/btnWicket"
+                style="@style/ButtonStyle.Round.Wicket"
+                android:text="@string/wicket"/>
+
+        </LinearLayout>
+
+        <!-- Scoring Buttons Row-3 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnExtrasLegByes"
+                style="@style/ButtonStyle.Round.Extras"
+                android:text="@string/btnLegByeText"/>
+
+            <Button
+                android:id="@+id/btnExtrasByes"
+                style="@style/ButtonStyle.Round.Extras"
+                android:text="@string/btnByeText"/>
+
+            <Button
+                android:id="@+id/btnExtrasWides"
+                style="@style/ButtonStyle.Round.Extras"
+                android:text="@string/btnWideText"/>
+
+            <Button
+                android:id="@+id/btnExtrasNoBall"
+                style="@style/ButtonStyle.Round.Extras"
+                android:text="@string/btnNoBallText"/>
+
+            <Button
+                android:id="@+id/btnExtraPenalty"
+                style="@style/ButtonStyle.Round.Extras"
+                android:text="@string/btnPenaltyText"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnSelBatsman"
+        style="@style/ButtonStyle"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/selBatsman"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btnSelFacingBatsman"
+        style="@style/ButtonStyle"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/selFacingBatsman"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btnSelBowler"
+        style="@style/ButtonStyle"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/selBowler"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btnStartNextInnings"
+        style="@style/ButtonStyle"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/startNextInnings"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tvResult"
+        style="@style/TextViewStyle.Big.Bold"
+        android:visibility="gone"/>
+
+</LinearLayout>

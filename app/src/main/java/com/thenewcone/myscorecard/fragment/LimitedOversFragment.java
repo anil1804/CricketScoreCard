@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +18,9 @@ import com.thenewcone.myscorecard.activity.BatsmanSelectActivity;
 import com.thenewcone.myscorecard.activity.BowlerSelectActivity;
 import com.thenewcone.myscorecard.activity.ExtraDialogActivity;
 import com.thenewcone.myscorecard.R;
+import com.thenewcone.myscorecard.activity.InputActivity;
 import com.thenewcone.myscorecard.activity.WicketDialogActivity;
+import com.thenewcone.myscorecard.intf.ConfirmationDialogClickListener;
 import com.thenewcone.myscorecard.match.CricketCard;
 import com.thenewcone.myscorecard.match.CricketCardUtils;
 import com.thenewcone.myscorecard.match.Team;
@@ -34,18 +35,22 @@ import com.thenewcone.myscorecard.utils.database.DatabaseHandler;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 public class LimitedOversFragment extends Fragment
-	implements View.OnClickListener{
+	implements View.OnClickListener, ConfirmationDialogClickListener {
 	View theView;
 	WicketData.DismissalType dismissalType;
     DatabaseHandler dbHandler;
 
-    private static final int ACTIVITY_REQ_CODE_EXTRA_DIALOG = 1;
-	private static final int ACTIVITY_REQ_CODE_WICKET_DIALOG = 2;
-    private static final int ACTIVITY_REQ_CODE_BATSMAN_DIALOG = 3;
-    private static final int ACTIVITY_REQ_CODE_BOWLER_DIALOG = 4;
-    private static final int ACTIVITY_REQ_CODE_CURRENT_FACING_DIALOG = 5;
+    private static final int REQ_CODE_EXTRA_DIALOG = 1;
+	private static final int REQ_CODE_WICKET_DIALOG = 2;
+    private static final int REQ_CODE_BATSMAN_DIALOG = 3;
+    private static final int REQ_CODE_BOWLER_DIALOG = 4;
+    private static final int REQ_CODE_CURRENT_FACING_DIALOG = 5;
+    private static final int REQ_CODE_GET_SAVE_MATCH_NAME = 6;
+
+    private static final int CONFIRMATION_CODE_SAVE_MATCH = 1;
 
 	CricketCardUtils ccUtils;
     BatsmanStats newBatsman, outBatsman;
@@ -56,16 +61,19 @@ public class LimitedOversFragment extends Fragment
     TextView tvBat2Name, tvBat2Runs, tvBat2Balls, tvBat24s, tvBat26s, tvBat2SR;
     TextView tvLegByes, tvByes, tvWides, tvNoBalls, tvPenalty;
     TextView tvBowlName, tvBowlOvers, tvBowlMaidens, tvBowlRuns, tvBowlWickets, tvBowlEconomy;
+    TextView tvResult;
+
+    int maxWickets;
+    boolean closeMatch = false;
 
 	public LimitedOversFragment() {
 	}
 
-	public static LimitedOversFragment newInstance
-			(Team battingTeam, Team bowlingTeam, Team tossWonBy,
-			 int maxOvers, int maxWickets, int maxPerBowler, int maxPlayers) {
+	public static LimitedOversFragment newInstance(String matchName, Team battingTeam, Team bowlingTeam, Team tossWonBy, int maxOvers, int maxWickets, int maxPerBowler) {
+
 		LimitedOversFragment fragment = new LimitedOversFragment();
 
-		fragment.initCricketCard(battingTeam, bowlingTeam, tossWonBy, maxOvers, maxWickets, maxPerBowler);
+		fragment.initCricketCard(matchName, battingTeam, bowlingTeam, tossWonBy, maxOvers, maxWickets, maxPerBowler);
 
 		return fragment;
 	}
@@ -107,17 +115,16 @@ public class LimitedOversFragment extends Fragment
         theView.findViewById(R.id.btnSelFacingBatsman).setOnClickListener(this);
 	}
 
-	private void initCricketCard(Team battingTeam, Team bowlingTeam, Team tossWonBy, int maxOvers, int maxWickets, int maxPerBowler) {
+	private void initCricketCard(String matchName, Team battingTeam, Team bowlingTeam, Team tossWonBy, int maxOvers, int maxWickets, int maxPerBowler) {
+		this.maxWickets = maxWickets;
+
 		CricketCard card =
-				new CricketCard(battingTeam.getShortName(),
-						String.valueOf(maxOvers),
-						maxPerBowler,
-						maxWickets,
-						1);
+				new CricketCard(battingTeam.getShortName(), String.valueOf(maxOvers), maxPerBowler, maxWickets, 1);
 
-		ccUtils = new CricketCardUtils(card, battingTeam.getShortName(), bowlingTeam.getShortName());
+		ccUtils = new CricketCardUtils(card, matchName, battingTeam, bowlingTeam);
 
-		ccUtils.setFirstInnings();
+		ccUtils.setTossWonBy(tossWonBy);
+		ccUtils.setFirstInnings(battingTeam.getMatchPlayers(), bowlingTeam.getMatchPlayers());
 	}
 
 	private void updateCardDetails(boolean isInitial) {
@@ -131,6 +138,16 @@ public class LimitedOversFragment extends Fragment
 		}
 
 		if(isInitial) {
+			TableRow tvTarget = theView.findViewById(R.id.trTarget);
+			TableRow tvRunsInBalls = theView.findViewById(R.id.trRunsInBalls);
+			if(currCard.getInnings() == 1) {
+				tvTarget.setVisibility(View.GONE);
+				tvRunsInBalls.setVisibility(View.GONE);
+			} else {
+				tvTarget.setVisibility(View.VISIBLE);
+				tvRunsInBalls.setVisibility(View.VISIBLE);
+			}
+
             tvCurrScore = theView.findViewById(R.id.tvScore);
             tvOvers = theView.findViewById(R.id.tvOvers);
             tvCRR = theView.findViewById(R.id.tvCRR);
@@ -236,6 +253,10 @@ public class LimitedOversFragment extends Fragment
 		tvBowlRuns.setText(String.valueOf(ccUtils.getBowler().getRunsGiven()));
 		tvBowlWickets.setText(String.valueOf(ccUtils.getBowler().getWickets()));
 		tvBowlEconomy.setText(CommonUtils.doubleToString(ccUtils.getBowler().getEconomy(), "#.##"));
+
+		if(isInitial) {
+			tvResult = theView.findViewById(R.id.tvResult);
+		}
 	}
 
 	private void newBallBowled(Extra extra, int runs, @Nullable WicketData wicketData) {
@@ -352,7 +373,7 @@ public class LimitedOversFragment extends Fragment
                     batsmenPlayed[i] = batsmen.get(i+1);
                 }
 
-                displayBatsmanSelect(ccUtils.getCard().getBattingTeam(), batsmenPlayed, ACTIVITY_REQ_CODE_BATSMAN_DIALOG, batsmen.size());
+                displayBatsmanSelect(ccUtils.getCard().getBattingTeam(), batsmenPlayed, REQ_CODE_BATSMAN_DIALOG, batsmen.size());
                 break;
 
             case R.id.btnSelBowler:
@@ -362,7 +383,7 @@ public class LimitedOversFragment extends Fragment
 
             case R.id.btnSelFacingBatsman:
                 displayBatsmanSelect(null, new BatsmanStats[]{ccUtils.getCurrentFacing() , ccUtils.getOtherBatsman()},
-                        ACTIVITY_REQ_CODE_CURRENT_FACING_DIALOG, 0);
+						REQ_CODE_CURRENT_FACING_DIALOG, 0);
                 break;
 		}
 	}
@@ -370,7 +391,7 @@ public class LimitedOversFragment extends Fragment
 	private void displayExtrasDialog(Extra.ExtraType type) {
 		Intent dialogIntent = new Intent(getContext(), ExtraDialogActivity.class);
 		dialogIntent.putExtra(CommonUtils.ARG_EXTRA_TYPE, type);
-		startActivityForResult(dialogIntent, ACTIVITY_REQ_CODE_EXTRA_DIALOG);
+		startActivityForResult(dialogIntent, REQ_CODE_EXTRA_DIALOG);
 	}
 
 	private void displayWicketDialog() {
@@ -381,7 +402,7 @@ public class LimitedOversFragment extends Fragment
 		dialogIntent.putExtra(WicketDialogActivity.ARG_BOWLER, ccUtils.getBowler());
 		dialogIntent.putExtra(WicketDialogActivity.ARG_FIELDING_TEAM, ccUtils.getCard().getBowlingTeam().toArray());
 
-		startActivityForResult(dialogIntent, ACTIVITY_REQ_CODE_WICKET_DIALOG);
+		startActivityForResult(dialogIntent, REQ_CODE_WICKET_DIALOG);
 	}
 
     private void displayBatsmanSelect(@Nullable List<Player> battingTeam, BatsmanStats[] batsmen, int reqCode, int defaultSelIndex) {
@@ -413,7 +434,7 @@ public class LimitedOversFragment extends Fragment
         bowlerIntent.putExtra(BowlerSelectActivity.ARG_NEXT_BOWLER, ccUtils.getNextBowler());
         bowlerIntent.putExtra(BowlerSelectActivity.ARG_PREV_BOWLER, ccUtils.getPrevBowler());
 
-        startActivityForResult(bowlerIntent, ACTIVITY_REQ_CODE_BOWLER_DIALOG);
+        startActivityForResult(bowlerIntent, REQ_CODE_BOWLER_DIALOG);
     }
 
 	@Override
@@ -421,7 +442,7 @@ public class LimitedOversFragment extends Fragment
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (requestCode) {
-			case ACTIVITY_REQ_CODE_EXTRA_DIALOG:
+			case REQ_CODE_EXTRA_DIALOG:
 				if (resultCode == ExtraDialogActivity.RESULT_CODE_OK) {
 					Extra.ExtraType extraType = (Extra.ExtraType) data.getSerializableExtra(CommonUtils.ARG_EXTRA_TYPE);
 					Extra.ExtraType extraSubType = (Extra.ExtraType) data.getSerializableExtra(ExtraDialogActivity.ARG_NB_EXTRA);
@@ -433,7 +454,7 @@ public class LimitedOversFragment extends Fragment
 				}
 				break;
 
-			case ACTIVITY_REQ_CODE_WICKET_DIALOG:
+			case REQ_CODE_WICKET_DIALOG:
 				if(resultCode == WicketDialogActivity.RESP_CODE_OK) {
 				    WicketData wktData = (WicketData) data.getSerializableExtra(WicketDialogActivity.ARG_WICKET_DATA);
 				    Extra extraData = (Extra) data.getSerializableExtra(WicketDialogActivity.ARG_EXTRA_DATA);
@@ -447,7 +468,7 @@ public class LimitedOversFragment extends Fragment
 				}
 				break;
 
-            case ACTIVITY_REQ_CODE_BATSMAN_DIALOG:
+            case REQ_CODE_BATSMAN_DIALOG:
                 if(resultCode == BatsmanSelectActivity.RESP_CODE_OK) {
                     newBatsman = (BatsmanStats) data.getSerializableExtra(BatsmanSelectActivity.ARG_SEL_BATSMAN);
                     if(newBatsman != null) {
@@ -470,7 +491,7 @@ public class LimitedOversFragment extends Fragment
                 }
                 break;
 
-            case ACTIVITY_REQ_CODE_CURRENT_FACING_DIALOG:
+            case REQ_CODE_CURRENT_FACING_DIALOG:
                 if(resultCode == BatsmanSelectActivity.RESP_CODE_OK) {
                     BatsmanStats facingBatsman = (BatsmanStats) data.getSerializableExtra(BatsmanSelectActivity.ARG_SEL_BATSMAN);
                     if(facingBatsman != null && ccUtils.getCurrentFacing().getPosition() != facingBatsman.getPosition()) {
@@ -482,7 +503,7 @@ public class LimitedOversFragment extends Fragment
                 }
                 break;
 
-            case ACTIVITY_REQ_CODE_BOWLER_DIALOG:
+            case REQ_CODE_BOWLER_DIALOG:
                 if(resultCode == BowlerSelectActivity.RESP_CODE_OK) {
                     BowlerStats nextBowler = (BowlerStats) data.getSerializableExtra(BowlerSelectActivity.ARG_SEL_BOWLER);
                     if(nextBowler != null) {
@@ -493,6 +514,12 @@ public class LimitedOversFragment extends Fragment
                     updateScreenForBowlerSelect(View.VISIBLE, View.GONE);
                 }
                 break;
+
+			case REQ_CODE_GET_SAVE_MATCH_NAME:
+				if(resultCode == InputActivity.RESP_CODE_OK) {
+					String saveMatchName = data.getStringExtra(InputActivity.ARG_INPUT_TEXT);
+					saveMatch(saveMatchName);
+				}
 		}
 	}
 
@@ -502,10 +529,7 @@ public class LimitedOversFragment extends Fragment
 
             String jsonStr = CommonUtils.convertToJSON(ccUtils);
 
-            ccUtils = null;
-            Log.i("JSON", String.format("Is CCUtils NULL ?  %b", (ccUtils == null)));
             ccUtils = CommonUtils.convertToCCUtils(jsonStr);
-            Log.i("JSON", String.format("Is CCUtils NULL ?  %b", (ccUtils == null)));
         }
     }
 
@@ -515,13 +539,13 @@ public class LimitedOversFragment extends Fragment
 
     @Override
     public void onDetach() {
-        //TODO: Implement logic to ensure that the state is saved before destroying the view.
+        confirmSaveMatch();
         super.onDetach();
     }
 
     @Override
         public void onDestroyView() {
-	    //TODO: Implement logic to ensure that the state is saved before destroying the view.
+		confirmSaveMatch();
         super.onDestroyView();
     }
 
@@ -543,6 +567,13 @@ public class LimitedOversFragment extends Fragment
         btnSelBowler.setVisibility(bowlerSelectVisibility);
     }
 
+    private void updateScreenForResult() {
+		LinearLayout llScoring = theView.findViewById(R.id.llScoring);
+
+		llScoring.setVisibility(View.GONE);
+		tvResult.setVisibility(View.VISIBLE);
+	}
+
     private void closeInnings() {
         theView.findViewById(R.id.llScoring).setVisibility(View.GONE);
         theView.findViewById(R.id.btnStartNextInnings).setVisibility(View.VISIBLE);
@@ -554,10 +585,41 @@ public class LimitedOversFragment extends Fragment
     }
 
     private void showResult() {
+		int score = ccUtils.getCard().getScore();
+		int target = ccUtils.getCard().getScore();
+		int wicketsFallen = ccUtils.getCard().getWicketsFallen();
 
+		String result;
+		if(score >= target) {
+			result = String.format(Locale.getDefault(), "%s WON by %d wickets", ccUtils.getTeam2().getName(), (maxWickets - wicketsFallen));
+		} else if(score < (target - 1)) {
+			result = String.format(Locale.getDefault(), "%s won by %d runs", ccUtils.getTeam1().getName(), (target - 1 - score));
+		} else {
+			result = "Match TIED";
+		}
+
+		updateScreenForResult();
+		tvResult.setText(result);
     }
 
     private void saveMatch(String saveName){
         dbHandler.saveMatchState(ccUtils.getMatchStateID(), CommonUtils.convertToJSON(ccUtils), saveName);
     }
+
+    private void confirmSaveMatch() {
+		closeMatch = true;
+
+	}
+
+	@Override
+	public void onConfirmationClick(int confirmationCode, boolean accepted) {
+		switch (confirmationCode) {
+			case CONFIRMATION_CODE_SAVE_MATCH:
+				if(accepted) {
+					Intent intent = new Intent(getContext(), InputActivity.class);
+					startActivityForResult(intent, REQ_CODE_GET_SAVE_MATCH_NAME);
+				}
+				break;
+		}
+	}
 }

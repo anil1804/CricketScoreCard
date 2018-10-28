@@ -26,7 +26,15 @@ public class Team implements Serializable {
         this.id = id;
     }
 
-    public Team(int id, String shortName) {
+	public List<Player> getMatchPlayers() {
+		return matchPlayers;
+	}
+
+	public void setMatchPlayers(List<Player> matchPlayers) {
+		this.matchPlayers = matchPlayers;
+	}
+
+	public Team(int id, String shortName) {
         this.id = id;
         this.shortName = shortName;
     }

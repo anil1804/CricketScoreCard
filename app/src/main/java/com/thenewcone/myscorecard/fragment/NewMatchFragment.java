@@ -1,8 +1,11 @@
 package com.thenewcone.myscorecard.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -10,15 +13,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
+import com.thenewcone.myscorecard.activity.PlayerSelectActivity;
 import com.thenewcone.myscorecard.intf.DialogItemClickListener;
 import com.thenewcone.myscorecard.match.Team;
+import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.utils.CommonUtils;
 import com.thenewcone.myscorecard.utils.database.DatabaseHandler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -27,14 +36,21 @@ import java.util.List;
 public class NewMatchFragment extends Fragment
     implements View.OnClickListener, DialogItemClickListener {
 
+	private final int REQ_CODE_PLAYER_SELECT_TEAM1 = 1;
+	private final int REQ_CODE_PLAYER_SELECT_TEAM2 = 2;
+
+	private final String ENUM_TYPE_TEAM1 = "Team1Select";
+	private final String ENUM_TYPE_TEAM2 = "Team2Select";
+
     EditText etMatchName, etMaxOvers, etMaxWickets, etMaxPerBowler, etNumPlayers;
     TextView tvTeam1, tvTeam2;
     Button btnCancel, btnValidate, btnStartMatch, btnManageTeam;
     List<Team> teams;
-    Team team1, team2;
+    Team team1, team2, tossWonBy, battingTeam, bowlingTeam;
+    RadioGroup rgToss, rgTossChoose;
+    RadioButton rbTossTeam1, rbTossTeam2, rbTossBat, rbTossBowl;
 
-    private final String ENUM_TYPE_TEAM1 = "Team1Select";
-    private final String ENUM_TYPE_TEAM2 = "Team2Select";
+	List<Player> team1Players, team2Players;
 
 	int maxPerBowler = 0, maxOvers, maxWickets, numPlayers = 0;
 
@@ -47,8 +63,8 @@ public class NewMatchFragment extends Fragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View theView = inflater.inflate(R.layout.fragment_new_match, container, false);
 
@@ -107,6 +123,14 @@ public class NewMatchFragment extends Fragment
         btnStartMatch = theView.findViewById(R.id.btnStartMatch);
         btnManageTeam = theView.findViewById(R.id.btnManageTeam);
 
+        rgToss = theView.findViewById(R.id.rgToss);
+		rgTossChoose = theView.findViewById(R.id.rgTossChoose);
+
+		rbTossTeam1 = theView.findViewById(R.id.rbTossTeam1);
+		rbTossTeam2 = theView.findViewById(R.id.rbTossTeam2);
+		rbTossBat = theView.findViewById(R.id.rbTossBat);
+		rbTossBowl = theView.findViewById(R.id.rbTossBowl);
+
         tvTeam1.setOnClickListener(this);
         tvTeam2.setOnClickListener(this);
 
@@ -114,6 +138,11 @@ public class NewMatchFragment extends Fragment
         btnValidate.setOnClickListener(this);
         btnStartMatch.setOnClickListener(this);
         btnManageTeam.setOnClickListener(this);
+
+        rbTossTeam1.setOnClickListener(this);
+        rbTossTeam2.setOnClickListener(this);
+        rbTossBat.setOnClickListener(this);
+        rbTossBowl.setOnClickListener(this);
 
         updateView(theView);
 
@@ -174,7 +203,7 @@ public class NewMatchFragment extends Fragment
 				break;
 
 			case R.id.btnStartMatch:
-                Toast.makeText(getContext(), "Show Toss and Player Select Screen", Toast.LENGTH_SHORT).show();
+				startNewMatch();
                 break;
 
             case R.id.btnCancel:
@@ -193,8 +222,56 @@ public class NewMatchFragment extends Fragment
 							.commit();
 				}
                 break;
+
+			case R.id.rbTossTeam1:
+				tossWonBy = team1;
+				rgTossChoose.setVisibility(View.VISIBLE);
+				break;
+
+			case R.id.rbTossTeam2:
+				tossWonBy = team2;
+				rgTossChoose.setVisibility(View.VISIBLE);
+				break;
+
+			case R.id.rbTossBat:
+				if(tossWonBy.getId() == team1.getId()) {
+					battingTeam = team1;
+					bowlingTeam = team2;
+				} else {
+					battingTeam = team2;
+					bowlingTeam = team1;
+				}
+				btnStartMatch.setVisibility(View.VISIBLE);
+				break;
+
+			case R.id.rbTossBowl:
+				if(tossWonBy.getId() == team1.getId()) {
+					battingTeam = team2;
+					bowlingTeam = team1;
+				} else {
+					battingTeam = team1;
+					bowlingTeam = team2;
+				}
+				btnStartMatch.setVisibility(View.VISIBLE);
+				break;
+
         }
     }
+
+	private void startNewMatch() {
+		if(getActivity() != null) {
+			FragmentManager fragMgr = getActivity().getSupportFragmentManager();
+			String fragmentTag = LimitedOversFragment.class.getSimpleName();
+			LimitedOversFragment fragment =
+					LimitedOversFragment.newInstance(etMatchName.getText().toString(), battingTeam, bowlingTeam, tossWonBy,
+							maxOvers, maxWickets, maxPerBowler);
+
+			fragMgr.beginTransaction()
+					.replace(R.id.frame_container, fragment, fragmentTag)
+					.addToBackStack(fragmentTag)
+					.commit();
+		}
+	}
 
 	private void validateInput() {
     	maxOvers = Integer.parseInt(etMaxOvers.getText().toString());
@@ -220,7 +297,10 @@ public class NewMatchFragment extends Fragment
 		} else if(deficientTeam != null) {
 			Toast.makeText(getContext(), String.format("Not enough players in %s", (deficientTeam.equals("TEAM1") ? team1.getShortName() : team2.getShortName())), Toast.LENGTH_LONG).show();
 		} else {
-			setLayoutForMatchStart();
+			/*Toast.makeText(getContext(), "Update the playing team by clicking the buttons next to team name.\n" +
+					"The playing team cannot be modified later on", Toast.LENGTH_LONG).show();*/
+			Toast.makeText(getContext(), String.format("Select Players from %s", team1.getName()) , Toast.LENGTH_SHORT).show();
+			displayPlayerSelect(team1, REQ_CODE_PLAYER_SELECT_TEAM1);
 		}
 	}
 
@@ -229,7 +309,7 @@ public class NewMatchFragment extends Fragment
         tvTeam1.setEnabled(false);
         tvTeam2.setEnabled(false);
 
-        btnStartMatch.setVisibility(View.VISIBLE);
+        rgToss.setVisibility(View.VISIBLE);
     }
 
     public void getTeams() {
@@ -288,5 +368,51 @@ public class NewMatchFragment extends Fragment
     		return "TEAM2";
     	else
     		return null;
+	}
+
+	private void displayPlayerSelect(Team team, int reqCode) {
+    	List<Player> dispPlayerList = new DatabaseHandler(getContext()).getTeamPlayers(team.getId());
+    	List<Integer> associatedPlayers = new ArrayList<>();
+
+    	for (int i=0; i<numPlayers; i++) {
+			associatedPlayers.add(dispPlayerList.get(i).getID());
+
+			if(reqCode == REQ_CODE_PLAYER_SELECT_TEAM1) {
+				team1Players.add(dispPlayerList.get(i));
+			}else if(reqCode == REQ_CODE_PLAYER_SELECT_TEAM2) {
+				team2Players.add(dispPlayerList.get(i));
+			}
+		}
+
+		Intent playerDisplayIntent = new Intent(getContext(), PlayerSelectActivity.class);
+		playerDisplayIntent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, dispPlayerList.toArray());
+		playerDisplayIntent.putExtra(PlayerSelectActivity.ARG_IS_MULTI_SELECT, true);
+		playerDisplayIntent.putIntegerArrayListExtra(PlayerSelectActivity.ARG_ASSOCIATED_PLAYERS, (ArrayList<Integer>) associatedPlayers);
+
+		startActivityForResult(playerDisplayIntent, reqCode);
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		switch (requestCode) {
+			case REQ_CODE_PLAYER_SELECT_TEAM1:
+				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
+					team1Players = Arrays.asList(CommonUtils.objectArrToPlayerArr((Object []) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYERS)));
+					team1.setMatchPlayers(team1Players);
+					Toast.makeText(getContext(), String.format("Select Players from %s", team2.getName()) , Toast.LENGTH_SHORT).show();
+					displayPlayerSelect(team2, REQ_CODE_PLAYER_SELECT_TEAM2);
+				}
+				break;
+
+			case REQ_CODE_PLAYER_SELECT_TEAM2:
+				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
+					team2Players = Arrays.asList(CommonUtils.objectArrToPlayerArr((Object []) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYERS)));
+					team2.setMatchPlayers(team2Players);
+				}
+				setLayoutForMatchStart();
+				break;
+		}
 	}
 }
