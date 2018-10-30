@@ -19,7 +19,7 @@
 			<GridLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:columnCount="3"
+				android:columnCount="4"
 				android:columnOrderPreserved="true">
 
 				<TextView
@@ -30,7 +30,7 @@
 				<EditText
 					style="@style/EditTextStyle"
 					android:id="@+id/etMatchName"
-                    android:layout_columnSpan="2"
+                    android:layout_columnSpan="3"
 					android:layout_width="250dp"
 					android:inputType="text"
 					android:maxLength="30"/>
@@ -48,7 +48,20 @@
                 <Button
                     android:id="@+id/btnNMSelectTeam1"
                     style="@style/ButtonStyle.Small"
+                    android:layout_column="2"
                     android:drawableStart="@drawable/ic_edit"/>
+
+                <TextView
+                    android:id="@+id/tvTeam1Captain"
+                    style="@style/TextViewStyle.LeftRightPadding"
+                    android:layout_columnSpan="2"
+                    android:text="@string/captainName"/>
+
+                <TextView
+                    android:id="@+id/tvTeam1WK"
+                    style="@style/TextViewStyle"
+                    android:layout_columnSpan="2"
+                    android:text="@string/wkName"/>
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
@@ -63,7 +76,20 @@
                 <Button
                     android:id="@+id/btnNMSelectTeam2"
                     style="@style/ButtonStyle.Small"
+                    android:layout_columnSpan="2"
                     android:drawableStart="@drawable/ic_edit"/>
+
+                <TextView
+                    android:id="@+id/tvTeam2Captain"
+                    style="@style/TextViewStyle.LeftRightPadding"
+                    android:layout_columnSpan="2"
+                    android:text="@string/captainName"/>
+
+                <TextView
+                    android:id="@+id/tvTeam2WK"
+                    style="@style/TextViewStyle"
+                    android:layout_columnSpan="2"
+                    android:text="@string/wkName"/>
 
 			</GridLayout>
 
@@ -78,14 +104,14 @@
 					android:text="@string/maxOvers"
                     android:labelFor="@id/etMaxOvers"/>
 
-				<EditText
-					style="@style/EditTextStyle"
-					android:gravity="center_horizontal"
-					android:id="@+id/etMaxOvers"
-					android:layout_width="50dp"
-					android:inputType="text"
-					android:maxLength="2"
-					android:text="@string/maxOversValue"/>
+                <EditText
+                    android:id="@+id/etMaxOvers"
+                    style="@style/EditTextStyle"
+                    android:layout_width="50dp"
+                    android:gravity="center_horizontal"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:text="@string/maxOversValue" />
 
                 <TextView
                     style="@style/TextViewStyle.Bold.Medium.MorePadding"
@@ -93,39 +119,39 @@
                     android:labelFor="@id/etMaxPerBowler"/>
 
                 <EditText
-                    style="@style/EditTextStyle"
-                    android:gravity="center_horizontal"
                     android:id="@+id/etMaxPerBowler"
+                    style="@style/EditTextStyle"
                     android:layout_width="50dp"
-                    android:inputType="text"
-                    android:maxLength="2"/>
+                    android:gravity="center_horizontal"
+                    android:inputType="number"
+                    android:maxLength="2" />
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
 					android:text="@string/maxWickets"
                     android:labelFor="@id/etMaxWickets"/>
 
-				<EditText
-					style="@style/EditTextStyle"
-					android:gravity="center_horizontal"
-					android:id="@+id/etMaxWickets"
-					android:layout_width="50dp"
-					android:inputType="text"
-					android:maxLength="2"
-					android:text="@string/maxWicketsValue"/>
+                <EditText
+                    android:id="@+id/etMaxWickets"
+                    style="@style/EditTextStyle"
+                    android:layout_width="50dp"
+                    android:gravity="center_horizontal"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:text="@string/maxWicketsValue" />
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
 					android:text="@string/numPlayers"
                     android:labelFor="@id/etNumPlayers"/>
 
-				<EditText
-					style="@style/EditTextStyle"
-					android:gravity="center_horizontal"
-					android:id="@+id/etNumPlayers"
-					android:layout_width="50dp"
-					android:inputType="text"
-					android:maxLength="2"/>
+                <EditText
+                    android:id="@+id/etNumPlayers"
+                    style="@style/EditTextStyle"
+                    android:layout_width="50dp"
+                    android:gravity="center_horizontal"
+                    android:inputType="number"
+                    android:maxLength="2" />
 
 			</GridLayout>
 

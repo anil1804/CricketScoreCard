@@ -120,7 +120,8 @@ public class CricketCardUtils {
 
 	public void setBowler(BowlerStats bowler) {
 		this.bowler = bowler;
-		card.updateBowlerInBowlerMap(bowler);
+		if(bowler != null)
+			card.updateBowlerInBowlerMap(bowler);
 	}
 
 	private void updateBowlerFigures(double ballsBowled, int runsGiven, WicketData wicketData) {
@@ -280,8 +281,9 @@ public class CricketCardUtils {
 
 		if(wicketData != null) {
 			card.incWicketsFallen();
-			card.inningsCheck();
 		}
+
+		card.inningsCheck();
 
 		updateBatsmanScore(batsmanRuns, batsmanBalls, wicketData);
 		updateBowlerFigures((double) bowlerBalls, bowlerRuns, wicketData);

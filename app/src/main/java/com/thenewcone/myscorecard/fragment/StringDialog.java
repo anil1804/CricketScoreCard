@@ -11,7 +11,6 @@ import android.support.v4.app.DialogFragment;
 import com.thenewcone.myscorecard.intf.DialogItemClickListener;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class StringDialog extends DialogFragment{
@@ -21,21 +20,21 @@ public class StringDialog extends DialogFragment{
     DialogItemClickListener dialogItemClickListener;
 
     public static final String ARG_TITLE = "Title";
-    public static final String ARG_ENUM_VALUES = "EnumValues";
-    public static final String ARG_ENUM_TYPE = "EnumType";
-    public static final String ARG_ENUM_TYPE_BAT_STYLE = "BattingStyle";
-    public static final String ARG_ENUM_TYPE_BOWL_STYLE = "BowlingStyle";
+    public static final String ARG_VALUES = "EnumValues";
+    public static final String ARG_TYPE = "EnumType";
+    public static final String ARG_TYPE_BAT_STYLE = "BattingStyle";
+    public static final String ARG_TYPE_BOWL_STYLE = "BowlingStyle";
 
     public StringDialog() {
     }
 
-    public static StringDialog newInstance(String title, String[] enumeration, String enumType) {
+    public static StringDialog newInstance(String title, String[] values, String type) {
         StringDialog dialog = new StringDialog();
         Bundle args = new Bundle();
 
         args.putString(ARG_TITLE, title);
-        args.putStringArray(ARG_ENUM_VALUES, enumeration);
-        args.putString(ARG_ENUM_TYPE, enumType);
+        args.putStringArray(ARG_VALUES, values);
+        args.putString(ARG_TYPE, type);
 
         dialog.setArguments(args);
 
@@ -54,8 +53,8 @@ public class StringDialog extends DialogFragment{
 
         if(args != null) {
             this.title = args.getString(ARG_TITLE);
-            this.values = args.getStringArray(ARG_ENUM_VALUES);
-            this.enumType = args.getString(ARG_ENUM_TYPE);
+            this.values = args.getStringArray(ARG_VALUES);
+            this.enumType = args.getString(ARG_TYPE);
 
             List<String> valueList = Arrays.asList(values);
             this.values = (String []) valueList.toArray();

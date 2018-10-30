@@ -22,6 +22,7 @@ import com.thenewcone.myscorecard.intf.DialogItemClickListener;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.utils.CommonUtils;
+import com.thenewcone.myscorecard.utils.database.AddDBData;
 import com.thenewcone.myscorecard.utils.database.DatabaseHandler;
 
 import java.util.ArrayList;
@@ -72,6 +73,12 @@ public class TeamFragment extends Fragment
 					showPlayerListDialog();
 				else
 					Toast.makeText(getContext(), "Select/Create a team to update player list", Toast.LENGTH_SHORT).show();
+				break;
+
+			case R.id.menu_loadData:
+				AddDBData addData = new AddDBData(getContext());
+				if(addData.addTeams())
+					Toast.makeText(getContext(), "Data uploaded successfully", Toast.LENGTH_SHORT).show();
 				break;
 		}
 
@@ -132,7 +139,7 @@ public class TeamFragment extends Fragment
 	}
 
     @Override
-    public void onItemSelect(String enumType, String value, int position) {
+    public void onItemSelect(String type, String value, int position) {
         selTeam = teamList.get(position);
     }
 

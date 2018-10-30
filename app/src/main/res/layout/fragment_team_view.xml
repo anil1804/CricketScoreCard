@@ -13,18 +13,14 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_weight="5"
             android:gravity="start"
             android:id="@+id/tvTeamName"
             style="@style/TextViewStyle"/>
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
             android:id="@+id/tvTeamShortName"
             android:gravity="center_horizontal"
-            style="@style/TextViewStyle"/>
+            style="@style/TextViewStyle.LeftRightPadding"/>
 
     </LinearLayout>
 

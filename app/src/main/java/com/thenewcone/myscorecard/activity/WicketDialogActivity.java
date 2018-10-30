@@ -437,7 +437,7 @@ public class WicketDialogActivity extends FragmentActivity
     }
 
 	@Override
-	public void onItemSelect(String enumType, String value, int position) {
+	public void onItemSelect(String type, String value, int position) {
 		effectedBy = fieldingTeam[position];
 		tvEffectedBy.setText(effectedBy.getName());
 	}

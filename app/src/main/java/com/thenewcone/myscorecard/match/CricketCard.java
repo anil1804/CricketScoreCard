@@ -168,6 +168,7 @@ public class CricketCard {
 		this.maxWickets = maxWickets;
 		this.innings = innings;
 		this.totalOversBowled = "0.0";
+		inningsComplete = false;
 	}
 
 	void addWides(int wides) {

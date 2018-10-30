@@ -153,4 +153,12 @@
     <string name="yes">Yes</string>
 	<string name="no">No</string>
 	<string name="outBatsmanData">%s %s %s %s</string>
+    <string name="inningsComplete">Innings Complete</string>
+    <string name="undo">Undo Last Ball</string>
+    <string name="load">Load Match</string>
+    <string name="saveMatch">Save Match</string>
+    <string name="notEnoughPlayers">Not Enough Players to Select</string>
+    <string name="captainName">Captain : %1$s</string>
+    <string name="wkName">WK : %1$s</string>
+    <string name="upload">Upload</string>
 </resources>

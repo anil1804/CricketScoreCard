@@ -7,6 +7,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.adapter.PlayerViewAdapter;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class PlayerSelectActivity extends Activity
 	implements ListInteractionListener, View.OnClickListener {
@@ -29,6 +32,7 @@ public class PlayerSelectActivity extends Activity
 	public static final String ARG_ASSOCIATED_PLAYERS = "AssociatedPlayers";
 	public static final String ARG_RESP_SEL_PLAYER = "SelectedPlayer";
 	public static final String ARG_RESP_SEL_PLAYERS = "SelectedPlayers";
+	public static final String ARG_NUM_PLAYERS = "NumberOfPlayers";
 
 	public static final int RESP_CODE_OK = 1;
 	public static final int RESP_CODE_CANCEL = -1;
@@ -36,6 +40,7 @@ public class PlayerSelectActivity extends Activity
     List<Player> playerList = new ArrayList<>();
 	ArrayList<Integer> associatedPlayers;
 	boolean isMultiSelect = false;
+	int numPlayers;
 
 	List<Player> selPlayers = new ArrayList<>();
 
@@ -56,6 +61,7 @@ public class PlayerSelectActivity extends Activity
 			if(associatedPlayers != null) {
 				selPlayers.addAll(new DatabaseHandler(this).getPlayers(associatedPlayers));
 			}
+			numPlayers = extras.getInt(ARG_NUM_PLAYERS, 0);
 		}
 
 		RecyclerView rcvPlayerList = findViewById(R.id.rcvPlayerList);
@@ -65,7 +71,7 @@ public class PlayerSelectActivity extends Activity
         findViewById(R.id.btnSelPlayerCancel).setOnClickListener(this);
         findViewById(R.id.btnCancel).setOnClickListener(this);
 
-		if(playerList.size() > 0) {
+		if(playerList.size() > 0 && (isMultiSelect && playerList.size() >= numPlayers)) {
 			Collections.sort(playerList, new PlayerComparator(associatedPlayers));
 
 			rcvPlayerList.setLayoutManager(new LinearLayoutManager(this));
@@ -81,6 +87,8 @@ public class PlayerSelectActivity extends Activity
 			rcvPlayerList.setVisibility(View.GONE);
 			findViewById(R.id.llPlayerSelectButtons).setVisibility(View.GONE);
 			findViewById(R.id.llNoPlayers).setVisibility(View.VISIBLE);
+			if(isMultiSelect && playerList.size() < numPlayers)
+				((TextView) findViewById(R.id.tvNoPlayers)).setText(getString(R.string.notEnoughPlayers));
 		}
 	}
 
@@ -88,7 +96,13 @@ public class PlayerSelectActivity extends Activity
 	public void onClick(View view) {
 		switch (view.getId()) {
 			case R.id.btnSelPlayerOK:
-				sendResponse(RESP_CODE_OK);
+				if(isMultiSelect && numPlayers > 0 && selPlayers.size() != numPlayers) {
+					Toast.makeText(this,
+							String.format(Locale.getDefault(), "Only %d players selected. Select %d players to continue.", selPlayers.size(), numPlayers),
+							Toast.LENGTH_LONG).show();
+				} else {
+					sendResponse(RESP_CODE_OK);
+				}
 				break;
 
 			case R.id.btnCancel:

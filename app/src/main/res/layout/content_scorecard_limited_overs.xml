@@ -115,13 +115,6 @@
         android:text="@string/selBatsman"
         android:visibility="gone"/>
 
-    <TextView
-		android:id="@+id/tvOutBatsmanDetails"
-		style="@style/TextViewStyle"
-		android:layout_gravity="center_horizontal"
-		android:text="@string/outBatsmanData"
-		android:visibility="gone"/>
-
     <Button
         android:id="@+id/btnSelFacingBatsman"
         style="@style/ButtonStyle"
@@ -129,11 +122,25 @@
         android:text="@string/selFacingBatsman"
         android:visibility="gone"/>
 
+    <TextView
+        android:id="@+id/tvOutBatsmanDetails"
+        style="@style/TextViewStyle"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/outBatsmanData"
+        android:visibility="gone"/>
+
     <Button
         android:id="@+id/btnSelBowler"
         style="@style/ButtonStyle"
         android:layout_gravity="center_horizontal"
         android:text="@string/selBowler"
+        android:visibility="gone"/>
+
+
+    <TextView
+        android:id="@+id/tvInningsComplete"
+        style="@style/TextViewStyle.Bold.Medium.MorePadding"
+        android:text="@string/inningsComplete"
         android:visibility="gone"/>
 
     <Button

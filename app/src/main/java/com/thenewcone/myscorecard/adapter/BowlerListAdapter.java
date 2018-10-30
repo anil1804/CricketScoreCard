@@ -84,7 +84,7 @@ public class BowlerListAdapter extends RecyclerView.Adapter<BowlerListAdapter.My
             int maxAllowed = CommonUtils.oversToBalls((double) maxPerBowler);
             int remBalls = maxAllowed - ballsBowled;
 
-            if(remBalls > 6) {
+            if(remBalls >= 6) {
                 tvOversLeft.setText(String.valueOf(CommonUtils.ballsToOvers(remBalls)));
             } else {
                 tvOversLeft.setText("0");

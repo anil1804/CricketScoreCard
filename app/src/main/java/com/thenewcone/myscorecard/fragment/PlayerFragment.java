@@ -26,6 +26,7 @@ import com.thenewcone.myscorecard.intf.DialogItemClickListener;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.utils.CommonUtils;
+import com.thenewcone.myscorecard.utils.database.AddDBData;
 import com.thenewcone.myscorecard.utils.database.DatabaseHandler;
 
 import java.util.ArrayList;
@@ -79,6 +80,12 @@ public class PlayerFragment extends Fragment
             	intent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, new DatabaseHandler(getContext()).getAllPlayers().toArray());
             	startActivityForResult(intent, REQ_CODE_DISPLAY_ALL_PLAYERS);
                 break;
+
+			case R.id.menu_loadData:
+				AddDBData addData = new AddDBData(getContext());
+				if(addData.addPlayers())
+					Toast.makeText(getContext(), "Data uploaded successfully", Toast.LENGTH_SHORT).show();
+				break;
         }
 
         return true;
@@ -122,9 +129,9 @@ public class PlayerFragment extends Fragment
             	if(type != Player.BattingType.NOT_SELECTED)
                 	battingStyles[i++] = type.toString();
 
-            StringDialog dialog = StringDialog.newInstance("Select Batting Style", battingStyles, StringDialog.ARG_ENUM_TYPE_BAT_STYLE);
+            StringDialog dialog = StringDialog.newInstance("Select Batting Style", battingStyles, StringDialog.ARG_TYPE_BAT_STYLE);
             dialog.setDialogItemClickListener(this);
-            dialog.show(getFragmentManager(), StringDialog.ARG_ENUM_TYPE_BAT_STYLE + "Dialog");
+            dialog.show(getFragmentManager(), StringDialog.ARG_TYPE_BAT_STYLE + "Dialog");
         }
     }
 
@@ -140,9 +147,9 @@ public class PlayerFragment extends Fragment
 
             bowlingStyles[i] = Player.BowlingType.NONE.toString();
 
-            StringDialog dialog = StringDialog.newInstance("Select Bowling Style", bowlingStyles, StringDialog.ARG_ENUM_TYPE_BOWL_STYLE);
+            StringDialog dialog = StringDialog.newInstance("Select Bowling Style", bowlingStyles, StringDialog.ARG_TYPE_BOWL_STYLE);
             dialog.setDialogItemClickListener(this);
-            dialog.show(getFragmentManager(), StringDialog.ARG_ENUM_TYPE_BOWL_STYLE + "Dialog");
+            dialog.show(getFragmentManager(), StringDialog.ARG_TYPE_BOWL_STYLE + "Dialog");
         }
     }
 
@@ -181,13 +188,13 @@ public class PlayerFragment extends Fragment
     }
 
     @Override
-    public void onItemSelect(String enumType, String value, int position) {
-        switch (enumType) {
-            case StringDialog.ARG_ENUM_TYPE_BAT_STYLE:
+    public void onItemSelect(String type, String value, int position) {
+        switch (type) {
+            case StringDialog.ARG_TYPE_BAT_STYLE:
                 tvBatStyle.setText(value);
                 break;
 
-            case StringDialog.ARG_ENUM_TYPE_BOWL_STYLE:
+            case StringDialog.ARG_TYPE_BOWL_STYLE:
                 tvBowlStyle.setText(value);
                 break;
         }
@@ -328,6 +335,7 @@ public class PlayerFragment extends Fragment
 							teamIDList.add(team.getId());
 
 						associatedToTeams = teamIDList;
+						selPlayer.setTeamsAssociatedTo(teamIDList);
 
 						populateData();
 					}
