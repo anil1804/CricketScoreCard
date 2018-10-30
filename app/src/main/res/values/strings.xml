@@ -151,4 +151,6 @@
     <string name="batting">Bat</string>
     <string name="bowling">Bowl</string>
     <string name="yes">Yes</string>
+	<string name="no">No</string>
+	<string name="outBatsmanData">%s %s %s %s</string>
 </resources>

@@ -106,8 +106,9 @@ public class BatsmanSelectActivity extends Activity
     private List<String> getPlayedBatsmen(BatsmanStats[] batsmenPlayed) {
         List<String> playedPlayers = new ArrayList<>();
 
-        for(BatsmanStats batsman : batsmenPlayed)
-            playedPlayers.add(batsman.getBatsmanName());
+        if(batsmenPlayed != null && batsmenPlayed.length > 0)
+            for(BatsmanStats batsman : batsmenPlayed)
+                playedPlayers.add(batsman.getBatsmanName());
 
         return playedPlayers;
     }

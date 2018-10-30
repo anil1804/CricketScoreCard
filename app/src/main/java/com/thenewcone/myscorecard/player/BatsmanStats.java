@@ -58,8 +58,16 @@ public class BatsmanStats implements Serializable {
 		this.notOut = notOut;
 	}
 
+	public Player getWicketEffectedBy() {
+		return wicketEffectedBy;
+	}
+
 	public void setWicketEffectedBy(Player wicketEffectedBy) {
 		this.wicketEffectedBy = wicketEffectedBy;
+	}
+
+	public BowlerStats getWicketTakenBy() {
+		return wicketTakenBy;
 	}
 
 	public void setWicketTakenBy(BowlerStats wicketTakenBy) {

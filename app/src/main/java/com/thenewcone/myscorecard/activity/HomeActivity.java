@@ -14,6 +14,7 @@ import android.view.MenuItem;
 
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.fragment.HomeFragment;
+import com.thenewcone.myscorecard.fragment.LimitedOversFragment;
 import com.thenewcone.myscorecard.fragment.NewMatchFragment;
 import com.thenewcone.myscorecard.fragment.PlayerFragment;
 import com.thenewcone.myscorecard.fragment.TeamFragment;
@@ -63,7 +64,8 @@ public class HomeActivity extends AppCompatActivity
 			if(getSupportFragmentManager().getBackStackEntryCount() > 0)
 				getSupportFragmentManager().popBackStack();
 			else
-				super.onBackPressed();
+				if(!isFragmentHidden(LimitedOversFragment.class.getSimpleName()))
+					super.onBackPressed();
 		}
 	}
 

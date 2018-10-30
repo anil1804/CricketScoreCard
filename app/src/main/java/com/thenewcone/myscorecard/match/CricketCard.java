@@ -17,7 +17,7 @@ public class CricketCard {
 	private int maxWickets;
 
 	private HashMap<String, BowlerStats> bowlerMap = new HashMap<>();
-	private SparseArray<BatsmanStats> batsmen = new SparseArray<>();
+	private HashMap<Integer, BatsmanStats> batsmen = new HashMap<>();
 
 	private int maxPerBowler;
 	private boolean inningsComplete;
@@ -124,12 +124,12 @@ public class CricketCard {
 		this.bowlerMap.put(bowler.getBowlerName(), bowler);
 	}
 
-	public SparseArray<BatsmanStats> getBatsmen() {
+	public HashMap<Integer, BatsmanStats> getBatsmen() {
 		return batsmen;
 	}
 
 	void appendToBatsmen(BatsmanStats batsman) {
-		this.batsmen.append(batsman.getPosition(), batsman);
+		this.batsmen.put(batsman.getPosition(), batsman);
 	}
 
 	void updateBatsmenData (BatsmanStats batsmanStats) {

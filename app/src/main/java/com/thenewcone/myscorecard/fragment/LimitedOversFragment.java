@@ -61,7 +61,7 @@ public class LimitedOversFragment extends Fragment
     TextView tvBat2Name, tvBat2Runs, tvBat2Balls, tvBat24s, tvBat26s, tvBat2SR;
     TextView tvLegByes, tvByes, tvWides, tvNoBalls, tvPenalty;
     TextView tvBowlName, tvBowlOvers, tvBowlMaidens, tvBowlRuns, tvBowlWickets, tvBowlEconomy;
-    TextView tvResult;
+    TextView tvResult, tvRunsInBalls;
 
     int maxWickets;
     boolean startInnings = true;
@@ -139,14 +139,14 @@ public class LimitedOversFragment extends Fragment
 		}
 
 		if(isInitial) {
-			TableRow tvTarget = theView.findViewById(R.id.trTarget);
-			TableRow tvRunsInBalls = theView.findViewById(R.id.trRunsInBalls);
+			TableRow trTarget = theView.findViewById(R.id.trTarget);
+			TableRow trRunsInBalls = theView.findViewById(R.id.trRunsInBalls);
 			if(currCard.getInnings() == 1) {
-				tvTarget.setVisibility(View.GONE);
-				tvRunsInBalls.setVisibility(View.GONE);
+				trTarget.setVisibility(View.GONE);
+				trRunsInBalls.setVisibility(View.GONE);
 			} else {
-				tvTarget.setVisibility(View.VISIBLE);
-				tvRunsInBalls.setVisibility(View.VISIBLE);
+				trTarget.setVisibility(View.VISIBLE);
+				trRunsInBalls.setVisibility(View.VISIBLE);
 			}
 
             tvCurrScore = theView.findViewById(R.id.tvScore);
@@ -173,6 +173,7 @@ public class LimitedOversFragment extends Fragment
 		} else {
 			if(currCard.getInnings() == 2) {
 				tvRRR.setText(CommonUtils.doubleToString(currCard.getReqRate(), "#.##"));
+
 			}
 		}
 
@@ -259,6 +260,14 @@ public class LimitedOversFragment extends Fragment
 
 		if(isInitial) {
 			tvResult = theView.findViewById(R.id.tvResult);
+			tvRunsInBalls = theView.findViewById(R.id.tvRunsInBalls);
+		}
+		if(currCard.getInnings() == 2) {
+        	int runsReq = ccUtils.getCard().getTarget() - ccUtils.getCard().getScore();
+        	int ballsRem = CommonUtils.oversToBalls(Double.parseDouble(ccUtils.getCard().getMaxOvers()))
+							- CommonUtils.oversToBalls(Double.parseDouble(ccUtils.getCard().getTotalOversBowled()));
+
+        	tvRunsInBalls.setText(String.format(getString(R.string.runsInBalls), runsReq, ballsRem));
 		}
 	}
 
@@ -289,7 +298,7 @@ public class LimitedOversFragment extends Fragment
             case LEG_BYE:
                 if(numExtraRuns > 0) {
                     extra = new Extra(Extra.ExtraType.LEG_BYE, numExtraRuns);
-                    newBallBowled(extra, numExtraRuns, null);
+                    newBallBowled(extra, 0, null);
                     ccUtils.checkNextBatsmanFacingBall(extra.getRuns());
                 }
                 break;
@@ -297,7 +306,7 @@ public class LimitedOversFragment extends Fragment
             case BYE:
                 if(numExtraRuns > 0) {
                     extra = new Extra(Extra.ExtraType.BYE, numExtraRuns);
-                    newBallBowled(extra, numExtraRuns, null);
+                    newBallBowled(extra, 0, null);
                     ccUtils.checkNextBatsmanFacingBall(extra.getRuns());
                 }
                 break;
@@ -305,7 +314,7 @@ public class LimitedOversFragment extends Fragment
             case WIDE:
                 if(numExtraRuns >= 0) {
                     extra = new Extra(Extra.ExtraType.WIDE, numExtraRuns);
-                    newBallBowled(extra, numExtraRuns, null);
+                    newBallBowled(extra, 0, null);
                 }
                 break;
 
@@ -385,7 +394,7 @@ public class LimitedOversFragment extends Fragment
 	}
 
 	private void selectBatsman() {
-		SparseArray<BatsmanStats> batsmen = ccUtils.getCard().getBatsmen();
+		HashMap<Integer, BatsmanStats> batsmen = ccUtils.getCard().getBatsmen();
 		BatsmanStats[] batsmenPlayed = new BatsmanStats[batsmen.size()];
 
 		for(int i=0; i<batsmen.size(); i++) {
@@ -465,12 +474,13 @@ public class LimitedOversFragment extends Fragment
 				if(resultCode == WicketDialogActivity.RESP_CODE_OK) {
 				    WicketData wktData = (WicketData) data.getSerializableExtra(WicketDialogActivity.ARG_WICKET_DATA);
 				    Extra extraData = (Extra) data.getSerializableExtra(WicketDialogActivity.ARG_EXTRA_DATA);
-                    outBatsman = wktData.getBatsman();
+                    outBatsman = (ccUtils.getCurrentFacing().getPlayer().getID() == wktData.getBatsman().getPlayer().getID())
+									? ccUtils.getCurrentFacing() : ccUtils.getOtherBatsman();
 
 					newBallBowled(extraData, 0, wktData);
 
+					dismissalType = wktData.getDismissalType();
                     updateScreenForBatsmanSelect(View.GONE, View.VISIBLE, View.GONE);
-                    dismissalType = wktData.getDismissalType();
                     updateCardDetails(false);
 				}
 				break;
@@ -487,6 +497,9 @@ public class LimitedOversFragment extends Fragment
 								case RUN_OUT:
 								case RETIRED:
 								case OBSTRUCTING_FIELD:
+								case CAUGHT:
+								case TIMED_OUT:
+								case HIT_BALL_TWICE:
 									updateScreenForBatsmanSelect(View.GONE, View.GONE, View.VISIBLE);
 									break;
 
@@ -578,10 +591,67 @@ public class LimitedOversFragment extends Fragment
         LinearLayout llScoring = theView.findViewById(R.id.llScoring);
         Button btnSelBatsman = theView.findViewById(R.id.btnSelBatsman);
         Button btnSelFacing = theView.findViewById(R.id.btnSelFacingBatsman);
+        TextView tvOutBatsmanDetails = theView.findViewById(R.id.tvOutBatsmanDetails);
 
         llScoring.setVisibility(scoringButtonsVisibility);
         btnSelBatsman.setVisibility(batsmanSelectionVisibility);
         btnSelFacing.setVisibility(currentFacingSelectVisibility);
+
+        if(dismissalType != null)
+		{
+			int outBatsmanVisibility = (batsmanSelectionVisibility == View.VISIBLE || currentFacingSelectVisibility == View.VISIBLE)
+										? View.VISIBLE : View.GONE;
+			tvOutBatsmanDetails.setVisibility(outBatsmanVisibility);
+			String outBy = "", bowledBy = "", score = outBatsman.getRunsScored() + "(" + outBatsman.getBallsPlayed() + ")";
+			switch (dismissalType) {
+				case CAUGHT:
+					outBy = "c " + outBatsman.getWicketEffectedBy().getName();
+					bowledBy = "b " + ccUtils.getBowler().getBowlerName();
+					break;
+
+				case STUMPED:
+					outBy = "st " + outBatsman.getWicketEffectedBy().getName();
+					bowledBy = "b " + ccUtils.getBowler().getBowlerName();
+					break;
+
+				case RUN_OUT:
+					outBy = "runout (" + outBatsman.getWicketEffectedBy().getName() + ")";
+					break;
+
+				case BOWLED:
+					bowledBy = "b " + ccUtils.getBowler().getBowlerName();
+					break;
+
+				case LBW:
+					bowledBy = "lbw " + ccUtils.getBowler().getBowlerName();
+					break;
+
+				case HIT_BALL_TWICE:
+					outBy = "(hit ball twice)";
+					break;
+
+				case HIT_WICKET:
+					outBy = "(hit-wicket)";
+					break;
+
+				case OBSTRUCTING_FIELD:
+					outBy = "(obstructing field)";
+					break;
+
+				case RETIRED:
+					outBy = "(retired)";
+					break;
+
+				case TIMED_OUT:
+					outBy = "(timed out)";
+					break;
+			}
+
+			tvOutBatsmanDetails.setText(String.format(Locale.getDefault(), getString(R.string.outBatsmanData),
+					outBatsman.getBatsmanName(), outBy, bowledBy, score));
+		} else {
+			tvOutBatsmanDetails.setVisibility(View.GONE);
+		}
     }
 
 	private void updateScreenForBowlerSelect(int scoringButtonsVisibility, int bowlerSelectVisibility) {

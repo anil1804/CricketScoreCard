@@ -115,6 +115,13 @@
         android:text="@string/selBatsman"
         android:visibility="gone"/>
 
+    <TextView
+		android:id="@+id/tvOutBatsmanDetails"
+		style="@style/TextViewStyle"
+		android:layout_gravity="center_horizontal"
+		android:text="@string/outBatsmanData"
+		android:visibility="gone"/>
+
     <Button
         android:id="@+id/btnSelFacingBatsman"
         style="@style/ButtonStyle"

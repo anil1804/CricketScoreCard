@@ -389,12 +389,6 @@ public class WicketDialogActivity extends FragmentActivity
 		}
 	}
 
-	private void displayFieldingTeam() {
-		Intent playerIntent = new Intent(this, PlayerSelectActivity.class);
-		playerIntent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, fieldingTeam);
-		startActivityForResult(playerIntent, ACTIVITY_REQ_CODE_FIELDER_SELECT);
-	}
-
 	private void displayBatsmen() {
 	    Intent batsmanIntent = new Intent(this, BatsmanSelectActivity.class);
 	    BatsmanStats[] batsmen = {facingBatsman, otherBatsman};

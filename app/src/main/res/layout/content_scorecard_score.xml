@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+
+	<TableRow
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<TextView
+			android:id="@+id/tvBattingTeam"
+			style="@style/TextViewStyle.Big"/>
+
+		<TextView
+			android:id="@+id/tvScore"
+			style="@style/TextViewStyle.Big.Bold"
+			android:text="@string/defaultScore"/>
+
+		<TextView
+			android:id="@+id/tvOvers"
+			android:text="@string/tvOversText"
+			style="@style/TextViewStyle"/>
+
+		<TextView
+			style="@style/TextViewStyle.Bold"
+			android:layout_weight="1"
+			android:gravity="end"
+			android:text="@string/tvRRText" />
+
+		<TextView
+			android:id="@+id/tvCRR"
+			style="@style/TextViewStyle"
+			android:layout_marginEnd="30dp" />
+
+	</TableRow>
+
+	<TableRow
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:id="@+id/trTarget">
+
+		<TextView
+			android:text="@string/tvTargetText"
+			style="@style/TextViewStyle.Bold"/>
+
+		<TextView
+			android:id="@+id/tvTarget"
+			style="@style/TextViewStyle"
+			android:text="@string/notApplicable"/>
+
+		<TextView
+			android:id="@+id/tvMaxOvers"
+			android:gravity="end"
+			android:text="@string/tvOversText"
+			style="@style/TextViewStyle"/>
+
+		<TextView
+			style="@style/TextViewStyle.Bold"
+			android:layout_weight="1"
+			android:gravity="end"
+			android:text="@string/tvRRRText" />
+
+		<TextView
+			android:id="@+id/tvRRR"
+			style="@style/TextViewStyle"
+			android:layout_marginEnd="30dp"
+			android:text="@string/notApplicable" />
+
+	</TableRow>
+
+	<TableRow
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:id="@+id/trRunsInBalls">
+
+		<TextView
+			android:id="@+id/tvRunsInBalls"
+			style="@style/TextViewStyle"/>
+
+	</TableRow>
+
+</TableLayout>

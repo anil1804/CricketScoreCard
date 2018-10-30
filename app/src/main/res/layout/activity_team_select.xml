@@ -3,39 +3,46 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"
+	android:layout_height="wrap_content"
 	android:orientation="vertical">
 
 	<ScrollView
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_height="wrap_content">
 
-		<android.support.v7.widget.RecyclerView
-			android:id="@+id/rcvTeamList"
+		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			tools:context=".activity.TeamSelectActivity"/>
+			android:orientation="vertical">
+
+			<android.support.v7.widget.RecyclerView
+				android:id="@+id/rcvTeamList"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				tools:context=".activity.TeamSelectActivity"/>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end"
+				android:id="@+id/llTeamSelectButtons"
+				android:orientation="horizontal">
+
+				<Button
+					style="@style/ButtonStyle.Submit"
+					android:id="@+id/btnTeamSelectOK"
+					android:text="@string/ok"/>
+
+				<Button
+					style="@style/ButtonStyle.Submit"
+					android:id="@+id/btnTeamSelectCancel"
+					android:text="@string/cancel"/>
+
+			</LinearLayout>
+
+		</LinearLayout>
 
 	</ScrollView>
-
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_gravity="end"
-		android:id="@+id/llTeamSelectButtons"
-		android:orientation="horizontal">
-
-		<Button
-			style="@style/ButtonStyle.Submit"
-			android:id="@+id/btnTeamSelectOK"
-			android:text="@string/ok"/>
-
-		<Button
-			style="@style/ButtonStyle.Submit"
-			android:id="@+id/btnTeamSelectCancel"
-			android:text="@string/cancel"/>
-
-	</LinearLayout>
 
 	<LinearLayout
 		android:layout_width="wrap_content"

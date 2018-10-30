@@ -381,7 +381,7 @@ public class PlayerFragment extends Fragment
 	private void confirmDeletePlayer() {
     	if(getFragmentManager() != null) {
 			ConfirmationDialog dialog = ConfirmationDialog.newInstance(CONFIRMATION_DELETE_PLAYER, "Confirm Delete", "Are you sure you want to delete the player?");
-			dialog.setDialogConfirmationClickListener(this);
+			dialog.setConfirmationClickListener(this);
 			dialog.show(getFragmentManager(), "ConfirmPlayerDeleteDialog");
 		}
 	}

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:paddingTop="10dp"
+	android:paddingStart="6dp"
+	android:paddingEnd="6dp">
+
+	<View style="@style/LineSeparator"/>
+
+	<!-- Batsman Header Row -->
+	<TableRow
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:background="@color/gray_200">
+
+		<TextView
+			android:layout_weight="1"
+			style="@style/TextViewStyle.TableRow.Header"
+			android:text="@string/headerBatsman"/>
+
+		<TextView
+			style="@style/TextViewStyle.TableRow.Data.Header"
+			android:text="@string/headerRuns"/>
+
+		<TextView
+			style="@style/TextViewStyle.TableRow.Data.Header"
+			android:text="@string/headerBalls"/>
+
+		<TextView
+			style="@style/TextViewStyle.TableRow.Data.Header"
+			android:text="@string/headerFours"/>
+
+		<TextView
+			style="@style/TextViewStyle.TableRow.Data.Header"
+			android:text="@string/headerSixes"/>
+
+		<TextView
+			style="@style/TextViewStyle.TableRow.Data.Header"
+			android:layout_width="50dp"
+			android:text="@string/headerStrikeRate"/>
+
+	</TableRow>
+
+	<!-- Separator -->
+	<View style="@style/LineSeparator"/>
+
+	<!-- Batsman-1 Details -->
+	<TableRow
+		android:id="@+id/trBatsman1"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content">
+
+		<TextView
+			android:id="@+id/tvBat1Name"
+			android:layout_weight="1"
+			style="@style/TextViewStyle.TableRow"/>
+
+		<TextView
+			android:id="@+id/tvBat1RunsScored"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+		<TextView
+			android:id="@+id/tvBat1BallsFaced"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+		<TextView
+			android:id="@+id/tvBat14sHit"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+		<TextView
+			android:id="@+id/tvBat16sHit"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+		<TextView
+			android:id="@+id/tvBat1SR"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+	</TableRow>
+
+	<!-- Batsman-2 Details -->
+	<TableRow
+		android:id="@+id/trBatsman2"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content">
+
+		<TextView
+			android:id="@+id/tvBat2Name"
+			android:layout_weight="1"
+			style="@style/TextViewStyle.TableRow"/>
+
+		<TextView
+			android:id="@+id/tvBat2RunsScored"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+		<TextView
+			android:id="@+id/tvBat2BallsFaced"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+		<TextView
+			android:id="@+id/tvBat24sHit"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+		<TextView
+			android:id="@+id/tvBat26sHit"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+		<TextView
+			android:id="@+id/tvBat2SR"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+	</TableRow>
+
+	<!-- Separator -->
+	<View style="@style/LineSeparator"/>
+
+	<!-- Extras -->
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:paddingTop="5dp"
+		android:paddingBottom="15dp"
+		android:background="@color/lime_100">
+
+		<TextView
+			style="@style/TextViewStyle"
+			android:text="@string/extrasText"/>
+
+		<TextView
+			android:id="@+id/tvLegByes"
+			style="@style/TextViewStyle"
+			android:text="@string/legByes"/>
+
+		<TextView
+			android:id="@+id/tvByes"
+			style="@style/TextViewStyle"
+			android:text="@string/byes"/>
+
+		<TextView
+			android:id="@+id/tvWides"
+			style="@style/TextViewStyle"
+			android:text="@string/wides"/>
+
+		<TextView
+			android:id="@+id/tvNoBalls"
+			style="@style/TextViewStyle"
+			android:text="@string/noBalls"/>
+
+		<TextView
+			android:id="@+id/tvPenalty"
+			style="@style/TextViewStyle"
+			android:text="@string/penalty"/>
+
+	</LinearLayout>
+
+	<!-- Separator -->
+	<View style="@style/LineSeparator"/>
+
+	<!-- Bowler Header Details -->
+	<TableRow
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:background="@color/gray_200">
+
+		<TextView
+			android:layout_weight="1"
+			style="@style/TextViewStyle.TableRow.Header"
+			android:text="@string/headerBowler"/>
+
+		<TextView
+			style="@style/TextViewStyle.TableRow.Data.Header"
+			android:text="@string/headerOvers"/>
+
+		<TextView
+			style="@style/TextViewStyle.TableRow.Data.Header"
+			android:text="@string/headerMaidens"/>
+
+		<TextView
+			style="@style/TextViewStyle.TableRow.Data.Header"
+			android:text="@string/headerRuns"/>
+
+		<TextView
+			style="@style/TextViewStyle.TableRow.Data.Header"
+			android:text="@string/headerWickets"/>
+
+		<TextView
+			style="@style/TextViewStyle.TableRow.Data.Header"
+			android:text="@string/headerEconomy"/>
+
+	</TableRow>
+
+	<!-- Separator -->
+	<View style="@style/LineSeparator"/>
+
+	<!-- Bowler Details -->
+	<TableRow
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content">
+
+		<TextView
+			android:id="@+id/tvBowlName"
+			android:layout_weight="1"
+			style="@style/TextViewStyle.TableRow"/>
+
+		<TextView
+			android:id="@+id/tvBowlOvers"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+		<TextView
+			android:id="@+id/tvBowlMaidens"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+		<TextView
+			android:id="@+id/tvBowlRuns"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+		<TextView
+			android:id="@+id/tvBowlWickets"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+		<TextView
+			android:id="@+id/tvBowlEconomy"
+			style="@style/TextViewStyle.TableRow.Data"
+			android:text="@string/zero"/>
+
+	</TableRow>
+
+	<View style="@style/LineSeparator"/>
+
+</TableLayout>

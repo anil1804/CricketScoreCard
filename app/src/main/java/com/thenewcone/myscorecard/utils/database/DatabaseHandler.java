@@ -531,9 +531,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void updateTeamList(@NonNull Team team, List<Integer> newPlayers, List<Integer> deletedPlayers) {
 
 		if(newPlayers != null && newPlayers.size() > 0) {
-			SQLiteDatabase db = this.getWritableDatabase();
 
 			for (int playerID : newPlayers) {
+				SQLiteDatabase db = this.getWritableDatabase();
 				ContentValues values = new ContentValues();
 				values.put(TBL_TEAM_PLAYERS_TEAM_ID, team.getId());
 				values.put(TBL_TEAM_PLAYERS_PLAYER_ID, playerID);
@@ -549,14 +549,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 					player.setTeamsAssociatedTo(teamsAssociatedTo);
 					upsertPlayer(player);
 				}
+				db.close();
 			}
-			db.close();
 		}
 
 		if(deletedPlayers != null && deletedPlayers.size() > 0) {
-			SQLiteDatabase db = this.getWritableDatabase();
-
 			for (int playerID : deletedPlayers) {
+				SQLiteDatabase db = this.getWritableDatabase();
 				db.delete(TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_PLAYER_ID + " = ? AND " + TBL_TEAM_PLAYERS_TEAM_ID + " = ?",
 						new String[]{String.valueOf(playerID), String.valueOf(team.getId())});
 
@@ -572,8 +571,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 						}
 					}
 				}
+				db.close();
 			}
-			db.close();
 		}
     }
 
