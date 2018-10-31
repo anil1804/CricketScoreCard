@@ -262,4 +262,18 @@ public class CommonUtils {
 
 		return null;
 	}
+
+	public static String[] listToArray(List<String> theList) {
+		String[] stringArr = null;
+
+		if(theList != null && theList.size() > 0) {
+			stringArr = new String[theList.size()];
+
+			int i=0;
+			for(String theStr : theList)
+				stringArr[i++] = theStr;
+		}
+
+		return stringArr;
+	}
 }

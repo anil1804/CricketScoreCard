@@ -7,15 +7,25 @@ import com.thenewcone.myscorecard.player.Player;
 
 public class AddDBData {
 
-	Context context;
-	DatabaseHandler dbh;
+	private Context context;
+	private DatabaseHandler dbh;
 
 	public AddDBData(Context context) {
 		this.context = context;
 		dbh = new DatabaseHandler(context);
 	}
 
+	public boolean addAll() {
+		if(addTeams())
+		{
+			return addPlayers();
+		}
+
+		return false;
+	}
+
 	public boolean addTeams() {
+		dbh.deleteAllTeams();
 		dbh.upsertTeam(new Team("Australia", "AUS"));
 		dbh.upsertTeam(new Team("Pakistan", "PAK"));
 
@@ -23,6 +33,7 @@ public class AddDBData {
 	}
 
 	public boolean addPlayers() {
+		dbh.deleteAllPlayers();
 		dbh.upsertPlayer(new Player("Fakhar Zaman", 28, Player.BattingType.LHB, Player.BowlingType.SLA, false));
 		dbh.upsertPlayer(new Player("Babar Azam", 24, Player.BattingType.RHB, Player.BowlingType.OB, false));
 		dbh.upsertPlayer(new Player("Mohammad Hafeez", 38, Player.BattingType.RHB, Player.BowlingType.OB, false));

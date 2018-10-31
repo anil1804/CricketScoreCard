@@ -20,12 +20,12 @@ public class BatsmanListAdapter extends RecyclerView.Adapter<BatsmanListAdapter.
 	private List<BatsmanStats> batsmen;
 	private Context context;
 	private ItemClickListener clickListener;
-	private int selectedIndex = -1, newBatsmanPosn = -1, defaultSelectedIx;
+	private int selectedIndex = -1, newBatsmanPosition, defaultSelectedIx;
 
 	public BatsmanListAdapter(@NonNull Context context, @NonNull List<BatsmanStats> batsmen, int position, int defaultSelIx) {
 		this.context = context;
 		this.batsmen = batsmen;
-		this.newBatsmanPosn = position;
+		this.newBatsmanPosition = position;
 		this.defaultSelectedIx = defaultSelIx;
 	}
 
@@ -72,13 +72,14 @@ public class BatsmanListAdapter extends RecyclerView.Adapter<BatsmanListAdapter.
 		}
 
 		public void setData(BatsmanStats batsman) {
-            tvBatsmanName.setText(batsman.getBatsmanName());
+        	String batText = batsman.getBatsmanName() +(batsman.getPlayer().isWicketKeeper() ? " (w)" : "");
+            tvBatsmanName.setText(batText);
 
-             if(newBatsmanPosn > -1) {
+             if(newBatsmanPosition > -1) {
                  tvBattingStyle.setText(batsman.getPlayer().getBattingStyle().toString());
              }
 
-            if (newBatsmanPosn > batsman.getPosition()) {
+            if (newBatsmanPosition > batsman.getPosition()) {
                 llBatsmanItem.setEnabled(false);
             }
 

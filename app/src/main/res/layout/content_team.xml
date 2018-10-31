@@ -13,13 +13,14 @@
         <TextView
             style="@style/TextViewStyle.Bold.Medium.MorePadding"
             android:text="@string/teamName"
-				android:labelFor="@id/etTeamName"/>
+			android:labelFor="@id/etTeamName"/>
 
         <EditText
             style="@style/EditTextStyle"
             android:layout_width="280dp"
             android:maxLength="30"
-            android:id="@+id/etTeamName"/>
+            android:id="@+id/etTeamName"
+            android:inputType="text"/>
 
         <TextView
             style="@style/TextViewStyle.Bold.Medium.MorePadding"
@@ -30,7 +31,18 @@
             style="@style/EditTextStyle"
             android:layout_width="80dp"
 			android:maxLength="8"
+            android:inputType="text"
             android:id="@+id/etTeamShortName"/>
+
+        <TextView
+            style="@style/TextViewStyle.Bold.Medium.MorePadding"
+            android:text="@string/players"
+            android:labelFor="@id/tvPlayers"/>
+
+        <TextView
+            style="@style/TextViewStyle"
+            android:id="@+id/tvPlayers"
+            android:text="@string/none"/>
 
     </GridLayout>
 

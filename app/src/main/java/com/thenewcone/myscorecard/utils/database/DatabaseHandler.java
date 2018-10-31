@@ -27,7 +27,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "CricketScoreCard";
 
-	public static final String SAVE_AUTO = "Auto";
+	private static final String SAVE_AUTO = "Auto";
 	public static final String SAVE_MANUAL = "Manual";
 
     private final String TBL_STATE = "CricketMatch_State";
@@ -179,7 +179,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
 
 		if(isAuto == 1)
-			clearMatchStateHistory(maxUndoAllowed);
+			clearMatchStateHistory(maxUndoAllowed, matchID, -1);
 
         return (int) rowIID;
     }
@@ -188,15 +188,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return saveMatchState(matchID, matchJson, 0, saveName, null);
     }
 
-    public int autoSaveMatch(int matchID, String matchJson, String matchName) {
-        return saveMatchState(matchID, matchJson, 1, null, matchName);
+    public void autoSaveMatch(int matchID, String matchJson, String matchName) {
+        saveMatchState(matchID, matchJson, 1, null, matchName);
     }
 
-    public SparseArray<String> getSavedMatches(String autoOrManual) {
-        return getSavedMatches(autoOrManual, 0, null);
-    }
-
-    public int getSaveMatchStateSaveOrder(int matchID) {
+    private int getSaveMatchStateSaveOrder(int matchID) {
     	int saveOrder = 1;
     	final String MAX_SAVE_ORDER = "MAX_SAVE_ORDER";
 
@@ -222,18 +218,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String selectQuery = "SELECT * FROM " + TBL_STATE;
         switch (autoOrManual) {
             case SAVE_AUTO:
-                selectQuery += " WHERE " + TBL_STATE_IS_AUTO + "=0";
-                break;
-            case SAVE_MANUAL:
                 selectQuery += " WHERE " + TBL_STATE_IS_AUTO + "=1";
                 break;
+
+            case SAVE_MANUAL:
+                selectQuery += " WHERE " + TBL_STATE_IS_AUTO + "=0";
+                break;
+
+			default:
+				selectQuery += " WHERE " + TBL_STATE_IS_AUTO + "<2";
         }
 
         if(matchID > 0) {
 			selectQuery += " AND " + TBL_STATE_MATCH_ID + " = " + matchID;
 		} else  if(partialName != null) {
             partialName = partialName.replaceAll("\\*", "%");
-            selectQuery += " AND " + TBL_STATE_NAME + " LIKE " + partialName;
+            selectQuery += " AND " + TBL_STATE_NAME + " LIKE '%" + partialName + "%'";
         }
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -274,37 +274,61 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     	SQLiteDatabase db = this.getReadableDatabase();
     	String selectQuery = String.format(Locale.getDefault(),
-				"SELECT MAX(%s) AS %s FROM %s WHERE %s = %d", TBL_STATE_ORDER, MAX_SAVE_ORDER, TBL_STATE, TBL_STATE_ORDER);
+				"SELECT MAX(%s) AS %s FROM %s WHERE %s = %d AND %s = 1"
+				, TBL_STATE_ORDER, MAX_SAVE_ORDER, TBL_STATE, TBL_STATE_MATCH_ID, matchID, TBL_STATE_IS_AUTO);
     	Cursor cursor = db.rawQuery(selectQuery, null);
 
     	if(cursor != null && cursor.moveToFirst()) {
     		matchStateID = cursor.getInt(cursor.getColumnIndex(MAX_SAVE_ORDER));
+			cursor.close();
 		}
+    	db.close();
 
 		return matchStateID;
 	}
 
     public void deleteMatch(int matchStateID) {
     	String query = String.format(Locale.getDefault(),
-				"DELETE FROM %s WHERE %s = %d)", TBL_STATE, TBL_STATE_ORDER, matchStateID);
+				"DELETE FROM %s WHERE %s = %d", TBL_STATE, TBL_STATE_ORDER, matchStateID);
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.execSQL(query);
 		db.close();
 	}
 
-	public void clearMatchStateHistory(int ignoreCount) {
+	public void clearMatchStateHistory(int ignoreCount, int matchID, int matchStateID) {
+    	if(matchID < 0) {
+			getMatchID(matchStateID);
+		}
+
+		SQLiteDatabase db = this.getWritableDatabase();
     	String query = String.format(Locale.getDefault(),
-				"DELETE FROM %s WHERE %s NOT IN (SELECT * FROM (SELECT %S FROM %s ORDER BY %s DESC) WHERE ROW_ID <= %d)"
-				, TBL_STATE, TBL_STATE_ORDER, TBL_STATE_ORDER, TBL_STATE, TBL_STATE_ORDER, ignoreCount);
+				"DELETE FROM %s WHERE %s NOT IN (SELECT %s FROM %s ORDER BY %s DESC LIMIT %d) AND %s = 1"
+				, TBL_STATE, TBL_STATE_ORDER, TBL_STATE_ORDER, TBL_STATE, TBL_STATE_ORDER, ignoreCount, TBL_STATE_IS_AUTO);
     	Log.i("StateHistory", "Delete Query : " + query);
 
-		SQLiteDatabase db = this.getWritableDatabase();
 		db.execSQL(query);
 		db.close();
 	}
 
-    public Player getPlayer(int playerID) {
+	public int getMatchID(int matchStateID) {
+    	int matchID = -1;
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		String matchIDQuery = String.format(Locale.getDefault(),
+				"SELECT %s FROM %s WHERE %s = %d", TBL_STATE_MATCH_ID, TBL_STATE, TBL_STATE_ID, matchStateID);
+		Cursor cursor = db.rawQuery(matchIDQuery, null);
+
+		if(cursor != null && cursor.moveToFirst()) {
+			matchID = cursor.getInt(cursor.getColumnIndex(TBL_STATE_MATCH_ID));
+			cursor.close();
+		}
+		db.close();
+
+		return matchID;
+	}
+
+	private Player getPlayer(int playerID) {
 
         String selectQuery = "SELECT * FROM " + TBL_PLAYER + " WHERE " + TBL_PLAYER_ID + " = " + playerID;
 
@@ -322,11 +346,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return player;
     }
 
-    public List<Player> getMatchingPlayers(String playerName, boolean exactMatch) {
+    private List<Player> getMatchingPlayers(String playerName) {
         String selectQuery = "SELECT * FROM " + TBL_PLAYER + " WHERE " + TBL_PLAYER_NAME;
-        selectQuery += (exactMatch)
-                        ? String.format(" = '%s'", playerName)
-                        : String.format(" LIKE '%s%s%s'", "%", playerName, "%");
+        selectQuery += String.format(" = '%s'", playerName);
 
         Log.i("Query", "Select Query -> " + selectQuery);
 
@@ -387,7 +409,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         if(player.getID() < 0) {
-            if(getMatchingPlayers(player.getName(), true).size() > 0) {
+            if(getMatchingPlayers(player.getName()).size() > 0) {
                 return CODE_INS_PLAYER_DUP_RECORD;
             }
         }
@@ -408,6 +430,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			rowID = db.update(TBL_PLAYER, values, TBL_PLAYER_ID + " = ?", new String[]{String.valueOf(player.getID())});
         db.close();
 
+        Log.i("DatabaseHandler" , "upsertPlayer : Player ID : " + rowID);
         return (int) rowID;
     }
 
@@ -448,6 +471,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return success;
     }
 
+	void deleteAllPlayers() {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		db.delete(TBL_PLAYER, null, null);
+		db.close();
+    }
+
     public int upsertTeam(Team team) {
         ContentValues values = new ContentValues();
 
@@ -472,6 +502,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return (int) rowID;
     }
+
+    void deleteAllTeams() {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		db.delete(TBL_TEAM, null, null);
+		db.close();
+	}
 
     public boolean deleteTeam(int teamID) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -686,18 +723,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         long rowID = CODE_NEW_MATCH_DUP_RECORD;
 
-        if(getAllMatches(match.getName(), null).size() == 0) {
+        List<Match> matches = getAllMatches(match.getName());
+        boolean isDuplicate = matches.size() > 0;
+
+        if(isDuplicate && getSavedMatches(SAVE_MANUAL, matches.get(0).getId(), null).size() == 0) {
+			isDuplicate = false;
+		}
+
+        if(!isDuplicate) {
 			SQLiteDatabase db = this.getWritableDatabase();
 			rowID = db.insert(TBL_MATCH, null, values);
 			db.close();
 		}
 
-
         return (int) rowID;
     }
 
-    public List<Match> getAllMatches(String matchNamePattern, String team) {
+    private List<Match> getAllMatches(String matchNamePattern) {
         StringBuilder whereClauseSB = new StringBuilder();
+        String TEAM1_NAME = "TEAM1_NAME";
+        String TEAM2_NAME = "TEAM2_NAME";
         if(matchNamePattern != null) {
             whereClauseSB.append(whereClauseSB.toString().length() == 0 ? " WHERE " : " AND ");
             whereClauseSB.append(TBL_MATCH_NAME);
@@ -705,18 +750,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             whereClauseSB.append(matchNamePattern);
             whereClauseSB.append("%'");
         }
-        if(team != null) {
+        /*if(team != null) {
             whereClauseSB.append(whereClauseSB.toString().length() == 0 ? " WHERE " : " AND ");
             whereClauseSB.append(String.format("(%s = %s OR %s = %s)", TBL_MATCH_TEAM1, team, TBL_MATCH_TEAM2, team));
-        }
+        }*/
 
-        String selectQuery = "SELECT *, " +
-                "(SELECT " + TBL_TEAM_NAME + " AS TEAM1NAME WHERE " + TBL_TEAM_ID + " = " + TBL_MATCH + "." + TBL_MATCH_TEAM1 + "), " +
-                "(SELECT " + TBL_TEAM_NAME + " AS TEAM2NAME WHERE " + TBL_TEAM_ID + " = " + TBL_MATCH + "." + TBL_MATCH_TEAM2 + ") " +
-                "FROM " + TBL_MATCH
-                + (whereClauseSB.toString().length() != 0 ? whereClauseSB.toString() : "");
+        String selectQuery = String.format(Locale.getDefault(),
+				"SELECT *, " +
+				"(SELECT %s FROM %s WHERE %s = %s) AS %s, " +
+                "(SELECT %s FROM %s WHERE %s = %s) AS %s " +
+                "FROM %s"
+				, TBL_TEAM_NAME, TBL_TEAM, TBL_TEAM_ID, TBL_MATCH+"."+TBL_MATCH_TEAM1, TEAM1_NAME
+				, TBL_TEAM_NAME, TBL_TEAM, TBL_TEAM_ID, TBL_MATCH+"."+TBL_MATCH_TEAM2, TEAM2_NAME
+				, TBL_MATCH);
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        selectQuery += (whereClauseSB.toString().length() != 0) ? whereClauseSB.toString() : "";
+
+		SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         List<Match> matchList = new ArrayList<>();
@@ -728,8 +778,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 int team1ID = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_TEAM1));
                 int team2ID = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_TEAM2));
                 String matchName = cursor.getString(cursor.getColumnIndex(TBL_MATCH_NAME));
-                String team1Name = cursor.getString(cursor.getColumnIndex("TEAM1NAME"));
-                String team2Name = cursor.getString(cursor.getColumnIndex("TEAM2NAME"));
+                String team1Name = cursor.getString(cursor.getColumnIndex(TEAM1_NAME));
+                String team2Name = cursor.getString(cursor.getColumnIndex(TEAM2_NAME));
 
                 match = new Match(matchID, matchName, new Team(team1ID, team1Name), new Team(team2ID, team2Name));
 
@@ -742,25 +792,4 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return matchList;
     }
-
-    public Match getMatch(int matchID) {
-    	Match match = null;
-
-    	SQLiteDatabase db = this.getReadableDatabase();
-    	if(matchID > 0) {
-    		String selectQuery = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d", TBL_MATCH, TBL_MATCH_ID, matchID);
-    		Cursor cursor = db.rawQuery(selectQuery, null);
-
-    		if(cursor != null && cursor.moveToFirst()) {
-    			String matchName = cursor.getString(cursor.getColumnIndex(TBL_MATCH_NAME));
-    			int team1ID = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_TEAM1));
-    			int team2ID = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_TEAM2));
-
-    			match = new Match(matchID, matchName, getTeams(null, team1ID).get(0), getTeams(null, team2ID).get(0));
-			}
-		}
-    	db.close();
-
-    	return match;
-	}
 }

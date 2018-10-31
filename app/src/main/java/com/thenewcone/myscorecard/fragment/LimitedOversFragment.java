@@ -72,7 +72,8 @@ public class LimitedOversFragment extends Fragment
     TextView tvBowlName, tvBowlOvers, tvBowlMaidens, tvBowlRuns, tvBowlWickets, tvBowlEconomy;
     TextView tvResult, tvRunsInBalls;
 
-    int maxWickets, matchID, currentUndoCount;
+    int matchStateID = -1;
+    int matchID, currentUndoCount;
     boolean startInnings = true, isLoad = false;
 
 	SparseArray<String> savedMatchDataList;
@@ -82,7 +83,8 @@ public class LimitedOversFragment extends Fragment
 
 	public static LimitedOversFragment loadInstance(int matchStateID) {
 		LimitedOversFragment fragment = new LimitedOversFragment();
-		fragment.loadSavedMatch(matchStateID);
+		fragment.matchStateID = matchStateID;
+		fragment.isLoad = true;
 
 		return fragment;
 	}
@@ -101,6 +103,16 @@ public class LimitedOversFragment extends Fragment
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
         dbHandler = new DatabaseHandler(getContext());
+
+        if(isLoad) {
+			if (matchStateID > 0) {
+				loadMatch(matchStateID);
+			} else {
+				Toast.makeText(getContext(), "Unable to Load match.", Toast.LENGTH_LONG).show();
+				if (getActivity() != null)
+					getActivity().onBackPressed();
+			}
+		}
 	}
 
 	@Override
@@ -129,12 +141,13 @@ public class LimitedOversFragment extends Fragment
 			case R.id.menu_undo:
 				if(currentUndoCount >= DatabaseHandler.maxUndoAllowed) {
 					Toast.makeText(getContext(), "Maximum UNDO limit reached.", Toast.LENGTH_SHORT).show();
-				} else if (currentUndoCount < CommonUtils.oversToBalls(Double.parseDouble(ccUtils.getCard().getTotalOversBowled()))) {
-					Toast.makeText(getContext(), "No further undo possible.", Toast.LENGTH_SHORT).show();
+				} else if (CommonUtils.oversToBalls(Double.parseDouble(ccUtils.getCard().getTotalOversBowled())) == 0) {
+					Toast.makeText(getContext(), "No Balls bowled and nothing to UNDO", Toast.LENGTH_SHORT).show();
 				} else {
 					currentUndoCount++;
 					int matchStateID = dbHandler.getLastAutoSave(matchID);
 					loadMatch(matchStateID);
+					updateCardDetails(false);
 					dbHandler.deleteMatch(matchStateID);
 				}
 				break;
@@ -149,13 +162,21 @@ public class LimitedOversFragment extends Fragment
 
 	private void showInputActivity() {
 		Intent iaIntent = new Intent(getContext(), InputActivity.class);
+		iaIntent.putExtra(InputActivity.ARG_INPUT_TEXT, ccUtils.getMatchName());
 		startActivityForResult(iaIntent, REQ_CODE_GET_SAVE_MATCH_NAME);
 	}
 
 	private void loadMatch(int matchStateID) {
-		String matchData = dbHandler.retrieveMatchData(matchStateID);
-		if(matchData != null) {
-			ccUtils = CommonUtils.convertToCCUtils(matchData);
+		if(matchStateID > 0) {
+			String matchData = dbHandler.retrieveMatchData(matchStateID);
+			matchID = dbHandler.getMatchID(matchStateID);
+			if (matchData != null) {
+				ccUtils = CommonUtils.convertToCCUtils(matchData);
+				if (isLoad)
+					Toast.makeText(getContext(), "Match Loaded", Toast.LENGTH_SHORT).show();
+				else
+					Toast.makeText(getContext(), "Undo Successful", Toast.LENGTH_SHORT).show();
+			}
 		}
 	}
 
@@ -165,14 +186,14 @@ public class LimitedOversFragment extends Fragment
 		// Inflate the layout for this fragment
 		theView = inflater.inflate(R.layout.fragment_limited_overs, container, false);
 
-		initialSetup();
-
 		if(!isLoad)
 			updateScreenForBatsmanSelect(View.GONE, View.VISIBLE, View.GONE);
 		else {
 			if(ccUtils.getCard().isInningsComplete())
 				updateViewToCloseInnings();
 		}
+
+		initialSetup();
 
 		return theView;
 	}
@@ -198,21 +219,15 @@ public class LimitedOversFragment extends Fragment
         theView.findViewById(R.id.btnStartNextInnings).setOnClickListener(this);
 	}
 
-	public void loadSavedMatch(int matchStateID) {
-		loadMatch(matchStateID);
-		isLoad = true;
-	}
-
 	private void initCricketCard(int matchID, String matchName, Team battingTeam, Team bowlingTeam, Team tossWonBy, int maxOvers, int maxWickets, int maxPerBowler) {
-		this.maxWickets = maxWickets;
 		this.matchID = matchID;
 
 		CricketCard card =
 				new CricketCard(battingTeam.getShortName(), String.valueOf(maxOvers), maxPerBowler, maxWickets, 1);
 
-		ccUtils = new CricketCardUtils(card, matchName, battingTeam, bowlingTeam);
+		ccUtils = new CricketCardUtils(card, matchName, battingTeam, bowlingTeam, maxWickets);
 
-		ccUtils.setTossWonBy(tossWonBy);
+		ccUtils.setTossWonBy(tossWonBy.getId());
 		ccUtils.setFirstInnings(battingTeam.getMatchPlayers(), bowlingTeam.getMatchPlayers());
 	}
 
@@ -371,52 +386,6 @@ public class LimitedOversFragment extends Fragment
 
 	@Override
 	public void onClick(View view) {
-		newBallBowled(view);
-	}
-
-    public void processExtra(Extra.ExtraType extraType, int numExtraRuns, String penaltyFavouringTeam, Extra.ExtraType extraSubType) {
-        Extra extra;
-        switch (extraType) {
-            case PENALTY:
-                if(numExtraRuns > 0) {
-                    extra = new Extra(Extra.ExtraType.PENALTY, numExtraRuns);
-                    ccUtils.addPenalty(extra, penaltyFavouringTeam);
-                }
-                break;
-
-            case LEG_BYE:
-                if(numExtraRuns > 0) {
-                    extra = new Extra(Extra.ExtraType.LEG_BYE, numExtraRuns);
-                    newBallBowled(extra, 0, null);
-                    ccUtils.checkNextBatsmanFacingBall(extra.getRuns());
-                }
-                break;
-
-            case BYE:
-                if(numExtraRuns > 0) {
-                    extra = new Extra(Extra.ExtraType.BYE, numExtraRuns);
-                    newBallBowled(extra, 0, null);
-                    ccUtils.checkNextBatsmanFacingBall(extra.getRuns());
-                }
-                break;
-
-            case WIDE:
-                if(numExtraRuns >= 0) {
-                    extra = new Extra(Extra.ExtraType.WIDE, numExtraRuns);
-                    newBallBowled(extra, 0, null);
-                }
-                break;
-
-            case NO_BALL:
-                if(numExtraRuns >= 0) {
-                    extra = new Extra(Extra.ExtraType.NO_BALL, 0, extraSubType);
-                    newBallBowled(extra, numExtraRuns, null);
-                }
-                break;
-        }
-    }
-
-	private void newBallBowled(View view) {
 		switch (view.getId()) {
 			case R.id.btnRuns0:
 				newBallBowled(null, 0, null);
@@ -466,24 +435,66 @@ public class LimitedOversFragment extends Fragment
 				displayExtrasDialog(Extra.ExtraType.NO_BALL);
 				break;
 
-            case R.id.btnSelBatsman:
-            	selectBatsman();
-                break;
+			case R.id.btnSelBatsman:
+				selectBatsman();
+				break;
 
-            case R.id.btnSelBowler:
-                displayBowlerSelect();
-                break;
+			case R.id.btnSelBowler:
+				displayBowlerSelect();
+				break;
 
-            case R.id.btnSelFacingBatsman:
-                displayBatsmanSelect(null, new BatsmanStats[]{ccUtils.getCurrentFacing() , ccUtils.getOtherBatsman()},
+			case R.id.btnSelFacingBatsman:
+				displayBatsmanSelect(null, new BatsmanStats[]{ccUtils.getCurrentFacing() , ccUtils.getOtherBatsman()},
 						REQ_CODE_CURRENT_FACING_DIALOG, 0);
-                break;
+				break;
 
 			case R.id.btnStartNextInnings:
 				startNewInnings();
 				break;
 		}
 	}
+
+    public void processExtra(Extra.ExtraType extraType, int numExtraRuns, String penaltyFavouringTeam, Extra.ExtraType extraSubType) {
+        Extra extra;
+        switch (extraType) {
+            case PENALTY:
+                if(numExtraRuns > 0) {
+                    extra = new Extra(Extra.ExtraType.PENALTY, numExtraRuns);
+                    ccUtils.addPenalty(extra, penaltyFavouringTeam);
+                }
+                break;
+
+            case LEG_BYE:
+                if(numExtraRuns > 0) {
+                    extra = new Extra(Extra.ExtraType.LEG_BYE, numExtraRuns);
+                    newBallBowled(extra, 0, null);
+                    ccUtils.checkNextBatsmanFacingBall(extra.getRuns());
+                }
+                break;
+
+            case BYE:
+                if(numExtraRuns > 0) {
+                    extra = new Extra(Extra.ExtraType.BYE, numExtraRuns);
+                    newBallBowled(extra, 0, null);
+                    ccUtils.checkNextBatsmanFacingBall(extra.getRuns());
+                }
+                break;
+
+            case WIDE:
+                if(numExtraRuns >= 0) {
+                    extra = new Extra(Extra.ExtraType.WIDE, numExtraRuns);
+                    newBallBowled(extra, 0, null);
+                }
+                break;
+
+            case NO_BALL:
+                if(numExtraRuns >= 0) {
+                    extra = new Extra(Extra.ExtraType.NO_BALL, 0, extraSubType);
+                    newBallBowled(extra, numExtraRuns, null);
+                }
+                break;
+        }
+    }
 
 	private void selectBatsman() {
 		HashMap<Integer, BatsmanStats> batsmen = ccUtils.getCard().getBatsmen();
@@ -617,9 +628,9 @@ public class LimitedOversFragment extends Fragment
 
             case REQ_CODE_CURRENT_FACING_DIALOG:
                 if(resultCode == BatsmanSelectActivity.RESP_CODE_OK) {
-                    BatsmanStats facingBatsman = (BatsmanStats) data.getSerializableExtra(BatsmanSelectActivity.ARG_SEL_BATSMAN);
-                    if(facingBatsman != null && ccUtils.getCurrentFacing().getPosition() != facingBatsman.getPosition()) {
-                        ccUtils.updateFacingBatsman(facingBatsman);
+                    BatsmanStats selBatsman = (BatsmanStats) data.getSerializableExtra(BatsmanSelectActivity.ARG_SEL_BATSMAN);
+                    if(selBatsman != null && ccUtils.getCurrentFacing().getPosition() != selBatsman.getPosition()) {
+                        ccUtils.updateFacingBatsman(selBatsman);
                         updateCardDetails(false);
                     }
 
@@ -648,7 +659,11 @@ public class LimitedOversFragment extends Fragment
 			case REQ_CODE_GET_SAVE_MATCH_NAME:
 				if(resultCode == InputActivity.RESP_CODE_OK) {
 					String saveMatchName = data.getStringExtra(InputActivity.ARG_INPUT_TEXT);
-					saveMatch(saveMatchName);
+					int rowID = saveMatch(saveMatchName);
+					if(rowID > 0)
+						Toast.makeText(getContext(), "Match saved successfully.", Toast.LENGTH_SHORT).show();
+					else
+						Toast.makeText(getContext(), "Problem encountered saving the match", Toast.LENGTH_SHORT).show();
 				}
 		}
 	}
@@ -781,6 +796,7 @@ public class LimitedOversFragment extends Fragment
 		int score = ccUtils.getCard().getScore();
 		int target = ccUtils.getCard().getScore();
 		int wicketsFallen = ccUtils.getCard().getWicketsFallen();
+		int maxWickets = ccUtils.getMaxWickets();
 
 		String result;
 		if(score >= target) {
@@ -795,13 +811,13 @@ public class LimitedOversFragment extends Fragment
 		tvResult.setText(result);
     }
 
-    private void saveMatch(String saveName){
-        dbHandler.saveMatchState(matchID, CommonUtils.convertToJSON(ccUtils), saveName);
+    private int saveMatch(String saveName){
+        return dbHandler.saveMatchState(matchID, CommonUtils.convertToJSON(ccUtils), saveName);
     }
 
     private void autoSaveMatch(){
         dbHandler.autoSaveMatch(matchID, CommonUtils.convertToJSON(ccUtils), ccUtils.getMatchName());
-        dbHandler.clearMatchStateHistory(6);
+        dbHandler.clearMatchStateHistory(DatabaseHandler.maxUndoAllowed, matchID, -1);
     }
 
     private void confirmSaveMatch() {
@@ -827,7 +843,7 @@ public class LimitedOversFragment extends Fragment
 
 				Collections.sort(savedMatches);
 
-				StringDialog dialog = StringDialog.newInstance("Select Match to Load", (String[]) savedMatches.toArray(), STRING_DIALOG_LOAD_SAVED_MATCHES);
+				StringDialog dialog = StringDialog.newInstance("Select Match to Load", CommonUtils.listToArray(savedMatches), STRING_DIALOG_LOAD_SAVED_MATCHES);
 				dialog.setDialogItemClickListener(this);
 				dialog.show(getFragmentManager(), "SavedMatchDialog");
 			}
@@ -838,9 +854,11 @@ public class LimitedOversFragment extends Fragment
 	public void onItemSelect(String type, String value, int position) {
 		switch (type) {
 			case STRING_DIALOG_LOAD_SAVED_MATCHES:
-				int matchStateID = savedMatchDataList.indexOfValue(value);
+				int matchStateID = savedMatchDataList.keyAt(savedMatchDataList.indexOfValue(value));
+				isLoad = true;
 				loadMatch(matchStateID);
-				dbHandler.clearMatchStateHistory(0);
+				updateCardDetails(false);
+				dbHandler.clearMatchStateHistory(0, -1, matchStateID);
 				break;
 		}
 	}

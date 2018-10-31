@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 public class CricketCardUtils {
-    private int numConsecutiveDots = 0, matchStateID = -1;
+    private int numConsecutiveDots = 0, tossWonByTeamID, maxWickets;
 	private boolean newOver = false;
 
 	private String matchName;
@@ -25,7 +25,7 @@ public class CricketCardUtils {
     private BowlerStats bowler, nextBowler, prevBowler;
 	private BatsmanStats currentFacing, otherBatsman;
 
-	private Team tossWonBy, team1, team2;
+	private Team team1, team2;
 
     public boolean isNewOver() {
         return newOver;
@@ -59,16 +59,8 @@ public class CricketCardUtils {
         return matchName;
     }
 
-    public int getMatchStateID() {
-        return matchStateID;
-    }
-
-    public void setMatchStateID(int matchStateID) {
-        this.matchStateID = matchStateID;
-    }
-
 	public Team getTossWonBy() {
-		return tossWonBy;
+		return (team1.getId() == tossWonByTeamID) ? team1 : team2;
 	}
 
 	public Team getTeam1() {
@@ -79,15 +71,20 @@ public class CricketCardUtils {
 		return team2;
 	}
 
-	public void setTossWonBy(Team tossWonBy) {
-		this.tossWonBy = tossWonBy;
+	public void setTossWonBy(int tossWonBy) {
+		this.tossWonByTeamID = tossWonBy;
 	}
 
-	public CricketCardUtils(CricketCard card, String matchName, Team team1, Team team2) {
+	public int getMaxWickets() {
+		return maxWickets;
+	}
+
+	public CricketCardUtils(CricketCard card, String matchName, Team team1, Team team2, int maxWickets) {
 		this.card = card;
 		this.matchName = matchName;
 		this.team1 = team1;
 		this.team2 = team2;
+		this.maxWickets = maxWickets;
 	}
 
 	public void updateFacingBatsman(BatsmanStats batsman) {

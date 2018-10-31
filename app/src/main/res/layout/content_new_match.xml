@@ -2,7 +2,8 @@
 <ScrollView
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_height="match_parent"
+    android:id="@+id/svNewMatch">
 
 	<LinearLayout
 		android:layout_width="match_parent"
@@ -16,11 +17,10 @@
 			android:orientation="vertical"
 			android:id="@+id/llNewMatch">
 
-			<GridLayout
+			<LinearLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:columnCount="4"
-				android:columnOrderPreserved="true">
+				android:orientation="horizontal">
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
@@ -28,12 +28,23 @@
 					android:text="@string/playerName"/>
 
 				<EditText
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
 					style="@style/EditTextStyle"
 					android:id="@+id/etMatchName"
-                    android:layout_columnSpan="3"
-					android:layout_width="250dp"
 					android:inputType="text"
 					android:maxLength="30"/>
+
+            </LinearLayout>
+
+            <!-- Separator -->
+            <View style="@style/LineSeparator.Dark.SmallMargin"/>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="4"
+                android:columnOrderPreserved="true">
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
@@ -49,19 +60,33 @@
                     android:id="@+id/btnNMSelectTeam1"
                     style="@style/ButtonStyle.Small"
                     android:layout_column="2"
-                    android:drawableStart="@drawable/ic_edit"/>
+                    android:drawableStart="@drawable/ic_edit"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/tvTeam1Captain"
                     style="@style/TextViewStyle.LeftRightPadding"
                     android:layout_columnSpan="2"
-                    android:text="@string/captainName"/>
+                    android:text="@string/captainName"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/tvTeam1WK"
                     style="@style/TextViewStyle"
                     android:layout_columnSpan="2"
-                    android:text="@string/wkName"/>
+                    android:text="@string/wkName"
+                    android:visibility="gone"/>
+
+            </GridLayout>
+
+            <!-- Separator -->
+            <View style="@style/LineSeparator.Dark.SmallMargin"/>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="4"
+                android:columnOrderPreserved="true">
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
@@ -77,21 +102,27 @@
                     android:id="@+id/btnNMSelectTeam2"
                     style="@style/ButtonStyle.Small"
                     android:layout_columnSpan="2"
-                    android:drawableStart="@drawable/ic_edit"/>
+                    android:drawableStart="@drawable/ic_edit"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/tvTeam2Captain"
                     style="@style/TextViewStyle.LeftRightPadding"
                     android:layout_columnSpan="2"
-                    android:text="@string/captainName"/>
+                    android:text="@string/captainName"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/tvTeam2WK"
                     style="@style/TextViewStyle"
                     android:layout_columnSpan="2"
-                    android:text="@string/wkName"/>
+                    android:text="@string/wkName"
+                    android:visibility="gone"/>
 
 			</GridLayout>
+
+            <!-- Separator -->
+            <View style="@style/LineSeparator.Dark.SmallMargin"/>
 
 			<GridLayout
 				android:layout_width="match_parent"
@@ -180,67 +211,70 @@
 
 			</LinearLayout>
 
+            <!-- Separator -->
+            <View style="@style/LineSeparator.Dark.SmallMargin"/>
+
+            <!-- Toss Won By -->
+            <RadioGroup
+                android:id="@+id/rgToss"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    style="@style/TextViewStyle"
+                    android:text="@string/tvTossWonBy"
+                    android:layout_width="100dp"/>
+
+                <RadioButton
+                    android:id="@+id/rbTossTeam1"
+                    style="@style/RadioButtonStyle"
+                    android:layout_width="100dp"/>
+
+                <RadioButton
+                    android:id="@+id/rbTossTeam2"
+                    style="@style/RadioButtonStyle"
+                    android:layout_width="100dp"/>
+
+            </RadioGroup>
+
+            <!-- Choose Batting/Bowling -->
+            <RadioGroup
+                android:id="@+id/rgTossChoose"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    style="@style/TextViewStyle"
+                    android:text="@string/choose"
+                    android:layout_width="100dp"/>
+
+                <RadioButton
+                    android:id="@+id/rbTossBat"
+                    style="@style/RadioButtonStyle"
+                    android:layout_width="100dp"
+                    android:text="@string/batting"/>
+
+                <RadioButton
+                    android:id="@+id/rbTossBowl"
+                    style="@style/RadioButtonStyle"
+                    android:layout_width="100dp"
+                    android:text="@string/bowling"/>
+
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/btnStartMatch"
+                style="@style/ButtonStyle.Medium"
+                android:layout_gravity="center_horizontal"
+                android:drawableTop="@drawable/ic_start"
+                android:text="@string/startMatch"
+                android:visibility="gone"/>
+
 		</LinearLayout>
-
-        <!-- Toss Won By -->
-        <RadioGroup
-            android:id="@+id/rgToss"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <TextView
-                style="@style/TextViewStyle"
-                android:text="@string/tvTossWonBy"
-                android:layout_width="100dp"/>
-
-            <RadioButton
-                android:id="@+id/rbTossTeam1"
-                style="@style/RadioButtonStyle"
-                android:layout_width="100dp"/>
-
-            <RadioButton
-                android:id="@+id/rbTossTeam2"
-                style="@style/RadioButtonStyle"
-                android:layout_width="100dp"/>
-
-        </RadioGroup>
-
-        <!-- Choose Batting/Bowling -->
-        <RadioGroup
-            android:id="@+id/rgTossChoose"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <TextView
-                style="@style/TextViewStyle"
-                android:text="@string/choose"
-                android:layout_width="100dp"/>
-
-            <RadioButton
-                android:id="@+id/rbTossBat"
-                style="@style/RadioButtonStyle"
-                android:layout_width="100dp"
-                android:text="@string/batting"/>
-
-            <RadioButton
-                android:id="@+id/rbTossBowl"
-                style="@style/RadioButtonStyle"
-                android:layout_width="100dp"
-                android:text="@string/bowling"/>
-
-        </RadioGroup>
-
-        <Button
-            android:id="@+id/btnStartMatch"
-            style="@style/ButtonStyle.Medium"
-            android:layout_gravity="center_horizontal"
-            android:drawableTop="@drawable/ic_start"
-            android:text="@string/startMatch"
-            android:visibility="gone"/>
 
 		<LinearLayout
 			android:layout_width="match_parent"

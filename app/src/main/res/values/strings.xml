@@ -158,7 +158,14 @@
     <string name="load">Load Match</string>
     <string name="saveMatch">Save Match</string>
     <string name="notEnoughPlayers">Not Enough Players to Select</string>
-    <string name="captainName">Captain : %1$s</string>
-    <string name="wkName">WK : %1$s</string>
+    <string name="captainName"><b>Captain : </b>%1$s</string>
+    <string name="wkName"><b>WK : </b>%1$s</string>
     <string name="upload">Upload</string>
+    <string name="players">Players</string>
+    <string name="style">Style</string>
+    <string name="batStyle">Bat</string>
+    <string name="bowlStyle">Bowl</string>
+    <string name="oversLeft">Overs Left</string>
+    <string name="isWK">is WK?</string>
+    <string name="text">Text Data</string>
 </resources>

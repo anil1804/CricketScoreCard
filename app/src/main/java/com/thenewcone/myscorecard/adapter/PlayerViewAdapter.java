@@ -47,9 +47,10 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull  final ViewHolder holder, final int position) {
         holder.player = playerList.get(position);
-        holder.tvPlayerName.setText(holder.player.getName());
+        String playerNameText = holder.player.getName() + (holder.player.isWicketKeeper() ? " (w)" : "");
+        holder.tvPlayerName.setText(playerNameText);
         holder.tvBatStyle.setText(holder.player.getBattingStyle().toString());
-        holder.tvBowlStyle.setText(holder.player.getBowlingStyle().toString());
+        holder.tvBowlStyle.setText(holder.player.getBowlingStyle() != Player.BowlingType.NONE  ? holder.player.getBowlingStyle().toString() : "");
 
 		if (selPlayerIDs.get(holder.player.getID())) {
 			selPlayerIDs.put(holder.player.getID(), false);
@@ -64,16 +65,13 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
             public void onClick(View v) {
                 if (null != mListener) {
 						if(!isMultiSelect) {
-							// Notify the active callbacks interface (the activity, if the
-							// fragment is attached to one) that an item has been selected.
-
 							mListener.onListFragmentInteraction(holder.player);
 						} else {
 
 							boolean isPresent = selPlayerIDs.get(holder.player.getID());
 							mListener.onListFragmentMultiSelect(holder.player, isPresent);
+							notifyItemChanged(position);
 						}
-						notifyItemChanged(position);
 					}
 				}
 	        });

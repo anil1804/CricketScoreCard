@@ -86,7 +86,12 @@ public class PlayerFragment extends Fragment
 				if(addData.addPlayers())
 					Toast.makeText(getContext(), "Data uploaded successfully", Toast.LENGTH_SHORT).show();
 				break;
-        }
+
+			case R.id.menu_updateTeams:
+				showTeamsSelectDialog();
+				break;
+
+		}
 
         return true;
     }
@@ -108,7 +113,6 @@ public class PlayerFragment extends Fragment
 
         tvBatStyle.setOnClickListener(this);
         tvBowlStyle.setOnClickListener(this);
-        tvTeams.setOnClickListener(this);
 
         theView.findViewById(R.id.btnPlayerSave).setOnClickListener(this);
         theView.findViewById(R.id.btnPlayerClear).setOnClickListener(this);
@@ -222,10 +226,6 @@ public class PlayerFragment extends Fragment
             case R.id.btnPlayerDelete:
                 confirmDeletePlayer();
                 break;
-
-			case R.id.tvTeams:
-				showTeamsSelectDialog();
-				break;
         }
     }
 
@@ -280,10 +280,12 @@ public class PlayerFragment extends Fragment
             int playerID = dbHandler.upsertPlayer(selPlayer);
 
             if (playerID == dbHandler.CODE_INS_PLAYER_DUP_RECORD) {
-                Toast.makeText(getContext(), "Player with same name exists.\nChange name or update/delete existing team.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(),
+						"Player with same name exists.\nChange name or update/delete existing team.",
+						Toast.LENGTH_LONG).show();
             } else {
 				selPlayer.setPlayerID(playerID);
-				new DatabaseHandler(getContext()).updateTeamList(selPlayer,
+				dbHandler.updateTeamList(selPlayer,
 						getAddedTeams(selTeams, associatedToTeams), getRemovedTeams(selTeams, associatedToTeams));
 
                 Toast.makeText(getContext(), "Player Saved Successfully", Toast.LENGTH_SHORT).show();
@@ -334,7 +336,6 @@ public class PlayerFragment extends Fragment
 						for (Team team : teams)
 							teamIDList.add(team.getId());
 
-						associatedToTeams = teamIDList;
 						selPlayer.setTeamsAssociatedTo(teamIDList);
 
 						populateData();

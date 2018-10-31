@@ -7,12 +7,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.intf.DialogItemClickListener;
+import com.thenewcone.myscorecard.utils.CommonUtils;
+import com.thenewcone.myscorecard.utils.database.AddDBData;
 import com.thenewcone.myscorecard.utils.database.DatabaseHandler;
 
 import java.util.ArrayList;
@@ -27,6 +32,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Dial
 
 	public static HomeFragment newInstance() {
 		return new HomeFragment();
+	}
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 	}
 
 	@Nullable
@@ -44,6 +55,25 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Dial
 		dbHandler = new DatabaseHandler(getContext());
 
 		return theView;
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.menu_fragments_home, menu);
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.menu_loadData:
+				if(new AddDBData(getContext()).addAll())
+					Toast.makeText(getContext(), "Data uploaded successfully", Toast.LENGTH_SHORT).show();
+				else
+					Toast.makeText(getContext(), "Data upload failed", Toast.LENGTH_SHORT).show();
+				break;
+		}
+		return true;
 	}
 
 	@Override
@@ -80,7 +110,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Dial
 
 				case R.id.btnLoadMatch:
 					showSavedMatchDialog();
-
+					break;
 			}
 		}
 	}
@@ -95,7 +125,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Dial
 
 				Collections.sort(savedMatches);
 
-				StringDialog dialog = StringDialog.newInstance("Select Match to Load", (String[]) savedMatches.toArray(), STRING_DIALOG_LOAD_SAVED_MATCHES);
+
+				StringDialog dialog = StringDialog.newInstance("Select Match to Load", CommonUtils.listToArray(savedMatches), STRING_DIALOG_LOAD_SAVED_MATCHES);
 				dialog.setDialogItemClickListener(this);
 				dialog.show(getFragmentManager(), "SavedMatchDialog");
 			} else {
@@ -109,7 +140,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Dial
 		switch (type) {
 			case STRING_DIALOG_LOAD_SAVED_MATCHES:
 				if(getActivity() != null) {
-					int matchStateID = savedMatchDataList.indexOfValue(value);
+					int matchStateID = savedMatchDataList.keyAt(savedMatchDataList.indexOfValue(value));
 					String fragmentTag = NewMatchFragment.class.getSimpleName();
 					getActivity().getSupportFragmentManager().beginTransaction()
 							.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID), fragmentTag)

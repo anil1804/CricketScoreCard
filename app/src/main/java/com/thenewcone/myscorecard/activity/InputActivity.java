@@ -27,7 +27,13 @@ public class InputActivity extends Activity
         findViewById(R.id.btnInputOK).setOnClickListener(this);
         findViewById(R.id.btnInputCancel).setOnClickListener(this);
 
+        String inputText = "";
+        if(getIntent().getExtras() != null) {
+        	inputText = getIntent().getStringExtra(ARG_INPUT_TEXT);
+		}
+
         etInputText = findViewById(R.id.etStringInput);
+        etInputText.setText(inputText);
     }
 
     @Override

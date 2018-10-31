@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
@@ -36,10 +37,12 @@ public class TeamFragment extends Fragment
 
     Button btnSaveTeam, btnDeleteTeam, btnReset;
     EditText etTeamName, etShortName;
+    TextView tvPlayers;
 
     List<Team> teamList;
     Team selTeam;
     List<Integer> associatedPlayers = new ArrayList<>();
+    Player[] selPlayers;
 
     public TeamFragment() {
 		setHasOptionsMenu(true);
@@ -94,6 +97,8 @@ public class TeamFragment extends Fragment
         etTeamName = theView.findViewById(R.id.etTeamName);
         etShortName = theView.findViewById(R.id.etTeamShortName);
 
+		tvPlayers = theView.findViewById(R.id.tvPlayers);
+
         btnSaveTeam = theView.findViewById(R.id.btnSaveTeam);
         btnDeleteTeam = theView.findViewById(R.id.btnDeleteTeam);
         btnReset = theView.findViewById(R.id.btnResetData);
@@ -127,11 +132,13 @@ public class TeamFragment extends Fragment
     	if(selTeam != null) {
 			etTeamName.setText(selTeam.getName());
 			etShortName.setText(selTeam.getShortName());
+			tvPlayers.setText(String.valueOf(associatedPlayers.size()));
 
 			btnDeleteTeam.setVisibility(View.VISIBLE);
 		} else {
 			etTeamName.setText("");
 			etShortName.setText("");
+			tvPlayers.setText(getString(R.string.none));
 			etTeamName.requestFocus();
 
 			btnDeleteTeam.setVisibility(View.GONE);
@@ -146,7 +153,6 @@ public class TeamFragment extends Fragment
     private void saveTeam() {
 		String teamName = etTeamName.getText().toString();
 		String shortName = etShortName.getText().toString();
-		DatabaseHandler dbh = new DatabaseHandler(getContext());
 
 		int teamID = selTeam != null ? selTeam.getId() : -1;
 		selTeam = new Team(teamName, shortName);
@@ -154,20 +160,31 @@ public class TeamFragment extends Fragment
 			selTeam.setId(teamID);
 
 		boolean isNew = teamID < 0;
-		int rowID = dbh.upsertTeam(selTeam);
+		DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+		int rowID = dbHandler.upsertTeam(selTeam);
 
-		if(rowID == dbh.CODE_NEW_TEAM_DUP_RECORD) {
+		if(rowID == dbHandler.CODE_NEW_TEAM_DUP_RECORD) {
 			Toast.makeText(getContext(), "Team with same name already exists. Choose a different name.", Toast.LENGTH_SHORT).show();
 		} else {
-			Toast.makeText(getContext(), "Team created successfully.", Toast.LENGTH_SHORT).show();
+
+			if(selPlayers != null && selPlayers.length > 0) {
+				List<Integer> addedPlayers = getAddedPlayers(selPlayers, associatedPlayers);
+				List<Integer> removedPlayers = getRemovedPlayers(selPlayers, associatedPlayers);
+
+				dbHandler.updateTeamList(selTeam, addedPlayers, removedPlayers);
+				associatedPlayers.clear();
+				for(Player player : dbHandler.getTeamPlayers(selTeam.getId()))
+					associatedPlayers.add(player.getID());
+			}
+			Toast.makeText(getContext(), "Team saved successfully.", Toast.LENGTH_SHORT).show();
 			selTeam = isNew ? null : selTeam;
 			populateData();
 		}
 	}
 
 	private void deleteTeam() {
-    	DatabaseHandler dbh = new DatabaseHandler(getContext());
-    	boolean success = dbh.deleteTeam(selTeam.getId());
+		DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+    	boolean success = dbHandler.deleteTeam(selTeam.getId());
 
     	if(success) {
 			Toast.makeText(getContext(), "Team deleted successfully", Toast.LENGTH_SHORT).show();
@@ -185,38 +202,53 @@ public class TeamFragment extends Fragment
 	}
 
 	private void showPlayerListDialog() {
+		DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+
+		List<Integer> currAssociation = new ArrayList<>();
+		if(selPlayers != null && selPlayers.length > 0) {
+			for (Player player : selPlayers)
+				currAssociation.add(player.getID());
+		} else{
+			currAssociation = associatedPlayers;
+		}
+
+
     	Intent updPlayersIntent = new Intent(getContext(), PlayerSelectActivity.class);
-    	DatabaseHandler dbh = new DatabaseHandler(getContext());
-		associatedPlayers = dbh.getAssociatedPlayers(selTeam.getId());
-    	updPlayersIntent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, dbh.getAllPlayers().toArray());
+    	updPlayersIntent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, dbHandler.getAllPlayers().toArray());
     	updPlayersIntent.putExtra(PlayerSelectActivity.ARG_IS_MULTI_SELECT, true);
     	updPlayersIntent.putIntegerArrayListExtra(PlayerSelectActivity.ARG_ASSOCIATED_PLAYERS,
-				(ArrayList<Integer>) associatedPlayers);
+				(ArrayList<Integer>) currAssociation);
 
     	startActivityForResult(updPlayersIntent, REQ_CODE_UPDATE_PLAYERS);
 	}
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		DatabaseHandler dbHandler = new DatabaseHandler(getContext());
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (requestCode) {
 			case REQ_CODE_TEAM_SELECT:
 				if(resultCode == TeamSelectActivity.RESP_CODE_OK) {
 					selTeam = (Team) data.getSerializableExtra(TeamSelectActivity.ARG_RESP_TEAM);
+					selPlayers = null;
+
+					List<Player> getTeamPlayers = dbHandler.getTeamPlayers(selTeam.getId());
+					associatedPlayers.clear();
+					if (getTeamPlayers != null && getTeamPlayers.size() > 0) {
+						for(Player player : getTeamPlayers)
+							associatedPlayers.add(player.getID());
+					}
 					populateData();
 				}
 				break;
 
 			case REQ_CODE_UPDATE_PLAYERS:
 				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
-					Player[] selPlayers =
+					selPlayers =
 							CommonUtils.objectArrToPlayerArr((Object[]) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYERS));
 
-					List<Integer> addedPlayers = getAddedPlayers(selPlayers, associatedPlayers);
-					List<Integer> removedPlayers = getRemovedPlayers(selPlayers, associatedPlayers);
-
-					new DatabaseHandler(getContext()).updateTeamList(selTeam, addedPlayers, removedPlayers);
+					tvPlayers.setText(String.valueOf(selPlayers != null && selPlayers.length > 0 ? selPlayers.length : getString(R.string.none)));
 				}
 		}
 	}

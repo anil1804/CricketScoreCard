@@ -43,6 +43,7 @@ public class PlayerSelectActivity extends Activity
 	int numPlayers;
 
 	List<Player> selPlayers = new ArrayList<>();
+	Player selPlayer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +72,7 @@ public class PlayerSelectActivity extends Activity
         findViewById(R.id.btnSelPlayerCancel).setOnClickListener(this);
         findViewById(R.id.btnCancel).setOnClickListener(this);
 
-		if(playerList.size() > 0 && (isMultiSelect && playerList.size() >= numPlayers)) {
+		if(playerList != null && ((!isMultiSelect && playerList.size() > 0) || (isMultiSelect && playerList.size() >= numPlayers))) {
 			Collections.sort(playerList, new PlayerComparator(associatedPlayers));
 
 			rcvPlayerList.setLayoutManager(new LinearLayoutManager(this));
@@ -83,6 +84,8 @@ public class PlayerSelectActivity extends Activity
 			rcvPlayerList.setLayoutManager(llm);
 
 			rcvPlayerList.setItemAnimator(new DefaultItemAnimator());
+			if(!isMultiSelect)
+				findViewById(R.id.llPlayerSelectButtons).setVisibility(View.GONE);
 		} else {
 			rcvPlayerList.setVisibility(View.GONE);
 			findViewById(R.id.llPlayerSelectButtons).setVisibility(View.GONE);
@@ -120,7 +123,7 @@ public class PlayerSelectActivity extends Activity
 			if(isMultiSelect)
 				respIntent.putExtra(ARG_RESP_SEL_PLAYERS, selPlayers.toArray());
 			else
-				respIntent.putExtra(ARG_RESP_SEL_PLAYER, selPlayers.get(0));
+				respIntent.putExtra(ARG_RESP_SEL_PLAYER, selPlayer);
 
 		setResult(resultCode, respIntent);
 		finish();
@@ -128,8 +131,7 @@ public class PlayerSelectActivity extends Activity
 
 	@Override
 	public void onListFragmentInteraction(Object selItem) {
-		selPlayers.add((Player) selItem);
-
+		selPlayer = (Player) selItem;
 		sendResponse(RESP_CODE_OK);
 	}
 

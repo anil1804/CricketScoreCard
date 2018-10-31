@@ -14,20 +14,24 @@
 
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:gravity="start"
             android:id="@+id/tvPlayerName"
-            style="@style/TextViewStyle"/>
+            style="@style/TextViewStyle.List"/>
 
         <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:id="@+id/tvBattingStyle"
-            android:gravity="center_horizontal"
-            style="@style/TextViewStyle.LeftRightPadding"/>
+            android:gravity="start"
+            style="@style/TextViewStyle.List"/>
 
         <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:id="@+id/tvBowlingStyle"
-            android:gravity="center_horizontal"
-            style="@style/TextViewStyle.LeftRightPadding"/>
+            android:gravity="start"
+            style="@style/TextViewStyle.List"/>
 
     </LinearLayout>
 

@@ -33,6 +33,7 @@ public class TeamSelectActivity extends Activity
 	private static boolean isMultiSelect = false;
 
 	List<Team> selTeams;
+	Team selTeam;
 	ArrayList<Integer> currentlyAssociatedTeams;
 
 	Button btnTeamSelectOk, btnTeamSelectCancel, btnCancel;
@@ -66,9 +67,12 @@ public class TeamSelectActivity extends Activity
 		Collections.sort(teamList, new TeamComparator(currentlyAssociatedTeams));
 
 		RecyclerView recyclerView = findViewById(R.id.rcvTeamList);
-		if(teamList.size() > 0) {
+		if(teamList != null && teamList.size() > 0) {
 			recyclerView.setLayoutManager(new LinearLayoutManager(this));
 			recyclerView.setAdapter(new TeamViewAdapter(teamList, currentlyAssociatedTeams,this, isMultiSelect));
+
+			if(!isMultiSelect)
+				findViewById(R.id.llTeamSelectButtons).setVisibility(View.GONE);
 		} else {
 			recyclerView.setVisibility(View.GONE);
 			findViewById(R.id.llTeamSelectButtons).setVisibility(View.GONE);
@@ -103,7 +107,7 @@ public class TeamSelectActivity extends Activity
 			if(isMultiSelect)
 				respIntent.putExtra(ARG_RESP_TEAMS, selTeams.toArray());
 			else
-				respIntent.putExtra(ARG_RESP_TEAM, selTeams.get(0));
+				respIntent.putExtra(ARG_RESP_TEAM, selTeam);
 
 		setResult(resultCode, respIntent);
 		finish();
@@ -111,8 +115,7 @@ public class TeamSelectActivity extends Activity
 
 	@Override
 	public void onListFragmentInteraction(Object selItem) {
-		selTeams.add((Team) selItem);
-
+		selTeam = (Team) selItem;
 		sendResponse(RESP_CODE_OK);
 	}
 

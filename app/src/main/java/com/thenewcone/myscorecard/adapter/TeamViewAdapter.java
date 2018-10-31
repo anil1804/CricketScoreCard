@@ -64,16 +64,12 @@ public class TeamViewAdapter extends RecyclerView.Adapter<TeamViewAdapter.ViewHo
             public void onClick(View v) {
 				if (null != mListener) {
 					if(!isMultiSelect) {
-							// Notify the active callbacks interface (the activity, if the
-							// fragment is attached to one) that an item has been selected.
-
-								mListener.onListFragmentInteraction(holder.team);
+						mListener.onListFragmentInteraction(holder.team);
 					} else {
-
-							boolean isPresent = selTeamIDs.get(holder.team.getId());
-							mListener.onListFragmentMultiSelect(holder.team, isPresent);
-						}
+						boolean isPresent = selTeamIDs.get(holder.team.getId());
+						mListener.onListFragmentMultiSelect(holder.team, isPresent);
 						notifyItemChanged(position);
+						}
 					}
 				}
 	        });

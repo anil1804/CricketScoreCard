@@ -11,14 +11,22 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:layout_width="0dp"
+            android:layout_weight="3"
             android:id="@+id/tvBowlerName"
             style="@style/TextViewStyle.List"/>
 
         <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="start"
             android:id="@+id/tvBowlingStyle"
             style="@style/TextViewStyle.List"/>
 
         <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="start"
             android:id="@+id/tvOversLeft"
             style="@style/TextViewStyle.List"/>
 
