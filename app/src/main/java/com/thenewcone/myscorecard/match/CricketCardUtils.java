@@ -346,5 +346,10 @@ public class CricketCardUtils {
         card.setTarget(prevInningsCard.getScore() + 1);
        	card.addPenalty(prevInningsCard.getFuturePenalty());
        	card.updateScore(prevInningsCard.getFuturePenalty(), null);
+
+       	currentFacing = null;
+       	otherBatsman = null;
+       	bowler = null;
+       	newOver = true;
     }
 }

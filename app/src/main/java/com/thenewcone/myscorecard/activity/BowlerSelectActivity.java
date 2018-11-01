@@ -59,7 +59,7 @@ public class BowlerSelectActivity extends Activity
             nextBowler = (BowlerStats) intent.getSerializableExtra(ARG_NEXT_BOWLER);
             maxOversPerBowler = intent.getIntExtra(ARG_MAX_OVERS_PER_BOWLER, 10);
 
-            dispBowlers = getDispBowlers(players, bowlers);
+            dispBowlers = getDisplayBowlers(players, bowlers);
         }
 
         if(dispBowlers != null && dispBowlers.size() > 0) {
@@ -79,26 +79,26 @@ public class BowlerSelectActivity extends Activity
         }
     }
 
-    private List<BowlerStats> getDispBowlers(Player[] players, BowlerStats[] bowlers) {
-        List<BowlerStats> dispBowlers = new ArrayList<>();
+    private List<BowlerStats> getDisplayBowlers(Player[] players, BowlerStats[] bowlers) {
+        List<BowlerStats> displayBowlers = new ArrayList<>();
 
-        dispBowlers.addAll(Arrays.asList(bowlers));
+        displayBowlers.addAll(Arrays.asList(bowlers));
 
         List<String> bowledBowlers;
         if(players != null && players.length > 0) {
-            bowledBowlers = getPlayedBowlers(bowlers);
+            bowledBowlers = getBowlersWhoBowled(bowlers);
 
             for(Player player : players) {
-                if(!bowledBowlers.contains(player.getName()) && !player.isWicketKeeper()) {
-                    dispBowlers.add(new BowlerStats(player));
+                if(!bowledBowlers.contains(player.getName())) {
+                    displayBowlers.add(new BowlerStats(player));
                 }
             }
         }
 
-        return dispBowlers;
+        return displayBowlers;
     }
 
-    private List<String> getPlayedBowlers(BowlerStats[] bowlers) {
+    private List<String> getBowlersWhoBowled(BowlerStats[] bowlers) {
         List<String> playedPlayers = new ArrayList<>();
 
         for(BowlerStats bowler : bowlers)

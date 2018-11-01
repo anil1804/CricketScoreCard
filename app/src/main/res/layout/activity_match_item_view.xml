@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:id="@+id/llMatchItem"
+	android:background="@drawable/item_selector">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:id="@+id/tvSaveName"
+            style="@style/TextViewStyle.List"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/tvTeam1"
+            android:gravity="start"
+            style="@style/TextViewStyle.List"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/tvTeam2"
+            android:gravity="start"
+            style="@style/TextViewStyle.List"/>
+
+    </LinearLayout>
+
+	<View style="@style/LineSeparator.Dark"/>
+
+</LinearLayout>

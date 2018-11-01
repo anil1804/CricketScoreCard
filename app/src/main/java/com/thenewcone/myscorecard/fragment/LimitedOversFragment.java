@@ -124,7 +124,7 @@ public class LimitedOversFragment extends Fragment
 
 		isLoad = false;
 		initialSetup();
-		updateLayout();
+		updateLayout(false);
 
 		return theView;
 	}
@@ -162,7 +162,7 @@ public class LimitedOversFragment extends Fragment
 					currentUndoCount++;
 					int matchStateID = dbHandler.getLastAutoSave(matchID);
 					loadMatch(matchStateID);
-					updateLayout();
+					updateLayout(false);
 					dbHandler.deleteMatch(matchStateID);
 				}
 				break;
@@ -272,7 +272,7 @@ public class LimitedOversFragment extends Fragment
 					newBallBowled(extraData, 0, wktData);
 
 					dismissalType = wktData.getDismissalType();
-					updateLayout();
+					updateLayout(false);
 					updateCardDetails(false);
 				}
 				break;
@@ -292,28 +292,21 @@ public class LimitedOversFragment extends Fragment
 								case CAUGHT:
 								case TIMED_OUT:
 								case HIT_BALL_TWICE:
-									updateScreenForBatsmanSelect(View.GONE, View.GONE, View.VISIBLE);
+									updateLayout(true);
 									break;
 
 								default:
-									updateScreenForBatsmanSelect(View.VISIBLE, View.GONE, View.GONE);
+									updateLayout(false);
 									break;
 							}
 							dismissalType = null;
 						} else {
-							if(startInnings) {
-								if (ccUtils.getCurrentFacing() != null && ccUtils.getOtherBatsman() != null) {
-									updateScreenForBatsmanSelect(View.GONE, View.GONE, View.VISIBLE);
-								} else {
-									updateLayout();
-								}
-							}
+							if(startInnings)
+								updateLayout(true);
+							else
+								updateLayout(false);
 						}
-
-						updateCardDetails(false);
 					}
-
-					updateLayout();
 				}
 				break;
 
@@ -325,12 +318,7 @@ public class LimitedOversFragment extends Fragment
 						updateCardDetails(false);
 					}
 
-					if(startInnings) {
-						updateScreenForBatsmanSelect(View.GONE, View.GONE, View.GONE);
-						updateScreenForBowlerSelect(View.GONE, View.VISIBLE);
-					} else {
-						updateLayout();
-					}
+					updateLayout(false);
 				}
 				break;
 
@@ -342,7 +330,7 @@ public class LimitedOversFragment extends Fragment
 						updateCardDetails(false);
 					}
 
-					updateLayout();
+					updateLayout(false);
 
 					startInnings = false;
 				}
@@ -388,7 +376,7 @@ public class LimitedOversFragment extends Fragment
 				int matchStateID = savedMatchDataList.keyAt(savedMatchDataList.indexOfValue(value));
 				isLoad = true;
 				loadMatch(matchStateID);
-				updateLayout();
+				updateLayout(false);
 				dbHandler.clearMatchStateHistory(0, -1, matchStateID);
 				break;
 		}
@@ -705,7 +693,7 @@ public class LimitedOversFragment extends Fragment
 
 	private void checkChangeOfBowler() {
 	    if(ccUtils.isNewOver()) {
-			updateLayout();
+			updateLayout(false);
         }
     }
 
@@ -715,29 +703,30 @@ public class LimitedOversFragment extends Fragment
 		startActivityForResult(iaIntent, REQ_CODE_GET_SAVE_MATCH_NAME);
 	}
 
-	private void updateLayout() {
+	private void updateLayout(boolean selectFacing) {
 		if(ccUtils.getCard().isInningsComplete()) {
 			updateViewToCloseInnings();
 		} if(ccUtils.getCurrentFacing() == null || ccUtils.getOtherBatsman() == null) {
 			updateScreenForBatsmanSelect(View.GONE, View.VISIBLE, View.GONE);
+			updateScreenForBowlerSelect(View.GONE, View.GONE);
+		} else if(selectFacing) {
+			updateScreenForBatsmanSelect(View.GONE, View.GONE, View.VISIBLE);
+			updateScreenForBowlerSelect(View.GONE, View.GONE);
 		} else if(ccUtils.getBowler() == null || ccUtils.isNewOver()) {
+			updateScreenForBatsmanSelect(View.GONE, View.GONE, View.GONE);
 			updateScreenForBowlerSelect(View.GONE, View.VISIBLE);
 		} else {
-			updateScreenForBowlerSelect(View.GONE, View.GONE);
-			updateScreenForBatsmanSelect(View.VISIBLE, View.GONE, View.GONE);
+			updateScreenForBatsmanSelect(View.GONE, View.GONE, View.GONE);
+			updateScreenForBowlerSelect(View.VISIBLE, View.GONE);
 		}
 		updateCardDetails(false);
 	}
 
     private void updateScreenForBatsmanSelect(int scoringButtonsVisibility, int batsmanSelectionVisibility, int currentFacingSelectVisibility) {
-        LinearLayout llScoring = theView.findViewById(R.id.llScoring);
-        Button btnSelBatsman = theView.findViewById(R.id.btnSelBatsman);
-        Button btnSelFacing = theView.findViewById(R.id.btnSelFacingBatsman);
+        theView.findViewById(R.id.llScoring).setVisibility(scoringButtonsVisibility);
+        theView.findViewById(R.id.btnSelBatsman).setVisibility(batsmanSelectionVisibility);
+        theView.findViewById(R.id.btnSelFacingBatsman).setVisibility(currentFacingSelectVisibility);
         TextView tvOutBatsmanDetails = theView.findViewById(R.id.tvOutBatsmanDetails);
-
-        llScoring.setVisibility(scoringButtonsVisibility);
-        btnSelBatsman.setVisibility(batsmanSelectionVisibility);
-        btnSelFacing.setVisibility(currentFacingSelectVisibility);
 
         if(dismissalType != null)
 		{
@@ -766,7 +755,7 @@ public class LimitedOversFragment extends Fragment
 					break;
 
 				case LBW:
-					bowledBy = "lbw " + ccUtils.getBowler().getBowlerName();
+					bowledBy = "lbw b " + ccUtils.getBowler().getBowlerName();
 					break;
 
 				case HIT_BALL_TWICE:
@@ -798,11 +787,8 @@ public class LimitedOversFragment extends Fragment
     }
 
 	private void updateScreenForBowlerSelect(int scoringButtonsVisibility, int bowlerSelectVisibility) {
-        LinearLayout llScoring = theView.findViewById(R.id.llScoring);
-        Button btnSelBowler = theView.findViewById(R.id.btnSelBowler);
-
-        llScoring.setVisibility(scoringButtonsVisibility);
-        btnSelBowler.setVisibility(bowlerSelectVisibility);
+        theView.findViewById(R.id.llScoring).setVisibility(scoringButtonsVisibility);
+        theView.findViewById(R.id.btnSelBowler).setVisibility(bowlerSelectVisibility);
     }
 
     private void updateScreenForResult() {
@@ -830,7 +816,7 @@ public class LimitedOversFragment extends Fragment
 		theView.findViewById(R.id.tvInningsComplete).setVisibility(View.GONE);
 		theView.findViewById(R.id.btnStartNextInnings).setVisibility(View.GONE);
 		updateCardDetails(false);
-		updateScreenForBatsmanSelect(View.GONE, View.VISIBLE, View.GONE);
+		updateLayout(true);
 	}
 
     private void showResult() {

@@ -136,11 +136,11 @@
         android:text="@string/selBowler"
         android:visibility="gone"/>
 
-
     <TextView
         android:id="@+id/tvInningsComplete"
         style="@style/TextViewStyle.Bold.Medium.MorePadding"
         android:text="@string/inningsComplete"
+        android:layout_gravity="center_horizontal"
         android:visibility="gone"/>
 
     <Button
