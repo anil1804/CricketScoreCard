@@ -1,5 +1,6 @@
 package com.thenewcone.myscorecard.fragment;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -71,6 +72,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Dial
 					Toast.makeText(getContext(), "Data uploaded successfully", Toast.LENGTH_SHORT).show();
 				else
 					Toast.makeText(getContext(), "Data upload failed", Toast.LENGTH_SHORT).show();
+				break;
+
+			case R.id.menu_quit:
+				if(getActivity() != null) {
+					getActivity().finishAndRemoveTask();
+				}
 				break;
 		}
 		return true;

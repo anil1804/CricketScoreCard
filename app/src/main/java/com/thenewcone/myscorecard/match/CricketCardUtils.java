@@ -112,35 +112,37 @@ public class CricketCardUtils {
 
         if(prevBowler != null) {
             setBowler(prevBowler);
+            newOver = true;
         }
     }
 
 	public void setBowler(BowlerStats bowler) {
 		this.bowler = bowler;
-		if(bowler != null)
+		if(bowler != null) {
 			card.updateBowlerInBowlerMap(bowler);
+		}
+		newOver = false;
 	}
 
 	private void updateBowlerFigures(double ballsBowled, int runsGiven, WicketData wicketData) {
-		BowlerStats bowlerDetails = card.getBowlerMap().get(bowler.getBowlerName());
-		if(bowlerDetails != null) {
+		if(bowler != null) {
 			if (runsGiven > 0) {
-				bowlerDetails.incRunsGiven(runsGiven);
+				bowler.incRunsGiven(runsGiven);
 			} else {
 				numConsecutiveDots++;
 			}
 			if (ballsBowled > 0) {
-				String oversBowled =  card.incrementOvers(bowlerDetails.getOversBowled());
+				String oversBowled =  card.incrementOvers(bowler.getOversBowled());
 				if (oversBowled.split("\\.")[1].equals("0") && numConsecutiveDots == 6) {
 					bowler.incMaidens();
 					numConsecutiveDots = 0;
 				}
-				bowlerDetails.setOversBowled(oversBowled);
+				bowler.setOversBowled(oversBowled);
 			}
 
 			if (wicketData != null) {
 				if (WicketData.isBowlersWicket(wicketData.getDismissalType()))
-					bowlerDetails.incWickets();
+					bowler.incWickets();
 			}
 
 			bowler.evaluateEconomy();
@@ -321,7 +323,6 @@ public class CricketCardUtils {
 			batTeam.add(new Player("Player-17", (new Random().nextInt(20)) + 18, Player.BattingType.LHB, Player.BowlingType.LF, false));
 			batTeam.add(new Player("Player-18", (new Random().nextInt(20)) + 18, Player.BattingType.RHB, Player.BowlingType.RFM, false));
 		}
-		card.setBattingTeam(batTeam);
 
 		if(bowlTeam == null) {
 			bowlTeam = new ArrayList<>();
@@ -334,17 +335,14 @@ public class CricketCardUtils {
 			bowlTeam.add(new Player("Player-27", (new Random().nextInt(20)) + 18, Player.BattingType.RHB, Player.BowlingType.RM, false));
 			bowlTeam.add(new Player("Player-28", (new Random().nextInt(20)) + 18, Player.BattingType.LHB, Player.BowlingType.LFM, false));
 		}
-		card.setBowlingTeam(bowlTeam);
 
     }
 
     public void setNewInnings() {
         prevInningsCard = card;
-        card = new CricketCard(team2.getShortName(), prevInningsCard.getMaxOvers(),
+        card = new CricketCard(team2, team1, prevInningsCard.getMaxOvers(),
                 prevInningsCard.getMaxPerBowler(), prevInningsCard.getMaxWickets(), 2);
 
-        card.setBattingTeam(prevInningsCard.getBowlingTeam());
-        card.setBowlingTeam(prevInningsCard.getBattingTeam());
         card.setTarget(prevInningsCard.getScore() + 1);
        	card.addPenalty(prevInningsCard.getFuturePenalty());
        	card.updateScore(prevInningsCard.getFuturePenalty(), null);

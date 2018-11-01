@@ -72,9 +72,9 @@ public class LimitedOversFragment extends Fragment
     TextView tvBowlName, tvBowlOvers, tvBowlMaidens, tvBowlRuns, tvBowlWickets, tvBowlEconomy;
     TextView tvResult, tvRunsInBalls;
 
-    int matchStateID = -1;
-    int matchID, currentUndoCount;
-    boolean startInnings = true, isLoad = false;
+	private int matchStateID = -1;
+	private int matchID, currentUndoCount;
+    private boolean startInnings = true, isLoad = false, isUndo = false;
 
 	SparseArray<String> savedMatchDataList;
 
@@ -89,7 +89,8 @@ public class LimitedOversFragment extends Fragment
 		return fragment;
 	}
 
-	public static LimitedOversFragment newInstance(int matchID, String matchName, Team battingTeam, Team bowlingTeam, Team tossWonBy, int maxOvers, int maxWickets, int maxPerBowler) {
+	public static LimitedOversFragment newInstance(int matchID, String matchName, Team battingTeam, Team bowlingTeam,
+												   Team tossWonBy, int maxOvers, int maxWickets, int maxPerBowler) {
 
 		LimitedOversFragment fragment = new LimitedOversFragment();
 
@@ -116,6 +117,19 @@ public class LimitedOversFragment extends Fragment
 	}
 
 	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		theView = inflater.inflate(R.layout.fragment_limited_overs, container, false);
+
+		isLoad = false;
+		initialSetup();
+		updateLayout();
+
+		return theView;
+	}
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.menu_fragments_scorecard, menu);
 		super.onCreateOptionsMenu(menu, inflater);
@@ -127,11 +141,11 @@ public class LimitedOversFragment extends Fragment
 			case R.id.menu_save:
 				if(!ccUtils.getCard().isInningsComplete()) {
 					if(ccUtils.getCurrentFacing() == null || ccUtils.getOtherBatsman() == null) {
-						Toast.makeText(getContext(), "Please Select Batsman before saving the match", Toast.LENGTH_LONG).show();
+						Toast.makeText(getContext(), "Please Select Batsman before saving the match", Toast.LENGTH_SHORT).show();
 						break;
 					}
-					if(ccUtils.getBowler() == null) {
-						Toast.makeText(getContext(), "Please Select Bowler before saving the match", Toast.LENGTH_LONG).show();
+					if(ccUtils.getBowler() == null || ccUtils.isNewOver()) {
+						Toast.makeText(getContext(), "Please Select Bowler before saving the match", Toast.LENGTH_SHORT).show();
 						break;
 					}
 				}
@@ -144,10 +158,11 @@ public class LimitedOversFragment extends Fragment
 				} else if (CommonUtils.oversToBalls(Double.parseDouble(ccUtils.getCard().getTotalOversBowled())) == 0) {
 					Toast.makeText(getContext(), "No Balls bowled and nothing to UNDO", Toast.LENGTH_SHORT).show();
 				} else {
+					isUndo = true;
 					currentUndoCount++;
 					int matchStateID = dbHandler.getLastAutoSave(matchID);
 					loadMatch(matchStateID);
-					updateCardDetails(false);
+					updateLayout();
 					dbHandler.deleteMatch(matchStateID);
 				}
 				break;
@@ -160,42 +175,223 @@ public class LimitedOversFragment extends Fragment
 		return true;
 	}
 
-	private void showInputActivity() {
-		Intent iaIntent = new Intent(getContext(), InputActivity.class);
-		iaIntent.putExtra(InputActivity.ARG_INPUT_TEXT, ccUtils.getMatchName());
-		startActivityForResult(iaIntent, REQ_CODE_GET_SAVE_MATCH_NAME);
-	}
+	@Override
+	public void onClick(View view) {
+		switch (view.getId()) {
+			case R.id.btnRuns0:
+				newBallBowled(null, 0, null);
+				break;
 
-	private void loadMatch(int matchStateID) {
-		if(matchStateID > 0) {
-			String matchData = dbHandler.retrieveMatchData(matchStateID);
-			matchID = dbHandler.getMatchID(matchStateID);
-			if (matchData != null) {
-				ccUtils = CommonUtils.convertToCCUtils(matchData);
-				if (isLoad)
-					Toast.makeText(getContext(), "Match Loaded", Toast.LENGTH_SHORT).show();
-				else
-					Toast.makeText(getContext(), "Undo Successful", Toast.LENGTH_SHORT).show();
-			}
+			case R.id.btnRuns1:
+				newBallBowled(null, 1, null);
+				break;
+
+			case R.id.btnRuns2:
+				newBallBowled(null, 2, null);
+				break;
+
+			case R.id.btnRuns3:
+				newBallBowled(null, 3, null);
+				break;
+
+			case R.id.btnRuns4:
+				newBallBowled(null, 4, null);
+				break;
+
+			case R.id.btnRuns6:
+				newBallBowled(null, 6, null);
+				break;
+
+			case R.id.btnWicket:
+				displayWicketDialog();
+				break;
+
+			case R.id.btnExtraPenalty:
+				displayExtrasDialog(Extra.ExtraType.PENALTY);
+				break;
+
+			case R.id.btnExtrasLegByes:
+				displayExtrasDialog(Extra.ExtraType.LEG_BYE);
+				break;
+
+			case R.id.btnExtrasByes:
+				displayExtrasDialog(Extra.ExtraType.BYE);
+				break;
+
+			case R.id.btnExtrasWides:
+				displayExtrasDialog(Extra.ExtraType.WIDE);
+				break;
+
+			case R.id.btnExtrasNoBall:
+				displayExtrasDialog(Extra.ExtraType.NO_BALL);
+				break;
+
+			case R.id.btnSelBatsman:
+				selectBatsman();
+				break;
+
+			case R.id.btnSelBowler:
+				displayBowlerSelect();
+				break;
+
+			case R.id.btnSelFacingBatsman:
+				displayBatsmanSelect(null, new BatsmanStats[]{ccUtils.getCurrentFacing() , ccUtils.getOtherBatsman()},
+						REQ_CODE_CURRENT_FACING_DIALOG, 0);
+				break;
+
+			case R.id.btnStartNextInnings:
+				startNewInnings();
+				break;
 		}
 	}
 
 	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		theView = inflater.inflate(R.layout.fragment_limited_overs, container, false);
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 
-		if(!isLoad)
-			updateScreenForBatsmanSelect(View.GONE, View.VISIBLE, View.GONE);
-		else {
-			if(ccUtils.getCard().isInningsComplete())
-				updateViewToCloseInnings();
+		switch (requestCode) {
+			case REQ_CODE_EXTRA_DIALOG:
+				if (resultCode == ExtraDialogActivity.RESULT_CODE_OK) {
+					Extra.ExtraType extraType = (Extra.ExtraType) data.getSerializableExtra(CommonUtils.ARG_EXTRA_TYPE);
+					Extra.ExtraType extraSubType = (Extra.ExtraType) data.getSerializableExtra(ExtraDialogActivity.ARG_NB_EXTRA);
+					int extraRuns = data.getIntExtra(ExtraDialogActivity.ARG_EXTRA_RUNS, -1);
+					String team = data.getStringExtra(ExtraDialogActivity.ARG_TEAM);
+
+					processExtra(extraType, extraRuns, team, extraSubType);
+					updateCardDetails(false);
+				}
+				break;
+
+			case REQ_CODE_WICKET_DIALOG:
+				if(resultCode == WicketDialogActivity.RESP_CODE_OK) {
+					WicketData wktData = (WicketData) data.getSerializableExtra(WicketDialogActivity.ARG_WICKET_DATA);
+					Extra extraData = (Extra) data.getSerializableExtra(WicketDialogActivity.ARG_EXTRA_DATA);
+					outBatsman = (ccUtils.getCurrentFacing().getPlayer().getID() == wktData.getBatsman().getPlayer().getID())
+							? ccUtils.getCurrentFacing() : ccUtils.getOtherBatsman();
+
+					newBallBowled(extraData, 0, wktData);
+
+					dismissalType = wktData.getDismissalType();
+					updateLayout();
+					updateCardDetails(false);
+				}
+				break;
+
+			case REQ_CODE_BATSMAN_DIALOG:
+				if(resultCode == BatsmanSelectActivity.RESP_CODE_OK) {
+					newBatsman = (BatsmanStats) data.getSerializableExtra(BatsmanSelectActivity.ARG_SEL_BATSMAN);
+
+					if(newBatsman != null) {
+						ccUtils.newBatsman(newBatsman);
+
+						if(dismissalType != null) {
+							switch (dismissalType) {
+								case RUN_OUT:
+								case RETIRED:
+								case OBSTRUCTING_FIELD:
+								case CAUGHT:
+								case TIMED_OUT:
+								case HIT_BALL_TWICE:
+									updateScreenForBatsmanSelect(View.GONE, View.GONE, View.VISIBLE);
+									break;
+
+								default:
+									updateScreenForBatsmanSelect(View.VISIBLE, View.GONE, View.GONE);
+									break;
+							}
+							dismissalType = null;
+						} else {
+							if(startInnings) {
+								if (ccUtils.getCurrentFacing() != null && ccUtils.getOtherBatsman() != null) {
+									updateScreenForBatsmanSelect(View.GONE, View.GONE, View.VISIBLE);
+								} else {
+									updateLayout();
+								}
+							}
+						}
+
+						updateCardDetails(false);
+					}
+
+					updateLayout();
+				}
+				break;
+
+			case REQ_CODE_CURRENT_FACING_DIALOG:
+				if(resultCode == BatsmanSelectActivity.RESP_CODE_OK) {
+					BatsmanStats selBatsman = (BatsmanStats) data.getSerializableExtra(BatsmanSelectActivity.ARG_SEL_BATSMAN);
+					if(selBatsman != null && ccUtils.getCurrentFacing().getPosition() != selBatsman.getPosition()) {
+						ccUtils.updateFacingBatsman(selBatsman);
+						updateCardDetails(false);
+					}
+
+					if(startInnings) {
+						updateScreenForBatsmanSelect(View.GONE, View.GONE, View.GONE);
+						updateScreenForBowlerSelect(View.GONE, View.VISIBLE);
+					} else {
+						updateLayout();
+					}
+				}
+				break;
+
+			case REQ_CODE_BOWLER_DIALOG:
+				if(resultCode == BowlerSelectActivity.RESP_CODE_OK) {
+					BowlerStats nextBowler = (BowlerStats) data.getSerializableExtra(BowlerSelectActivity.ARG_SEL_BOWLER);
+					if(nextBowler != null) {
+						ccUtils.setBowler(nextBowler);
+						updateCardDetails(false);
+					}
+
+					updateLayout();
+
+					startInnings = false;
+				}
+				break;
+
+			case REQ_CODE_GET_SAVE_MATCH_NAME:
+				if(resultCode == InputActivity.RESP_CODE_OK) {
+					String saveMatchName = data.getStringExtra(InputActivity.ARG_INPUT_TEXT);
+					int rowID = saveMatch(saveMatchName);
+					if(rowID > 0)
+						Toast.makeText(getContext(), "Match saved successfully.", Toast.LENGTH_SHORT).show();
+					else
+						Toast.makeText(getContext(), "Problem encountered saving the match", Toast.LENGTH_SHORT).show();
+				}
 		}
+	}
 
-		initialSetup();
+	@Override
+	public void onDetach() {
+		confirmSaveMatch();
+		super.onDetach();
+	}
 
-		return theView;
+	@Override
+	public void onDestroyView() {
+		confirmSaveMatch();
+		super.onDestroyView();
+	}
+
+	@Override
+	public void onConfirmationClick(int confirmationCode, boolean accepted) {
+		switch (confirmationCode) {
+			case CONFIRMATION_CODE_SAVE_MATCH:
+				showInputActivity();
+				break;
+		}
+	}
+
+	@Override
+	public void onItemSelect(String type, String value, int position) {
+		switch (type) {
+			case STRING_DIALOG_LOAD_SAVED_MATCHES:
+				int matchStateID = savedMatchDataList.keyAt(savedMatchDataList.indexOfValue(value));
+				isLoad = true;
+				loadMatch(matchStateID);
+				updateLayout();
+				dbHandler.clearMatchStateHistory(0, -1, matchStateID);
+				break;
+		}
 	}
 
 	private void initialSetup() {
@@ -214,21 +410,39 @@ public class LimitedOversFragment extends Fragment
 		theView.findViewById(R.id.btnExtrasNoBall).setOnClickListener(this);
 		theView.findViewById(R.id.btnExtraPenalty).setOnClickListener(this);
 		theView.findViewById(R.id.btnSelBatsman).setOnClickListener(this);
-        theView.findViewById(R.id.btnSelBowler).setOnClickListener(this);
-        theView.findViewById(R.id.btnSelFacingBatsman).setOnClickListener(this);
-        theView.findViewById(R.id.btnStartNextInnings).setOnClickListener(this);
+		theView.findViewById(R.id.btnSelBowler).setOnClickListener(this);
+		theView.findViewById(R.id.btnSelFacingBatsman).setOnClickListener(this);
+		theView.findViewById(R.id.btnStartNextInnings).setOnClickListener(this);
 	}
 
-	private void initCricketCard(int matchID, String matchName, Team battingTeam, Team bowlingTeam, Team tossWonBy, int maxOvers, int maxWickets, int maxPerBowler) {
+	private void initCricketCard(int matchID, String matchName, Team battingTeam, Team bowlingTeam, Team tossWonBy,
+								 int maxOvers, int maxWickets, int maxPerBowler) {
 		this.matchID = matchID;
 
 		CricketCard card =
-				new CricketCard(battingTeam.getShortName(), String.valueOf(maxOvers), maxPerBowler, maxWickets, 1);
+				new CricketCard(battingTeam, bowlingTeam,
+						String.valueOf(maxOvers), maxPerBowler, maxWickets, 1);
 
 		ccUtils = new CricketCardUtils(card, matchName, battingTeam, bowlingTeam, maxWickets);
 
 		ccUtils.setTossWonBy(tossWonBy.getId());
 		ccUtils.setFirstInnings(battingTeam.getMatchPlayers(), bowlingTeam.getMatchPlayers());
+	}
+
+	private void loadMatch(int matchStateID) {
+		if(matchStateID > 0) {
+			String matchData = dbHandler.retrieveMatchData(matchStateID);
+			matchID = dbHandler.getMatchID(matchStateID);
+			if (matchData != null) {
+				ccUtils = CommonUtils.convertToCCUtils(matchData);
+				if (isLoad) {
+					Toast.makeText(getContext(), "Match Loaded", Toast.LENGTH_SHORT).show();
+				} else if(isUndo){
+					Toast.makeText(getContext(), "Undo Successful", Toast.LENGTH_SHORT).show();
+					isUndo = false;
+				}
+			}
+		}
 	}
 
 	private void updateCardDetails(boolean isInitial) {
@@ -375,6 +589,9 @@ public class LimitedOversFragment extends Fragment
 	}
 
 	private void newBallBowled(Extra extra, int runs, @Nullable WicketData wicketData) {
+		if(currentUndoCount > 0)
+			currentUndoCount--;
+
 		autoSaveMatch();
 		ccUtils.processBallActivity(extra, runs, wicketData, false);
 		updateCardDetails(false);
@@ -384,77 +601,7 @@ public class LimitedOversFragment extends Fragment
         }
 	}
 
-	@Override
-	public void onClick(View view) {
-		switch (view.getId()) {
-			case R.id.btnRuns0:
-				newBallBowled(null, 0, null);
-				break;
-
-			case R.id.btnRuns1:
-				newBallBowled(null, 1, null);
-				break;
-
-			case R.id.btnRuns2:
-				newBallBowled(null, 2, null);
-				break;
-
-			case R.id.btnRuns3:
-				newBallBowled(null, 3, null);
-				break;
-
-			case R.id.btnRuns4:
-				newBallBowled(null, 4, null);
-				break;
-
-			case R.id.btnRuns6:
-				newBallBowled(null, 6, null);
-				break;
-
-			case R.id.btnWicket:
-				displayWicketDialog();
-				break;
-
-			case R.id.btnExtraPenalty:
-				displayExtrasDialog(Extra.ExtraType.PENALTY);
-				break;
-
-			case R.id.btnExtrasLegByes:
-				displayExtrasDialog(Extra.ExtraType.LEG_BYE);
-				break;
-
-			case R.id.btnExtrasByes:
-				displayExtrasDialog(Extra.ExtraType.BYE);
-				break;
-
-			case R.id.btnExtrasWides:
-				displayExtrasDialog(Extra.ExtraType.WIDE);
-				break;
-
-			case R.id.btnExtrasNoBall:
-				displayExtrasDialog(Extra.ExtraType.NO_BALL);
-				break;
-
-			case R.id.btnSelBatsman:
-				selectBatsman();
-				break;
-
-			case R.id.btnSelBowler:
-				displayBowlerSelect();
-				break;
-
-			case R.id.btnSelFacingBatsman:
-				displayBatsmanSelect(null, new BatsmanStats[]{ccUtils.getCurrentFacing() , ccUtils.getOtherBatsman()},
-						REQ_CODE_CURRENT_FACING_DIALOG, 0);
-				break;
-
-			case R.id.btnStartNextInnings:
-				startNewInnings();
-				break;
-		}
-	}
-
-    public void processExtra(Extra.ExtraType extraType, int numExtraRuns, String penaltyFavouringTeam, Extra.ExtraType extraSubType) {
+	private void processExtra(Extra.ExtraType extraType, int numExtraRuns, String penaltyFavouringTeam, Extra.ExtraType extraSubType) {
         Extra extra;
         switch (extraType) {
             case PENALTY:
@@ -504,7 +651,7 @@ public class LimitedOversFragment extends Fragment
 			batsmenPlayed[i] = batsmen.get(i+1);
 		}
 
-		displayBatsmanSelect(ccUtils.getCard().getBattingTeam(), batsmenPlayed, REQ_CODE_BATSMAN_DIALOG, batsmen.size());
+		displayBatsmanSelect(ccUtils.getCard().getBattingTeam().getMatchPlayers(), batsmenPlayed, REQ_CODE_BATSMAN_DIALOG, batsmen.size());
 	}
 
 	private void displayExtrasDialog(Extra.ExtraType type) {
@@ -519,7 +666,7 @@ public class LimitedOversFragment extends Fragment
 		dialogIntent.putExtra(WicketDialogActivity.ARG_FACING_BATSMAN, ccUtils.getCurrentFacing());
 		dialogIntent.putExtra(WicketDialogActivity.ARG_OTHER_BATSMAN, ccUtils.getOtherBatsman());
 		dialogIntent.putExtra(WicketDialogActivity.ARG_BOWLER, ccUtils.getBowler());
-		dialogIntent.putExtra(WicketDialogActivity.ARG_FIELDING_TEAM, ccUtils.getCard().getBowlingTeam().toArray());
+		dialogIntent.putExtra(WicketDialogActivity.ARG_FIELDING_TEAM, ccUtils.getCard().getBowlingTeam().getMatchPlayers().toArray());
 
 		startActivityForResult(dialogIntent, REQ_CODE_WICKET_DIALOG);
 	}
@@ -547,7 +694,7 @@ public class LimitedOversFragment extends Fragment
 
         Intent bowlerIntent = new Intent(getContext(), BowlerSelectActivity.class);
 
-        bowlerIntent.putExtra(BowlerSelectActivity.ARG_PLAYER_LIST, ccUtils.getCard().getBowlingTeam().toArray());
+        bowlerIntent.putExtra(BowlerSelectActivity.ARG_PLAYER_LIST, ccUtils.getCard().getBowlingTeam().getMatchPlayers().toArray());
         bowlerIntent.putExtra(BowlerSelectActivity.ARG_BOWLER_LIST, currBowlers);
         bowlerIntent.putExtra(BowlerSelectActivity.ARG_MAX_OVERS_PER_BOWLER, ccUtils.getCard().getMaxPerBowler());
         bowlerIntent.putExtra(BowlerSelectActivity.ARG_NEXT_BOWLER, ccUtils.getNextBowler());
@@ -556,136 +703,31 @@ public class LimitedOversFragment extends Fragment
         startActivityForResult(bowlerIntent, REQ_CODE_BOWLER_DIALOG);
     }
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		switch (requestCode) {
-			case REQ_CODE_EXTRA_DIALOG:
-				if (resultCode == ExtraDialogActivity.RESULT_CODE_OK) {
-					Extra.ExtraType extraType = (Extra.ExtraType) data.getSerializableExtra(CommonUtils.ARG_EXTRA_TYPE);
-					Extra.ExtraType extraSubType = (Extra.ExtraType) data.getSerializableExtra(ExtraDialogActivity.ARG_NB_EXTRA);
-					int extraRuns = data.getIntExtra(ExtraDialogActivity.ARG_EXTRA_RUNS, -1);
-					String team = data.getStringExtra(ExtraDialogActivity.ARG_TEAM);
-
-					processExtra(extraType, extraRuns, team, extraSubType);
-					updateCardDetails(false);
-				}
-				break;
-
-			case REQ_CODE_WICKET_DIALOG:
-				if(resultCode == WicketDialogActivity.RESP_CODE_OK) {
-				    WicketData wktData = (WicketData) data.getSerializableExtra(WicketDialogActivity.ARG_WICKET_DATA);
-				    Extra extraData = (Extra) data.getSerializableExtra(WicketDialogActivity.ARG_EXTRA_DATA);
-                    outBatsman = (ccUtils.getCurrentFacing().getPlayer().getID() == wktData.getBatsman().getPlayer().getID())
-									? ccUtils.getCurrentFacing() : ccUtils.getOtherBatsman();
-
-					newBallBowled(extraData, 0, wktData);
-
-					dismissalType = wktData.getDismissalType();
-                    updateScreenForBatsmanSelect(View.GONE, View.VISIBLE, View.GONE);
-                    updateCardDetails(false);
-				}
-				break;
-
-            case REQ_CODE_BATSMAN_DIALOG:
-                if(resultCode == BatsmanSelectActivity.RESP_CODE_OK) {
-                    newBatsman = (BatsmanStats) data.getSerializableExtra(BatsmanSelectActivity.ARG_SEL_BATSMAN);
-
-                    if(newBatsman != null) {
-						ccUtils.newBatsman(newBatsman);
-
-                    	if(dismissalType != null) {
-							switch (dismissalType) {
-								case RUN_OUT:
-								case RETIRED:
-								case OBSTRUCTING_FIELD:
-								case CAUGHT:
-								case TIMED_OUT:
-								case HIT_BALL_TWICE:
-									updateScreenForBatsmanSelect(View.GONE, View.GONE, View.VISIBLE);
-									break;
-
-								default:
-									updateScreenForBatsmanSelect(View.VISIBLE, View.GONE, View.GONE);
-									break;
-							}
-							dismissalType = null;
-						} else {
-                    		if(startInnings) {
-								if (ccUtils.getCurrentFacing() != null && ccUtils.getOtherBatsman() != null) {
-									updateScreenForBatsmanSelect(View.GONE, View.GONE, View.VISIBLE);
-								} else {
-									updateScreenForBatsmanSelect(View.GONE, View.VISIBLE, View.GONE);
-								}
-							}
-						}
-
-                        updateCardDetails(false);
-                    }
-                }
-                break;
-
-            case REQ_CODE_CURRENT_FACING_DIALOG:
-                if(resultCode == BatsmanSelectActivity.RESP_CODE_OK) {
-                    BatsmanStats selBatsman = (BatsmanStats) data.getSerializableExtra(BatsmanSelectActivity.ARG_SEL_BATSMAN);
-                    if(selBatsman != null && ccUtils.getCurrentFacing().getPosition() != selBatsman.getPosition()) {
-                        ccUtils.updateFacingBatsman(selBatsman);
-                        updateCardDetails(false);
-                    }
-
-                    if(startInnings) {
-						updateScreenForBatsmanSelect(View.GONE, View.GONE, View.GONE);
-						updateScreenForBowlerSelect(View.GONE, View.VISIBLE);
-					} else {
-						updateScreenForBatsmanSelect(View.VISIBLE, View.GONE, View.GONE);
-					}
-                }
-                break;
-
-            case REQ_CODE_BOWLER_DIALOG:
-                if(resultCode == BowlerSelectActivity.RESP_CODE_OK) {
-                    BowlerStats nextBowler = (BowlerStats) data.getSerializableExtra(BowlerSelectActivity.ARG_SEL_BOWLER);
-                    if(nextBowler != null) {
-                        ccUtils.setBowler(nextBowler);
-                        updateCardDetails(false);
-                    }
-
-                    updateScreenForBowlerSelect(View.VISIBLE, View.GONE);
-                    startInnings = false;
-                }
-                break;
-
-			case REQ_CODE_GET_SAVE_MATCH_NAME:
-				if(resultCode == InputActivity.RESP_CODE_OK) {
-					String saveMatchName = data.getStringExtra(InputActivity.ARG_INPUT_TEXT);
-					int rowID = saveMatch(saveMatchName);
-					if(rowID > 0)
-						Toast.makeText(getContext(), "Match saved successfully.", Toast.LENGTH_SHORT).show();
-					else
-						Toast.makeText(getContext(), "Problem encountered saving the match", Toast.LENGTH_SHORT).show();
-				}
-		}
-	}
-
 	private void checkChangeOfBowler() {
 	    if(ccUtils.isNewOver()) {
-	    	ccUtils.setBowler(null);
-            updateScreenForBowlerSelect(View.GONE, View.VISIBLE);
+			updateLayout();
         }
     }
 
-    @Override
-    public void onDetach() {
-        confirmSaveMatch();
-        super.onDetach();
-    }
+	private void showInputActivity() {
+		Intent iaIntent = new Intent(getContext(), InputActivity.class);
+		iaIntent.putExtra(InputActivity.ARG_INPUT_TEXT, ccUtils.getMatchName());
+		startActivityForResult(iaIntent, REQ_CODE_GET_SAVE_MATCH_NAME);
+	}
 
-    @Override
-        public void onDestroyView() {
-		confirmSaveMatch();
-        super.onDestroyView();
-    }
+	private void updateLayout() {
+		if(ccUtils.getCard().isInningsComplete()) {
+			updateViewToCloseInnings();
+		} if(ccUtils.getCurrentFacing() == null || ccUtils.getOtherBatsman() == null) {
+			updateScreenForBatsmanSelect(View.GONE, View.VISIBLE, View.GONE);
+		} else if(ccUtils.getBowler() == null || ccUtils.isNewOver()) {
+			updateScreenForBowlerSelect(View.GONE, View.VISIBLE);
+		} else {
+			updateScreenForBowlerSelect(View.GONE, View.GONE);
+			updateScreenForBatsmanSelect(View.VISIBLE, View.GONE, View.GONE);
+		}
+		updateCardDetails(false);
+	}
 
     private void updateScreenForBatsmanSelect(int scoringButtonsVisibility, int batsmanSelectionVisibility, int currentFacingSelectVisibility) {
         LinearLayout llScoring = theView.findViewById(R.id.llScoring);
@@ -711,7 +753,7 @@ public class LimitedOversFragment extends Fragment
 					break;
 
 				case STUMPED:
-					outBy = "st " + outBatsman.getWicketEffectedBy().getName();
+					outBy = "st " + ccUtils.getCard().getBowlingTeam().getWicketKeeper().getName();
 					bowledBy = "b " + ccUtils.getBowler().getBowlerName();
 					break;
 
@@ -792,6 +834,8 @@ public class LimitedOversFragment extends Fragment
 	}
 
     private void showResult() {
+		updateScreenForBatsmanSelect(View.GONE, View.GONE, View.GONE);
+		updateScreenForBowlerSelect(View.GONE, View.GONE);
 		theView.findViewById(R.id.tvInningsComplete).setVisibility(View.VISIBLE);
 		int score = ccUtils.getCard().getScore();
 		int target = ccUtils.getCard().getScore();
@@ -824,15 +868,6 @@ public class LimitedOversFragment extends Fragment
 
 	}
 
-	@Override
-	public void onConfirmationClick(int confirmationCode, boolean accepted) {
-		switch (confirmationCode) {
-			case CONFIRMATION_CODE_SAVE_MATCH:
-				showInputActivity();
-				break;
-		}
-	}
-
 	private void showSavedMatchDialog() {
 		if(getFragmentManager() != null) {
 			savedMatchDataList = dbHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, matchID, null);
@@ -847,19 +882,6 @@ public class LimitedOversFragment extends Fragment
 				dialog.setDialogItemClickListener(this);
 				dialog.show(getFragmentManager(), "SavedMatchDialog");
 			}
-		}
-	}
-
-	@Override
-	public void onItemSelect(String type, String value, int position) {
-		switch (type) {
-			case STRING_DIALOG_LOAD_SAVED_MATCHES:
-				int matchStateID = savedMatchDataList.keyAt(savedMatchDataList.indexOfValue(value));
-				isLoad = true;
-				loadMatch(matchStateID);
-				updateCardDetails(false);
-				dbHandler.clearMatchStateHistory(0, -1, matchStateID);
-				break;
 		}
 	}
 }

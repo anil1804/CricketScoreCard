@@ -63,9 +63,13 @@ public class HomeActivity extends AppCompatActivity
 		} else {
 			if(getSupportFragmentManager().getBackStackEntryCount() > 0)
 				getSupportFragmentManager().popBackStack();
-			else
-				if(!isFragmentHidden(LimitedOversFragment.class.getSimpleName()))
+			else {
+				if (!isFragmentHidden(HomeFragment.class.getSimpleName())) {
+					finish();
+				} else if (!isFragmentHidden(LimitedOversFragment.class.getSimpleName())) {
 					super.onBackPressed();
+				}
+			}
 		}
 	}
 
@@ -117,6 +121,13 @@ public class HomeActivity extends AppCompatActivity
 		HashMap<String, Object> respMap = new HashMap<>();
 
 		switch (item.getItemId()) {
+			case R.id.nav_home:
+				if(isFragmentHidden(HomeFragment.class.getSimpleName())) {
+					respMap.put(FRAGMENT, HomeFragment.newInstance());
+					respMap.put(FRAGMENT_TAG, HomeFragment.class.getSimpleName());
+				}
+				break;
+
 			case R.id.nav_manage_player:
 				if(isFragmentHidden(PlayerFragment.class.getSimpleName())) {
 					respMap.put(FRAGMENT, PlayerFragment.newInstance());

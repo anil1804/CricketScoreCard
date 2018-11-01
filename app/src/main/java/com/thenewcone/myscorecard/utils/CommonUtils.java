@@ -214,14 +214,15 @@ public class CommonUtils {
     }
 
     public static CricketCardUtils convertToCCUtils(String jsonString) {
+		CricketCardUtils ccUtils = null;
 		if(jsonString != null) {
 			Gson gson = new Gson();
 			Type type = new TypeToken<CricketCardUtils>(){}.getType();
 
-			return gson.fromJson(jsonString, type);
+			ccUtils = gson.fromJson(jsonString, type);
 		}
 
-		return null;
+		return ccUtils;
     }
 
     public static String currTimestamp() {

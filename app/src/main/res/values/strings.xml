@@ -168,4 +168,5 @@
     <string name="oversLeft">Overs Left</string>
     <string name="isWK">is WK?</string>
     <string name="text">Text Data</string>
+    <string name="quit">Quit</string>
 </resources>

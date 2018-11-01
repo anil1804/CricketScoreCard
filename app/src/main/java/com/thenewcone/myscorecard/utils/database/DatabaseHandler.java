@@ -270,16 +270,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public int getLastAutoSave(int matchID) {
     	int matchStateID = -1;
-		final String MAX_SAVE_ORDER = "MAX_SAVE_ORDER";
 
     	SQLiteDatabase db = this.getReadableDatabase();
     	String selectQuery = String.format(Locale.getDefault(),
-				"SELECT MAX(%s) AS %s FROM %s WHERE %s = %d AND %s = 1"
-				, TBL_STATE_ORDER, MAX_SAVE_ORDER, TBL_STATE, TBL_STATE_MATCH_ID, matchID, TBL_STATE_IS_AUTO);
+				"SELECT %s FROM %s WHERE %s = %d AND %s = 1 ORDER BY %s DESC LIMIT 1"
+				, TBL_STATE_ID, TBL_STATE, TBL_STATE_MATCH_ID, matchID, TBL_STATE_IS_AUTO, TBL_STATE_ORDER);
     	Cursor cursor = db.rawQuery(selectQuery, null);
 
     	if(cursor != null && cursor.moveToFirst()) {
-    		matchStateID = cursor.getInt(cursor.getColumnIndex(MAX_SAVE_ORDER));
+    		matchStateID = cursor.getInt(cursor.getColumnIndex(TBL_STATE_ID));
 			cursor.close();
 		}
     	db.close();
@@ -289,7 +288,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void deleteMatch(int matchStateID) {
     	String query = String.format(Locale.getDefault(),
-				"DELETE FROM %s WHERE %s = %d", TBL_STATE, TBL_STATE_ORDER, matchStateID);
+				"DELETE FROM %s WHERE %s = %d", TBL_STATE, TBL_STATE_ID, matchStateID);
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.execSQL(query);
@@ -303,8 +302,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		SQLiteDatabase db = this.getWritableDatabase();
     	String query = String.format(Locale.getDefault(),
-				"DELETE FROM %s WHERE %s NOT IN (SELECT %s FROM %s ORDER BY %s DESC LIMIT %d) AND %s = 1"
-				, TBL_STATE, TBL_STATE_ORDER, TBL_STATE_ORDER, TBL_STATE, TBL_STATE_ORDER, ignoreCount, TBL_STATE_IS_AUTO);
+				"DELETE FROM %s WHERE %s NOT IN " +
+						"(SELECT %s FROM %s WHERE %s = %d ORDER BY %s DESC LIMIT %d) " +
+						"AND %s = 1 AND %s = %d"
+				, TBL_STATE, TBL_STATE_ORDER,
+				TBL_STATE_ORDER, TBL_STATE, TBL_STATE_MATCH_ID, matchID, TBL_STATE_ORDER, ignoreCount,
+				TBL_STATE_IS_AUTO, TBL_STATE_MATCH_ID, matchID);
+
     	Log.i("StateHistory", "Delete Query : " + query);
 
 		db.execSQL(query);
