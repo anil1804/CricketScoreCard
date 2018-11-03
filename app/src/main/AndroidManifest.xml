@@ -1,47 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.thenewcone.myscorecard">
+	package="com.thenewcone.myscorecard">
 
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">
-        <activity
-            android:name=".activity.HomeActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+	<application
+		android:allowBackup="true"
+		android:icon="@mipmap/ic_launcher"
+		android:label="@string/app_name"
+		android:roundIcon="@mipmap/ic_launcher_round"
+		android:supportsRtl="true"
+		android:theme="@style/AppTheme.NoActionBar">
+		<activity
+			android:name=".activity.HomeActivity"
+			android:label="@string/app_name"
+			android:screenOrientation="portrait"
+			android:theme="@style/AppTheme.NoActionBar">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".activity.ExtraDialogActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
-        <activity
-            android:name=".activity.WicketDialogActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
-        <activity
-            android:name=".activity.PlayerSelectActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
-        <activity
-            android:name=".activity.BatsmanSelectActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
-        <activity
-            android:name=".activity.BowlerSelectActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
-        <activity
-            android:name=".activity.InputActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
-        <activity
-            android:name=".activity.TeamSelectActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
-        <activity android:name=".activity.MatchSelectActivity"></activity>
-    </application>
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		<activity
+			android:name=".activity.ExtraDialogActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
+		<activity
+			android:name=".activity.WicketDialogActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
+		<activity
+			android:name=".activity.PlayerSelectActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
+		<activity
+			android:name=".activity.BatsmanSelectActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
+		<activity
+			android:name=".activity.BowlerSelectActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
+		<activity
+			android:name=".activity.InputActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
+		<activity
+			android:name=".activity.TeamSelectActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
+		<activity
+			android:name=".activity.SavedMatchSelectActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
+		<activity
+			android:name=".activity.ScoreCardActivity"
+			android:screenOrientation="portrait"
+			android:label="@string/title_activity_score_card"
+			android:theme="@style/AppTheme.NoActionBar"/>
+	</application>
 
 </manifest>

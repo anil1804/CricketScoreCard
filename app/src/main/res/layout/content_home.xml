@@ -32,6 +32,13 @@
             android:contentDescription="@string/loadMatch"
             android:text="@string/loadMatch"/>
 
+        <Button
+            android:id="@+id/btnDeleteMatches"
+            style="@style/ButtonStyle.Medium"
+            android:drawableTop="@drawable/ic_delete"
+            android:contentDescription="@string/deleteMatches"
+            android:text="@string/deleteMatches"/>
+
     </LinearLayout>
 
     <!-- Separator -->

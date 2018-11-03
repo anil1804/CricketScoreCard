@@ -30,6 +30,7 @@ public class InputActivity extends Activity
         String inputText = "";
         if(getIntent().getExtras() != null) {
         	inputText = getIntent().getStringExtra(ARG_INPUT_TEXT);
+        	inputText = inputText == null ? "" : inputText;
 		}
 
         etInputText = findViewById(R.id.etStringInput);

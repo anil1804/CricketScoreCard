@@ -1,12 +1,11 @@
 package com.thenewcone.myscorecard.fragment;
 
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,20 +15,28 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
-import com.thenewcone.myscorecard.intf.DialogItemClickListener;
+import com.thenewcone.myscorecard.activity.SavedMatchSelectActivity;
+import com.thenewcone.myscorecard.intf.ConfirmationDialogClickListener;
+import com.thenewcone.myscorecard.match.MatchState;
 import com.thenewcone.myscorecard.utils.CommonUtils;
 import com.thenewcone.myscorecard.utils.database.AddDBData;
 import com.thenewcone.myscorecard.utils.database.DatabaseHandler;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
-public class HomeFragment extends Fragment implements View.OnClickListener, DialogItemClickListener {
+public class HomeFragment extends Fragment implements View.OnClickListener, ConfirmationDialogClickListener {
 
-	private static final String STRING_DIALOG_LOAD_SAVED_MATCHES = "LoadSavedMatches";
+	//private static final String STRING_DIALOG_LOAD_SAVED_MATCHES = "LoadSavedMatches";
+
+	private static final int REQ_CODE_MATCH_LIST_LOAD = 1;
+	private static final int REQ_CODE_MATCH_LIST_DELETE = 2;
+
+	private static final int CONFIRMATION_CODE_DELETE_MATCHES = 1;
+
 	DatabaseHandler dbHandler;
-	SparseArray<String> savedMatchDataList;
+
+	MatchState[] matchesToDelete;
 
 	public static HomeFragment newInstance() {
 		return new HomeFragment();
@@ -52,6 +59,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Dial
 		theView.findViewById(R.id.btnManagePlayer).setOnClickListener(this);
         theView.findViewById(R.id.btnManageTeam).setOnClickListener(this);
         theView.findViewById(R.id.btnLoadMatch).setOnClickListener(this);
+        theView.findViewById(R.id.btnDeleteMatches).setOnClickListener(this);
 
 		dbHandler = new DatabaseHandler(getContext());
 
@@ -116,43 +124,72 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Dial
                     break;
 
 				case R.id.btnLoadMatch:
-					showSavedMatchDialog();
+					showSavedMatchDialog(false, REQ_CODE_MATCH_LIST_LOAD);
+					break;
+
+				case R.id.btnDeleteMatches:
+					showSavedMatchDialog(true, REQ_CODE_MATCH_LIST_DELETE);
 					break;
 			}
 		}
 	}
 
-	private void showSavedMatchDialog() {
-		if(getFragmentManager() != null) {
-			savedMatchDataList = dbHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, 0, null);
-			if (savedMatchDataList != null && savedMatchDataList.size() > 0) {
-				List<String> savedMatches = new ArrayList<>();
-				for (int i = 0; i < savedMatchDataList.size(); i++)
-					savedMatches.add(savedMatchDataList.valueAt(i));
-
-				Collections.sort(savedMatches);
-
-
-				StringDialog dialog = StringDialog.newInstance("Select Match to Load", CommonUtils.listToArray(savedMatches), STRING_DIALOG_LOAD_SAVED_MATCHES);
-				dialog.setDialogItemClickListener(this);
-				dialog.show(getFragmentManager(), "SavedMatchDialog");
-			} else {
-				Toast.makeText(getContext(), "No Saved Matches Found", Toast.LENGTH_SHORT).show();
-			}
+	private void showSavedMatchDialog(boolean isMulti, int requestCode) {
+		List<MatchState> savedMatchDataList = dbHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, 0, null);
+		if(savedMatchDataList != null && savedMatchDataList.size() > 0) {
+			Intent getMatchListIntent = new Intent(getContext(), SavedMatchSelectActivity.class);
+			getMatchListIntent.putExtra(SavedMatchSelectActivity.ARG_MATCH_LIST, savedMatchDataList.toArray());
+			getMatchListIntent.putExtra(SavedMatchSelectActivity.ARG_IS_MULTI_SELECT, isMulti);
+			startActivityForResult(getMatchListIntent, requestCode);
+		} else {
+			Toast.makeText(getContext(), "No Saved matches found.", Toast.LENGTH_SHORT).show();
 		}
 	}
 
 	@Override
-	public void onItemSelect(String type, String value, int position) {
-		switch (type) {
-			case STRING_DIALOG_LOAD_SAVED_MATCHES:
-				if(getActivity() != null) {
-					int matchStateID = savedMatchDataList.keyAt(savedMatchDataList.indexOfValue(value));
-					String fragmentTag = NewMatchFragment.class.getSimpleName();
-					getActivity().getSupportFragmentManager().beginTransaction()
-							.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID), fragmentTag)
-							.addToBackStack(fragmentTag)
-							.commit();
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		switch (requestCode) {
+			case REQ_CODE_MATCH_LIST_LOAD:
+				if(resultCode == SavedMatchSelectActivity.RESP_CODE_OK) {
+					MatchState selSavedMatch = (MatchState) data.getSerializableExtra(SavedMatchSelectActivity.ARG_RESP_SEL_MATCH);
+					if(getActivity() != null) {
+						String fragmentTag = NewMatchFragment.class.getSimpleName();
+
+						getActivity().getSupportFragmentManager().beginTransaction()
+								.replace(R.id.frame_container, LimitedOversFragment.loadInstance(selSavedMatch.getId()), fragmentTag)
+								.addToBackStack(fragmentTag)
+								.commit();
+					}
+				}
+				break;
+
+			case REQ_CODE_MATCH_LIST_DELETE:
+				if(resultCode == SavedMatchSelectActivity.RESP_CODE_OK) {
+					matchesToDelete = CommonUtils.objectArrToMatchStateArr(
+							(Object[]) data.getSerializableExtra(SavedMatchSelectActivity.ARG_RESP_SEL_MATCHES));
+
+					if(matchesToDelete.length > 0 && getFragmentManager() != null) {
+						ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance(CONFIRMATION_CODE_DELETE_MATCHES,
+								"Confirm Delete", String.format(Locale.getDefault(), "Do you want to delete these %d saved matches?", matchesToDelete.length));
+						confirmationDialog.setConfirmationClickListener(this);
+						confirmationDialog.show(getFragmentManager(), "DeleteSavedMatches");
+					}
+				}
+		}
+	}
+
+	@Override
+	public void onConfirmationClick(int confirmationCode, boolean accepted) {
+		switch (confirmationCode) {
+			case CONFIRMATION_CODE_DELETE_MATCHES:
+				if(accepted) {
+					if(dbHandler.deleteSavedMatchStates(matchesToDelete)) {
+						Toast.makeText(getContext(), "Matches Deleted", Toast.LENGTH_SHORT).show();
+					} else {
+						Toast.makeText(getContext(), "Unable to delete all matches. Please retry", Toast.LENGTH_LONG).show();
+					}
 				}
 				break;
 		}

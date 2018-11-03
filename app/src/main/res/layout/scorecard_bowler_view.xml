@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<TextView
+			android:layout_width="0dp"
+			android:layout_weight="6"
+			android:id="@+id/tvSCBowlerName"
+			style="@style/TextViewStyle.Bold"
+			android:text="@string/playerName"/>
+
+		<TextView
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:id="@+id/tvSCBowlerOvers"
+			style="@style/TextViewStyle"
+			android:text="@string/headerOvers"/>
+
+		<TextView
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:id="@+id/tvSCBowlerMaidens"
+			style="@style/TextViewStyle"
+			android:text="@string/headerMaidens"/>
+
+		<TextView
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:id="@+id/tvSCBowlerRuns"
+			style="@style/TextViewStyle"
+			android:text="@string/headerRuns"/>
+
+		<TextView
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:id="@+id/tvSCBowlerWickets"
+			style="@style/TextViewStyle"
+			android:text="@string/headerWickets"/>
+
+		<TextView
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:id="@+id/tvSCBowlerER"
+			style="@style/TextViewStyle"
+			android:text="@string/headerEconomy"/>
+
+	</LinearLayout>
+
+	<!-- Separator -->
+	<View style="@style/LineSeparator"/>
+
+</LinearLayout>

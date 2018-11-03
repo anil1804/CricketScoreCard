@@ -1,15 +1,19 @@
 package com.thenewcone.myscorecard.match;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
+import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.scorecard.Extra;
+import com.thenewcone.myscorecard.scorecard.WicketData;
 import com.thenewcone.myscorecard.utils.CommonUtils;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class CricketCard {
+public class CricketCard implements Serializable {
 	private int maxWickets;
 
 	private int maxPerBowler;
@@ -30,6 +34,12 @@ public class CricketCard {
 
 	private HashMap<String, BowlerStats> bowlerMap = new HashMap<>();
 	private HashMap<Integer, BatsmanStats> batsmen = new HashMap<>();
+
+	private HashMap<Integer, Partnership> partnershipData = new HashMap<>();
+	private HashMap<Integer, OverInfo> overInfoData = new HashMap<>();
+	private OverInfo currOver;
+	private Partnership currPartnership;
+	private int currBallNum;
 
 	public int getScore() {
 		return score;
@@ -149,6 +159,14 @@ public class CricketCard {
 		this.futurePenalty += futurePenalty;
 	}
 
+	public HashMap<Integer, Partnership> getPartnershipData() {
+		return partnershipData;
+	}
+
+	public HashMap<Integer, OverInfo> getOverInfoData() {
+		return overInfoData;
+	}
+
 	public CricketCard(Team battingTeam, Team bowlingTeam, String maxOvers, int maxPerBowler, int maxWickets, int innings) {
 		this.battingTeam = battingTeam;
 		this.bowlingTeam = bowlingTeam;
@@ -221,5 +239,45 @@ public class CricketCard {
 		if(innings == 2) {
 			reqRate = CommonUtils.calReqRate(score, Double.parseDouble(totalOversBowled), target, Double.parseDouble(maxOvers));
 		}
+	}
+
+	void addNewPartnershipRecord(@NonNull BatsmanStats batsman1, @NonNull BatsmanStats batsman2) {
+		int key = partnershipData.size() + 1;
+		Player player1 = (batsman2.getRunsScored() == 0) ? batsman1.getPlayer() : batsman2.getPlayer();
+		Player player2 = (batsman1.getPlayer().getID() != player1.getID()) ? batsman1.getPlayer() : batsman2.getPlayer();
+
+		currPartnership = new Partnership(player1, player2, score);
+	}
+
+	void updatePartnership(BatsmanStats batsman, int ballsPlayed, int runsScored, boolean isOut) {
+		currPartnership.updatePlayerStats(batsman.getPlayer(), ballsPlayed, runsScored, isOut, score, totalOversBowled);
+		if(isOut) {
+			partnershipData.put(wicketsFallen, currPartnership);
+		} else if(inningsComplete) {
+			currPartnership.setUnBeaten(true);
+			partnershipData.put(wicketsFallen + 1, currPartnership);
+		}
+	}
+
+	void addNewOver(boolean isPrevOverMaiden) {
+		OverInfo overInfo = new OverInfo();
+		if(currOver != null) {
+			currOver.setMaiden(isPrevOverMaiden);
+			overInfoData.put((int) Double.parseDouble(totalOversBowled), currOver);
+		}
+		currOver = overInfo;
+
+		currBallNum = 0;
+	}
+
+	void addNewBall(int runsScored, BowlerStats bowler, Extra extra, WicketData wicketData) {
+		if(extra != null
+				&& extra.getType() != Extra.ExtraType.NO_BALL
+				&& extra.getType() != Extra.ExtraType.WIDE) {
+			currBallNum++;
+		}
+
+		BallInfo ballInfo = new BallInfo(currBallNum, runsScored, extra, wicketData, bowler.getPlayer());
+		currOver.newBallBowled(ballInfo);
 	}
 }

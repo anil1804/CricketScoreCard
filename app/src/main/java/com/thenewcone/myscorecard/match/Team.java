@@ -75,4 +75,16 @@ public class Team implements Serializable {
         this.name = name;
         this.shortName = shortName;
     }
+
+    public boolean contains(Player player) {
+    	if(matchPlayers != null && matchPlayers.size() > 0) {
+    		for(Player matchPlayer : matchPlayers) {
+    			if(matchPlayer.getID() == player.getID()) {
+					return true;
+				}
+			}
+		}
+
+    	return false;
+	}
 }

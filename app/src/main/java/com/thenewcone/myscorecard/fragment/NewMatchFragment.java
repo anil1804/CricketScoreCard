@@ -475,6 +475,7 @@ public class NewMatchFragment extends Fragment
 		String deficientTeam = getTeamHavingInsufficientPlayers(numPlayers);
 
 		String errorMessage = null;
+		Player dupPlayer = checkIfSamePlayerInBothTeams();
 
 		if(team1 == null || team2 == null) {
 			errorMessage = "Both teams need to be selected to continue";
@@ -496,10 +497,20 @@ public class NewMatchFragment extends Fragment
 			errorMessage = String.format(Locale.getDefault(), "Select the players for %s by clicking 'Edit' button next to Team name", team1.getShortName());
 		} else if(team2.getMatchPlayers() == null) {
 			errorMessage = String.format(Locale.getDefault(), "Select the players for %s by clicking 'Edit' button next to Team name", team2.getShortName());
+		} else if(dupPlayer != null) {
+			errorMessage = String.format(Locale.getDefault(), "Same player %s found in both teams", dupPlayer.getName());
 		} else if (team1.getCaptain() == null || team1.getWicketKeeper() == null) {
 			errorMessage = String.format(Locale.getDefault(), "Both captain and wicket-keeper for %s need to be selected", team1.getShortName());
 		} else if (team2.getCaptain() == null || team2.getWicketKeeper() == null) {
 			errorMessage = String.format(Locale.getDefault(), "Both captain and wicket-keeper for %s need to be selected", team2.getShortName());
+		} else if (!team1.contains(team1.getCaptain())) {
+			errorMessage = String.format(Locale.getDefault(), "%s not part of %s playing team. Select different captain", team1.getCaptain(), team1.getShortName());
+		} else if (!team1.contains(team1.getWicketKeeper())) {
+			errorMessage = String.format(Locale.getDefault(), "%s not part of %s playing team. Select different wicket-keeper", team1.getWicketKeeper(), team1.getShortName());
+		} else if (!team2.contains(team2.getCaptain())) {
+			errorMessage = String.format(Locale.getDefault(), "%s not part of %s playing team. Select different captain", team2.getCaptain(), team2.getShortName());
+		} else if (!team2.contains(team2.getWicketKeeper())) {
+			errorMessage = String.format(Locale.getDefault(), "%s not part of %s playing team. Select different wicket-keeper", team2.getWicketKeeper(), team2.getShortName());
 		}
 
 		if(errorMessage != null) {
@@ -540,6 +551,19 @@ public class NewMatchFragment extends Fragment
 		}
 	}
 
+	private Player checkIfSamePlayerInBothTeams(){
+    	Player dupPlayer = null;
+
+    	for(Player player : team1Players) {
+    		if(team2.contains(player)) {
+    			dupPlayer = player;
+    			break;
+			}
+		}
+
+    	return dupPlayer;
+	}
+
 	private void startNewMatch() {
 		DatabaseHandler dbh = new DatabaseHandler(getContext());
 		int matchID = dbh.addNewMatch(new Match(etMatchName.getText().toString(), battingTeam, bowlingTeam));
@@ -565,9 +589,15 @@ public class NewMatchFragment extends Fragment
 	}
 
 	private void setLayoutForMatchStart() {
-        etMatchName.setEnabled(false);
         tvTeam1.setEnabled(false);
         tvTeam2.setEnabled(false);
+        btnNMSelectTeam1.setEnabled(false);
+        btnNMSelectTeam2.setEnabled(false);
+        etMaxOvers.setEnabled(false);
+        etMaxPerBowler.setEnabled(false);
+        etMaxWickets.setEnabled(false);
+        etNumPlayers.setEnabled(false);
+
 		scrollToBottom();
         rgToss.setVisibility(View.VISIBLE);
     }

@@ -55,12 +55,16 @@ public class CricketCardUtils {
 		return card;
 	}
 
+	public CricketCard getPrevInningsCard() {
+    	return prevInningsCard;
+	}
+
 	public String getMatchName() {
         return matchName;
     }
 
-	public Team getTossWonBy() {
-		return (team1.getId() == tossWonByTeamID) ? team1 : team2;
+	public int getTossWonBy() {
+		return tossWonByTeamID;
 	}
 
 	public Team getTeam1() {
@@ -101,6 +105,10 @@ public class CricketCardUtils {
 	        otherBatsman = batsman;
 
 		card.appendToBatsmen(batsman);
+
+		if(currentFacing != null && otherBatsman != null) {
+			card.addNewPartnershipRecord(currentFacing, otherBatsman);
+		}
 	}
 
 	private void setNextBowler() {
@@ -111,32 +119,39 @@ public class CricketCardUtils {
         prevBowler = bowler;
 
         if(prevBowler != null) {
-            setBowler(prevBowler);
-            newOver = true;
+            setBowler(prevBowler, true);
         }
     }
 
-	public void setBowler(BowlerStats bowler) {
+	public void setBowler(BowlerStats bowler, boolean isAutomatic) {
 		this.bowler = bowler;
 		if(bowler != null) {
 			card.updateBowlerInBowlerMap(bowler);
 		}
-		newOver = false;
+
+		newOver = isAutomatic;
 	}
 
-	private void updateBowlerFigures(double ballsBowled, int runsGiven, WicketData wicketData) {
+	private void updateBowlerFigures(double ballsBowled, int runsGiven, WicketData wicketData, Extra extra) {
 		if(bowler != null) {
 			if (runsGiven > 0) {
 				bowler.incRunsGiven(runsGiven);
+				numConsecutiveDots = 0;
 			} else {
 				numConsecutiveDots++;
 			}
 			if (ballsBowled > 0) {
 				String oversBowled =  card.incrementOvers(bowler.getOversBowled());
-				if (oversBowled.split("\\.")[1].equals("0") && numConsecutiveDots == 6) {
-					bowler.incMaidens();
+				boolean isMaiden = false;
+				if (oversBowled.split("\\.")[1].equals("0")) {
+					if(numConsecutiveDots == 6){
+						bowler.incMaidens();
+						isMaiden = true;
+					}
+
 					numConsecutiveDots = 0;
 				}
+				card.addNewOver(isMaiden);
 				bowler.setOversBowled(oversBowled);
 			}
 
@@ -147,11 +162,13 @@ public class CricketCardUtils {
 
 			bowler.evaluateEconomy();
 
+			card.addNewBall(runsGiven, bowler, extra, wicketData);
+
 			card.updateBowlerInBowlerMap(bowler);
 		}
 	}
 
-	private void updateBatsmanScore(int runs, int balls, @Nullable WicketData wicketData) {
+	private void updateBatsmanScore(int runs, int balls, @Nullable WicketData wicketData, Extra extra) {
 		BatsmanStats batsman = currentFacing;
 		if(balls > 0) {
 			batsman.incBallsPlayed(balls);
@@ -180,18 +197,25 @@ public class CricketCardUtils {
 			}
 		}
 
+		boolean isOut = false;
 		if(wicketData != null) {
+			isOut = true;
+			Player effectedBy = (wicketData.getDismissalType() == WicketData.DismissalType.STUMPED)
+					? card.getBowlingTeam().getWicketKeeper() : wicketData.getEffectedBy();
+
             if(currentFacing.getPosition() == wicketData.getBatsman().getPosition()) {
                 currentFacing.setNotOut(false);
-                currentFacing.setWicketEffectedBy(wicketData.getEffectedBy());
+                currentFacing.setWicketEffectedBy(effectedBy);
                 currentFacing.setWicketTakenBy(wicketData.getBowler());
+                currentFacing.setDismissalType(wicketData.getDismissalType());
                 currentFacing.evaluateStrikeRate();
                 card.updateBatsmenData(currentFacing);
                 currentFacing = null;
             } else {
                 otherBatsman.setNotOut(false);
-                otherBatsman.setWicketEffectedBy(wicketData.getEffectedBy());
+                otherBatsman.setWicketEffectedBy(effectedBy);
                 otherBatsman.setWicketTakenBy(wicketData.getBowler());
+				otherBatsman.setDismissalType(wicketData.getDismissalType());
                 otherBatsman.evaluateStrikeRate();
                 card.updateBatsmenData(otherBatsman);
                 otherBatsman = null;
@@ -200,10 +224,20 @@ public class CricketCardUtils {
             batsman.evaluateStrikeRate();
         }
 
-		checkNextBatsmanFacingBall(runs);
+		card.updatePartnership(batsman, balls, runs + (extra != null ? extra.getRuns() : 0), isOut);
+		checkNextBatsmanFacingBall(runs, extra);
 	}
 
-	public void checkNextBatsmanFacingBall(int runs) {
+	private void checkNextBatsmanFacingBall(int runs, Extra extra) {
+    	if(extra != null && (
+    			extra.getType() == Extra.ExtraType.BYE
+				|| extra.getType() == Extra.ExtraType.LEG_BYE
+				|| (extra.getType() == Extra.ExtraType.NO_BALL && (
+						extra.getSubType() == Extra.ExtraType.BYE || extra.getSubType() == Extra.ExtraType.LEG_BYE
+				)))) {
+    		runs = extra.getRuns();
+		}
+
         if((runs % 2 == 1 && !newOver)  || (runs % 2 == 0 && newOver)) {
             BatsmanStats tempBatsman = otherBatsman;
             otherBatsman = currentFacing;
@@ -272,11 +306,13 @@ public class CricketCardUtils {
 			newOver = false;
 		}
 
-		if(newOver)
+		if(newOver) {
 		    setNextBowler();
+		}
 
-		if(bowlerChanged)
+		if(bowlerChanged) {
 			numConsecutiveDots = 0;
+		}
 
 		if(wicketData != null) {
 			card.incWicketsFallen();
@@ -284,8 +320,8 @@ public class CricketCardUtils {
 
 		card.inningsCheck();
 
-		updateBatsmanScore(batsmanRuns, batsmanBalls, wicketData);
-		updateBowlerFigures((double) bowlerBalls, bowlerRuns, wicketData);
+		updateBatsmanScore(batsmanRuns, batsmanBalls, wicketData, extra);
+		updateBowlerFigures((double) bowlerBalls, bowlerRuns, wicketData, extra);
 		card.updateScore(runs, extra);
 		card.updateRunRate();
 	}

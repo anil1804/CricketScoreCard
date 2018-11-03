@@ -31,18 +31,18 @@
 		<item name="android:layout_width">25dp</item>
 		<item name="android:layout_height">25dp</item>
 		<item name="android:layout_margin">2dp</item>
-        <item name="android:background">@drawable/button_rounded_rectangle_small</item>
+		<item name="android:background">@drawable/button_rounded_rectangle_small</item>
 	</style>
 
 	<style name="ButtonStyle.Medium">
 		<item name="android:layout_width">50dp</item>
 		<item name="android:layout_height">50dp</item>
 		<item name="android:layout_marginStart">25dp</item>
-        <item name="android:scaleType">fitCenter</item>
-        <item name="android:textSize">10sp</item>
-        <item name="android:background">@drawable/button_rounded_rectangle_medium</item>
-        <item name="android:gravity">center_horizontal|bottom</item>
-        <item name="android:textColor">@color/colorPrimaryDark</item>
+		<item name="android:scaleType">fitCenter</item>
+		<item name="android:textSize">10sp</item>
+		<item name="android:background">@drawable/button_rounded_rectangle_medium</item>
+		<item name="android:gravity">center_horizontal|bottom</item>
+		<item name="android:textColor">@color/colorPrimaryDark</item>
 	</style>
 
 	<style name="ButtonStyle.Submit">
@@ -86,14 +86,14 @@
 		<item name="android:textColor">@color/colorPrimaryDark</item>
 	</style>
 
-    <style name="TextViewStyle.MorePadding">
-        <item name="android:padding">12dp</item>
-    </style>
+	<style name="TextViewStyle.MorePadding">
+		<item name="android:padding">12dp</item>
+	</style>
 
-    <style name="TextViewStyle.LeftRightPadding">
-        <item name="android:paddingStart">12dp</item>
-        <item name="android:paddingEnd">12dp</item>
-    </style>
+	<style name="TextViewStyle.LeftRightPadding">
+		<item name="android:paddingStart">12dp</item>
+		<item name="android:paddingEnd">12dp</item>
+	</style>
 
 	<style name="TextViewStyle.List">
 		<item name="android:padding">10dp</item>
@@ -111,9 +111,9 @@
 		<item name="android:textSize">14sp</item>
 	</style>
 
-    <style name="TextViewStyle.Bold.Medium.MorePadding">
-        <item name="android:padding">12dp</item>
-    </style>
+	<style name="TextViewStyle.Bold.Medium.MorePadding">
+		<item name="android:padding">12dp</item>
+	</style>
 
 	<style name="TextViewStyle.Big">
 		<item name="android:textSize">16sp</item>
@@ -121,6 +121,10 @@
 
 	<style name="TextViewStyle.Big.Bold">
 		<item name="android:textStyle">bold</item>
+	</style>
+
+	<style name="TextViewStyle.Big.Bold.Highlight">
+		<item name="android:textColor">@color/orange_600</item>
 	</style>
 
 	<style name="EditTextStyle">
@@ -172,27 +176,27 @@
 		<item name="android:background">@color/teal_A100</item>
 	</style>
 
-    <style name="LineSeparator.Dark.SmallMargin">
-        <item name="android:background">@color/teal_A100</item>
-        <item name="android:layout_marginTop">4dp</item>
-        <item name="android:layout_marginBottom">4dp</item>
-    </style>
+	<style name="LineSeparator.Dark.SmallMargin">
+		<item name="android:background">@color/teal_A100</item>
+		<item name="android:layout_marginTop">4dp</item>
+		<item name="android:layout_marginBottom">4dp</item>
+	</style>
 
-    <style name="LineSeparator.Dark.Margin">
-        <item name="android:background">@color/teal_A100</item>
-        <item name="android:layout_marginTop">20dp</item>
-        <item name="android:layout_marginBottom">12dp</item>
-    </style>
+	<style name="LineSeparator.Dark.Margin">
+		<item name="android:background">@color/teal_A100</item>
+		<item name="android:layout_marginTop">20dp</item>
+		<item name="android:layout_marginBottom">12dp</item>
+	</style>
 
-    <style name="ImageButtonStyle">
-        <item name="android:layout_width">60dp</item>
-        <item name="android:layout_height">60dp</item>
-        <item name="android:layout_marginTop">10dp</item>
-        <item name="android:layout_marginStart">20dp</item>
-        <item name="android:scaleType">fitCenter</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:textSize">10sp</item>
-    </style>
+	<style name="ImageButtonStyle">
+		<item name="android:layout_width">60dp</item>
+		<item name="android:layout_height">60dp</item>
+		<item name="android:layout_marginTop">10dp</item>
+		<item name="android:layout_marginStart">20dp</item>
+		<item name="android:scaleType">fitCenter</item>
+		<item name="android:background">@android:color/transparent</item>
+		<item name="android:textSize">10sp</item>
+	</style>
 
-    <style name="oversLeft">Overs Left</style>
+	<style name="oversLeft">Overs Left</style>
 </resources>

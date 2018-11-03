@@ -5,6 +5,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thenewcone.myscorecard.match.CricketCardUtils;
+import com.thenewcone.myscorecard.match.Match;
+import com.thenewcone.myscorecard.match.MatchState;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
@@ -25,6 +27,8 @@ public class CommonUtils {
 	public static final String BOWLING_TEAM = "Bowling Team";
 	public static final String ARG_EXTRA_TYPE = "Extra Type";
 
+	public static final String DEF_DATE_FORMAT = "yyyyMMdd_HHmmss";
+
 	public static double calcRunRate(int score, double overs) {
 		double runRate = 0.00;
 
@@ -41,11 +45,10 @@ public class CommonUtils {
 	}
 
 	public static double calReqRate(int score, double overs, int target, double maxOvers) {
-
 		int reqRuns = target - score;
 		double oversRem = 0.00;
 
-		if(maxOvers > 0 && score > 0) {
+		if(maxOvers > 0 && target > 0) {
 			int ballsBowled = oversToBalls(overs);
 
 			int maxBalls = oversToBalls(maxOvers);
@@ -197,6 +200,24 @@ public class CommonUtils {
         return teams;
     }
 
+    public static MatchState[] objectArrToMatchStateArr(Object[] objArr) {
+		MatchState[] savedMatches = null;
+
+        if(objArr != null) {
+            savedMatches = new MatchState[objArr.length];
+
+            int i=0;
+            for(Object obj : objArr) {
+                if(obj instanceof MatchState) {
+                    savedMatches[i] = (MatchState) obj;
+                    i++;
+                }
+            }
+        }
+
+        return savedMatches;
+    }
+
     public static String convertToJSON(CricketCardUtils ccUtilsObj) {
 		if(ccUtilsObj != null) {
 			Gson gson = new Gson();
@@ -226,7 +247,7 @@ public class CommonUtils {
     }
 
     public static String currTimestamp() {
-        return currTimestamp("yyyyMMdd_HHmmss");
+        return currTimestamp(DEF_DATE_FORMAT);
     }
 
     public static String currTimestamp(String format) {
@@ -276,5 +297,58 @@ public class CommonUtils {
 		}
 
 		return stringArr;
+	}
+
+	public static String getBatsmanOutData(BatsmanStats batsmanStats) {
+		String outData = "Not Out";
+		Player fielder = batsmanStats.getWicketEffectedBy();
+		BowlerStats bowler = batsmanStats.getWicketTakenBy();
+
+		if(batsmanStats.getDismissalType() != null) {
+			switch (batsmanStats.getDismissalType()) {
+				case BOWLED:
+					outData = "b " + bowler.getBowlerName();
+					break;
+
+				case CAUGHT:
+					outData = "c " + ((fielder.getID() == bowler.getPlayer().getID()) ? "&" : fielder.getName())
+							+ " b " + bowler.getBowlerName();
+					break;
+
+				case HIT_BALL_TWICE:
+					outData = "(Hit Ball Twice)";
+					break;
+
+				case HIT_WICKET:
+					outData = "(Hit Wicket)";
+					break;
+
+				case LBW:
+					outData = "lbw b " + bowler.getBowlerName();
+					break;
+
+				case OBSTRUCTING_FIELD:
+					outData = "(Obstructing Field)";
+					break;
+
+				case RETIRED:
+					outData = "(Retired)";
+					break;
+
+				case RUN_OUT:
+					outData = "Runout (" + fielder.getName() + ")";
+					break;
+
+				case STUMPED:
+					outData = "st " + fielder.getName() + " b " + bowler.getBowlerName();
+					break;
+
+				case TIMED_OUT:
+					outData = "(Timed Out)";
+					break;
+			}
+		}
+
+		return outData;
 	}
 }

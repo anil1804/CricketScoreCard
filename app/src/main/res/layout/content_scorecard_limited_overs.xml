@@ -152,7 +152,8 @@
 
     <TextView
         android:id="@+id/tvResult"
-        style="@style/TextViewStyle.Big.Bold"
+        style="@style/TextViewStyle.Big.Bold.Highlight"
+        android:layout_gravity="center_horizontal"
         android:visibility="gone"/>
 
 </LinearLayout>

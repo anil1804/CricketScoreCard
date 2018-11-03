@@ -1,5 +1,6 @@
 package com.thenewcone.myscorecard.player;
 
+import com.thenewcone.myscorecard.scorecard.WicketData;
 import com.thenewcone.myscorecard.utils.CommonUtils;
 
 import java.io.Serializable;
@@ -16,6 +17,7 @@ public class BatsmanStats implements Serializable {
 	private double strikeRate;
 	private boolean notOut = true;
 	private Player wicketEffectedBy, player;
+	private WicketData.DismissalType dismissalType;
 	private BowlerStats wicketTakenBy;
 
 	public String getBatsmanName() {
@@ -74,6 +76,13 @@ public class BatsmanStats implements Serializable {
 		this.wicketTakenBy = wicketTakenBy;
 	}
 
+	public WicketData.DismissalType getDismissalType() {
+		return dismissalType;
+	}
+
+	public void setDismissalType(WicketData.DismissalType dismissalType) {
+		this.dismissalType = dismissalType;
+	}
 
 	public BatsmanStats(Player player, int position) {
 		this.player = player;
