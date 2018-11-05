@@ -59,7 +59,7 @@
             android:drawableTop="@drawable/ic_manage"
             android:contentDescription="@string/manageTeam"
             android:text="@string/manageTeam"
-            style="@style/ImageButtonStyle"/>
+            style="@style/ButtonStyle.Medium"/>
 
     </LinearLayout>
 
@@ -81,7 +81,7 @@
             android:drawableTop="@drawable/ic_manage"
             android:contentDescription="@string/managePlayer"
             android:text="@string/managePlayer"
-            style="@style/ImageButtonStyle"/>
+            style="@style/ButtonStyle.Medium"/>
 
     </LinearLayout>
 

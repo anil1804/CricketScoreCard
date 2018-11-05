@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.activity.SavedMatchSelectActivity;
 import com.thenewcone.myscorecard.intf.ConfirmationDialogClickListener;
+import com.thenewcone.myscorecard.intf.DrawerLocker;
 import com.thenewcone.myscorecard.match.MatchState;
 import com.thenewcone.myscorecard.utils.CommonUtils;
 import com.thenewcone.myscorecard.utils.database.AddDBData;
@@ -62,6 +63,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
         theView.findViewById(R.id.btnDeleteMatches).setOnClickListener(this);
 
 		dbHandler = new DatabaseHandler(getContext());
+
+		if(getActivity() != null)
+			((DrawerLocker) getActivity()).setDrawerEnabled(true);
 
 		return theView;
 	}

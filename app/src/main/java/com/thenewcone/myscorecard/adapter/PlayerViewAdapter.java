@@ -29,10 +29,8 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
 
         selPlayerIDs = new SparseBooleanArray();
 		for(Player player : playerList) {
-			if (associatedPlayers == null || !associatedPlayers.contains(player.getID()))
+			if (associatedPlayers != null && associatedPlayers.contains(player.getID()))
 				selPlayerIDs.put(player.getID(), true);
-			else
-				selPlayerIDs.put(player.getID(), false);
 		}
     }
 
@@ -53,11 +51,9 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
         holder.tvBowlStyle.setText(holder.player.getBowlingStyle() != Player.BowlingType.NONE  ? holder.player.getBowlingStyle().toString() : "");
 
 		if (selPlayerIDs.get(holder.player.getID())) {
-			selPlayerIDs.put(holder.player.getID(), false);
-			holder.mView.setSelected(false);
-		} else {
-			selPlayerIDs.put(holder.player.getID(), true);
 			holder.mView.setSelected(true);
+		} else {
+			holder.mView.setSelected(false);
 		}
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -67,9 +63,9 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
 						if(!isMultiSelect) {
 							mListener.onListFragmentInteraction(holder.player);
 						} else {
-
 							boolean isPresent = selPlayerIDs.get(holder.player.getID());
 							mListener.onListFragmentMultiSelect(holder.player, isPresent);
+							selPlayerIDs.put(holder.player.getID(), !isPresent);
 							notifyItemChanged(position);
 						}
 					}

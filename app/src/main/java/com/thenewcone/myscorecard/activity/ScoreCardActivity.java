@@ -25,7 +25,6 @@ import com.thenewcone.myscorecard.match.Partnership;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
-import com.thenewcone.myscorecard.player.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +46,6 @@ public class ScoreCardActivity extends AppCompatActivity {
 	private static BatsmanStats currentFacing, otherBatsman;
 	private static BowlerStats bowler;
 	private static Team team1, team2;
-	private static int tossWonById;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -79,7 +77,6 @@ public class ScoreCardActivity extends AppCompatActivity {
 			bowler = (BowlerStats) extras.getSerializable(ARG_BOWLER);
 			team1 = (Team) extras.getSerializable(ARG_TEAM_1);
 			team2 = (Team) extras.getSerializable(ARG_TEAM_2);
-			tossWonById = extras.getInt(ARG_TOSS_WON_BY);
 		}
 
 		// Create the adapter that will return a fragment for each of the three
@@ -91,8 +88,21 @@ public class ScoreCardActivity extends AppCompatActivity {
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
 		TabLayout tabLayout = findViewById(R.id.tabs);
-		tabLayout.getTabAt(0).setText(String.format(getString(R.string.tabInningsText), team1.getShortName()));
-		tabLayout.getTabAt(1).setText(String.format(getString(R.string.tabInningsText), team2.getShortName()));
+		tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.gray_500));
+
+		TabLayout.Tab team1Tab = tabLayout.getTabAt(0);
+		TabLayout.Tab team2Tab = tabLayout.getTabAt(1);
+
+		if(team1Tab != null) {
+			team1Tab.setText(String.format(getString(R.string.tabInningsText), team1.getShortName()));
+		}
+		if(team2Tab != null) {
+			team2Tab.setText(String.format(getString(R.string.tabInningsText), team2.getShortName()));
+			if(innings2Card == null)
+				tabLayout.removeTab(team2Tab);
+			else
+				team2Tab.select();
+		}
 
 		mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 		tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
@@ -166,11 +176,11 @@ public class ScoreCardActivity extends AppCompatActivity {
 				}
 
 				int legByes = inningsCard.getLegByes(), byes = inningsCard.getByes();
-				int wides = inningsCard.getNoBalls(), noBalls = inningsCard.getNoBalls();
+				int wides = inningsCard.getWides(), noBalls = inningsCard.getNoBalls();
 				int penalty = inningsCard.getPenalty(), totalExtras = legByes + byes + wides + noBalls + penalty;
 
 				String extras = String.format(Locale.getDefault()
-						, "Extras-%d : Lb-%d, B-%d, Wd-%d, N-%d, P-%d"
+						, "Extras - %d (Lb-%d, B-%d, Wd-%d, N-%d, P-%d)"
 						, totalExtras, legByes, byes, wides, noBalls, penalty);
 				tvSCExtras.setText(extras);
 				tvSCTotal.setText(String.format(Locale.getDefault(), "TOTAL : %d", inningsCard.getScore()));

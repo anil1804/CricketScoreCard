@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.thenewcone.myscorecard.R;
@@ -44,6 +45,8 @@ public class SCBowlerAdapter extends RecyclerView.Adapter<SCBowlerAdapter.MyView
 
 			currBowler = (bowler != null && bowler.getPlayer().getID() == currBowler.getPlayer().getID())
 					? bowler : currBowler;
+		} else {
+			holder.llSCBowlerView.setSelected(true);
 		}
 
 		String bowlerName = (position > 0) ? currBowler.getBowlerName() : "Name";
@@ -72,10 +75,12 @@ public class SCBowlerAdapter extends RecyclerView.Adapter<SCBowlerAdapter.MyView
 		TextView tvSCBowlerName;
 		TextView tvSCBowlerOvers, tvSCBowlerMaidens, tvSCBowlerRuns, tvSCBowlerWickets, tvSCBowlerER;
 		BowlerStats bowler;
+		LinearLayout llSCBowlerView;
 
         private MyViewHolder(@NonNull View itemView) {
 			super(itemView);
 
+			llSCBowlerView = itemView.findViewById(R.id.llSCBowlerView);
 			tvSCBowlerName = itemView.findViewById(R.id.tvSCBowlerName);
 			tvSCBowlerOvers = itemView.findViewById(R.id.tvSCBowlerOvers);
 			tvSCBowlerMaidens = itemView.findViewById(R.id.tvSCBowlerMaidens);

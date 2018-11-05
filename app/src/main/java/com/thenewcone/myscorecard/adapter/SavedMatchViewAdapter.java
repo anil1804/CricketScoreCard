@@ -28,10 +28,6 @@ public class SavedMatchViewAdapter extends RecyclerView.Adapter<SavedMatchViewAd
         this.isMultiSelect = isMultiSelect;
 
 		selMatchStateIDs = new SparseBooleanArray();
-
-		for(MatchState savedMatch : savedMatchList) {
-			selMatchStateIDs.put(savedMatch.getId(), true);
-		}
     }
 
     @Override
@@ -54,11 +50,9 @@ public class SavedMatchViewAdapter extends RecyclerView.Adapter<SavedMatchViewAd
         holder.tvTeamVersus.setText(matchVersus);
 
 		if (selMatchStateIDs.get(holder.matchState.getId())) {
-			selMatchStateIDs.put(holder.matchState.getId(), false);
-			holder.mView.setSelected(false);
-		} else {
-			selMatchStateIDs.put(holder.matchState.getId(), true);
 			holder.mView.setSelected(true);
+		} else {
+			holder.mView.setSelected(false);
 		}
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +65,7 @@ public class SavedMatchViewAdapter extends RecyclerView.Adapter<SavedMatchViewAd
 
 							boolean isPresent = selMatchStateIDs.get(holder.matchState.getId());
 							mListener.onListFragmentMultiSelect(holder.matchState, isPresent);
+							selMatchStateIDs.put(holder.matchState.getId(), !isPresent);
 							notifyItemChanged(position);
 						}
 					}

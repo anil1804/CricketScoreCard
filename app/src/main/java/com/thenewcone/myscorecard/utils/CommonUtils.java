@@ -1,11 +1,9 @@
 package com.thenewcone.myscorecard.utils;
 
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thenewcone.myscorecard.match.CricketCardUtils;
-import com.thenewcone.myscorecard.match.Match;
 import com.thenewcone.myscorecard.match.MatchState;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.BatsmanStats;
@@ -21,7 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class CommonUtils {
-	public static final String LOG_TAG = "MyScoreCard";
+	public static final String LOG_TAG = "CricketScoreCard";
 
 	public static final String BATTING_TEAM = "Batting Team";
 	public static final String BOWLING_TEAM = "Bowling Team";
@@ -224,11 +222,7 @@ public class CommonUtils {
 			Type type = new TypeToken<CricketCardUtils>() {
 			}.getType();
 
-			String jsonString = gson.toJson(ccUtilsObj, type);
-
-			Log.i("JSON", jsonString);
-
-			return jsonString;
+			return gson.toJson(ccUtilsObj, type);
 		}
 
 		return null;
@@ -275,11 +269,7 @@ public class CommonUtils {
 			Type type = new TypeToken<List<Integer>>() {
 			}.getType();
 
-			String jsonString = gson.toJson(intList, type);
-
-			Log.i("JSON", jsonString);
-
-			return jsonString;
+			return gson.toJson(intList, type);
 		}
 
 		return null;
@@ -297,6 +287,26 @@ public class CommonUtils {
 		}
 
 		return stringArr;
+	}
+
+	public static String listToString(List<String> theList, String separator) {
+		StringBuilder builder = new StringBuilder();
+
+		if(theList != null) {
+
+			for(String theString : theList) {
+				builder.append(theString);
+				builder.append(separator);
+			}
+
+			builder.trimToSize();
+			if(builder.length() >= 1) {
+				builder.delete(builder.length() - 1, builder.length());
+			}
+			builder.trimToSize();
+		}
+
+		return builder.toString();
 	}
 
 	public static String getBatsmanOutData(BatsmanStats batsmanStats) {

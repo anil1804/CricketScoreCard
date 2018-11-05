@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.thenewcone.myscorecard.match.Match;
 import com.thenewcone.myscorecard.match.MatchState;
@@ -235,26 +234,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
     public List<MatchState> getSavedMatches(String autoOrManual, int matchID, String partialName) {
-		List<MatchState> savedMatchNames = new ArrayList<>();
-		final String MatchStateID = "MATCH_STATE_ID";
-		final String MatchSaveName = "MATCH_SAVE_NAME";
-		final String MatchName = "MATCH_NAME";
-		final String Team1ShortName = "TEAM1_SHORT_NAME";
-		final String Team2ShortName = "TEAM2_SHORT_NAME";
+		List<MatchState> savedMatches = new ArrayList<>();
+		final String MATCH_STATE_ID = "MatchStateID";
+		final String MATCH_SAVE_NAME = "MatchSaveName";
+		final String MATCH_NAME = "MatchName";
+		final String TEAM1_SHORT_NAME = "Team1ShortName";
+		final String TEAM2_SHORT_NAME = "Team2ShortName";
 
         String selectQuery = String.format(Locale.getDefault(),
 				"SELECT %s AS %s, %s, %s AS %s, " +
 						"%s, %s, %s, " +
 						"%s AS %s, %s, %s, " +
-						"(SELECT %s FROM %s WHERE %s = %s) AS %s, " +
+						"(SELECT %s FROM %s WHERE %s = %s) AS %s," +
 						"(SELECT %s FROM %s WHERE %s = %s) AS %s " +
 						"FROM %s, %s " +
 				"WHERE %s = %s",
-				TBL_STATE+"."+TBL_STATE_ID, MatchStateID, TBL_STATE_IS_AUTO, TBL_STATE+"."+TBL_STATE_NAME, MatchSaveName,
+				TBL_STATE+"."+TBL_STATE_ID, MATCH_STATE_ID, TBL_STATE_IS_AUTO, TBL_STATE+"."+TBL_STATE_NAME, MATCH_SAVE_NAME,
 				TBL_STATE_ORDER, TBL_STATE_MATCH_ID, TBL_STATE_TIMESTAMP,
-				TBL_MATCH+"."+TBL_MATCH_NAME, MatchName, TBL_MATCH_TEAM1, TBL_MATCH_TEAM2,
-				TBL_TEAM_SHORT_NAME, TBL_TEAM, TBL_TEAM+"."+TBL_TEAM_ID, TBL_MATCH+"."+TBL_MATCH_TEAM1, Team1ShortName,
-				TBL_TEAM_SHORT_NAME, TBL_TEAM, TBL_TEAM+"."+TBL_TEAM_ID, TBL_MATCH+"."+TBL_MATCH_TEAM2, Team2ShortName,
+				TBL_MATCH+"."+TBL_MATCH_NAME, MATCH_NAME, TBL_MATCH_TEAM1, TBL_MATCH_TEAM2,
+				TBL_TEAM_SHORT_NAME, TBL_TEAM, TBL_TEAM+"."+TBL_TEAM_ID, TBL_MATCH+"."+TBL_MATCH_TEAM1, TEAM1_SHORT_NAME,
+				TBL_TEAM_SHORT_NAME, TBL_TEAM, TBL_TEAM+"."+TBL_TEAM_ID, TBL_MATCH+"."+TBL_MATCH_TEAM2, TEAM2_SHORT_NAME,
 				TBL_STATE, TBL_MATCH,
 				TBL_MATCH+"."+TBL_MATCH_ID, TBL_STATE+"."+TBL_STATE_MATCH_ID);
 
@@ -275,27 +274,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             selectQuery += " AND " + TBL_STATE_NAME + " LIKE '%" + partialName + "%'";
         }
 
-		Log.i("CricketScoreCard", "Select Query : " + selectQuery);
-
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         if(cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndex(MatchStateID));
+                int id = cursor.getInt(cursor.getColumnIndex(MATCH_STATE_ID));
                 boolean isAuto = cursor.getInt(cursor.getColumnIndex(TBL_STATE_IS_AUTO)) == 1;
-				String name = cursor.getString(cursor.getColumnIndex(MatchSaveName));
+				String name = cursor.getString(cursor.getColumnIndex(MATCH_SAVE_NAME));
                 int saveOrder = cursor.getInt(cursor.getColumnIndex(TBL_STATE_ORDER));
                 int dbMatchID = cursor.getInt(cursor.getColumnIndex(TBL_STATE_MATCH_ID));
                 String timestamp = cursor.getString(cursor.getColumnIndex(TBL_STATE_TIMESTAMP));
-                String matchName = cursor.getString(cursor.getColumnIndex(MatchName));
+                String matchName = cursor.getString(cursor.getColumnIndex(MATCH_NAME));
                 int team1ID = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_TEAM1));
                 int team2ID = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_TEAM2));
-                String team1SName = cursor.getString(cursor.getColumnIndex(Team1ShortName));
-                String team2SName = cursor.getString(cursor.getColumnIndex(Team2ShortName));
+                String team1ShortName = cursor.getString(cursor.getColumnIndex(TEAM1_SHORT_NAME));
+                String team2ShortName = cursor.getString(cursor.getColumnIndex(TEAM2_SHORT_NAME));
 
-                Team team1 = new Team(team1ID, team1SName);
-                Team team2 = new Team(team2ID, team2SName);
+				Team team1 = new Team(team1ID, team1ShortName);
+				Team team2 = new Team(team2ID, team2ShortName);
 
                 Date saveDate = null;
 				try {
@@ -307,14 +304,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				Match match = new Match(dbMatchID, matchName, team1, team2);
 				MatchState matchState = new MatchState(id, name, isAuto, saveOrder, saveDate, match);
 
-				savedMatchNames.add(matchState);
+				savedMatches.add(matchState);
 
 			} while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
 
-        return savedMatchNames;
+		return savedMatches;
     }
 
 	public boolean deleteSavedMatchStates(MatchState[] matchesToDelete) {
@@ -398,8 +395,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				TBL_STATE_ORDER, TBL_STATE, TBL_STATE_MATCH_ID, matchID, TBL_STATE_ORDER, ignoreCount,
 				TBL_STATE_IS_AUTO, TBL_STATE_MATCH_ID, matchID);
 
-    	Log.i("StateHistory", "Delete Query : " + query);
-
 		db.execSQL(query);
 		db.close();
 	}
@@ -442,8 +437,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private List<Player> getMatchingPlayers(String playerName) {
         String selectQuery = "SELECT * FROM " + TBL_PLAYER + " WHERE " + TBL_PLAYER_NAME;
         selectQuery += String.format(" = '%s'", playerName);
-
-        Log.i("Query", "Select Query -> " + selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -523,7 +516,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			rowID = db.update(TBL_PLAYER, values, TBL_PLAYER_ID + " = ?", new String[]{String.valueOf(player.getID())});
         db.close();
 
-        Log.i("DatabaseHandler" , "upsertPlayer : Player ID : " + rowID);
         return (int) rowID;
     }
 
@@ -686,7 +678,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public List<Integer> getAssociatedPlayers(int teamID) {
     	List<Integer> playerIDList = new ArrayList<>();
 
-    	String selectQuery = "SELECT * FROM " + TBL_TEAM_PLAYERS + " WHERE " + TBL_TEAM_PLAYERS_TEAM_ID + " = " + teamID;
+    	String selectQuery = "SELECT " + TBL_TEAM_PLAYERS_PLAYER_ID + " FROM " + TBL_TEAM_PLAYERS + " WHERE " + TBL_TEAM_PLAYERS_TEAM_ID + " = " + teamID;
 
     	SQLiteDatabase db = this.getReadableDatabase();
     	Cursor cursor = db.rawQuery(selectQuery, null);
@@ -701,6 +693,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	db.close();
 
     	return playerIDList;
+	}
+
+	private List<Integer> getAssociatedTeams(int playerID) {
+    	List<Integer> teamIDList = new ArrayList<>();
+
+    	String selectQuery = "SELECT " + TBL_TEAM_PLAYERS_TEAM_ID + " FROM " + TBL_TEAM_PLAYERS + " WHERE " + TBL_TEAM_PLAYERS_PLAYER_ID + " = " + playerID;
+
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	Cursor cursor = db.rawQuery(selectQuery, null);
+
+    	if(cursor.moveToFirst()) {
+    		do {
+    			teamIDList.add(cursor.getInt(cursor.getColumnIndex(TBL_TEAM_PLAYERS_TEAM_ID)));
+			} while (cursor.moveToNext());
+		}
+
+		cursor.close();
+    	db.close();
+
+    	return teamIDList;
 	}
 
 	public List<Player> getTeamPlayers(int teamID) {
@@ -768,7 +780,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void updateTeamList(@NonNull Player player, List<Integer> newTeams, List<Integer> deletedTeams) {
-		List<Integer> teamsAssociatedTo = getPlayer(player.getID()).getTeamsAssociatedTo();
+		List<Integer> teamsAssociatedTo = getAssociatedTeams(player.getID());
 
 		if(newTeams != null && newTeams.size() > 0) {
 			SQLiteDatabase db = this.getWritableDatabase();

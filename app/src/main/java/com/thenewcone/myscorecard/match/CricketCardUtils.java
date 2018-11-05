@@ -27,6 +27,8 @@ public class CricketCardUtils {
 
 	private Team team1, team2;
 
+	private List<String> last12Balls;
+
     public boolean isNewOver() {
         return newOver;
     }
@@ -81,6 +83,10 @@ public class CricketCardUtils {
 
 	public int getMaxWickets() {
 		return maxWickets;
+	}
+
+	public List<String> getLast12Balls() {
+		return last12Balls;
 	}
 
 	public CricketCardUtils(CricketCard card, String matchName, Team team1, Team team2, int maxWickets) {
@@ -324,6 +330,7 @@ public class CricketCardUtils {
 		updateBowlerFigures((double) bowlerBalls, bowlerRuns, wicketData, extra);
 		card.updateScore(runs, extra);
 		card.updateRunRate();
+		updateLast12Balls(extra, runs, wicketData);
 	}
 
 	public void addPenalty(Extra extra, @NonNull String favouringTeam) {
@@ -383,9 +390,75 @@ public class CricketCardUtils {
        	card.addPenalty(prevInningsCard.getFuturePenalty());
        	card.updateScore(prevInningsCard.getFuturePenalty(), null);
 
+       	card.updateRunRate();
+
        	currentFacing = null;
        	otherBatsman = null;
        	bowler = null;
        	newOver = true;
     }
+
+	private void updateLast12Balls(Extra extra, int runs, @Nullable WicketData wicketData) {
+		if(last12Balls == null) {
+			last12Balls = new ArrayList<>();
+		}
+
+		StringBuilder currentBallSB = new StringBuilder();
+		if(wicketData != null) {
+			currentBallSB.append("W");
+		}
+		if(extra != null) {
+			if(currentBallSB.length() > 0)
+				currentBallSB.append("+");
+			if(extra.getRuns() > 0)
+				currentBallSB.append(extra.getRuns());
+			switch (extra.getType()) {
+				case BYE:
+					currentBallSB.append("B");
+					break;
+				case LEG_BYE:
+					currentBallSB.append("L");
+					break;
+				case PENALTY:
+					currentBallSB.append("P");
+					break;
+				case WIDE:
+					currentBallSB.append("Wd");
+					break;
+				case NO_BALL:
+					if(extra.getSubType() != null)
+					{
+						switch (extra.getSubType()) {
+							case NONE:
+								currentBallSB.append("N");
+								break;
+							case BYE:
+								currentBallSB.append("B+N");
+								break;
+							case LEG_BYE:
+								currentBallSB.append("L+N");
+								break;
+						}
+					}
+					else
+						currentBallSB.append("N");
+					break;
+			}
+		}
+		if(currentBallSB.length() > 0) {
+			if (runs > 0) {
+				currentBallSB.append("+");
+				currentBallSB.append(runs);
+			}
+		}
+		else {
+			currentBallSB.append(runs);
+		}
+		if(newOver)
+			currentBallSB.append(" | ");
+
+		last12Balls.add(currentBallSB.toString());
+		if(last12Balls.size() > 12)
+			last12Balls.remove(0);
+	}
 }

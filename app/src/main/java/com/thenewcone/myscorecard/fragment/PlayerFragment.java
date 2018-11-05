@@ -23,6 +23,7 @@ import com.thenewcone.myscorecard.activity.PlayerSelectActivity;
 import com.thenewcone.myscorecard.activity.TeamSelectActivity;
 import com.thenewcone.myscorecard.intf.ConfirmationDialogClickListener;
 import com.thenewcone.myscorecard.intf.DialogItemClickListener;
+import com.thenewcone.myscorecard.intf.DrawerLocker;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.utils.CommonUtils;
@@ -119,6 +120,9 @@ public class PlayerFragment extends Fragment
         btnDelete.setOnClickListener(this);
 
 		populateData();
+
+		if(getActivity() != null)
+			((DrawerLocker) getActivity()).setDrawerEnabled(true);
 
         return theView;
     }

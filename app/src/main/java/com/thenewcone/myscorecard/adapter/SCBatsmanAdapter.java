@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.thenewcone.myscorecard.R;
@@ -47,6 +48,8 @@ public class SCBatsmanAdapter extends RecyclerView.Adapter<SCBatsmanAdapter.MyVi
 					: ((otherBatsman != null && otherBatsman.getPlayer().getID() == batsman.getPlayer().getID())
 						? otherBatsman
 						: batsman);
+		} else {
+			holder.llSCBatsmanView.setSelected(true);
 		}
 
 		String batsmanName = (position > 0) ? batsman.getBatsmanName() : "Name";
@@ -82,10 +85,12 @@ public class SCBatsmanAdapter extends RecyclerView.Adapter<SCBatsmanAdapter.MyVi
 		TextView tvSCBatsmanName, tvSCBatsmanOutDetails;
 		TextView tvSCBatsmanRuns, tvSCBatsmanBalls, tvSCBatsmanFours, tvSCBatsmanSixes, tvSCBatsmanSR;
 		BatsmanStats batsman;
+		LinearLayout llSCBatsmanView;
 
         private MyViewHolder(@NonNull View itemView) {
 			super(itemView);
 
+			llSCBatsmanView = itemView.findViewById(R.id.llSCBatsmanView);
 			tvSCBatsmanName = itemView.findViewById(R.id.tvSCBatsmanName);
 			tvSCBatsmanOutDetails = itemView.findViewById(R.id.tvSCBatsmanOutDetails);
 			tvSCBatsmanRuns = itemView.findViewById(R.id.tvSCBatsmanRuns);

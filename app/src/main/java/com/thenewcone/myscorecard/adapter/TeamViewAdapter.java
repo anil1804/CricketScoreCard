@@ -29,10 +29,8 @@ public class TeamViewAdapter extends RecyclerView.Adapter<TeamViewAdapter.ViewHo
 
 		selTeamIDs = new SparseBooleanArray();
         for(Team team : teamList) {
-			if (currentlyAssociatedTo == null || !currentlyAssociatedTo.contains(team.getId()))
+			if (currentlyAssociatedTo != null && currentlyAssociatedTo.contains(team.getId()))
 				selTeamIDs.put(team.getId(), true);
-			else
-				selTeamIDs.put(team.getId(), false);
 		}
     }
 
@@ -52,11 +50,9 @@ public class TeamViewAdapter extends RecyclerView.Adapter<TeamViewAdapter.ViewHo
         holder.tvTeamShortName.setText(holder.team.getShortName());
 
 		if (selTeamIDs.get(holder.team.getId())) {
-			selTeamIDs.put(holder.team.getId(), false);
-			holder.mView.setSelected(false);
-		} else {
-			selTeamIDs.put(holder.team.getId(), true);
 			holder.mView.setSelected(true);
+		} else {
+			holder.mView.setSelected(false);
 		}
 
 		holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -68,10 +64,11 @@ public class TeamViewAdapter extends RecyclerView.Adapter<TeamViewAdapter.ViewHo
 					} else {
 						boolean isPresent = selTeamIDs.get(holder.team.getId());
 						mListener.onListFragmentMultiSelect(holder.team, isPresent);
+						selTeamIDs.put(holder.team.getId(), !isPresent);
 						notifyItemChanged(position);
-						}
 					}
 				}
+			}
 	        });
     }
 
