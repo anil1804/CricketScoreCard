@@ -16,7 +16,7 @@ import java.util.Random;
 
 public class CricketCardUtils {
     private int numConsecutiveDots = 0, tossWonByTeamID, maxWickets;
-	private boolean newOver = false;
+	private boolean newOver = false, isMaiden;
 
 	private String matchName;
 
@@ -135,8 +135,10 @@ public class CricketCardUtils {
 			card.updateBowlerInBowlerMap(bowler);
 		}
 
-		newOver = isAutomatic;
-	}
+		if(newOver)
+			card.addNewOver(isMaiden);
+
+		newOver = isAutomatic;	}
 
 	private void updateBowlerFigures(double ballsBowled, int runsGiven, WicketData wicketData, Extra extra) {
 		if(bowler != null) {
@@ -146,9 +148,10 @@ public class CricketCardUtils {
 			} else {
 				numConsecutiveDots++;
 			}
+
+			isMaiden = false;
 			if (ballsBowled > 0) {
 				String oversBowled =  card.incrementOvers(bowler.getOversBowled());
-				boolean isMaiden = false;
 				if (oversBowled.split("\\.")[1].equals("0")) {
 					if(numConsecutiveDots == 6){
 						bowler.incMaidens();
@@ -157,7 +160,6 @@ public class CricketCardUtils {
 
 					numConsecutiveDots = 0;
 				}
-				card.addNewOver(isMaiden);
 				bowler.setOversBowled(oversBowled);
 			}
 

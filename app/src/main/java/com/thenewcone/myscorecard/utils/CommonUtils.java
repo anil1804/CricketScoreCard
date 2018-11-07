@@ -104,8 +104,6 @@ public class CommonUtils {
 						extraRunsArray = new String[]{"0", "1", "2", "3", "4", "6"};
 						break;
 					case BYE:
-						extraRunsArray = new String[]{"1", "2", "3", "4"};
-						break;
 					case LEG_BYE:
 						extraRunsArray = new String[]{"1", "2", "3", "4", "6"};
 						break;
@@ -115,10 +113,8 @@ public class CommonUtils {
 				extraRunsArray = new String[]{BATTING_TEAM, BOWLING_TEAM};
 				break;
 			case BYE:
-				extraRunsArray = new String[]{"1", "2", "3", "4", "6"};
-				break;
 			case LEG_BYE:
-				extraRunsArray = new String[]{"1", "2", "3", "4"};
+				extraRunsArray = new String[]{"1", "2", "3", "4", "6"};
 				break;
 		}
 
