@@ -272,8 +272,8 @@ public class PlayerFragment extends Fragment
 
         if(etName.getText().toString().trim().length() < 3)
             errorSB.append("Enter valid name (at-least 3 characters)\n");
-        if(etAge.getText().toString().trim().length() < 1)
-            errorSB.append("Enter valid age\n");
+        /*if(etAge.getText().toString().trim().length() < 1)
+            errorSB.append("Enter valid age\n");*/
         if(tvBatStyle.getText().toString().equals(getString(R.string.selectBatStyle)))
             errorSB.append("Select Batting Style\n");
         if(tvBowlStyle.getText().toString().equals(getString(R.string.selectBowlStyle)))

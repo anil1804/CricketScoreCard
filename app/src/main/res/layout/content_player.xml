@@ -100,7 +100,8 @@
             android:id="@+id/btnPlayerClear"
             style="@style/ButtonStyle.Medium"
             android:drawableTop="@drawable/ic_clear"
-            android:contentDescription="@string/clear"/>
+            android:contentDescription="@string/clear"
+            android:text="@string/clear"/>
 
     </LinearLayout>
 

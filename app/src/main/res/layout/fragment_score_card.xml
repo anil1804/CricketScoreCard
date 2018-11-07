@@ -1,69 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_marginTop="100dp"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
-	android:layout_height="wrap_content">
+	android:layout_height="wrap_content"
+	android:layout_marginTop="100dp"
+	android:fillViewport="false">
 
 	<LinearLayout
+		android:id="@+id/llCardView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:id="@+id/llCardView">
+		android:orientation="vertical">
 
 		<!-- Separator -->
-		<View style="@style/LineSeparator.Dark"/>
+		<View style="@style/LineSeparator.Dark" />
 
 		<android.support.v7.widget.RecyclerView
-			android:paddingTop="10dp"
-			android:paddingBottom="5dp"
 			android:id="@+id/rcvSCBatsmanData"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
+			android:layout_height="wrap_content"
+			android:paddingTop="10dp"
+			android:paddingBottom="5dp" />
 
 		<!-- Separator -->
-		<View style="@style/LineSeparator.Dark"/>
+		<View style="@style/LineSeparator.Dark" />
 
 		<TextView
+			android:id="@+id/tvSCExtras"
 			style="@style/TextViewStyle"
-			android:paddingTop="10dp"
-			android:paddingBottom="10dp"
 			android:layout_width="match_parent"
 			android:background="@color/gray_200"
-			android:id="@+id/tvSCExtras"/>
+			android:paddingTop="10dp"
+			android:paddingBottom="10dp" />
 
 		<!-- Separator -->
-		<View style="@style/LineSeparator.Dark"/>
+		<View style="@style/LineSeparator.Dark" />
 
 		<TextView
+			android:id="@+id/tvSCTotal"
 			style="@style/TextViewStyle.Bold"
-			android:paddingTop="5dp"
-			android:paddingBottom="5dp"
-			android:layout_gravity="end"
 			android:layout_width="match_parent"
+			android:layout_gravity="end"
 			android:background="@color/teal_100"
-			android:id="@+id/tvSCTotal"/>
+			android:paddingTop="5dp"
+			android:paddingBottom="5dp" />
 
 		<!-- Separator -->
-		<View style="@style/LineSeparator.Dark"/>
+		<View style="@style/LineSeparator.Dark" />
 
 		<TextView
+			android:id="@+id/tvSCFallOfWickets"
 			style="@style/TextViewStyle"
 			android:layout_marginTop="10dp"
 			android:layout_marginBottom="10dp"
-			android:gravity="center_vertical"
-			android:id="@+id/tvSCFallOfWickets"/>
+			android:gravity="center_vertical" />
 
 		<android.support.v7.widget.RecyclerView
-			android:paddingTop="10dp"
-			android:paddingBottom="5dp"
 			android:id="@+id/rcvSCBowlerData"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
+			android:layout_height="wrap_content"
+			android:paddingTop="10dp"
+			android:paddingBottom="5dp"
+			tools:listitem="@layout/scorecard_bowler_view" />
 
 		<!-- Separator -->
-		<View style="@style/LineSeparator.Dark"
-			android:layout_marginBottom="25dp"/>
+		<View
+			style="@style/LineSeparator.Dark"
+			android:layout_marginBottom="25dp" />
 
 	</LinearLayout>
 

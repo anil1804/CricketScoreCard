@@ -212,14 +212,18 @@ public class CricketCard implements Serializable {
 	}
 
 	void inningsCheck() {
-		if(innings == 1) {
-			if (totalOversBowled.equals(maxOvers) || wicketsFallen == maxWickets) {
-				inningsComplete = true;
-			}
-		} else if(innings == 2) {
-			if (totalOversBowled.equals(maxOvers) || wicketsFallen == maxWickets || score >= target) {
-				inningsComplete = true;
-			}
+		switch (innings) {
+			case 1:
+				if (totalOversBowled.equals(maxOvers) || wicketsFallen == maxWickets) {
+					inningsComplete = true;
+				}
+				break;
+
+			case 2:
+				if (totalOversBowled.equals(maxOvers) || wicketsFallen == maxWickets || score >= target) {
+					inningsComplete = true;
+				}
+				break;
 		}
 	}
 
@@ -242,7 +246,6 @@ public class CricketCard implements Serializable {
 	}
 
 	void addNewPartnershipRecord(@NonNull BatsmanStats batsman1, @NonNull BatsmanStats batsman2) {
-		int key = partnershipData.size() + 1;
 		Player player1 = (batsman2.getRunsScored() == 0) ? batsman1.getPlayer() : batsman2.getPlayer();
 		Player player2 = (batsman1.getPlayer().getID() != player1.getID()) ? batsman1.getPlayer() : batsman2.getPlayer();
 

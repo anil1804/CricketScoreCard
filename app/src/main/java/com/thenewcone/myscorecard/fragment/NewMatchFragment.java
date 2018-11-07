@@ -558,7 +558,9 @@ public class NewMatchFragment extends Fragment
 		} else if(dupPlayer != null) {
 			errorMessage = String.format(Locale.getDefault(),
 					"Same player %s found in both teams", dupPlayer.getName());
-		} else if (team1.getCaptain() == null || team1.getWicketKeeper() == null) {
+		} else if(team1.getMatchPlayers().size() != numPlayers || team2.getMatchPlayers().size() != numPlayers) {
+			errorMessage = "Number of players seems to have changed. Please reselect playing teams for both teams";
+		}else if (team1.getCaptain() == null || team1.getWicketKeeper() == null) {
 			errorMessage = String.format(Locale.getDefault(),
 					"Both captain and wicket-keeper for %s need to be selected", team1.getShortName());
 		} else if (team2.getCaptain() == null || team2.getWicketKeeper() == null) {
@@ -593,12 +595,14 @@ public class NewMatchFragment extends Fragment
 	private String getTeamHavingInsufficientPlayers(int numPlayers) {
 		DatabaseHandler dbh = new DatabaseHandler(getContext());
 
-		if(dbh.getAssociatedPlayers(team1.getId()).size() < numPlayers)
-			return team1.getShortName();
-		else if(dbh.getAssociatedPlayers(team2.getId()).size() < numPlayers)
-			return team2.getShortName();
-		else
-			return null;
+		if(team1 != null && team2 != null) {
+			if (dbh.getAssociatedPlayers(team1.getId()).size() < numPlayers)
+				return team1.getShortName();
+			else if (dbh.getAssociatedPlayers(team2.getId()).size() < numPlayers)
+				return team2.getShortName();
+		}
+
+		return null;
 	}
 
 	private void displayCaptainWKSelect(Team team, int reqCode, Player selected) {
@@ -625,10 +629,18 @@ public class NewMatchFragment extends Fragment
 	private Player checkIfSamePlayerInBothTeams(){
     	Player dupPlayer = null;
 
-    	for(Player player : team1Players) {
-    		if(team2.contains(player)) {
-    			dupPlayer = player;
-    			break;
+    	if(team1 != null && team2 != null && team1Players != null && team2Players != null) {
+			for (Player player : team1Players) {
+				if (team2.contains(player)) {
+					dupPlayer = player;
+					break;
+				}
+			}
+			for (Player player : team2Players) {
+				if (team1.contains(player)) {
+					dupPlayer = player;
+					break;
+				}
 			}
 		}
 

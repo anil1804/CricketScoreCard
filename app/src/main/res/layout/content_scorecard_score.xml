@@ -78,6 +78,7 @@
 		android:id="@+id/trRunsInBalls">
 
 		<TextView
+			android:layout_width="match_parent"
 			android:id="@+id/tvRunsInBalls"
 			android:layout_span="5"
 			style="@style/TextViewStyle"/>

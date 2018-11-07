@@ -13,7 +13,7 @@
 
 		<LinearLayout
 			android:layout_width="0dp"
-			android:layout_weight="5"
+			android:layout_weight="6"
 			android:layout_height="wrap_content"
 			android:orientation="vertical">
 
@@ -61,8 +61,7 @@
 			android:text="@string/headerSixes"/>
 
 		<TextView
-			android:layout_width="0dp"
-			android:layout_weight="1"
+			android:layout_width="45dp"
 			android:id="@+id/tvSCBatsmanSR"
 			style="@style/TextViewStyle"
 			android:layout_gravity="center_vertical"

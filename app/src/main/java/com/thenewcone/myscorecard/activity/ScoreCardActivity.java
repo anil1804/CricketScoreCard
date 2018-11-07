@@ -12,10 +12,12 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.adapter.SCBatsmanAdapter;
@@ -25,6 +27,7 @@ import com.thenewcone.myscorecard.match.Partnership;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
+import com.thenewcone.myscorecard.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -153,7 +156,7 @@ public class ScoreCardActivity extends AppCompatActivity {
 				sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER, 0);
 
 			RecyclerView rcvSCBatsmanData = rootView.findViewById(R.id.rcvSCBatsmanData);
-			rcvSCBatsmanData.setHasFixedSize(false);
+			rcvSCBatsmanData.setHasFixedSize(true);
 			RecyclerView rcvSCBowlerData = rootView.findViewById(R.id.rcvSCBowlerData);
 			rcvSCBowlerData.setHasFixedSize(false);
 
@@ -221,6 +224,7 @@ public class ScoreCardActivity extends AppCompatActivity {
 				rcvSCBowlerData.setLayoutManager(new LinearLayoutManager(getContext()));
 				SCBowlerAdapter adapter = new SCBowlerAdapter(getContext(), bowlerStatsList, bowler);
 				rcvSCBowlerData.setAdapter(adapter);
+				rcvSCBowlerData.setMinimumHeight(500);
 
 				LinearLayoutManager llm = new LinearLayoutManager(getContext());
 				llm.setOrientation(LinearLayoutManager.VERTICAL);

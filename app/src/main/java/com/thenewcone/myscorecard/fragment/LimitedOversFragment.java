@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -282,7 +281,6 @@ public class LimitedOversFragment extends Fragment
 					String team = data.getStringExtra(ExtraDialogActivity.ARG_TEAM);
 
 					processExtra(extraType, extraRuns, team, extraSubType);
-					updateCardDetails();
 				}
 				break;
 
@@ -292,8 +290,9 @@ public class LimitedOversFragment extends Fragment
 					Extra extraData = (Extra) data.getSerializableExtra(WicketDialogActivity.ARG_EXTRA_DATA);
 					outBatsman = (ccUtils.getCurrentFacing().getPlayer().getID() == wktData.getBatsman().getPlayer().getID())
 							? ccUtils.getCurrentFacing() : ccUtils.getOtherBatsman();
+					int batsmanRuns = data.getIntExtra(WicketDialogActivity.ARG_BATSMAN_RUNS, 0);
 
-					newBallBowled(extraData, 0, wktData);
+					newBallBowled(extraData, batsmanRuns, wktData);
 
 					dismissalType = wktData.getDismissalType();
 					updateLayout(false, false);
@@ -603,20 +602,21 @@ public class LimitedOversFragment extends Fragment
 
 		autoSaveMatch();
 		ccUtils.processBallActivity(extra, runs, wicketData, false);
-		updateCardDetails();
-        checkChangeOfBowler();
-        if(ccUtils.getCard().isInningsComplete()) {
-            updateViewToCloseInnings();
-        }
+		updateLayout(false, false);
 	}
 
 	private void processExtra(Extra.ExtraType extraType, int numExtraRuns, String penaltyFavouringTeam, Extra.ExtraType extraSubType) {
-        Extra extra;
+        Extra extra = null;
         switch (extraType) {
             case PENALTY:
                 if(numExtraRuns > 0) {
                     extra = new Extra(Extra.ExtraType.PENALTY, numExtraRuns);
                     ccUtils.addPenalty(extra, penaltyFavouringTeam);
+                    updateLayout(false, true);
+                    String toastText = String.format(Locale.getDefault(),
+							"Additional runs awarded to %s. %s updated", penaltyFavouringTeam,
+							(penaltyFavouringTeam == CommonUtils.BATTING_TEAM) ? "Score" : "Target");
+					Toast.makeText(getContext(), toastText, Toast.LENGTH_SHORT).show();
                 }
                 break;
 
@@ -643,8 +643,14 @@ public class LimitedOversFragment extends Fragment
 
             case NO_BALL:
                 if(numExtraRuns >= 0) {
-                    extra = new Extra(Extra.ExtraType.NO_BALL, 0, extraSubType);
-                    newBallBowled(extra, numExtraRuns, null);
+                	int batsmanRuns = 0;
+                    if(extraSubType == null || extraSubType == Extra.ExtraType.NONE) {
+						extra = new Extra(Extra.ExtraType.NO_BALL, 0, extraSubType);
+						batsmanRuns = numExtraRuns;
+					} else if (extraSubType == Extra.ExtraType.BYE || extraSubType == Extra.ExtraType.LEG_BYE) {
+						extra = new Extra(Extra.ExtraType.NO_BALL, numExtraRuns, extraSubType);
+					}
+					newBallBowled(extra, batsmanRuns, null);
                 }
                 break;
         }
@@ -708,12 +714,6 @@ public class LimitedOversFragment extends Fragment
         bowlerIntent.putExtra(BowlerSelectActivity.ARG_PREV_BOWLER, ccUtils.getPrevBowler());
 
         startActivityForResult(bowlerIntent, REQ_CODE_BOWLER_DIALOG);
-    }
-
-	private void checkChangeOfBowler() {
-	    if(ccUtils.isNewOver()) {
-			updateLayout(false, false);
-        }
     }
 
 	private void showInputActivity(String inputText) {
@@ -814,13 +814,6 @@ public class LimitedOversFragment extends Fragment
         theView.findViewById(R.id.btnSelBowler).setVisibility(bowlerSelectVisibility);
     }
 
-    private void updateScreenForResult() {
-		LinearLayout llScoring = theView.findViewById(R.id.llScoring);
-
-		llScoring.setVisibility(View.GONE);
-		tvResult.setVisibility(View.VISIBLE);
-	}
-
     private void updateViewToCloseInnings() {
         if(ccUtils.getCard().getInnings() == 1) {
 			updateScreenForBatsmanSelect(View.GONE, View.GONE, View.GONE);
@@ -859,7 +852,9 @@ public class LimitedOversFragment extends Fragment
 			result = "Match TIED";
 		}
 
-		updateScreenForResult();
+		theView.findViewById(R.id.llScoring).setVisibility(View.GONE);
+		tvResult.setVisibility(View.VISIBLE);
+
 		tvResult.setText(result);
     }
 

@@ -70,7 +70,7 @@ public class ExtraDialogActivity extends Activity
 				break;
 		}
 
-		popualteRuns(Extra.ExtraType.NONE);
+		populateRuns(Extra.ExtraType.NONE);
 	}
 
 	@Override
@@ -85,15 +85,15 @@ public class ExtraDialogActivity extends Activity
 				break;
 
 			case R.id.rbExtraNBNone:
-				popualteRuns(Extra.ExtraType.NONE);
+				populateRuns(Extra.ExtraType.NONE);
 				break;
 
 			case R.id.rbExtraNBBye:
-				popualteRuns(Extra.ExtraType.BYE);
+				populateRuns(Extra.ExtraType.BYE);
 				break;
 
 			case R.id.rbExtraNBLegBye:
-				popualteRuns(Extra.ExtraType.LEG_BYE);
+				populateRuns(Extra.ExtraType.LEG_BYE);
 				break;
 		}
 	}
@@ -111,7 +111,7 @@ public class ExtraDialogActivity extends Activity
 		}
 	}
 
-	private void popualteRuns(Extra.ExtraType extraSubType) {
+	private void populateRuns(Extra.ExtraType extraSubType) {
 		int i=0;
 		rgExtraRuns.removeAllViews();
 
@@ -150,8 +150,12 @@ public class ExtraDialogActivity extends Activity
 			switch (extraType) {
 				case PENALTY:
 					team = ((RadioButton) findViewById(rgExtraRunsSelId)).getText().toString();
+					numRuns = 5;
+					break;
+
 				default:
 					numRuns = Integer.parseInt(((RadioButton) findViewById(rgExtraRunsSelId)).getText().toString());
+					break;
 			}
 		}
 

@@ -13,6 +13,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.fragment.StringDialog;
@@ -37,6 +38,7 @@ public class WicketDialogActivity extends FragmentActivity
 	public static final String ARG_FIELDING_TEAM = "FieldingTeam";
 	public static final String ARG_WICKET_DATA = "WicketData";
     public static final String ARG_EXTRA_DATA = "ExtraData";
+    public static final String ARG_BATSMAN_RUNS = "BatsmanRuns";
 
 	BatsmanStats facingBatsman, otherBatsman, outBatsman;
 	BowlerStats bowler;
@@ -50,6 +52,7 @@ public class WicketDialogActivity extends FragmentActivity
 	int minExtraRuns = 0;
 	SeekBar sbRORuns;
     TextView tvEffectedBy;
+    int batsmanRuns = 0;
 
 	public static final int RESP_CODE_OK = 1;
 	public static final int RESP_CODE_CANCEL = -1;
@@ -59,8 +62,6 @@ public class WicketDialogActivity extends FragmentActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_wicket_dialog);
 
-		setView();
-
 		Intent incomingIntent = getIntent();
 		if(incomingIntent != null) {
 			facingBatsman = (BatsmanStats) incomingIntent.getSerializableExtra(ARG_FACING_BATSMAN);
@@ -68,6 +69,8 @@ public class WicketDialogActivity extends FragmentActivity
 			bowler = (BowlerStats) incomingIntent.getSerializableExtra(ARG_BOWLER);
 			fieldingTeam = CommonUtils.objectArrToPlayerArr((Object[]) incomingIntent.getSerializableExtra(ARG_FIELDING_TEAM));
 		}
+
+		setView();
 	}
 
 	@Override
@@ -159,6 +162,11 @@ public class WicketDialogActivity extends FragmentActivity
 		rbRONBNone.setOnClickListener(this);
 		rbRONBBye.setOnClickListener(this);
 		rbRONBLB.setOnClickListener(this);
+
+		if((facingBatsman != null && facingBatsman.getBallsPlayed() == 0)
+				|| (otherBatsman != null && otherBatsman.getBallsPlayed() == 0)) {
+			rbWktTimedOut.setVisibility(View.VISIBLE);
+		}
 	}
 
 	@Override
@@ -196,77 +204,81 @@ public class WicketDialogActivity extends FragmentActivity
 				clearOtherCheckedRadioButtons(glWicket, view.getId());
 				setViewVisibility(View.VISIBLE, View.GONE, View.GONE);
 				tvEffectedBy.setText(R.string.caughtBy);
-
 				dismissalType = WicketData.DismissalType.CAUGHT;
+				effectedBy = null;
 				outBatsman = facingBatsman;
 				break;
 
 			case R.id.rbWktRunOut:
 				clearOtherCheckedRadioButtons(glWicket, view.getId());
 				setViewVisibility(View.VISIBLE, View.VISIBLE, View.VISIBLE);
+				outBatsman = null;
+				effectedBy = null;
 				tvEffectedBy.setText(R.string.runoutBy);
-
 				dismissalType = WicketData.DismissalType.RUN_OUT;
 				break;
 
 			case R.id.rbWktObstruct:
 				clearOtherCheckedRadioButtons(glWicket, view.getId());
-				setViewVisibility(View.VISIBLE, View.VISIBLE, View.VISIBLE);
-
+				setViewVisibility(View.GONE, View.VISIBLE, View.VISIBLE);
+				outBatsman = null;
+				effectedBy = null;
 				dismissalType = WicketData.DismissalType.OBSTRUCTING_FIELD;
 				break;
 
 			case R.id.rbWktBowled:
 				clearOtherCheckedRadioButtons(glWicket, view.getId());
 				setViewVisibility(View.GONE, View.GONE, View.GONE);
-
-				dismissalType = WicketData.DismissalType.BOWLED;
+				effectedBy = null;
 				outBatsman = facingBatsman;
+				dismissalType = WicketData.DismissalType.BOWLED;
 				break;
 
 			case R.id.rbWktHitTwice:
 				clearOtherCheckedRadioButtons(glWicket, view.getId());
 				setViewVisibility(View.GONE, View.GONE, View.GONE);
-
-				dismissalType = WicketData.DismissalType.HIT_BALL_TWICE;
+				effectedBy = null;
 				outBatsman = facingBatsman;
+				dismissalType = WicketData.DismissalType.HIT_BALL_TWICE;
 				break;
 
 			case R.id.rbWktHitWicket:
 				clearOtherCheckedRadioButtons(glWicket, view.getId());
 				setViewVisibility(View.GONE, View.GONE, View.GONE);
-
-				dismissalType = WicketData.DismissalType.HIT_WICKET;
+				effectedBy = null;
 				outBatsman = facingBatsman;
+				dismissalType = WicketData.DismissalType.HIT_WICKET;
 				break;
 
 			case R.id.rbWktLBW:
 				clearOtherCheckedRadioButtons(glWicket, view.getId());
 				setViewVisibility(View.GONE, View.GONE, View.GONE);
-
-				dismissalType = WicketData.DismissalType.LBW;
+				effectedBy = null;
 				outBatsman = facingBatsman;
+				dismissalType = WicketData.DismissalType.LBW;
 				break;
 
 			case R.id.rbWktRetiredHurt:
 				clearOtherCheckedRadioButtons(glWicket, view.getId());
 				setViewVisibility(View.GONE, View.VISIBLE, View.GONE);
-
+				outBatsman = null;
+				effectedBy = null;
 				dismissalType = WicketData.DismissalType.RETIRED;
 				break;
 
 			case R.id.rbWktStump:
 				clearOtherCheckedRadioButtons(glWicket, view.getId());
 				setViewVisibility(View.GONE, View.GONE, View.GONE);
-
-				dismissalType = WicketData.DismissalType.STUMPED;
+				effectedBy = null;
 				outBatsman = facingBatsman;
+				dismissalType = WicketData.DismissalType.STUMPED;
 				break;
 
 			case R.id.rbWktTimedOut:
 				clearOtherCheckedRadioButtons(glWicket, view.getId());
 				setViewVisibility(View.GONE, View.VISIBLE, View.GONE);
-
+				outBatsman = null;
+				effectedBy = null;
 				dismissalType = WicketData.DismissalType.TIMED_OUT;
 				break;
 
@@ -278,6 +290,7 @@ public class WicketDialogActivity extends FragmentActivity
                 }
 				else {
                     glRORunsExtra.setVisibility(View.GONE);
+                    extraData = null;
                 }
 				break;
 
@@ -391,7 +404,15 @@ public class WicketDialogActivity extends FragmentActivity
 
 	private void displayBatsmen() {
 	    Intent batsmanIntent = new Intent(this, BatsmanSelectActivity.class);
-	    BatsmanStats[] batsmen = {facingBatsman, otherBatsman};
+
+		BatsmanStats[] batsmen;
+	    if(dismissalType != null && dismissalType == WicketData.DismissalType.TIMED_OUT) {
+	    	BatsmanStats batsman = (facingBatsman.getBallsPlayed() == 0) ? facingBatsman : otherBatsman;
+			batsmen = new BatsmanStats[]{batsman};
+		} else {
+	    	batsmen = new BatsmanStats[]{facingBatsman, otherBatsman};
+		}
+
 	    batsmanIntent.putExtra(BatsmanSelectActivity.ARG_BATSMAN_LIST, batsmen);
         batsmanIntent.putExtra(BatsmanSelectActivity.ARG_DEFAULT_SEL_INDEX, 0);
 	    startActivityForResult(batsmanIntent, ACTIVITY_REQ_CODE_OUT_BATSMAN_SELECT);
@@ -419,21 +440,62 @@ public class WicketDialogActivity extends FragmentActivity
 		}
 	}
 
+	private boolean validateData() {
+		boolean isValid = true;
+
+		switch (dismissalType) {
+			case CAUGHT:
+				if(effectedBy == null) {
+					Toast.makeText(this, "Please choose Caught By Player", Toast.LENGTH_SHORT).show();
+					isValid = false;
+				}
+				break;
+
+			case RUN_OUT:
+				if(effectedBy == null) {
+					Toast.makeText(this, "Please choose Run out by", Toast.LENGTH_SHORT).show();
+					isValid = false;
+				} else if(outBatsman == null) {
+					Toast.makeText(this, "Please choose Batsman who is out", Toast.LENGTH_SHORT).show();
+					isValid = false;
+				} else  if(extraData == null) {
+					batsmanRuns = sbRORuns.getProgress();
+				}
+				break;
+
+			case TIMED_OUT:
+			case OBSTRUCTING_FIELD:
+			case RETIRED:
+				if(outBatsman == null) {
+					Toast.makeText(this, "Please choose Batsman who is out", Toast.LENGTH_SHORT).show();
+					isValid = false;
+				}
+				break;
+		}
+
+		return isValid;
+	}
+
     private void sendResponse(int responseCode) {
-        setResult(responseCode);
+        if(responseCode == RESP_CODE_OK) {
+			Intent respIntent = new Intent();
+			WicketData wicketData = null;
 
-        WicketData wicketData;
-        wicketData = new WicketData(outBatsman, dismissalType, effectedBy, bowler);
+        	if(validateData()) {
+				wicketData = new WicketData(outBatsman, dismissalType, effectedBy, bowler);
+				respIntent.putExtra(ARG_WICKET_DATA, wicketData);
+				if(extraData != null)
+					respIntent.putExtra(ARG_EXTRA_DATA, extraData);
+				if(batsmanRuns > 0)
+					respIntent.putExtra(ARG_BATSMAN_RUNS, batsmanRuns);
 
-        Intent respIntent = new Intent();
-        respIntent.putExtra(ARG_WICKET_DATA, wicketData);
+				setResult(responseCode, respIntent);
 
-        if(extraData != null)
-            respIntent.putExtra(ARG_EXTRA_DATA, extraData);
-
-        setResult(responseCode, respIntent);
-
-        finish();
+				finish();
+			}
+		} else if(responseCode == RESP_CODE_CANCEL) {
+			setResult(responseCode);
+		}
     }
 
 	@Override

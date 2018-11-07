@@ -98,7 +98,7 @@ public class CricketCardUtils {
 	}
 
 	public void updateFacingBatsman(BatsmanStats batsman) {
-	    if(currentFacing != null)
+	    if(currentFacing != null && currentFacing.getPlayer().getID() != batsman.getPlayer().getID())
 	        otherBatsman = currentFacing;
 
 	    currentFacing = batsman;
@@ -235,13 +235,16 @@ public class CricketCardUtils {
 	}
 
 	private void checkNextBatsmanFacingBall(int runs, Extra extra) {
-    	if(extra != null && (
-    			extra.getType() == Extra.ExtraType.BYE
-				|| extra.getType() == Extra.ExtraType.LEG_BYE
-				|| (extra.getType() == Extra.ExtraType.NO_BALL && (
-						extra.getSubType() == Extra.ExtraType.BYE || extra.getSubType() == Extra.ExtraType.LEG_BYE
-				)))) {
-    		runs = extra.getRuns();
+    	if(extra != null) {
+    		if(extra.getType() == Extra.ExtraType.BYE
+					|| extra.getType() == Extra.ExtraType.LEG_BYE
+					|| extra.getType() == Extra.ExtraType.WIDE
+					|| (extra.getType() == Extra.ExtraType.NO_BALL && (
+							extra.getSubType() == Extra.ExtraType.BYE
+									|| extra.getSubType() == Extra.ExtraType.LEG_BYE
+					))) {
+    			runs = extra.getRuns();
+			}
 		}
 
         if((runs % 2 == 1 && !newOver)  || (runs % 2 == 0 && newOver)) {
@@ -278,20 +281,24 @@ public class CricketCardUtils {
 
 				case NO_BALL:
 					bowlerBalls = 0;
-					switch (extra.getSubType()) {
-						case NONE:
-							bowlerRuns = runs + 1;
-							break;
-						case BYE:
-							bowlerRuns = 1;
-							batsmanRuns = 0;
-							card.addByes(runs);
-							break;
-						case LEG_BYE:
-							bowlerRuns = 1;
-							batsmanRuns = 0;
-							card.addLegByes(runs);
-							break;
+					if(extra.getSubType() != null) {
+						switch (extra.getSubType()) {
+							case NONE:
+								bowlerRuns = runs + 1;
+								break;
+							case BYE:
+								bowlerRuns = 1;
+								batsmanRuns = 0;
+								card.addByes(extra.getRuns());
+								break;
+							case LEG_BYE:
+								bowlerRuns = 1;
+								batsmanRuns = 0;
+								card.addLegByes(extra.getRuns());
+								break;
+						}
+					} else {
+						bowlerRuns = runs + 1;
 					}
 					card.incNoBalls();
 					break;
@@ -324,16 +331,16 @@ public class CricketCardUtils {
 			card.incWicketsFallen();
 		}
 
-		card.inningsCheck();
-
 		updateBatsmanScore(batsmanRuns, batsmanBalls, wicketData, extra);
 		updateBowlerFigures((double) bowlerBalls, bowlerRuns, wicketData, extra);
 		card.updateScore(runs, extra);
 		card.updateRunRate();
 		updateLast12Balls(extra, runs, wicketData);
+
+		card.inningsCheck();
 	}
 
-	public void addPenalty(Extra extra, @NonNull String favouringTeam) {
+	public void addPenalty(@NonNull Extra extra, @NonNull String favouringTeam) {
 		if(extra.getRuns() > 0) {
 			int penaltyRuns = extra.getRuns();
 			if(favouringTeam.equals(CommonUtils.BATTING_TEAM)) {
@@ -351,6 +358,8 @@ public class CricketCardUtils {
 				}
 			}
 		}
+
+		card.inningsCheck();
 	}
 
 	public void setFirstInnings(List<Player> batTeam, List<Player> bowlTeam) {
@@ -382,6 +391,10 @@ public class CricketCardUtils {
     }
 
     public void setNewInnings() {
+    	card.updateBatsmenData(currentFacing);
+    	card.updateBatsmenData(otherBatsman);
+    	card.updateBowlerInBowlerMap(bowler);
+
         prevInningsCard = card;
         card = new CricketCard(team2, team1, prevInningsCard.getMaxOvers(),
                 prevInningsCard.getMaxPerBowler(), prevInningsCard.getMaxWickets(), 2);
@@ -391,6 +404,7 @@ public class CricketCardUtils {
        	card.updateScore(prevInningsCard.getFuturePenalty(), null);
 
        	card.updateRunRate();
+		last12Balls.clear();
 
        	currentFacing = null;
        	otherBatsman = null;
@@ -416,15 +430,22 @@ public class CricketCardUtils {
 				case BYE:
 					currentBallSB.append("B");
 					break;
+
 				case LEG_BYE:
 					currentBallSB.append("L");
 					break;
+
 				case PENALTY:
 					currentBallSB.append("P");
 					break;
+
 				case WIDE:
+					if(extra.getRuns() > 0) {
+						currentBallSB.append("+");
+					}
 					currentBallSB.append("Wd");
 					break;
+
 				case NO_BALL:
 					if(extra.getSubType() != null)
 					{
@@ -443,6 +464,7 @@ public class CricketCardUtils {
 					else
 						currentBallSB.append("N");
 					break;
+
 			}
 		}
 		if(currentBallSB.length() > 0) {
