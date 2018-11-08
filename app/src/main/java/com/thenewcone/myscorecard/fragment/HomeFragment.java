@@ -34,10 +34,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	private static final int REQ_CODE_MATCH_LIST_DELETE = 2;
 
 	private static final int CONFIRMATION_CODE_DELETE_MATCHES = 1;
+	private static final int CONFIRMATION_CODE_LOAD_LAST_MATCH = 2;
 
 	DatabaseHandler dbHandler;
 
 	MatchState[] matchesToDelete;
+	int matchStateID = -1;
 
 	public static HomeFragment newInstance() {
 		return new HomeFragment();
@@ -66,6 +68,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 
 		if(getActivity() != null)
 			((DrawerLocker) getActivity()).setDrawerEnabled(true);
+
+		checkForAutoSavedMatches();
 
 		return theView;
 	}
@@ -138,18 +142,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 		}
 	}
 
-	private void showSavedMatchDialog(boolean isMulti, int requestCode) {
-		List<MatchState> savedMatchDataList = dbHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, 0, null);
-		if(savedMatchDataList != null && savedMatchDataList.size() > 0) {
-			Intent getMatchListIntent = new Intent(getContext(), SavedMatchSelectActivity.class);
-			getMatchListIntent.putExtra(SavedMatchSelectActivity.ARG_MATCH_LIST, savedMatchDataList.toArray());
-			getMatchListIntent.putExtra(SavedMatchSelectActivity.ARG_IS_MULTI_SELECT, isMulti);
-			startActivityForResult(getMatchListIntent, requestCode);
-		} else {
-			Toast.makeText(getContext(), "No Saved matches found.", Toast.LENGTH_SHORT).show();
-		}
-	}
-
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -158,14 +150,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 			case REQ_CODE_MATCH_LIST_LOAD:
 				if(resultCode == SavedMatchSelectActivity.RESP_CODE_OK) {
 					MatchState selSavedMatch = (MatchState) data.getSerializableExtra(SavedMatchSelectActivity.ARG_RESP_SEL_MATCH);
-					if(getActivity() != null) {
-						String fragmentTag = NewMatchFragment.class.getSimpleName();
-
-						getActivity().getSupportFragmentManager().beginTransaction()
-								.replace(R.id.frame_container, LimitedOversFragment.loadInstance(selSavedMatch.getId()), fragmentTag)
-								.addToBackStack(fragmentTag)
-								.commit();
-					}
+					loadSavedMatch(selSavedMatch.getId());
 				}
 				break;
 
@@ -196,6 +181,48 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 					}
 				}
 				break;
+
+			case CONFIRMATION_CODE_LOAD_LAST_MATCH:
+				dbHandler.clearMatchStateHistory(1, -1, matchStateID);
+				if(accepted) {
+					loadSavedMatch(matchStateID);
+				}
+				break;
+		}
+	}
+
+	private void loadSavedMatch(int matchStateID) {
+		if(getActivity() != null) {
+			String fragmentTag = NewMatchFragment.class.getSimpleName();
+
+			getActivity().getSupportFragmentManager().beginTransaction()
+					.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID), fragmentTag)
+					.addToBackStack(fragmentTag)
+					.commit();
+		}
+	}
+
+	private void showSavedMatchDialog(boolean isMulti, int requestCode) {
+		List<MatchState> savedMatchDataList = dbHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, 0, null);
+		if(savedMatchDataList != null && savedMatchDataList.size() > 0) {
+			Intent getMatchListIntent = new Intent(getContext(), SavedMatchSelectActivity.class);
+			getMatchListIntent.putExtra(SavedMatchSelectActivity.ARG_MATCH_LIST, savedMatchDataList.toArray());
+			getMatchListIntent.putExtra(SavedMatchSelectActivity.ARG_IS_MULTI_SELECT, isMulti);
+			startActivityForResult(getMatchListIntent, requestCode);
+		} else {
+			Toast.makeText(getContext(), "No Saved matches found.", Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	private void checkForAutoSavedMatches() {
+		matchStateID = dbHandler.getLastAutoSave();
+		if(matchStateID > 0 && getFragmentManager() != null) {
+			ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance(CONFIRMATION_CODE_LOAD_LAST_MATCH,
+					"Load Match", "Abruptly closed match found. Do you want to load it?" +
+							"\nYou will not be able to load it later." +
+							"\n\nLast ball information in the score-card is however lost.");
+			confirmationDialog.setConfirmationClickListener(this);
+			confirmationDialog.show(getFragmentManager(), "LoadClosedMatches");
 		}
 	}
 }

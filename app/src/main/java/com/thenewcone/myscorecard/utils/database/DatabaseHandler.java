@@ -387,6 +387,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return matchStateID;
 	}
 
+    public int getLastAutoSave() {
+    	int matchStateID = -1;
+
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	String selectQuery = String.format(Locale.getDefault(),
+				"SELECT %s FROM %s WHERE %s = 1 ORDER BY %s DESC LIMIT 1"
+				, TBL_STATE_ID, TBL_STATE, TBL_STATE_IS_AUTO, TBL_STATE_ORDER);
+    	Cursor cursor = db.rawQuery(selectQuery, null);
+
+    	if(cursor != null && cursor.moveToFirst()) {
+    		matchStateID = cursor.getInt(cursor.getColumnIndex(TBL_STATE_ID));
+			cursor.close();
+		}
+    	db.close();
+
+		return matchStateID;
+	}
+
     public void deleteMatch(int matchStateID) {
     	String query = String.format(Locale.getDefault(),
 				"DELETE FROM %s WHERE %s = %d", TBL_STATE, TBL_STATE_ID, matchStateID);
@@ -412,6 +430,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		db.execSQL(query);
 		db.close();
+	}
+
+	public void clearAllAutoSaveHistory() {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	db.delete(TBL_STATE, TBL_STATE_IS_AUTO + " = ?", new String[]{String.valueOf(1)});
+    	db.close();
 	}
 
 	public int getMatchID(int matchStateID) {

@@ -307,7 +307,7 @@ public class TeamFragment extends Fragment
 
 	private void confirmDeleteTeam() {
 		if(getFragmentManager() != null) {
-			ConfirmationDialog dialog = ConfirmationDialog.newInstance(CONFIRMATION_DELETE_TEAM, "Confirm Delete", "Are you sure you want to delete the player?");
+			ConfirmationDialog dialog = ConfirmationDialog.newInstance(CONFIRMATION_DELETE_TEAM, "Confirm Delete", "Are you sure you want to delete the team?");
 			dialog.setConfirmationClickListener(this);
 			dialog.show(getFragmentManager(), "ConfirmTeamDeleteDialog");
 		}

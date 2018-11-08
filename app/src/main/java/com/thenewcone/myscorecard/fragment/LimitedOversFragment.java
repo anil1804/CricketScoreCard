@@ -50,18 +50,6 @@ public class LimitedOversFragment extends Fragment
 	WicketData.DismissalType dismissalType;
     DatabaseHandler dbHandler;
 
-/*
-    private static final String ARG_MATCH_STATE_ID = "MatchStateID";
-    private static final String ARG_MATCH_ID = "MatchID";
-    private static final String ARG_UNDO_COUNT = "UndoCount";
-    private static final String ARG_START_INNINGS = "StartInnings";
-    private static final String ARG_IS_LOAD = "isLoad";
-    private static final String ARG_IS_UNDO = "isUndo";
-    private static final String ARG_CC_UTILS = "CCUtils";
-    private static final String ARG_NEW_BATSMAN = "NewBatsman";
-    private static final String ARG_OUT_BATSMAN = "OutBatsman";
-*/
-
     private static final int REQ_CODE_EXTRA_DIALOG = 1;
 	private static final int REQ_CODE_WICKET_DIALOG = 2;
     private static final int REQ_CODE_BATSMAN_DIALOG = 3;
@@ -110,47 +98,6 @@ public class LimitedOversFragment extends Fragment
 
 		return fragment;
 	}
-
-/*
-	@Override
-	public void onSaveInstanceState(@NonNull Bundle outState) {
-		super.onSaveInstanceState(outState);
-
-		outState.putBoolean(ARG_IS_LOAD, isLoad);
-		outState.putBoolean(ARG_IS_UNDO, isUndo);
-		outState.putBoolean(ARG_START_INNINGS, startInnings);
-		outState.putInt(ARG_MATCH_ID, matchID);
-		outState.putInt(ARG_MATCH_STATE_ID, matchStateID);
-		outState.putInt(ARG_UNDO_COUNT, currentUndoCount);
-		outState.putSerializable(ARG_NEW_BATSMAN, newBatsman);
-		outState.putSerializable(ARG_OUT_BATSMAN, outBatsman);
-		outState.putString(ARG_CC_UTILS, CommonUtils.convertToJSON(ccUtils));
-	}
-
-	@Override
-	public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-		super.onViewStateRestored(savedInstanceState);
-
-		if(savedInstanceState != null) {
-			isLoad = savedInstanceState.getBoolean(ARG_IS_LOAD, false);
-			isUndo = savedInstanceState.getBoolean(ARG_IS_UNDO, false);
-			startInnings = savedInstanceState.getBoolean(ARG_START_INNINGS, false);
-			matchID = savedInstanceState.getInt(ARG_MATCH_ID, -1);
-			matchStateID = savedInstanceState.getInt(ARG_MATCH_STATE_ID, -1);
-			currentUndoCount = savedInstanceState.getInt(ARG_UNDO_COUNT, 0);
-			newBatsman = (savedInstanceState.getSerializable(ARG_NEW_BATSMAN) != null)
-						? (BatsmanStats) savedInstanceState.getSerializable(ARG_NEW_BATSMAN)
-						: null;
-			outBatsman = (savedInstanceState.getSerializable(ARG_OUT_BATSMAN) != null)
-					? (BatsmanStats) savedInstanceState.getSerializable(ARG_OUT_BATSMAN)
-					: null;
-			ccUtils = CommonUtils.convertToCCUtils(savedInstanceState.getString(ARG_CC_UTILS));
-
-			if(ccUtils != null)
-				updateLayout(true, true);
-		}
-	}
-*/
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -454,8 +401,8 @@ public class LimitedOversFragment extends Fragment
 
 			case CONFIRMATION_CODE_EXIT_MATCH:
 				if(accepted && getActivity() != null) {
-					getActivity().onBackPressed();
 					dbHandler.clearMatchStateHistory(0, matchID, -1);
+					getActivity().onBackPressed();
 				}
 				break;
 		}
@@ -491,7 +438,6 @@ public class LimitedOversFragment extends Fragment
 		ccUtils = new CricketCardUtils(card, matchName, battingTeam, bowlingTeam, maxWickets);
 
 		ccUtils.setTossWonBy(tossWonBy.getId());
-		ccUtils.setFirstInnings(battingTeam.getMatchPlayers(), bowlingTeam.getMatchPlayers());
 	}
 
 	private void loadMatch(int matchStateID) {
@@ -502,6 +448,10 @@ public class LimitedOversFragment extends Fragment
 				ccUtils = CommonUtils.convertToCCUtils(matchData);
 				if (isLoad) {
 					Toast.makeText(getContext(), "Match Loaded", Toast.LENGTH_SHORT).show();
+					if(ccUtils.getCard().getWicketsFallen() > 0 || ccUtils.getCard().getScore() > 0
+							|| CommonUtils.oversToBalls(Double.parseDouble(ccUtils.getCard().getTotalOversBowled())) > 0) {
+						startInnings = false;
+					}
 				} else if(isUndo){
 					Toast.makeText(getContext(), "Undo Successful", Toast.LENGTH_SHORT).show();
 					isUndo = false;
@@ -655,6 +605,7 @@ public class LimitedOversFragment extends Fragment
 	}
 
 	private void newBallBowled(Extra extra, int runs, @Nullable WicketData wicketData) {
+		startInnings = false;
 		if(currentUndoCount > 0)
 			currentUndoCount--;
 

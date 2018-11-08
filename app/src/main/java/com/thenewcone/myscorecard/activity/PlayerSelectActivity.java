@@ -64,13 +64,9 @@ public class PlayerSelectActivity extends Activity
 			numPlayers = extras.getInt(ARG_NUM_PLAYERS, 0);
 		}
 
-		if(isMultiSelect) {
-			setContentView(R.layout.activity_player_select_multiple);
-			findViewById(R.id.btnSelPlayerOK).setOnClickListener(this);
-			findViewById(R.id.btnSelPlayerCancel).setOnClickListener(this);
-		} else {
-			setContentView(R.layout.activity_player_select);
-		}
+		setContentView(R.layout.activity_player_select);
+		findViewById(R.id.btnSelPlayerOK).setOnClickListener(this);
+		findViewById(R.id.btnSelPlayerCancel).setOnClickListener(this);
 
 		RecyclerView rcvPlayerList = findViewById(R.id.rcvPlayerList);
 		rcvPlayerList.setHasFixedSize(false);
@@ -89,12 +85,13 @@ public class PlayerSelectActivity extends Activity
 			rcvPlayerList.setLayoutManager(llm);
 
 			rcvPlayerList.setItemAnimator(new DefaultItemAnimator());
+
+			if(!isMultiSelect)
+				findViewById(R.id.llPlayerSelectButtons).setVisibility(View.GONE);
 		} else {
 			rcvPlayerList.setVisibility(View.GONE);
+			findViewById(R.id.llPlayerSelectButtons).setVisibility(View.GONE);
 			findViewById(R.id.llNoPlayers).setVisibility(View.VISIBLE);
-
-			if(isMultiSelect)
-				findViewById(R.id.llPlayerSelectButtons).setVisibility(View.GONE);
 
 			if(isMultiSelect && playerList.size() < numPlayers)
 				((TextView) findViewById(R.id.tvNoPlayers)).setText(getString(R.string.notEnoughPlayers));

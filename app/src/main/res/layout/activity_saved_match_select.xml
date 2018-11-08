@@ -1,22 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".activity.PlayerSelectActivity"
+    android:background="@android:color/transparent"
+    android:gravity="center"
+    android:layout_gravity="center">
 
-<ScrollView
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content">
-
-	<LinearLayout
+	<ScrollView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="vertical">
+		android:layout_above="@id/llMatchSelectButtons"
+        app:layout_constraintTop_toTopOf="parent">
 
-		<android.support.v7.widget.RecyclerView
-			android:id="@+id/rcvMatchList"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			tools:context=".activity.PlayerSelectActivity"/>
+			<android.support.v7.widget.RecyclerView
+				android:id="@+id/rcvMatchList"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+                android:layout_marginBottom="60dp"/>
+
+	</ScrollView>
+
+	<LinearLayout
+		style="@style/LinearLayoutStyleSubmit"
+		android:id="@+id/llMatchSelectButtons"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+		<Button
+			style="@style/ButtonStyle.Submit"
+			android:id="@+id/btnSelMatchCancel"
+			android:text="@string/cancel"/>
+
+		<Button
+			style="@style/ButtonStyle.Submit"
+			android:id="@+id/btnSelMatchOK"
+			android:text="@string/ok"/>
 
 	</LinearLayout>
 
-</ScrollView>
+</android.support.constraint.ConstraintLayout>

@@ -95,6 +95,7 @@ public class CricketCardUtils {
 		this.team1 = team1;
 		this.team2 = team2;
 		this.maxWickets = maxWickets;
+		this.newOver = true;
 	}
 
 	public void updateFacingBatsman(BatsmanStats batsman) {
@@ -363,34 +364,6 @@ public class CricketCardUtils {
 
 		card.inningsCheck();
 	}
-
-	public void setFirstInnings(List<Player> batTeam, List<Player> bowlTeam) {
-
-    	if(batTeam == null) {
-			batTeam = new ArrayList<>();
-			batTeam.add(new Player("Player-11", (new Random().nextInt(20)) + 18, Player.BattingType.RHB, Player.BowlingType.NONE, false));
-			batTeam.add(new Player("Player-12", (new Random().nextInt(20)) + 18, Player.BattingType.LHB, Player.BowlingType.NONE, false));
-			batTeam.add(new Player("Player-13", (new Random().nextInt(20)) + 18, Player.BattingType.RHB, Player.BowlingType.OB, false));
-			batTeam.add(new Player("Player-14", (new Random().nextInt(20)) + 18, Player.BattingType.RHB, Player.BowlingType.NONE, true));
-			batTeam.add(new Player("Player-15", (new Random().nextInt(20)) + 18, Player.BattingType.LHB, Player.BowlingType.SLA, false));
-			batTeam.add(new Player("Player-16", (new Random().nextInt(20)) + 18, Player.BattingType.RHB, Player.BowlingType.RM, false));
-			batTeam.add(new Player("Player-17", (new Random().nextInt(20)) + 18, Player.BattingType.LHB, Player.BowlingType.LF, false));
-			batTeam.add(new Player("Player-18", (new Random().nextInt(20)) + 18, Player.BattingType.RHB, Player.BowlingType.RFM, false));
-		}
-
-		if(bowlTeam == null) {
-			bowlTeam = new ArrayList<>();
-			bowlTeam.add(new Player("Player-21", (new Random().nextInt(20)) + 18, Player.BattingType.LHB, Player.BowlingType.NONE, false));
-			bowlTeam.add(new Player("Player-22", (new Random().nextInt(20)) + 18, Player.BattingType.RHB, Player.BowlingType.NONE, false));
-			bowlTeam.add(new Player("Player-23", (new Random().nextInt(20)) + 18, Player.BattingType.LHB, Player.BowlingType.SLC, false));
-			bowlTeam.add(new Player("Player-24", (new Random().nextInt(20)) + 18, Player.BattingType.RHB, Player.BowlingType.LB, false));
-			bowlTeam.add(new Player("Player-25", (new Random().nextInt(20)) + 18, Player.BattingType.LHB, Player.BowlingType.NONE, true));
-			bowlTeam.add(new Player("Player-26", (new Random().nextInt(20)) + 18, Player.BattingType.RHB, Player.BowlingType.RM, false));
-			bowlTeam.add(new Player("Player-27", (new Random().nextInt(20)) + 18, Player.BattingType.RHB, Player.BowlingType.RM, false));
-			bowlTeam.add(new Player("Player-28", (new Random().nextInt(20)) + 18, Player.BattingType.LHB, Player.BowlingType.LFM, false));
-		}
-
-    }
 
     public void setNewInnings() {
     	card.updateBatsmenData(currentFacing);
