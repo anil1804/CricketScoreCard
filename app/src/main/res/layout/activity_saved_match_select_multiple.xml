@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:gravity="center_vertical"
+	android:layout_gravity="center_vertical">
+
+	<ScrollView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/llMatchSelectButtons">
+
+			<android.support.v7.widget.RecyclerView
+				android:id="@+id/rcvMatchList"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				tools:context=".activity.PlayerSelectActivity"/>
+
+	</ScrollView>
+
+	<LinearLayout
+		style="@style/LinearLayoutStyleSubmit"
+		android:id="@+id/llMatchSelectButtons">
+
+		<Button
+			style="@style/ButtonStyle.Submit"
+			android:id="@+id/btnSelMatchCancel"
+			android:text="@string/cancel"/>
+
+		<Button
+			style="@style/ButtonStyle.Submit"
+			android:id="@+id/btnSelMatchOK"
+			android:text="@string/ok"/>
+
+	</LinearLayout>
+
+</RelativeLayout>

@@ -40,7 +40,6 @@ public class SavedMatchSelectActivity extends Activity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_saved_match_select);
 
 		Intent intent = getIntent();
 		if(intent != null && intent.getExtras() != null) {
@@ -52,11 +51,17 @@ public class SavedMatchSelectActivity extends Activity
 			isMultiSelect = extras.getBoolean(ARG_IS_MULTI_SELECT, false);
 		}
 
+		if(isMultiSelect) {
+			setContentView(R.layout.activity_saved_match_select_multiple);
+
+			findViewById(R.id.btnSelMatchOK).setOnClickListener(this);
+			findViewById(R.id.btnSelMatchCancel).setOnClickListener(this);
+		} else {
+			setContentView(R.layout.activity_saved_match_select);
+		}
+
 		RecyclerView rcvMatchList = findViewById(R.id.rcvMatchList);
 		rcvMatchList.setHasFixedSize(false);
-
-		findViewById(R.id.btnSelMatchOK).setOnClickListener(this);
-		findViewById(R.id.btnSelMatchCancel).setOnClickListener(this);
 
 		if(savedMatchList != null) {
 			Collections.sort(savedMatchList, new MatchStateComparator());
@@ -70,10 +75,6 @@ public class SavedMatchSelectActivity extends Activity
 			rcvMatchList.setLayoutManager(llm);
 
 			rcvMatchList.setItemAnimator(new DefaultItemAnimator());
-
-			if(!isMultiSelect)
-				findViewById(R.id.llMatchSelectButtons).setVisibility(View.GONE);
-
 		}
 	}
 

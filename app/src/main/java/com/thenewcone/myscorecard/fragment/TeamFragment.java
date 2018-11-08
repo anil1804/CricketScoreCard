@@ -1,3 +1,4 @@
+
 package com.thenewcone.myscorecard.fragment;
 
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.activity.PlayerSelectActivity;
 import com.thenewcone.myscorecard.activity.TeamSelectActivity;
+import com.thenewcone.myscorecard.intf.ConfirmationDialogClickListener;
 import com.thenewcone.myscorecard.intf.DialogItemClickListener;
 import com.thenewcone.myscorecard.intf.DrawerLocker;
 import com.thenewcone.myscorecard.match.Team;
@@ -31,10 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TeamFragment extends Fragment
-    implements View.OnClickListener, DialogItemClickListener {
+    implements View.OnClickListener, DialogItemClickListener, ConfirmationDialogClickListener {
 
 	private final int REQ_CODE_TEAM_SELECT = 1;
 	private final int REQ_CODE_UPDATE_PLAYERS = 2;
+
+	private static final int CONFIRMATION_DELETE_TEAM = 1;
 
     Button btnSaveTeam, btnDeleteTeam, btnReset;
     EditText etTeamName, etShortName;
@@ -122,7 +126,7 @@ public class TeamFragment extends Fragment
                 break;
 
             case R.id.btnDeleteTeam:
-            	deleteTeam();
+            	confirmDeleteTeam();
                 break;
 
 			case R.id.btnResetData:
@@ -158,31 +162,42 @@ public class TeamFragment extends Fragment
 		String teamName = etTeamName.getText().toString();
 		String shortName = etShortName.getText().toString();
 
-		int teamID = selTeam != null ? selTeam.getId() : -1;
-		selTeam = new Team(teamName, shortName);
-		if(teamID > -1)
-			selTeam.setId(teamID);
+		String errorMessage = null;
+		if(teamName.length() < 5) {
+			errorMessage = "Enter valid team name (at-least 5 characters)";
+		} else if(shortName.length() < 2) {
+			errorMessage = "Enter valid team name (at-least 2 characters)";
+		}
 
-		boolean isNew = teamID < 0;
-		DatabaseHandler dbHandler = new DatabaseHandler(getContext());
-		int rowID = dbHandler.upsertTeam(selTeam);
-
-		if(rowID == dbHandler.CODE_NEW_TEAM_DUP_RECORD) {
-			Toast.makeText(getContext(), "Team with same name already exists. Choose a different name.", Toast.LENGTH_SHORT).show();
+		if(errorMessage != null) {
+			Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
 		} else {
+			int teamID = selTeam != null ? selTeam.getId() : -1;
+			selTeam = new Team(teamName, shortName);
+			if (teamID > -1)
+				selTeam.setId(teamID);
 
-			if(selPlayers != null && selPlayers.length > 0) {
-				List<Integer> addedPlayers = getAddedPlayers(selPlayers, associatedPlayers);
-				List<Integer> removedPlayers = getRemovedPlayers(selPlayers, associatedPlayers);
+			boolean isNew = teamID < 0;
+			DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+			int rowID = dbHandler.upsertTeam(selTeam);
 
-				dbHandler.updateTeamList(selTeam, addedPlayers, removedPlayers);
-				associatedPlayers.clear();
-				for(Player player : dbHandler.getTeamPlayers(selTeam.getId()))
-					associatedPlayers.add(player.getID());
+			if (rowID == dbHandler.CODE_NEW_TEAM_DUP_RECORD) {
+				Toast.makeText(getContext(), "Team with same name already exists. Choose a different name.", Toast.LENGTH_SHORT).show();
+			} else {
+
+				if (selPlayers != null && selPlayers.length > 0) {
+					List<Integer> addedPlayers = getAddedPlayers(selPlayers, associatedPlayers);
+					List<Integer> removedPlayers = getRemovedPlayers(selPlayers, associatedPlayers);
+
+					dbHandler.updateTeamList(selTeam, addedPlayers, removedPlayers);
+					associatedPlayers.clear();
+					for (Player player : dbHandler.getTeamPlayers(selTeam.getId()))
+						associatedPlayers.add(player.getID());
+				}
+				Toast.makeText(getContext(), "Team saved successfully.", Toast.LENGTH_SHORT).show();
+				selTeam = isNew ? null : selTeam;
+				populateData();
 			}
-			Toast.makeText(getContext(), "Team saved successfully.", Toast.LENGTH_SHORT).show();
-			selTeam = isNew ? null : selTeam;
-			populateData();
 		}
 	}
 
@@ -192,6 +207,8 @@ public class TeamFragment extends Fragment
 
     	if(success) {
 			Toast.makeText(getContext(), "Team deleted successfully", Toast.LENGTH_SHORT).show();
+			selTeam = null;
+			populateData();
 		} else {
 			Toast.makeText(getContext(), "Team deletion failed", Toast.LENGTH_SHORT).show();
 		}
@@ -237,12 +254,8 @@ public class TeamFragment extends Fragment
 					selTeam = (Team) data.getSerializableExtra(TeamSelectActivity.ARG_RESP_TEAM);
 					selPlayers = null;
 
-					List<Player> getTeamPlayers = dbHandler.getTeamPlayers(selTeam.getId());
-					associatedPlayers.clear();
-					if (getTeamPlayers != null && getTeamPlayers.size() > 0) {
-						for(Player player : getTeamPlayers)
-							associatedPlayers.add(player.getID());
-					}
+					associatedPlayers = dbHandler.getAssociatedPlayers(selTeam.getId());
+
 					populateData();
 				}
 				break;
@@ -290,5 +303,22 @@ public class TeamFragment extends Fragment
 		}
 
 		return removedPlayers;
+	}
+
+	private void confirmDeleteTeam() {
+		if(getFragmentManager() != null) {
+			ConfirmationDialog dialog = ConfirmationDialog.newInstance(CONFIRMATION_DELETE_TEAM, "Confirm Delete", "Are you sure you want to delete the player?");
+			dialog.setConfirmationClickListener(this);
+			dialog.show(getFragmentManager(), "ConfirmTeamDeleteDialog");
+		}
+	}
+
+	@Override
+	public void onConfirmationClick(int confirmationCode, boolean accepted) {
+		switch (confirmationCode) {
+			case CONFIRMATION_DELETE_TEAM:
+				if(accepted)
+					deleteTeam();
+		}
 	}
 }

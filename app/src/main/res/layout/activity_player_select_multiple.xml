@@ -7,7 +7,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+		android:layout_above="@id/llPlayerSelectButtons">
 
 		<LinearLayout
 			android:layout_width="match_parent"
@@ -23,6 +24,22 @@
 		</LinearLayout>
 
 	</ScrollView>
+
+	<LinearLayout
+		style="@style/LinearLayoutStyleSubmit"
+		android:id="@+id/llPlayerSelectButtons">
+
+		<Button
+			style="@style/ButtonStyle.Submit"
+			android:id="@+id/btnSelPlayerCancel"
+			android:text="@string/cancel"/>
+
+		<Button
+			style="@style/ButtonStyle.Submit"
+			android:id="@+id/btnSelPlayerOK"
+			android:text="@string/ok"/>
+
+	</LinearLayout>
 
 	<LinearLayout
 		android:layout_width="wrap_content"

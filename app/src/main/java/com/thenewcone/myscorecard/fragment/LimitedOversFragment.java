@@ -50,6 +50,7 @@ public class LimitedOversFragment extends Fragment
 	WicketData.DismissalType dismissalType;
     DatabaseHandler dbHandler;
 
+/*
     private static final String ARG_MATCH_STATE_ID = "MatchStateID";
     private static final String ARG_MATCH_ID = "MatchID";
     private static final String ARG_UNDO_COUNT = "UndoCount";
@@ -59,6 +60,7 @@ public class LimitedOversFragment extends Fragment
     private static final String ARG_CC_UTILS = "CCUtils";
     private static final String ARG_NEW_BATSMAN = "NewBatsman";
     private static final String ARG_OUT_BATSMAN = "OutBatsman";
+*/
 
     private static final int REQ_CODE_EXTRA_DIALOG = 1;
 	private static final int REQ_CODE_WICKET_DIALOG = 2;

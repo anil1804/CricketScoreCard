@@ -19,7 +19,8 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			app:tabMode="fixed"
-			app:tabGravity="fill">
+			app:tabGravity="fill"
+			app:tabSelectedTextColor="@color/lime_A100">
 
 			<android.support.design.widget.TabItem
 				android:id="@+id/tabInnings1"

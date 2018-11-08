@@ -17,25 +17,6 @@
 			android:layout_height="wrap_content"
 			tools:context=".activity.PlayerSelectActivity"/>
 
-		<LinearLayout
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="end"
-			android:id="@+id/llMatchSelectButtons"
-			android:orientation="horizontal">
-
-			<Button
-				style="@style/ButtonStyle.Submit"
-				android:id="@+id/btnSelMatchCancel"
-				android:text="@string/cancel"/>
-
-			<Button
-				style="@style/ButtonStyle.Submit"
-				android:id="@+id/btnSelMatchOK"
-				android:text="@string/ok"/>
-
-		</LinearLayout>
-
 	</LinearLayout>
 
 </ScrollView>

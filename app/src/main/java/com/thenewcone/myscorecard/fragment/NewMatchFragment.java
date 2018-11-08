@@ -190,8 +190,10 @@ public class NewMatchFragment extends Fragment
                             + "\nNeed at-least 2 teams to play a match.";
             tvInsufficientTeams.setText(insufficientTeamsText);
         } else {
-			maxOvers = Integer.parseInt(etMaxOvers.getText().toString());
-			maxWickets = Integer.parseInt(etMaxWickets.getText().toString());
+			maxOvers = etMaxOvers.getText().toString().equals("")
+					? 0 : Integer.parseInt(etMaxOvers.getText().toString());
+			maxWickets = etMaxWickets.getText().toString().equals("")
+					? 0 :Integer.parseInt(etMaxWickets.getText().toString());
 			updateNumPlayers();
         	updateMaxPerBowler();
 		}
@@ -522,10 +524,14 @@ public class NewMatchFragment extends Fragment
 	}
 
 	private void validateInput() {
-		maxOvers = Integer.parseInt(etMaxOvers.getText().toString());
-		maxWickets = Integer.parseInt(etMaxWickets.getText().toString());
-		maxPerBowler = Integer.parseInt(etMaxPerBowler.getText().toString());
-		numPlayers = Integer.parseInt(etNumPlayers.getText().toString());
+		maxOvers = etMaxOvers.getText().toString().equals("")
+				? 0 : Integer.parseInt(etMaxOvers.getText().toString());
+		maxWickets = etMaxWickets.getText().toString().equals("")
+				? 0 : Integer.parseInt(etMaxWickets.getText().toString());
+		maxPerBowler = etMaxPerBowler.getText().toString().equals("")
+				? 0 : Integer.parseInt(etMaxPerBowler.getText().toString());
+		numPlayers = etNumPlayers.getText().toString().equals("")
+				? 0 : Integer.parseInt(etNumPlayers.getText().toString());
 		String deficientTeam = getTeamHavingInsufficientPlayers(numPlayers);
 
 		String errorMessage = null;

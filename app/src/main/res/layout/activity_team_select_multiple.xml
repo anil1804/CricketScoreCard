@@ -8,7 +8,8 @@
 
 	<ScrollView
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:layout_above="@id/llTeamSelectButtons">
 
 		<LinearLayout
 			android:layout_width="match_parent"
@@ -24,6 +25,22 @@
 		</LinearLayout>
 
 	</ScrollView>
+
+	<LinearLayout
+		style="@style/LinearLayoutStyleSubmit"
+		android:id="@+id/llTeamSelectButtons">
+
+		<Button
+			style="@style/ButtonStyle.Submit"
+			android:id="@+id/btnTeamSelectOK"
+			android:text="@string/ok"/>
+
+		<Button
+			style="@style/ButtonStyle.Submit"
+			android:id="@+id/btnTeamSelectCancel"
+			android:text="@string/cancel"/>
+
+	</LinearLayout>
 
 	<LinearLayout
 		android:layout_width="wrap_content"

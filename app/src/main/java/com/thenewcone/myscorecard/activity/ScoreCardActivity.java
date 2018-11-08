@@ -12,12 +12,10 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.adapter.SCBatsmanAdapter;
@@ -27,7 +25,6 @@ import com.thenewcone.myscorecard.match.Partnership;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
-import com.thenewcone.myscorecard.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,7 +88,8 @@ public class ScoreCardActivity extends AppCompatActivity {
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
 		TabLayout tabLayout = findViewById(R.id.tabs);
-		tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.gray_500));
+		tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.lime_50));
+		tabLayout.setTabTextColors(getResources().getColor(R.color.colorPrimaryDark), getResources().getColor(R.color.lime_A100));
 
 		TabLayout.Tab team1Tab = tabLayout.getTabAt(0);
 		TabLayout.Tab team2Tab = tabLayout.getTabAt(1);
@@ -101,10 +99,12 @@ public class ScoreCardActivity extends AppCompatActivity {
 		}
 		if(team2Tab != null) {
 			team2Tab.setText(String.format(getString(R.string.tabInningsText), team2.getShortName()));
-			if(innings2Card == null)
+			if(innings2Card == null) {
 				tabLayout.removeTab(team2Tab);
-			else
-				team2Tab.select();
+
+			} else {
+				mViewPager.setCurrentItem(1);
+			}
 		}
 
 		mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));

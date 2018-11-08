@@ -350,6 +350,7 @@ public class PlayerFragment extends Fragment
 			case REQ_CODE_DISPLAY_ALL_PLAYERS:
 				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
 					selPlayer = (Player) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYER);
+					selPlayer = new DatabaseHandler(getContext()).getPlayer(selPlayer.getID());
 					populateData();
 				}
 				break;

@@ -41,7 +41,6 @@ public class TeamSelectActivity extends Activity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_team_select);
 
 		selTeams = new ArrayList<>();
 
@@ -55,11 +54,17 @@ public class TeamSelectActivity extends Activity
 			}
 		}
 
-		btnTeamSelectOk = findViewById(R.id.btnTeamSelectOK);
-		btnTeamSelectCancel = findViewById(R.id.btnTeamSelectCancel);
+		if(isMultiSelect) {
+			setContentView(R.layout.activity_team_select_multiple);
+			btnTeamSelectOk = findViewById(R.id.btnTeamSelectOK);
+			btnTeamSelectCancel = findViewById(R.id.btnTeamSelectCancel);
+			btnTeamSelectOk.setOnClickListener(this);
+			btnTeamSelectCancel.setOnClickListener(this);
+		} else {
+			setContentView(R.layout.activity_team_select);
+		}
+
 		btnCancel = findViewById(R.id.btnCancel);
-		btnTeamSelectOk.setOnClickListener(this);
-		btnTeamSelectCancel.setOnClickListener(this);
 		btnCancel.setOnClickListener(this);
 
 		// Set the adapter
@@ -67,15 +72,13 @@ public class TeamSelectActivity extends Activity
 		Collections.sort(teamList, new TeamComparator(currentlyAssociatedTeams));
 
 		RecyclerView recyclerView = findViewById(R.id.rcvTeamList);
-		if(teamList != null && teamList.size() > 0) {
+		if(teamList.size() > 0) {
 			recyclerView.setLayoutManager(new LinearLayoutManager(this));
 			recyclerView.setAdapter(new TeamViewAdapter(teamList, currentlyAssociatedTeams,this, isMultiSelect));
-
-			if(!isMultiSelect)
-				findViewById(R.id.llTeamSelectButtons).setVisibility(View.GONE);
 		} else {
 			recyclerView.setVisibility(View.GONE);
-			findViewById(R.id.llTeamSelectButtons).setVisibility(View.GONE);
+			if(isMultiSelect)
+				findViewById(R.id.llTeamSelectButtons).setVisibility(View.GONE);
 			findViewById(R.id.llNoTeams).setVisibility(View.VISIBLE);
 		}
 	}
