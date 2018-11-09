@@ -183,9 +183,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 				break;
 
 			case CONFIRMATION_CODE_LOAD_LAST_MATCH:
-				dbHandler.clearMatchStateHistory(1, -1, matchStateID);
 				if(accepted) {
 					loadSavedMatch(matchStateID);
+					matchStateID = -1;
+					dbHandler.clearMatchStateHistory(1, -1, matchStateID);
+				} else {
+					dbHandler.clearAllAutoSaveHistory();
 				}
 				break;
 		}

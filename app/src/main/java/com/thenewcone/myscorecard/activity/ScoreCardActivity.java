@@ -188,13 +188,13 @@ public class ScoreCardActivity extends AppCompatActivity {
 				tvSCExtras.setText(extras);
 				tvSCTotal.setText(String.format(Locale.getDefault(), "TOTAL : %d", inningsCard.getScore()));
 
-				HashMap<Integer, Partnership> partnershipData = inningsCard.getPartnershipData();
+				List<Partnership> partnershipData = inningsCard.getPartnershipData();
 				StringBuilder fowSB = new StringBuilder("FOW : ");
+				int i=1;
 				if (partnershipData != null) {
-					for (int key : partnershipData.keySet()) {
-						Partnership partnership = partnershipData.get(key);
-						if (partnership != null && !partnership.isUnBeaten()) {
-							fowSB.append(key);
+					for (Partnership partnership : partnershipData) {
+						if (!partnership.isUnBeaten()) {
+							fowSB.append(i++);
 							fowSB.append("-");
 							fowSB.append(partnership.getEndScore());
 							fowSB.append(", ");

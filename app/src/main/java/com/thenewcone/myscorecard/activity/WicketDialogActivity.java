@@ -443,34 +443,39 @@ public class WicketDialogActivity extends FragmentActivity
 	private boolean validateData() {
 		boolean isValid = true;
 
-		switch (dismissalType) {
-			case CAUGHT:
-				if(effectedBy == null) {
-					Toast.makeText(this, "Please choose Caught By Player", Toast.LENGTH_SHORT).show();
-					isValid = false;
-				}
-				break;
+		if(dismissalType != null) {
+			switch (dismissalType) {
+				case CAUGHT:
+					if (effectedBy == null) {
+						Toast.makeText(this, "Please choose Caught By Player", Toast.LENGTH_SHORT).show();
+						isValid = false;
+					}
+					break;
 
-			case RUN_OUT:
-				if(effectedBy == null) {
-					Toast.makeText(this, "Please choose Run out by", Toast.LENGTH_SHORT).show();
-					isValid = false;
-				} else if(outBatsman == null) {
-					Toast.makeText(this, "Please choose Batsman who is out", Toast.LENGTH_SHORT).show();
-					isValid = false;
-				} else  if(extraData == null) {
-					batsmanRuns = sbRORuns.getProgress();
-				}
-				break;
+				case RUN_OUT:
+					if (effectedBy == null) {
+						Toast.makeText(this, "Please choose Run out by", Toast.LENGTH_SHORT).show();
+						isValid = false;
+					} else if (outBatsman == null) {
+						Toast.makeText(this, "Please choose Batsman who is out", Toast.LENGTH_SHORT).show();
+						isValid = false;
+					} else if (extraData == null) {
+						batsmanRuns = sbRORuns.getProgress();
+					}
+					break;
 
-			case TIMED_OUT:
-			case OBSTRUCTING_FIELD:
-			case RETIRED:
-				if(outBatsman == null) {
-					Toast.makeText(this, "Please choose Batsman who is out", Toast.LENGTH_SHORT).show();
-					isValid = false;
-				}
-				break;
+				case TIMED_OUT:
+				case OBSTRUCTING_FIELD:
+				case RETIRED:
+					if (outBatsman == null) {
+						Toast.makeText(this, "Please choose Batsman who is out", Toast.LENGTH_SHORT).show();
+						isValid = false;
+					}
+					break;
+			}
+		} else {
+			Toast.makeText(this, "Select a dismissal type", Toast.LENGTH_SHORT).show();
+			isValid = false;
 		}
 
 		return isValid;
@@ -479,7 +484,7 @@ public class WicketDialogActivity extends FragmentActivity
     private void sendResponse(int responseCode) {
         if(responseCode == RESP_CODE_OK) {
 			Intent respIntent = new Intent();
-			WicketData wicketData = null;
+			WicketData wicketData;
 
         	if(validateData()) {
 				wicketData = new WicketData(outBatsman, dismissalType, effectedBy, bowler);
@@ -495,6 +500,7 @@ public class WicketDialogActivity extends FragmentActivity
 			}
 		} else if(responseCode == RESP_CODE_CANCEL) {
 			setResult(responseCode);
+			finish();
 		}
     }
 

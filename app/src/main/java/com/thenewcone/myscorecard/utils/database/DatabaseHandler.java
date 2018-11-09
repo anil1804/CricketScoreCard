@@ -27,7 +27,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public final int CODE_NEW_TEAM_DUP_RECORD = -10;
     public final int CODE_NEW_MATCH_DUP_RECORD = -10;
 
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
     private static final String DB_NAME = "CricketScoreCard";
 
 	private static final String SAVE_AUTO = "Auto";
@@ -84,7 +84,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    	Log.i(CommonUtils.LOG_TAG, String.format(Locale.getDefault(), "Old version %d, New Version %d", oldVersion, newVersion));
+    	if(oldVersion < 3) {
+    		db.delete(TBL_STATE, null, null);
+		}
     	if(oldVersion < 2) {
 			String alterTeamTableSQL = String.format(Locale.getDefault(),
 					"ALTER TABLE %s ADD COLUMN %s INTEGER DEFAULT 0", TBL_TEAM, TBL_TEAM_ARCHIVED);

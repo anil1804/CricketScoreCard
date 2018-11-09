@@ -11,7 +11,9 @@ import com.thenewcone.myscorecard.scorecard.WicketData;
 import com.thenewcone.myscorecard.utils.CommonUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class CricketCard implements Serializable {
 	private int maxWickets;
@@ -35,8 +37,8 @@ public class CricketCard implements Serializable {
 	private HashMap<String, BowlerStats> bowlerMap = new HashMap<>();
 	private HashMap<Integer, BatsmanStats> batsmen = new HashMap<>();
 
-	private HashMap<Integer, Partnership> partnershipData = new HashMap<>();
-	private HashMap<Integer, OverInfo> overInfoData = new HashMap<>();
+	private List<Partnership> partnershipData = new ArrayList<>();
+	private List<OverInfo> overInfoData = new ArrayList<>();
 	private OverInfo currOver;
 	private Partnership currPartnership;
 	private int currBallNum;
@@ -159,11 +161,11 @@ public class CricketCard implements Serializable {
 		this.futurePenalty += futurePenalty;
 	}
 
-	public HashMap<Integer, Partnership> getPartnershipData() {
+	public List<Partnership> getPartnershipData() {
 		return partnershipData;
 	}
 
-	public HashMap<Integer, OverInfo> getOverInfoData() {
+	public List<OverInfo> getOverInfoData() {
 		return overInfoData;
 	}
 
@@ -255,10 +257,10 @@ public class CricketCard implements Serializable {
 	void updatePartnership(BatsmanStats batsman, int ballsPlayed, int runsScored, boolean isOut) {
 		currPartnership.updatePlayerStats(batsman.getPlayer(), ballsPlayed, runsScored, isOut, score, totalOversBowled);
 		if(isOut) {
-			partnershipData.put(wicketsFallen, currPartnership);
+			partnershipData.add(currPartnership);
 		} else if(inningsComplete) {
 			currPartnership.setUnBeaten(true);
-			partnershipData.put(wicketsFallen + 1, currPartnership);
+			partnershipData.add(currPartnership);
 		}
 	}
 
@@ -266,7 +268,7 @@ public class CricketCard implements Serializable {
 		OverInfo overInfo = new OverInfo();
 		if(currOver != null) {
 			currOver.setMaiden(isPrevOverMaiden);
-			overInfoData.put((int) Double.parseDouble(totalOversBowled), currOver);
+			overInfoData.add(currOver);
 		}
 		currOver = overInfo;
 
