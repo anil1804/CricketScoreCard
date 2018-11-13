@@ -121,6 +121,7 @@ public class CricketCardUtils {
     }
 
 	public void newBatsman(@NonNull BatsmanStats batsman) {
+    	batsman.setDismissalType(null);
 	    if(currentFacing == null)
 	        currentFacing = batsman;
 	    else

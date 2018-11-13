@@ -93,7 +93,7 @@ public class LimitedOversFragment extends Fragment
 	private String saveMatchName;
 	String[] moMPlayers;
 
-	boolean bowlerChanged = false;
+	boolean bowlerChanged = false, enableBatsmanHurtOption = true, enableChangeFacingOption = true, enableBowlerHurtOption = true;
 
 	public LimitedOversFragment() {
 	}
@@ -172,6 +172,19 @@ public class LimitedOversFragment extends Fragment
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.menu_fragments_match_limited_overs, menu);
 		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+
+		MenuItem batsmanHurtItem = menu.findItem(R.id.menu_batsman_hurt);
+		MenuItem bowlerHurtItem = menu.findItem(R.id.menu_bowler_hurt);
+		MenuItem changeFacingItem = menu.findItem(R.id.menu_change_facing);
+
+		batsmanHurtItem.setEnabled(enableBatsmanHurtOption);
+		bowlerHurtItem.setEnabled(enableBowlerHurtOption);
+		changeFacingItem.setEnabled(enableChangeFacingOption);
 	}
 
 	@Override
@@ -588,6 +601,8 @@ public class LimitedOversFragment extends Fragment
 					Toast.makeText(getContext(), "Undo Successful", Toast.LENGTH_SHORT).show();
 					isUndo = false;
 				}
+
+				checkMenuOptions();
 			}
 		}
 	}
@@ -760,6 +775,20 @@ public class LimitedOversFragment extends Fragment
 
 		bowlerChanged = false;
 		hurtBowler = null;
+
+		checkMenuOptions();
+	}
+
+	private void checkMenuOptions() {
+		if(ccUtils.getCurrentFacing() == null || ccUtils.getOtherBatsman() == null || ccUtils.getBowler() == null || ccUtils.isNewOver()) {
+			enableBatsmanHurtOption = false;
+			enableBowlerHurtOption = false;
+			enableChangeFacingOption = false;
+		} else {
+			enableBatsmanHurtOption = true;
+			enableBowlerHurtOption = true;
+			enableChangeFacingOption = true;
+		}
 	}
 
 	private void processExtra(Extra.ExtraType extraType, int numExtraRuns, String penaltyFavouringTeam, Extra.ExtraType extraSubType) {
@@ -917,6 +946,7 @@ public class LimitedOversFragment extends Fragment
 			updateScreenForBatsmanSelect(View.GONE, View.GONE, View.GONE);
 			updateScreenForBowlerSelect(View.VISIBLE, View.GONE);
 		}
+		checkMenuOptions();
 		updateCardDetails();
 	}
 

@@ -51,7 +51,7 @@
 				<RadioButton
 					android:id="@+id/rbWktRetiredHurt"
 					style="@style/RadioButtonStyle"
-					android:text="@string/wicket_retiredHurt"/>
+					android:text="@string/wicket_retired"/>
 
 				<RadioButton
 					android:id="@+id/rbWktObstruct"
