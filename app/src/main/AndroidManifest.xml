@@ -43,13 +43,16 @@
 			android:name=".activity.TeamSelectActivity"
 			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
 		<activity
-			android:name=".activity.SavedMatchSelectActivity"
+			android:name=".activity.MatchStateSelectActivity"
 			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
 		<activity
 			android:name=".activity.ScoreCardActivity"
 			android:screenOrientation="portrait"
 			android:label="@string/title_activity_score_card"
 			android:theme="@style/AppTheme.NoActionBar"/>
+		<activity
+			android:name=".activity.CompletedMatchSelectActivity"
+			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
 	</application>
 
 </manifest>
