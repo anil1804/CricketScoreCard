@@ -36,6 +36,7 @@ public class WicketDialogActivity extends FragmentActivity
 	public static final String ARG_OTHER_BATSMAN = "OtherBatsman";
 	public static final String ARG_BOWLER = "Bowler";
 	public static final String ARG_FIELDING_TEAM = "FieldingTeam";
+	public static final String ARG_NEW_BATSMAN_ARRIVED = "NewBatsmanArrived";
 	public static final String ARG_WICKET_DATA = "WicketData";
     public static final String ARG_EXTRA_DATA = "ExtraData";
     public static final String ARG_BATSMAN_RUNS = "BatsmanRuns";
@@ -46,6 +47,7 @@ public class WicketDialogActivity extends FragmentActivity
 	WicketData.DismissalType dismissalType;
 	Extra extraData;
 	Player[] fieldingTeam;
+	boolean newBatsmanArrived;
 
 	GridLayout glWicket, glRORunsExtra;
 	CheckBox cbIsExtra;
@@ -68,6 +70,7 @@ public class WicketDialogActivity extends FragmentActivity
 			otherBatsman = (BatsmanStats) incomingIntent.getSerializableExtra(ARG_OTHER_BATSMAN);
 			bowler = (BowlerStats) incomingIntent.getSerializableExtra(ARG_BOWLER);
 			fieldingTeam = CommonUtils.objectArrToPlayerArr((Object[]) incomingIntent.getSerializableExtra(ARG_FIELDING_TEAM));
+			newBatsmanArrived = incomingIntent.getBooleanExtra(ARG_NEW_BATSMAN_ARRIVED, false);
 		}
 
 		setView();
@@ -163,8 +166,7 @@ public class WicketDialogActivity extends FragmentActivity
 		rbRONBBye.setOnClickListener(this);
 		rbRONBLB.setOnClickListener(this);
 
-		if((facingBatsman != null && facingBatsman.getBallsPlayed() == 0)
-				|| (otherBatsman != null && otherBatsman.getBallsPlayed() == 0)) {
+		if(newBatsmanArrived) {
 			rbWktTimedOut.setVisibility(View.VISIBLE);
 		}
 	}
@@ -407,8 +409,17 @@ public class WicketDialogActivity extends FragmentActivity
 
 		BatsmanStats[] batsmen;
 	    if(dismissalType != null && dismissalType == WicketData.DismissalType.TIMED_OUT) {
-	    	BatsmanStats batsman = (facingBatsman.getBallsPlayed() == 0) ? facingBatsman : otherBatsman;
-			batsmen = new BatsmanStats[]{batsman};
+			if(facingBatsman.getBallsPlayed() == 0 && otherBatsman.getBallsPlayed() == 0) {
+				if(facingBatsman.getPosition() <= 2 && otherBatsman.getPosition() <= 2) {
+					batsmen = new BatsmanStats[]{facingBatsman, otherBatsman};
+				} else {
+					BatsmanStats batsman = (facingBatsman.getPosition() > otherBatsman.getPosition()) ? facingBatsman : otherBatsman;
+					batsmen = new BatsmanStats[]{batsman};
+				}
+			} else {
+				BatsmanStats batsman = (facingBatsman.getBallsPlayed() == 0) ? facingBatsman : otherBatsman;
+				batsmen = new BatsmanStats[]{batsman};
+			}
 		} else {
 	    	batsmen = new BatsmanStats[]{facingBatsman, otherBatsman};
 		}

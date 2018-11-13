@@ -338,6 +338,14 @@ public class CricketCardUtils {
 			}
 		}
 
+		if(wicketData != null) {
+			card.incWicketsFallen();
+			if(wicketData.getDismissalType() == WicketData.DismissalType.TIMED_OUT) {
+				bowlerBalls = 0;
+				batsmanBalls = 0;
+			}
+		}
+
 		if(bowlerBalls > 0) {
 			card.updateTotalOversBowled();
 			newOver = card.getTotalOversBowled().split("\\.")[1].equals("0");
@@ -351,10 +359,6 @@ public class CricketCardUtils {
 
 		if(bowlerChanged) {
 			numConsecutiveDots = 0;
-		}
-
-		if(wicketData != null) {
-			card.incWicketsFallen();
 		}
 
 		updateBatsmanScore(batsmanRuns, batsmanBalls, wicketData, extra);

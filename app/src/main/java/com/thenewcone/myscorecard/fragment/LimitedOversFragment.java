@@ -71,7 +71,7 @@ public class LimitedOversFragment extends Fragment
 	private static final String DIALOG_CODE_GET_MOM_TEAM1 = "1";
 	private static final String DIALOG_CODE_GET_MOM_TEAM2 = "2";
 
-    TableRow trBatsman1, trBatsman2;
+    TableRow trBatsman1, trBatsman2, trBowler;
     TextView tvCurrScore, tvOvers, tvCRR, tvRRR, tvLast12Balls;
     TextView tvBat1Name, tvBat1Runs, tvBat1Balls, tvBat14s, tvBat16s, tvBat1SR;
     TextView tvBat2Name, tvBat2Runs, tvBat2Balls, tvBat24s, tvBat26s, tvBat2SR;
@@ -93,7 +93,8 @@ public class LimitedOversFragment extends Fragment
 	private String saveMatchName;
 	String[] moMPlayers;
 
-	boolean bowlerChanged = false, enableBatsmanHurtOption = true, enableChangeFacingOption = true, enableBowlerHurtOption = true;
+	boolean bowlerChanged = false, newBatsmanArrived = false;
+	boolean enableBatsmanHurtOption = true, enableChangeFacingOption = true, enableBowlerHurtOption = true;
 
 	public LimitedOversFragment() {
 	}
@@ -373,6 +374,7 @@ public class LimitedOversFragment extends Fragment
 			case REQ_CODE_BATSMAN_DIALOG:
 				if(resultCode == BatsmanSelectActivity.RESP_CODE_OK) {
 					newBatsman = (BatsmanStats) data.getSerializableExtra(BatsmanSelectActivity.ARG_SEL_BATSMAN);
+					newBatsmanArrived = true;
 
 					if(newBatsman != null) {
 						ccUtils.newBatsman(newBatsman);
@@ -384,8 +386,6 @@ public class LimitedOversFragment extends Fragment
 								case RETIRED_HURT:
 								case OBSTRUCTING_FIELD:
 								case CAUGHT:
-								case TIMED_OUT:
-								case HIT_BALL_TWICE:
 									updateLayout(true, false);
 									break;
 
@@ -669,6 +669,7 @@ public class LimitedOversFragment extends Fragment
 		tvPenalty = theView.findViewById(R.id.tvPenalty);
 
 		/* Bowler Details */
+		trBowler = theView.findViewById(R.id.trBowler);
 		tvBowlName = theView.findViewById(R.id.tvBowlName);
 		tvBowlOvers = theView.findViewById(R.id.tvBowlOvers);
 		tvBowlMaidens = theView.findViewById(R.id.tvBowlMaidens);
@@ -747,12 +748,15 @@ public class LimitedOversFragment extends Fragment
 
 		/* Bowler Details */
         if(ccUtils.getBowler() != null) {
+			trBowler.setVisibility(View.VISIBLE);
 			tvBowlName.setText(ccUtils.getBowler().getBowlerName());
 			tvBowlOvers.setText(ccUtils.getBowler().getOversBowled());
 			tvBowlMaidens.setText(String.valueOf(ccUtils.getBowler().getMaidens()));
 			tvBowlRuns.setText(String.valueOf(ccUtils.getBowler().getRunsGiven()));
 			tvBowlWickets.setText(String.valueOf(ccUtils.getBowler().getWickets()));
 			tvBowlEconomy.setText(CommonUtils.doubleToString(ccUtils.getBowler().getEconomy(), "#.##"));
+		} else {
+        	trBowler.setVisibility(View.GONE);
 		}
 
 		if(currCard.getInnings() == 2) {
@@ -772,8 +776,8 @@ public class LimitedOversFragment extends Fragment
 		autoSaveMatch();
 		ccUtils.processBallActivity(extra, runs, wicketData, bowlerChanged);
 		updateLayout(false, false);
-
 		bowlerChanged = false;
+		newBatsmanArrived = false;
 		hurtBowler = null;
 
 		checkMenuOptions();
@@ -867,6 +871,7 @@ public class LimitedOversFragment extends Fragment
 		dialogIntent.putExtra(WicketDialogActivity.ARG_OTHER_BATSMAN, ccUtils.getOtherBatsman());
 		dialogIntent.putExtra(WicketDialogActivity.ARG_BOWLER, ccUtils.getBowler());
 		dialogIntent.putExtra(WicketDialogActivity.ARG_FIELDING_TEAM, ccUtils.getCard().getBowlingTeam().getMatchPlayers().toArray());
+		dialogIntent.putExtra(WicketDialogActivity.ARG_NEW_BATSMAN_ARRIVED, newBatsmanArrived);
 
 		startActivityForResult(dialogIntent, REQ_CODE_WICKET_DIALOG);
 	}
