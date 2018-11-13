@@ -1,11 +1,11 @@
 package com.thenewcone.myscorecard.utils;
 
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.thenewcone.myscorecard.Constants;
 import com.thenewcone.myscorecard.match.CricketCardUtils;
+import com.thenewcone.myscorecard.match.Match;
 import com.thenewcone.myscorecard.match.MatchState;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.BatsmanStats;
@@ -15,19 +15,13 @@ import com.thenewcone.myscorecard.scorecard.Extra;
 
 import java.lang.reflect.Type;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class CommonUtils {
-	public static final String LOG_TAG = "CricketScoreCard";
-
-	public static final String BATTING_TEAM = "Batting Team";
-	public static final String BOWLING_TEAM = "Bowling Team";
-	public static final String ARG_EXTRA_TYPE = "Extra Type";
-
-	public static final String DEF_DATE_FORMAT = "yyyyMMdd_HHmmss";
 
 	public static double calcRunRate(int score, double overs) {
 		double runRate = 0.00;
@@ -98,25 +92,25 @@ public class CommonUtils {
 
 		switch (extraType) {
 			case WIDE:
-				extraRunsArray = new String[]{"0", "1", "2", "3", "4"};
+				extraRunsArray = new String[]{"0", "1", "2", "3", "4", "Other"};
 				break;
 			case NO_BALL:
 				switch (extraSubType) {
 					case NONE:
-						extraRunsArray = new String[]{"0", "1", "2", "3", "4", "6"};
+						extraRunsArray = new String[]{"0", "1", "2", "3", "4", "6", "Other"};
 						break;
 					case BYE:
 					case LEG_BYE:
-						extraRunsArray = new String[]{"1", "2", "3", "4", "6"};
+						extraRunsArray = new String[]{"1", "2", "3", "4", "6", "Other"};
 						break;
 				}
 				break;
 			case PENALTY:
-				extraRunsArray = new String[]{BATTING_TEAM, BOWLING_TEAM};
+				extraRunsArray = new String[]{Constants.BATTING_TEAM, Constants.BOWLING_TEAM};
 				break;
 			case BYE:
 			case LEG_BYE:
-				extraRunsArray = new String[]{"1", "2", "3", "4", "6"};
+				extraRunsArray = new String[]{"1", "2", "3", "4", "6", "Other"};
 				break;
 		}
 
@@ -214,6 +208,24 @@ public class CommonUtils {
         return savedMatches;
     }
 
+    public static Match[] objectArrToMatchArr(Object[] objArr) {
+		Match[] matches = null;
+
+        if(objArr != null) {
+            matches = new Match[objArr.length];
+
+            int i=0;
+            for(Object obj : objArr) {
+                if(obj instanceof Match) {
+                    matches[i] = (Match) obj;
+                    i++;
+                }
+            }
+        }
+
+        return matches;
+    }
+
     public static String convertToJSON(CricketCardUtils ccUtilsObj) {
 		if(ccUtilsObj != null) {
 			Gson gson = new Gson();
@@ -239,7 +251,7 @@ public class CommonUtils {
     }
 
     public static String currTimestamp() {
-        return currTimestamp(DEF_DATE_FORMAT);
+        return currTimestamp(Constants.DEF_DATE_FORMAT);
     }
 
     public static String currTimestamp(String format) {
@@ -248,6 +260,42 @@ public class CommonUtils {
 
         return sdf.format(date);
     }
+
+    public static String dateToString(Date theDate) {
+		return dateToString(theDate, null);
+	}
+
+    public static String dateToString(Date theDate, String format) {
+		String stringDate = null;
+
+		if(theDate != null) {
+			format = format != null ? format : Constants.DEF_DATE_FORMAT;
+			SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
+			stringDate = sdf.format(theDate);
+		}
+
+		return stringDate;
+	}
+
+	public static Date stringToDate(String stringDate) {
+		return stringToDate(stringDate, null);
+	}
+
+    private static Date stringToDate(String stringDate, String format) {
+		Date theDate = null;
+
+		if(stringDate != null) {
+			format = format != null ? format : Constants.DEF_DATE_FORMAT;
+			SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
+			try {
+				theDate = sdf.parse(stringDate);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return theDate;
+	}
 
     public static List<Integer> jsonToIntList(String jsonString)  {
 		if(jsonString != null) {
@@ -353,6 +401,10 @@ public class CommonUtils {
 
 				case TIMED_OUT:
 					outData = "(Timed Out)";
+					break;
+
+				case RETIRED_HURT:
+					outData = "(Retired Hurt)";
 					break;
 			}
 		}
