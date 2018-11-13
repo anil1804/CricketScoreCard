@@ -41,12 +41,27 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnFinishedMatches"
+            style="@style/ButtonStyle.Medium"
+            android:drawableTop="@drawable/ic_card"
+            android:contentDescription="@string/finishedMatches"
+            android:text="@string/finishedMatches"/>
+
+    </LinearLayout>
+
     <!-- Separator -->
     <View style="@style/LineSeparator.Dark.Margin"/>
 
     <TextView
         style="@style/TextViewStyle.Bold.Medium"
-        android:text="@string/teamData"/>
+        android:text="@string/manage"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -56,33 +71,21 @@
 
         <Button
             android:id="@+id/btnManageTeam"
-            android:drawableTop="@drawable/ic_manage"
-            android:contentDescription="@string/manageTeam"
-            android:text="@string/manageTeam"
+            android:drawableTop="@drawable/ic_people"
+            android:contentDescription="@string/team"
+            android:text="@string/team"
             style="@style/ButtonStyle.Medium"/>
+
+		<Button
+			android:id="@+id/btnManagePlayer"
+			android:drawableTop="@drawable/ic_person"
+			android:contentDescription="@string/player"
+			android:text="@string/player"
+			style="@style/ButtonStyle.Medium"/>
 
     </LinearLayout>
 
     <!-- Separator -->
     <View style="@style/LineSeparator.Dark.Margin"/>
-
-    <TextView
-        style="@style/TextViewStyle.Bold.Medium"
-        android:text="@string/playerData"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="start"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btnManagePlayer"
-            android:drawableTop="@drawable/ic_manage"
-            android:contentDescription="@string/managePlayer"
-            android:text="@string/managePlayer"
-            style="@style/ButtonStyle.Medium"/>
-
-    </LinearLayout>
 
 </LinearLayout>

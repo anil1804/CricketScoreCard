@@ -145,7 +145,7 @@
 	<string name="loadMatch">Load</string>
 	<string name="playerData">Player</string>
 	<string name="teamData">Team</string>
-	<string name="runsInBalls">Require %1$d runs in %2$d balls</string>
+	<string name="runsInBalls">%1$s need %2$d runs in %3$d balls</string>
 	<string name="tvTossWonBy">Toss Won By</string>
 	<string name="choose">Choose</string>
 	<string name="batting">Bat</string>
@@ -177,4 +177,19 @@
 	<string name="section_format">Hello World from section: %1$d</string>
 	<string name="scoreCard">Score Card</string>
 	<string name="tabSummary">Summary</string>
+	<string name="changeFacing">Change Facing Batsman</string>
+	<string name="batsmanHurt">Batsman Hurt</string>
+	<string name="enterRuns">Enter Runs</string>
+	<string name="moreRuns">More Runs</string>
+	<string name="other">Other</string>
+	<string name="runsInOver">%1$d run(s) scored this over</string>
+	<string name="finishedMatches">Finished</string>
+	<string name="poMFrom">Player of the Match From</string>
+	<string name="tvPoMData">Player of Match: %1$s</string>
+	<string name="completeMatch">Finish Match</string>
+	<string name="closeMatch">Complete</string>
+	<string name="manage">Manage</string>
+	<string name="team">Team</string>
+	<string name="player">Player</string>
+	<string name="bowlerHurt">Bowler Hurt</string>
 </resources>

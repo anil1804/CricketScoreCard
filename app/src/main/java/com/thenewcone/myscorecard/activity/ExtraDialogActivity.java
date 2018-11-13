@@ -6,13 +6,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.thenewcone.myscorecard.Constants;
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.scorecard.Extra;
 import com.thenewcone.myscorecard.utils.CommonUtils;
+
+import java.util.Locale;
 
 public class ExtraDialogActivity extends Activity
 	implements View.OnClickListener{
@@ -38,41 +43,6 @@ public class ExtraDialogActivity extends Activity
 		setupView();
 	}
 
-	private void setupView() {
-		TextView tvExtraNB = findViewById(R.id.tvExtraNBText);
-		TextView tvExtra = findViewById(R.id.tvExtraText);
-		rgExtraNB = findViewById(R.id.rgExtraNB);
-		rgExtraRuns = findViewById(R.id.rgExtraRuns);
-
-		Button btnOK = findViewById(R.id.btnExtraOK);
-		Button btnCancel = findViewById(R.id.btnExtraCancel);
-		btnCancel.setOnClickListener(this);
-		btnOK.setOnClickListener(this);
-
-		RadioButton rbExtraNBNone = findViewById(R.id.rbExtraNBNone);
-		RadioButton rbExtraNBBye = findViewById(R.id.rbExtraNBBye);
-		RadioButton rbExtraNBLegBye = findViewById(R.id.rbExtraNBLegBye);
-		rbExtraNBNone.setOnClickListener(this);
-		rbExtraNBBye.setOnClickListener(this);
-		rbExtraNBLegBye.setOnClickListener(this);
-
-		incomingIntent = getIntent();
-		if(incomingIntent != null) {
-			extraType = (Extra.ExtraType) incomingIntent.getSerializableExtra(CommonUtils.ARG_EXTRA_TYPE);
-		}
-
-		tvExtra.setText(getExtraText());
-
-		switch (extraType) {
-			case NO_BALL:
-				rgExtraNB.setVisibility(View.VISIBLE);
-				tvExtraNB.setVisibility(View.VISIBLE);
-				break;
-		}
-
-		populateRuns(Extra.ExtraType.NONE);
-	}
-
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
@@ -95,7 +65,47 @@ public class ExtraDialogActivity extends Activity
 			case R.id.rbExtraNBLegBye:
 				populateRuns(Extra.ExtraType.LEG_BYE);
 				break;
+
+			case R.id.rbExtraOtherRuns:
+				findViewById(R.id.etOtherRuns).setVisibility(View.VISIBLE);
+				break;
 		}
+	}
+
+	private void setupView() {
+		TextView tvExtraNB = findViewById(R.id.tvExtraNBText);
+		TextView tvExtra = findViewById(R.id.tvExtraText);
+		rgExtraNB = findViewById(R.id.rgExtraNB);
+		rgExtraRuns = findViewById(R.id.rgExtraRuns);
+
+		Button btnOK = findViewById(R.id.btnExtraOK);
+		Button btnCancel = findViewById(R.id.btnExtraCancel);
+		btnCancel.setOnClickListener(this);
+		btnOK.setOnClickListener(this);
+
+		RadioButton rbExtraNBNone = findViewById(R.id.rbExtraNBNone);
+		RadioButton rbExtraNBBye = findViewById(R.id.rbExtraNBBye);
+		RadioButton rbExtraNBLegBye = findViewById(R.id.rbExtraNBLegBye);
+
+		rbExtraNBNone.setOnClickListener(this);
+		rbExtraNBBye.setOnClickListener(this);
+		rbExtraNBLegBye.setOnClickListener(this);
+
+		incomingIntent = getIntent();
+		if(incomingIntent != null) {
+			extraType = (Extra.ExtraType) incomingIntent.getSerializableExtra(Constants.ARG_EXTRA_TYPE);
+		}
+
+		tvExtra.setText(getExtraText());
+
+		switch (extraType) {
+			case NO_BALL:
+				rgExtraNB.setVisibility(View.VISIBLE);
+				tvExtraNB.setVisibility(View.VISIBLE);
+				break;
+		}
+
+		populateRuns(Extra.ExtraType.NONE);
 	}
 
 	private String getExtraText() {
@@ -113,15 +123,33 @@ public class ExtraDialogActivity extends Activity
 
 	private void populateRuns(Extra.ExtraType extraSubType) {
 		int i=0;
+
+		RadioButton rbExtraOtherRuns = findViewById(R.id.rbExtraOtherRuns);
 		rgExtraRuns.removeAllViews();
 
 		String[] extraDataArray = CommonUtils.getExtraDetailsArray(extraType, extraSubType);
+
 		for(String extraData : extraDataArray) {
 			RadioButton radioButton = new RadioButton(this);
 			radioButton.setText(extraData);
 			radioButton.setId(View.generateViewId());
 			if(i==0) {
 				radioButton.setChecked(true);
+				radioButton.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						findViewById(R.id.etOtherRuns).setVisibility(View.GONE);
+					}
+				});
+			} else if (extraData.equalsIgnoreCase("OTHER")) {
+				radioButton.setText(extraData);
+				radioButton.setId(rbExtraOtherRuns.getId());
+				radioButton.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						findViewById(R.id.etOtherRuns).setVisibility(View.VISIBLE);
+					}
+				});
 			}
 
 			rgExtraRuns.addView(radioButton);
@@ -132,7 +160,9 @@ public class ExtraDialogActivity extends Activity
 	private void processExtras(int resultCode) {
 		Extra.ExtraType extraNBType = Extra.ExtraType.NONE;
 		int numRuns = -1;
-		String team = CommonUtils.BATTING_TEAM;
+		String team = Constants.BATTING_TEAM;
+
+		boolean validationOk = true;
 
 		if(resultCode == RESULT_CODE_OK) {
 			if (extraType == Extra.ExtraType.NO_BALL) {
@@ -154,17 +184,39 @@ public class ExtraDialogActivity extends Activity
 					break;
 
 				default:
-					numRuns = Integer.parseInt(((RadioButton) findViewById(rgExtraRunsSelId)).getText().toString());
+					String theRuns = ((RadioButton) findViewById(rgExtraRunsSelId)).getText().toString();
+					if (theRuns.equalsIgnoreCase("OTHER")) {
+						theRuns = ((EditText) findViewById(R.id.etOtherRuns)).getText().toString();
+						if(theRuns.equals("")) {
+							Toast.makeText(this, "Please enter the runs", Toast.LENGTH_SHORT).show();
+							validationOk = false;
+						}
+					}
+					if(validationOk)
+					{
+						numRuns = Integer.parseInt(theRuns);
+						if(numRuns > Constants.MAX_RUNS_POSSIBLE) {
+							Toast.makeText(this,
+									String.format(Locale.getDefault(),"Number of Runs limited to %d", Constants.MAX_RUNS_POSSIBLE),
+									Toast.LENGTH_SHORT).show();
+							validationOk = false;
+						} else if (numRuns < 0) {
+							Toast.makeText(this, "Number of runs cannot be negative", Toast.LENGTH_SHORT).show();
+							validationOk = false;
+						}
+					}
 					break;
 			}
 		}
 
-		Intent respIntent = new Intent();
-		respIntent.putExtra(CommonUtils.ARG_EXTRA_TYPE, extraType);
-		respIntent.putExtra(ARG_NB_EXTRA, extraNBType);
-		respIntent.putExtra(ARG_EXTRA_RUNS, numRuns);
-		respIntent.putExtra(ARG_TEAM, team);
-		setResult(resultCode, respIntent);
-		finish();
+		if(validationOk) {
+			Intent respIntent = new Intent();
+			respIntent.putExtra(Constants.ARG_EXTRA_TYPE, extraType);
+			respIntent.putExtra(ARG_NB_EXTRA, extraNBType);
+			respIntent.putExtra(ARG_EXTRA_RUNS, numRuns);
+			respIntent.putExtra(ARG_TEAM, team);
+			setResult(resultCode, respIntent);
+			finish();
+		}
 	}
 }

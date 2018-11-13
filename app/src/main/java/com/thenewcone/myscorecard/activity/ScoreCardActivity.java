@@ -21,10 +21,12 @@ import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.adapter.SCBatsmanAdapter;
 import com.thenewcone.myscorecard.adapter.SCBowlerAdapter;
 import com.thenewcone.myscorecard.match.CricketCard;
+import com.thenewcone.myscorecard.match.CricketCardUtils;
 import com.thenewcone.myscorecard.match.Partnership;
 import com.thenewcone.myscorecard.match.Team;
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
+import com.thenewcone.myscorecard.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,14 +35,7 @@ import java.util.Locale;
 
 public class ScoreCardActivity extends AppCompatActivity {
 
-	public static final String ARG_INNINGS_1_CARD = "Innings1_Card";
-	public static final String ARG_INNINGS_2_CARD = "Innings2_Card";
-	public static final String ARG_FACING_BATSMAN = "Facing_Batsman";
-	public static final String ARG_OTHER_BATSMAN = "Other_Batsman";
-	public static final String ARG_BOWLER = "Bowler";
-	public static final String ARG_TEAM_1 = "Team1";
-	public static final String ARG_TEAM_2 = "Team2";
-	public static final String ARG_TOSS_WON_BY = "TossWonBy";
+	public static final String ARG_CRICKET_CARD_UTILS = "CricketCardUtils";
 
 	private static CricketCard innings1Card, innings2Card;
 	private static BatsmanStats currentFacing, otherBatsman;
@@ -67,16 +62,21 @@ public class ScoreCardActivity extends AppCompatActivity {
 		SectionsPagerAdapter mSectionsPagerAdapter;
 		ViewPager mViewPager;
 
+		CricketCardUtils ccUtils = null;
 		if(getIntent() != null && getIntent().getExtras() != null) {
 			Bundle extras = getIntent().getExtras();
 
-			innings1Card = (CricketCard) extras.getSerializable(ARG_INNINGS_1_CARD);
-			innings2Card = (CricketCard) extras.getSerializable(ARG_INNINGS_2_CARD);
-			currentFacing = (BatsmanStats) extras.getSerializable(ARG_FACING_BATSMAN);
-			otherBatsman = (BatsmanStats) extras.getSerializable(ARG_OTHER_BATSMAN);
-			bowler = (BowlerStats) extras.getSerializable(ARG_BOWLER);
-			team1 = (Team) extras.getSerializable(ARG_TEAM_1);
-			team2 = (Team) extras.getSerializable(ARG_TEAM_2);
+			ccUtils = CommonUtils.convertToCCUtils(extras.getString(ARG_CRICKET_CARD_UTILS));
+
+			if(ccUtils != null) {
+				innings1Card = ccUtils.getCard().getInnings() == 2 ? ccUtils.getPrevInningsCard() : ccUtils.getCard();
+				innings2Card = ccUtils.getCard().getInnings() == 2 ? ccUtils.getCard() : null;
+				currentFacing = ccUtils.getCurrentFacing();
+				otherBatsman = ccUtils.getOtherBatsman();
+				bowler = ccUtils.getBowler();
+				team1 = ccUtils.getTeam1();
+				team2 = ccUtils.getTeam2();
+			}
 		}
 
 		// Create the adapter that will return a fragment for each of the three
@@ -102,7 +102,7 @@ public class ScoreCardActivity extends AppCompatActivity {
 			if(innings2Card == null) {
 				tabLayout.removeTab(team2Tab);
 
-			} else {
+			} else if(ccUtils != null && ccUtils.getResult() == null) {
 				mViewPager.setCurrentItem(1);
 			}
 		}
@@ -234,46 +234,6 @@ public class ScoreCardActivity extends AppCompatActivity {
 			}
 		}
 	}
-
-/*
-	private static void updateSummaryView(View rootView) {
-		TextView tvSCVersus = rootView.findViewById(R.id.tvSCVersus);
-		TextView tvSCTossInfo = rootView.findViewById(R.id.tvSCTossInfo);
-		TextView tvSCTeam1 = rootView.findViewById(R.id.tvSCTeam1);
-		TextView tvSCTeam2 = rootView.findViewById(R.id.tvSCTeam2);
-
-		String tossWonBy = (team1.getId() == tossWonById) ? team1.getName() : team2.getName();
-		String electedTo = (team1.getName().equals(tossWonBy)) ? "Bat" : "Field";
-
-		tvSCVersus.setText(String.format(Locale.getDefault(), "%s vs %s", team1.getName(), team2.getName()));
-		tvSCTossInfo.setText(String.format(Locale.getDefault(),
-				"%s won the toss and elected to %s", tossWonBy, electedTo));
-
-		StringBuilder teamInfoSB = new StringBuilder(team1.getName());
-		teamInfoSB.append("Playing team:\n");
-		for(Player player : team1.getMatchPlayers()) {
-			String playerName = player.getName();
-			playerName = (player.getID() == team1.getCaptain().getID()) ? playerName + " (c)" : playerName;
-			playerName = (player.getID() == team1.getWicketKeeper().getID()) ? playerName + " (wk)" : playerName;
-			teamInfoSB.append(playerName);
-			teamInfoSB.append(", ");
-		}
-		teamInfoSB.delete(teamInfoSB.length()-2, teamInfoSB.length());
-		tvSCTeam1.setText(teamInfoSB.toString());
-
-		teamInfoSB = new StringBuilder(team2.getName());
-		teamInfoSB.append("Playing team:\n");
-		for(Player player : team2.getMatchPlayers()) {
-			String playerName = player.getName();
-			playerName = (player.getID() == team1.getCaptain().getID()) ? playerName + " (c)" : playerName;
-			playerName = (player.getID() == team1.getWicketKeeper().getID()) ? playerName + " (wk)" : playerName;
-			teamInfoSB.append(playerName);
-			teamInfoSB.append(", ");
-		}
-		teamInfoSB.delete(teamInfoSB.length()-2, teamInfoSB.length());
-		tvSCTeam2.setText(teamInfoSB.toString());
-	}
-*/
 
 	/**
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

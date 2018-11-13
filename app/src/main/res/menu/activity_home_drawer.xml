@@ -10,11 +10,11 @@
 			android:title="@string/nav_drawer_home" />
 		<item
 			android:id="@+id/nav_manage_player"
-			android:icon="@drawable/ic_manage"
+			android:icon="@drawable/ic_person"
 			android:title="@string/nav_drawer_manage_player" />
 		<item
 			android:id="@+id/nav_manage_team"
-			android:icon="@drawable/ic_manage"
+			android:icon="@drawable/ic_people"
 			android:title="@string/nav_drawer_manage_team" />
 		<item
 			android:id="@+id/nav_new_match"

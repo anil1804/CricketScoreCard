@@ -82,12 +82,6 @@ public class TeamFragment extends Fragment
 				else
 					Toast.makeText(getContext(), "Select/Create a team to update player list", Toast.LENGTH_SHORT).show();
 				break;
-
-			case R.id.menu_loadData:
-				AddDBData addData = new AddDBData(getContext());
-				if(addData.addTeams())
-					Toast.makeText(getContext(), "Data uploaded successfully", Toast.LENGTH_SHORT).show();
-				break;
 		}
 
 		return true;

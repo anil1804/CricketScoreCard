@@ -169,6 +169,10 @@ public class CricketCard implements Serializable {
 		return overInfoData;
 	}
 
+	public OverInfo getCurrOver() {
+		return currOver;
+	}
+
 	public CricketCard(Team battingTeam, Team bowlingTeam, String maxOvers, int maxPerBowler, int maxWickets, int innings) {
 		this.battingTeam = battingTeam;
 		this.bowlingTeam = bowlingTeam;
@@ -265,7 +269,7 @@ public class CricketCard implements Serializable {
 	}
 
 	void addNewOver(boolean isPrevOverMaiden) {
-		OverInfo overInfo = new OverInfo();
+		OverInfo overInfo = new OverInfo(overInfoData.size());
 		if(currOver != null) {
 			currOver.setMaiden(isPrevOverMaiden);
 			overInfoData.add(currOver);

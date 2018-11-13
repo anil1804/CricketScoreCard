@@ -26,7 +26,7 @@ public class BowlerSelectActivity extends Activity
 
     public static final String ARG_PLAYER_LIST = "PlayerList";
     public static final String ARG_BOWLER_LIST = "BowlerList";
-    public static final String ARG_PREV_BOWLER = "PreviousBowler";
+    public static final String ARG_RESTRICTED_BOWLERS = "RestrictedBowlers";
     public static final String ARG_NEXT_BOWLER = "NextBowler";
     public static final String ARG_MAX_OVERS_PER_BOWLER = "MaxOversPerBowler";
     public static final String ARG_SEL_BOWLER = "SelectedBowler";
@@ -36,9 +36,10 @@ public class BowlerSelectActivity extends Activity
 
     BowlerStats[] bowlers;
     Player[] players;
-    BowlerStats selBowler, prevBowler, nextBowler;
+    BowlerStats selBowler, nextBowler;
     int maxOversPerBowler = -1;
     List<BowlerStats> dispBowlers;
+    List<Integer> restrictedBowlerIDs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,16 +56,22 @@ public class BowlerSelectActivity extends Activity
         if(intent != null) {
             players = CommonUtils.objectArrToPlayerArr((Object[]) intent.getSerializableExtra(ARG_PLAYER_LIST));
             bowlers = CommonUtils.objectArrToBowlerArr((Object[]) intent.getSerializableExtra(ARG_BOWLER_LIST));
-            prevBowler = (BowlerStats) intent.getSerializableExtra(ARG_PREV_BOWLER);
+            BowlerStats[] restrictedBowlers = CommonUtils.objectArrToBowlerArr((Object[]) intent.getSerializableExtra(ARG_RESTRICTED_BOWLERS));
             nextBowler = (BowlerStats) intent.getSerializableExtra(ARG_NEXT_BOWLER);
             maxOversPerBowler = intent.getIntExtra(ARG_MAX_OVERS_PER_BOWLER, 10);
 
             dispBowlers = getDisplayBowlers(players, bowlers);
+
+            if(restrictedBowlers != null) {
+				restrictedBowlerIDs = new ArrayList<>();
+				for(BowlerStats bowler : restrictedBowlers)
+					restrictedBowlerIDs.add(bowler.getPlayer().getID());
+            }
         }
 
         if(dispBowlers != null && dispBowlers.size() > 0) {
             rcvPlayerList.setLayoutManager(new LinearLayoutManager(this));
-            BowlerListAdapter adapter = new BowlerListAdapter(this, dispBowlers, maxOversPerBowler, prevBowler, nextBowler);
+            BowlerListAdapter adapter = new BowlerListAdapter(this, dispBowlers, maxOversPerBowler, restrictedBowlerIDs, nextBowler);
             adapter.setClickListener(this);
             rcvPlayerList.setAdapter(adapter);
 

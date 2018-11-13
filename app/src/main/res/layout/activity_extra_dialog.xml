@@ -43,7 +43,23 @@
 	<RadioGroup
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:id="@+id/rgExtraRuns"/>
+		android:id="@+id/rgExtraRuns">
+
+		<RadioButton
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/rbExtraOtherRuns"/>
+
+	</RadioGroup>
+
+	<EditText
+		android:id="@+id/etOtherRuns"
+		android:layout_width="100dp"
+		android:layout_height="wrap_content"
+		android:contentDescription="@string/enterRuns"
+		android:inputType="number"
+		android:maxLength="1"
+		android:visibility="gone"/>
 
 	<LinearLayout
 		style="@style/LinearLayoutStyleSubmit">

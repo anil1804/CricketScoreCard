@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.intf.ItemClickListener;
 import com.thenewcone.myscorecard.player.BatsmanStats;
+import com.thenewcone.myscorecard.scorecard.WicketData;
 
 import java.util.List;
 
@@ -20,13 +21,15 @@ public class BatsmanListAdapter extends RecyclerView.Adapter<BatsmanListAdapter.
 	private List<BatsmanStats> batsmen;
 	private Context context;
 	private ItemClickListener clickListener;
-	private int selectedIndex = -1, newBatsmanPosition, defaultSelectedIx;
+	private int selectedIndex = -1, newBatsmanPosition, defaultSelectedIx, wkPlayerID, captainPlayerID;
 
-	public BatsmanListAdapter(@NonNull Context context, @NonNull List<BatsmanStats> batsmen, int position, int defaultSelIx) {
+	public BatsmanListAdapter(@NonNull Context context, @NonNull List<BatsmanStats> batsmen, int position, int defaultSelIx, int captainPlayerID, int wkPlayerID) {
 		this.context = context;
 		this.batsmen = batsmen;
 		this.newBatsmanPosition = position;
 		this.defaultSelectedIx = defaultSelIx;
+		this.captainPlayerID = captainPlayerID;
+		this.wkPlayerID = wkPlayerID;
 	}
 
 	@NonNull
@@ -72,14 +75,16 @@ public class BatsmanListAdapter extends RecyclerView.Adapter<BatsmanListAdapter.
 		}
 
 		public void setData(BatsmanStats batsman) {
-        	String batText = batsman.getBatsmanName() +(batsman.getPlayer().isWicketKeeper() ? " (w)" : "");
+        	int batsmanPlayerID = batsman.getPlayer().getID();
+        	String batText = batsman.getBatsmanName() +(batsmanPlayerID == wkPlayerID ? " (w)" : (batsmanPlayerID == captainPlayerID ? " (c)" : ""));
             tvBatsmanName.setText(batText);
 
              if(newBatsmanPosition > -1) {
                  tvBattingStyle.setText(batsman.getPlayer().getBattingStyle().toString());
              }
 
-            if (newBatsmanPosition > batsman.getPosition()) {
+            //Disabling batsman who are out or currently playing
+            if (batsman.getPosition() < newBatsmanPosition && batsman.getDismissalType() != WicketData.DismissalType.RETIRED_HURT) {
                 llBatsmanItem.setEnabled(false);
             }
 

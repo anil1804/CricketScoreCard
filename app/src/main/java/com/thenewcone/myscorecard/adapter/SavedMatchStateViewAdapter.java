@@ -10,11 +10,13 @@ import android.widget.TextView;
 
 import com.thenewcone.myscorecard.R;
 import com.thenewcone.myscorecard.intf.ListInteractionListener;
+import com.thenewcone.myscorecard.match.Match;
 import com.thenewcone.myscorecard.match.MatchState;
+import com.thenewcone.myscorecard.utils.CommonUtils;
 
 import java.util.List;
 
-public class SavedMatchViewAdapter extends RecyclerView.Adapter<SavedMatchViewAdapter.ViewHolder> {
+public class SavedMatchStateViewAdapter extends RecyclerView.Adapter<SavedMatchStateViewAdapter.ViewHolder> {
 
     private final List<MatchState> savedMatchList;
     private final ListInteractionListener mListener;
@@ -22,7 +24,7 @@ public class SavedMatchViewAdapter extends RecyclerView.Adapter<SavedMatchViewAd
 
 	private SparseBooleanArray selMatchStateIDs;
 
-    public SavedMatchViewAdapter(List<MatchState> savedMatchList, ListInteractionListener listener, boolean isMultiSelect) {
+    public SavedMatchStateViewAdapter(List<MatchState> savedMatchList, ListInteractionListener listener, boolean isMultiSelect) {
         this.savedMatchList = savedMatchList;
         mListener = listener;
         this.isMultiSelect = isMultiSelect;
@@ -45,9 +47,12 @@ public class SavedMatchViewAdapter extends RecyclerView.Adapter<SavedMatchViewAd
         String matchVersus = holder.matchState.getMatch().getTeam1ShortName() + " v " +
 				holder.matchState.getMatch().getTeam2ShortName();
 
+		Match match = holder.matchState.getMatch();
+
         holder.tvSavedName.setText(holder.matchState.getSavedName());
-        holder.tvMatchName.setText(holder.matchState.getMatch().getName());
+        holder.tvMatchName.setText(match.getName());
         holder.tvTeamVersus.setText(matchVersus);
+        holder.tvMatchDate.setText(match.getDate() != null ? CommonUtils.dateToString(match.getDate()) : "");
 
 		if (selMatchStateIDs.get(holder.matchState.getId())) {
 			holder.mView.setSelected(true);
@@ -81,7 +86,7 @@ public class SavedMatchViewAdapter extends RecyclerView.Adapter<SavedMatchViewAd
     class ViewHolder extends RecyclerView.ViewHolder {
         MatchState matchState;
         final View mView;
-        final TextView tvSavedName, tvMatchName, tvTeamVersus;
+        final TextView tvSavedName, tvMatchName, tvTeamVersus, tvMatchDate;
 
         ViewHolder(View view) {
             super(view);
@@ -89,6 +94,7 @@ public class SavedMatchViewAdapter extends RecyclerView.Adapter<SavedMatchViewAd
             tvSavedName = view.findViewById(R.id.tvSaveName);
             tvMatchName = view.findViewById(R.id.tvMatchName);
             tvTeamVersus = view.findViewById(R.id.tvTeamVersus);
+            tvMatchDate = view.findViewById(R.id.tvMatchDate);
         }
     }
 }

@@ -15,9 +15,12 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.thenewcone.myscorecard.R;
-import com.thenewcone.myscorecard.activity.SavedMatchSelectActivity;
+import com.thenewcone.myscorecard.activity.CompletedMatchSelectActivity;
+import com.thenewcone.myscorecard.activity.MatchStateSelectActivity;
 import com.thenewcone.myscorecard.intf.ConfirmationDialogClickListener;
 import com.thenewcone.myscorecard.intf.DrawerLocker;
+import com.thenewcone.myscorecard.match.CricketCardUtils;
+import com.thenewcone.myscorecard.match.Match;
 import com.thenewcone.myscorecard.match.MatchState;
 import com.thenewcone.myscorecard.utils.CommonUtils;
 import com.thenewcone.myscorecard.utils.database.AddDBData;
@@ -32,6 +35,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 
 	private static final int REQ_CODE_MATCH_LIST_LOAD = 1;
 	private static final int REQ_CODE_MATCH_LIST_DELETE = 2;
+	private static final int REQ_CODE_MATCH_LIST_FINISHED = 3;
 
 	private static final int CONFIRMATION_CODE_DELETE_MATCHES = 1;
 	private static final int CONFIRMATION_CODE_LOAD_LAST_MATCH = 2;
@@ -63,6 +67,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
         theView.findViewById(R.id.btnManageTeam).setOnClickListener(this);
         theView.findViewById(R.id.btnLoadMatch).setOnClickListener(this);
         theView.findViewById(R.id.btnDeleteMatches).setOnClickListener(this);
+        theView.findViewById(R.id.btnFinishedMatches).setOnClickListener(this);
 
 		dbHandler = new DatabaseHandler(getContext());
 
@@ -138,6 +143,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 				case R.id.btnDeleteMatches:
 					showSavedMatchDialog(true, REQ_CODE_MATCH_LIST_DELETE);
 					break;
+
+				case R.id.btnFinishedMatches:
+					displayFinishedMatches();
+					break;
 			}
 		}
 	}
@@ -148,16 +157,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 
 		switch (requestCode) {
 			case REQ_CODE_MATCH_LIST_LOAD:
-				if(resultCode == SavedMatchSelectActivity.RESP_CODE_OK) {
-					MatchState selSavedMatch = (MatchState) data.getSerializableExtra(SavedMatchSelectActivity.ARG_RESP_SEL_MATCH);
+				if(resultCode == MatchStateSelectActivity.RESP_CODE_OK) {
+					MatchState selSavedMatch = (MatchState) data.getSerializableExtra(MatchStateSelectActivity.ARG_RESP_SEL_MATCH);
 					loadSavedMatch(selSavedMatch.getId());
 				}
 				break;
 
 			case REQ_CODE_MATCH_LIST_DELETE:
-				if(resultCode == SavedMatchSelectActivity.RESP_CODE_OK) {
+				if(resultCode == MatchStateSelectActivity.RESP_CODE_OK) {
 					matchesToDelete = CommonUtils.objectArrToMatchStateArr(
-							(Object[]) data.getSerializableExtra(SavedMatchSelectActivity.ARG_RESP_SEL_MATCHES));
+							(Object[]) data.getSerializableExtra(MatchStateSelectActivity.ARG_RESP_SEL_MATCHES));
 
 					if(matchesToDelete.length > 0 && getFragmentManager() != null) {
 						ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance(CONFIRMATION_CODE_DELETE_MATCHES,
@@ -166,6 +175,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 						confirmationDialog.show(getFragmentManager(), "DeleteSavedMatches");
 					}
 				}
+				break;
+
+			case REQ_CODE_MATCH_LIST_FINISHED:
+				if(resultCode == CompletedMatchSelectActivity.RESP_CODE_OK) {
+					Match selMatch = (Match) data.getSerializableExtra(CompletedMatchSelectActivity.ARG_RESP_SEL_MATCH);
+					if(getActivity() != null) {
+						CricketCardUtils ccUtils = CommonUtils.convertToCCUtils(dbHandler.getCompletedMatch(selMatch.getId()));
+						FragmentManager fragMgr = getActivity().getSupportFragmentManager();
+						String fragmentTag = MatchSummaryFragment.class.getSimpleName();
+						fragMgr.beginTransaction()
+								.replace(R.id.frame_container, MatchSummaryFragment.newInstance(ccUtils, selMatch), fragmentTag)
+								.addToBackStack(fragmentTag)
+								.commit();
+					}
+				}
+				break;
 		}
 	}
 
@@ -208,9 +233,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	private void showSavedMatchDialog(boolean isMulti, int requestCode) {
 		List<MatchState> savedMatchDataList = dbHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, 0, null);
 		if(savedMatchDataList != null && savedMatchDataList.size() > 0) {
-			Intent getMatchListIntent = new Intent(getContext(), SavedMatchSelectActivity.class);
-			getMatchListIntent.putExtra(SavedMatchSelectActivity.ARG_MATCH_LIST, savedMatchDataList.toArray());
-			getMatchListIntent.putExtra(SavedMatchSelectActivity.ARG_IS_MULTI_SELECT, isMulti);
+			Intent getMatchListIntent = new Intent(getContext(), MatchStateSelectActivity.class);
+			getMatchListIntent.putExtra(MatchStateSelectActivity.ARG_MATCH_LIST, savedMatchDataList.toArray());
+			getMatchListIntent.putExtra(MatchStateSelectActivity.ARG_IS_MULTI_SELECT, isMulti);
 			startActivityForResult(getMatchListIntent, requestCode);
 		} else {
 			Toast.makeText(getContext(), "No Saved matches found.", Toast.LENGTH_SHORT).show();
@@ -226,6 +251,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 							"\n\nLast ball information in the score-card is however lost.");
 			confirmationDialog.setConfirmationClickListener(this);
 			confirmationDialog.show(getFragmentManager(), "LoadClosedMatches");
+		}
+	}
+
+	private void displayFinishedMatches() {
+		List<Match> finishedMatches = dbHandler.getCompletedMatches();
+		if(finishedMatches.size() > 0) {
+			Intent finishedMatchesIntent = new Intent(getContext(), CompletedMatchSelectActivity.class);
+			finishedMatchesIntent.putExtra(CompletedMatchSelectActivity.ARG_MATCH_LIST, finishedMatches.toArray());
+			startActivityForResult(finishedMatchesIntent, REQ_CODE_MATCH_LIST_FINISHED);
+		} else {
+			Toast.makeText(getContext(), "No Finished Matches found.", Toast.LENGTH_SHORT).show();
 		}
 	}
 }

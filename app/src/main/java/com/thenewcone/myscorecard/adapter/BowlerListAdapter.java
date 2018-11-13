@@ -23,13 +23,14 @@ public class BowlerListAdapter extends RecyclerView.Adapter<BowlerListAdapter.My
 	private ItemClickListener clickListener;
 	private int selectedIndex = -1;
     private int maxPerBowler;
-    private BowlerStats prevBowler, nextBowler;
+    private BowlerStats nextBowler;
+    private List<Integer> restrictedBowlers;
 
-	public BowlerListAdapter(@NonNull Context context, @NonNull List<BowlerStats> bowlers, int maxPerBowler, BowlerStats prevBowler, BowlerStats nextBowler) {
+	public BowlerListAdapter(@NonNull Context context, @NonNull List<BowlerStats> bowlers, int maxPerBowler, List<Integer> restrictedBowlers, BowlerStats nextBowler) {
 		this.context = context;
 		this.bowlers = bowlers;
 		this.maxPerBowler = maxPerBowler;
-		this.prevBowler = prevBowler;
+		this.restrictedBowlers = restrictedBowlers;
 		this.nextBowler = nextBowler;
 	}
 
@@ -91,7 +92,7 @@ public class BowlerListAdapter extends RecyclerView.Adapter<BowlerListAdapter.My
                 llBowlerItem.setEnabled(false);
             }
 
-            if(prevBowler != null && bowler.getBowlerName().equals(prevBowler.getBowlerName() ))
+            if(restrictedBowlers != null && restrictedBowlers.contains(bowler.getPlayer().getID()))
                 llBowlerItem.setEnabled(false);
 
             if(selectedIndex < 0 && nextBowler != null && bowler.getBowlerName().equals(nextBowler.getBowlerName())) {

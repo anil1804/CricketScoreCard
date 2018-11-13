@@ -82,12 +82,6 @@ public class PlayerFragment extends Fragment
             	startActivityForResult(intent, REQ_CODE_DISPLAY_ALL_PLAYERS);
                 break;
 
-			case R.id.menu_loadData:
-				AddDBData addData = new AddDBData(getContext());
-				if(addData.addPlayers())
-					Toast.makeText(getContext(), "Data uploaded successfully", Toast.LENGTH_SHORT).show();
-				break;
-
 			case R.id.menu_updateTeams:
 				showTeamsSelectDialog();
 				break;

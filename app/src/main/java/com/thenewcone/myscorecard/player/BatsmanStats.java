@@ -13,7 +13,7 @@ public class BatsmanStats implements Serializable {
 	private int num4s;
 	private int num6s;
 
-	private int dots, singles, twos, threes;
+	private int dots, singles, twos, threes, fives, sevens;
 	private double strikeRate;
 	private boolean notOut = true;
 	private Player wicketEffectedBy, player;
@@ -55,6 +55,10 @@ public class BatsmanStats implements Serializable {
 	public Player getPlayer() {
 	    return player;
     }
+
+	public boolean isNotOut() {
+		return notOut;
+	}
 
 	public void setNotOut(boolean notOut) {
 		this.notOut = notOut;
@@ -116,6 +120,16 @@ public class BatsmanStats implements Serializable {
 	public void addSixes() {
 		++num6s;
 		runsScored += 6;
+	}
+
+	public void addFives() {
+		++fives;
+		runsScored += 5;
+	}
+
+	public void addSevens() {
+		++sevens;
+		runsScored += 7;
 	}
 
 	public void evaluateStrikeRate() {

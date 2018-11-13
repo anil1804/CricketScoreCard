@@ -126,6 +126,25 @@ public class NewMatchFragment extends Fragment
 			}
 		});
 
+		etNumPlayers.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+			}
+
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+			}
+
+			@Override
+			public void afterTextChanged(Editable editable) {
+				if(editable != null && !editable.toString().equals("")) {
+					if (numPlayers != Integer.parseInt(editable.toString())) {
+						numPlayers = Integer.parseInt(editable.toString());
+					}
+				}
+			}
+		});
+
         tvTeam1 = theView.findViewById(R.id.tvTeam1);
         tvTeam2 = theView.findViewById(R.id.tvTeam2);
         tvTeam1Capt = theView.findViewById(R.id.tvTeam1Captain);
@@ -476,8 +495,20 @@ public class NewMatchFragment extends Fragment
 			String[] teamDetails = new String[teams.size()];
 
 			int i=0;
-			for(Team team : teams)
-				teamDetails[i++] = team.getName();
+			int ignoreTeam = -1;
+			/*if(teamSelect.equals(ENUM_TYPE_TEAM1) && team2 != null) {
+				teamDetails = new String[teams.size() - 1];
+				ignoreTeam = team2.getId();
+			} else if(teamSelect.equals(ENUM_TYPE_TEAM2) && team1 != null) {
+				teamDetails = new String[teams.size() - 1];
+				ignoreTeam = team1.getId();
+			}*/
+
+			for(Team team : teams) {
+				if(team.getId() != ignoreTeam) {
+					teamDetails[i++] = team.getName();
+				}
+			}
 
 			StringDialog dialog = StringDialog.newInstance("Select Team", teamDetails, teamSelect);
 			dialog.setDialogItemClickListener(this);
@@ -539,12 +570,12 @@ public class NewMatchFragment extends Fragment
 
 		if(team1 == null || team2 == null) {
 			errorMessage = "Both teams need to be selected to continue";
-		} else if(etMatchName.getText().toString().length() < 5) {
-			errorMessage = "Provide a match name more than 5 characters";
 		} else if(team1.getId() == team2.getId()) {
 			errorMessage = "Both teams are the same. Select different teams";
-		} else if(maxOvers == 0 || maxWickets == 0 || maxPerBowler == 0 || numPlayers == 0) {
-			errorMessage = "Players, Overs, Wickets cannot be zero";
+		} else if(etMatchName.getText().toString().length() < 5) {
+			errorMessage = "Provide a match name more than 5 characters";
+		} else if(maxOvers <= 0 || maxWickets <= 0 || maxPerBowler <= 0 || numPlayers <= 0) {
+			errorMessage = "Players, Overs, Wickets cannot be zero or negative";
 		} else if(maxWickets >= numPlayers) {
 			errorMessage = "Number of Players has to be greater than Maximum Wickets";
 		} else if(maxPerBowler > maxOvers) {

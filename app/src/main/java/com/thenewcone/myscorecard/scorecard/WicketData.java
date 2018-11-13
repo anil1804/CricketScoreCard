@@ -1,6 +1,5 @@
 package com.thenewcone.myscorecard.scorecard;
 
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -64,6 +63,7 @@ public class WicketData implements Serializable {
 		OBSTRUCTING_FIELD,
 		RUN_OUT,
 		STUMPED,
-		TIMED_OUT
+		TIMED_OUT,
+		RETIRED_HURT
 	}
 }

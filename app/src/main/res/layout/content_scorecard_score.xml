@@ -71,31 +71,19 @@
 
 	</TableRow>
 
-	<TableRow
+	<TextView
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:id="@+id/trRunsInBalls">
+		android:id="@+id/tvRunsInBalls"
+		style="@style/TextViewStyle"
+		android:visibility="gone"/>
 
-		<TextView
-			android:layout_width="match_parent"
-			android:id="@+id/tvRunsInBalls"
-			android:layout_span="5"
-			style="@style/TextViewStyle"/>
+	<TextView
+		android:id="@+id/tvLast12Balls"
+		style="@style/TextViewStyle"/>
 
-	</TableRow>
-
-	<TableRow
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:id="@+id/trLast12Balls">
-
-		<TextView
-			android:id="@+id/tvLast12Balls"
-			android:layout_span="5"
-			style="@style/TextViewStyle"/>
-
-	</TableRow>
+	<TextView
+		android:id="@+id/tvRunsInOver"
+		style="@style/TextViewStyle"
+		android:visibility="gone"/>
 
 </TableLayout>

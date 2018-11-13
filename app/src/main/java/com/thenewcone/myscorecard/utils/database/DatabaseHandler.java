@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
+import com.thenewcone.myscorecard.Constants;
 import com.thenewcone.myscorecard.match.Match;
 import com.thenewcone.myscorecard.match.MatchState;
 import com.thenewcone.myscorecard.match.Team;
@@ -27,7 +27,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public final int CODE_NEW_TEAM_DUP_RECORD = -10;
     public final int CODE_NEW_MATCH_DUP_RECORD = -10;
 
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 4;
     private static final String DB_NAME = "CricketScoreCard";
 
 	private static final String SAVE_AUTO = "Auto";
@@ -68,6 +68,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private final String TBL_MATCH_NAME = "Name";
     private final String TBL_MATCH_TEAM1 = "Team1";
     private final String TBL_MATCH_TEAM2 = "Team2";
+    private final String TBL_MATCH_DATE = "DatePlayed";
+    private final String TBL_MATCH_IS_COMPLETE = "isComplete";
+    private final String TBL_MATCH_JSON = "MatchData";
 
     public DatabaseHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -84,6 +87,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    	if(oldVersion < 4) {
+    		String alterMatchTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s TEXT", TBL_MATCH, TBL_MATCH_DATE);
+    		db.execSQL(alterMatchTableSQL);
+
+    		alterMatchTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s INTEGER DEFAULT 0", TBL_MATCH, TBL_MATCH_IS_COMPLETE);
+    		db.execSQL(alterMatchTableSQL);
+
+    		alterMatchTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s TEXT", TBL_MATCH, TBL_MATCH_JSON);
+    		db.execSQL(alterMatchTableSQL);
+		}
     	if(oldVersion < 3) {
     		db.delete(TBL_STATE, null, null);
 		}
@@ -162,6 +178,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         + TBL_MATCH_NAME + " TEXT, "
                         + TBL_MATCH_TEAM1 + " INTEGER, "
                         + TBL_MATCH_TEAM2 + " INTEGER, "
+						+ TBL_MATCH_DATE + " TEXT, "
+						+ TBL_MATCH_IS_COMPLETE + " INTEGER DEFAULT 0, "
+						+ TBL_MATCH_JSON + " TEXT, "
                         + "FOREIGN KEY (" + TBL_MATCH_TEAM1 + ") REFERENCES " + TBL_TEAM + "(" + TBL_TEAM_ID + "), "
                         + "FOREIGN KEY (" + TBL_MATCH_TEAM2 + ") REFERENCES " + TBL_TEAM + "(" + TBL_TEAM_ID + ")"
                         + ")";
@@ -313,7 +332,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
                 Date saveDate = null;
 				try {
-					saveDate = new SimpleDateFormat(CommonUtils.DEF_DATE_FORMAT, Locale.getDefault()).parse(timestamp);
+					saveDate = new SimpleDateFormat(Constants.DEF_DATE_FORMAT, Locale.getDefault()).parse(timestamp);
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
@@ -455,6 +474,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 
 		return matchID;
+	}
+
+	public void clearAllMatchHistory(int matchID) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TBL_STATE, TBL_STATE_MATCH_ID + " = ?", new String[]{String.valueOf(matchID)});
+		db.close();
 	}
 
 	public Player getPlayer(int playerID) {
@@ -889,6 +914,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(TBL_MATCH_NAME, match.getName());
         values.put(TBL_MATCH_TEAM1, match.getTeam1ID());
         values.put(TBL_MATCH_TEAM2, match.getTeam2ID());
+        values.put(TBL_MATCH_DATE, CommonUtils.currTimestamp());
 
         long rowID = CODE_NEW_MATCH_DUP_RECORD;
 
@@ -902,4 +928,75 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return (int) rowID;
     }
+
+    public boolean completeMatch(int matchID, String matchJSON) {
+    	ContentValues values = new ContentValues();
+
+    	values.put(TBL_MATCH_IS_COMPLETE, 1);
+    	values.put(TBL_MATCH_JSON, matchJSON);
+
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	int rowsUpdated = db.update(TBL_MATCH, values, TBL_MATCH_ID + " = ?", new String[]{String.valueOf(matchID)});
+    	db.close();
+
+    	return rowsUpdated == 1;
+	}
+
+	public List<Match> getCompletedMatches() {
+    	List<Match> matchList = new ArrayList<>();
+
+    	final String MATCH_ID = "MatchID";
+    	final String MATCH_NAME = "MatchName";
+    	final String TEAM1_SHORT_NAME = "Team1ShortName";
+    	final String TEAM2_SHORT_NAME = "Team2ShortName";
+
+    	String selectQuery = String.format(Locale.getDefault(),
+				"SELECT %s AS %s, %s AS %s, %s, %s, %s, " +
+						"(SELECT %s FROM %s WHERE %s = %s) AS %s, " +
+						"(SELECT %s FROM %s WHERE %s = %s) AS %s " +
+						"FROM %s WHERE %s = 1",
+				TBL_MATCH+"."+TBL_MATCH_ID, MATCH_ID, TBL_MATCH+"."+TBL_MATCH_NAME, MATCH_NAME, TBL_MATCH_DATE, TBL_MATCH_TEAM1, TBL_MATCH_TEAM2,
+				TBL_TEAM_SHORT_NAME, TBL_TEAM, TBL_TEAM+"."+TBL_TEAM_ID, TBL_MATCH+"."+TBL_MATCH_TEAM1, TEAM1_SHORT_NAME,
+				TBL_TEAM_SHORT_NAME, TBL_TEAM, TBL_TEAM+"."+TBL_TEAM_ID, TBL_MATCH+"."+TBL_MATCH_TEAM2, TEAM2_SHORT_NAME,
+				TBL_MATCH, TBL_MATCH_IS_COMPLETE);
+
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	Cursor cursor = db.rawQuery(selectQuery, null);
+
+    	if(cursor != null && cursor.moveToFirst()) {
+    		do {
+    			int id = cursor.getInt(cursor.getColumnIndex(MATCH_ID));
+    			String matchName = cursor.getString(cursor.getColumnIndex(MATCH_NAME));
+    			Date date = CommonUtils.stringToDate(cursor.getString(cursor.getColumnIndex(TBL_MATCH_DATE)));
+    			int team1ID = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_TEAM1));
+    			String team1ShortName = cursor.getString(cursor.getColumnIndex(TEAM1_SHORT_NAME));
+    			int team2ID = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_TEAM2));
+    			String team2ShortName = cursor.getString(cursor.getColumnIndex(TEAM2_SHORT_NAME));
+
+    			matchList.add(new Match(id, matchName, date, new Team(team1ID, team1ShortName), new Team(team2ID, team2ShortName)));
+			} while (cursor.moveToNext());
+
+			cursor.close();
+		}
+    	db.close();
+
+    	return matchList;
+	}
+
+	public String getCompletedMatch(int matchID) {
+    	String matchData = null;
+
+		String selectQuery = String.format(Locale.getDefault(),
+				"SELECT %s FROM %s WHERE %s = %d", TBL_MATCH_JSON, TBL_MATCH, TBL_MATCH_ID, matchID);
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		if(cursor.moveToFirst()) {
+			matchData = cursor.getString(0);
+		}
+		cursor.close();
+		db.close();
+
+    	return matchData;
+	}
 }

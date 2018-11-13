@@ -4,12 +4,14 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:orientation="vertical"
+	android:gravity="center_horizontal"
 	android:id="@+id/llSummaryView">
 
 	<TextView
-		style="@style/TextViewStyle.Bold"
+		style="@style/TextViewStyle.Big.Bold"
 		android:layout_marginTop="5dp"
 		android:layout_marginBottom="5dp"
+		android:gravity="center"
 		android:id="@+id/tvSCVersus"/>
 
 	<!-- Separator -->
@@ -19,27 +21,81 @@
 		style="@style/TextViewStyle"
 		android:layout_marginTop="5dp"
 		android:layout_marginBottom="5dp"
+		android:gravity="center"
+		android:id="@+id/tvSCMatchDate"/>
+
+	<TextView
+		style="@style/TextViewStyle"
+		android:layout_marginBottom="5dp"
+		android:gravity="center"
 		android:id="@+id/tvSCTossInfo"/>
 
 	<!-- Separator -->
 	<View style="@style/LineSeparator.Dark"/>
 
-	<TextView
-		style="@style/TextViewStyle"
-		android:layout_marginTop="5dp"
-		android:layout_marginBottom="5dp"
-		android:id="@+id/tvSCTeam1"/>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<TextView
+			style="@style/TextViewStyle.Bold.Medium"
+			android:layout_width="100dp"
+			android:layout_marginTop="5dp"
+			android:layout_marginBottom="5dp"
+			android:gravity="center_vertical"
+			android:id="@+id/tvSCTeam1Name"/>
+
+		<TextView
+			style="@style/TextViewStyle"
+			android:layout_marginTop="5dp"
+			android:layout_marginBottom="5dp"
+			android:id="@+id/tvSCTeam1"/>
+
+	</LinearLayout>
+
+	<!-- Separator -->
+	<View style="@style/LineSeparator.Dark"/>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<TextView
+			style="@style/TextViewStyle.Bold.Medium"
+			android:layout_width="100dp"
+			android:layout_marginTop="5dp"
+			android:layout_marginBottom="5dp"
+			android:gravity="center_vertical"
+			android:id="@+id/tvSCTeam2Name"/>
+
+		<TextView
+			style="@style/TextViewStyle"
+			android:layout_marginTop="5dp"
+			android:layout_marginBottom="5dp"
+			android:id="@+id/tvSCTeam2"/>
+
+	</LinearLayout>
 
 	<!-- Separator -->
 	<View style="@style/LineSeparator.Dark"/>
 
 	<TextView
-		style="@style/TextViewStyle"
+		style="@style/TextViewStyle.Big.Bold.Highlight"
 		android:layout_marginTop="5dp"
 		android:layout_marginBottom="5dp"
-		android:id="@+id/tvSCTeam2"/>
+		android:gravity="center"
+		android:id="@+id/tvSCMatchResult"/>
 
 	<!-- Separator -->
 	<View style="@style/LineSeparator.Dark"/>
+
+	<TextView
+		style="@style/TextViewStyle.Bold.Medium"
+		android:layout_marginTop="5dp"
+		android:layout_marginBottom="5dp"
+		android:gravity="center"
+		android:id="@+id/tvSCPoM"/>
 
 </LinearLayout>

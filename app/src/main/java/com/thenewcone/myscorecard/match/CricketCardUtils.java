@@ -3,29 +3,28 @@ package com.thenewcone.myscorecard.match;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.thenewcone.myscorecard.Constants;
 import com.thenewcone.myscorecard.player.BatsmanStats;
 import com.thenewcone.myscorecard.player.BowlerStats;
 import com.thenewcone.myscorecard.player.Player;
 import com.thenewcone.myscorecard.scorecard.Extra;
 import com.thenewcone.myscorecard.scorecard.WicketData;
-import com.thenewcone.myscorecard.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class CricketCardUtils {
     private int numConsecutiveDots = 0, tossWonByTeamID, maxWickets;
-	private boolean newOver = false, isMaiden;
+	private boolean newOver, isMaiden;
 
-	private String matchName;
+	private String matchName, result;
 
 	private CricketCard card, prevInningsCard;
 
     private BowlerStats bowler, nextBowler, prevBowler;
 	private BatsmanStats currentFacing, otherBatsman;
-
 	private Team team1, team2;
+	private Player playerOfMatch;
 
 	private List<String> last12Balls;
 
@@ -89,6 +88,22 @@ public class CricketCardUtils {
 		return last12Balls;
 	}
 
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
+
+	public Player getPlayerOfMatch() {
+		return playerOfMatch;
+	}
+
+	public void setPlayerOfMatch(Player playerOfMatch) {
+		this.playerOfMatch = playerOfMatch;
+	}
+
 	public CricketCardUtils(CricketCard card, String matchName, Team team1, Team team2, int maxWickets) {
 		this.card = card;
 		this.matchName = matchName;
@@ -136,10 +151,11 @@ public class CricketCardUtils {
 			card.updateBowlerInBowlerMap(bowler);
 		}
 
-		if(newOver)
+		if(newOver & !isAutomatic)
 			card.addNewOver(isMaiden);
 
-		newOver = isAutomatic;	}
+		newOver = isAutomatic;
+    }
 
 	private void updateBowlerFigures(double ballsBowled, int runsGiven, WicketData wicketData, Extra extra) {
 		if(bowler != null) {
@@ -202,6 +218,12 @@ public class CricketCardUtils {
 					break;
 				case 6:
 					batsman.addSixes();
+					break;
+				case 5:
+					batsman.addFives();
+					break;
+				case 7:
+					batsman.addSevens();
 					break;
 			}
 		}
@@ -343,13 +365,27 @@ public class CricketCardUtils {
 		card.inningsCheck();
 	}
 
+	public void updateBatsmanHurt(BatsmanStats hurtBatsman) {
+		hurtBatsman.setDismissalType(WicketData.DismissalType.RETIRED_HURT);
+		hurtBatsman.evaluateStrikeRate();
+		hurtBatsman.setNotOut(true);
+
+		getCard().updateBatsmenData(hurtBatsman);
+
+		if(currentFacing.getPlayer().getID() == hurtBatsman.getPlayer().getID()) {
+			currentFacing = null;
+		} else {
+			otherBatsman = null;
+		}
+	}
+
 	public void addPenalty(@NonNull Extra extra, @NonNull String favouringTeam) {
 		if(extra.getRuns() > 0) {
 			int penaltyRuns = extra.getRuns();
-			if(favouringTeam.equals(CommonUtils.BATTING_TEAM)) {
+			if(favouringTeam.equals(Constants.BATTING_TEAM)) {
 				card.addPenalty(penaltyRuns);
 				card.updateScore(0, extra);
-			} else if(favouringTeam.equals(CommonUtils.BOWLING_TEAM)) {
+			} else if(favouringTeam.equals(Constants.BOWLING_TEAM)) {
 				if(card.getInnings() == 1) {
 					card.addFuturePenalty(penaltyRuns);
 				} else if(card.getInnings() == 2) {
@@ -366,9 +402,12 @@ public class CricketCardUtils {
 	}
 
     public void setNewInnings() {
-    	card.updateBatsmenData(currentFacing);
-    	card.updateBatsmenData(otherBatsman);
-    	card.updateBowlerInBowlerMap(bowler);
+    	if(currentFacing != null)
+    		card.updateBatsmenData(currentFacing);
+    	if(otherBatsman != null)
+    		card.updateBatsmenData(otherBatsman);
+    	if(bowler != null)
+    		card.updateBowlerInBowlerMap(bowler);
 
         prevInningsCard = card;
         card = new CricketCard(team2, team1, prevInningsCard.getMaxOvers(),
