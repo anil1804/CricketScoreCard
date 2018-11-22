@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	tools:context=".activity.GraphsActivity"
+	android:orientation="vertical"
+	android:layout_gravity="center"
+	android:gravity="center">
+
+	<TextView
+		style="@style/TextViewStyle.Big.Bold"
+		android:text="@string/selectInnings"/>
+
+	<RadioGroup
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:orientation="horizontal">
+
+		<RadioButton
+			style="@style/RadioButtonStyle"
+			android:id="@+id/rbInnings1"/>
+
+		<RadioButton
+			style="@style/RadioButtonStyle"
+			android:id="@+id/rbInnings2"/>
+
+	</RadioGroup>
+
+	<Button
+		style="@style/ButtonStyle"
+		android:id="@+id/btnOverGraph"
+		android:text="@string/overGraph"/>
+
+	<Button
+		style="@style/ButtonStyle"
+		android:id="@+id/btnPartnershipGraph"
+		android:text="@string/partnershipGraph"/>
+
+	<Button
+		style="@style/ButtonStyle"
+		android:id="@+id/btnRunRateGraph"
+		android:text="@string/runRateGraph"/>
+
+</LinearLayout>

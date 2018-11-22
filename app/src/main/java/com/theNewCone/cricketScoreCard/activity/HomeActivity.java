@@ -1,0 +1,216 @@
+package com.theNewCone.cricketScoreCard.activity;
+
+import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+
+import com.theNewCone.cricketScoreCard.R;
+import com.theNewCone.cricketScoreCard.fragment.HomeFragment;
+import com.theNewCone.cricketScoreCard.fragment.NewMatchFragment;
+import com.theNewCone.cricketScoreCard.fragment.PlayerFragment;
+import com.theNewCone.cricketScoreCard.fragment.TeamFragment;
+import com.theNewCone.cricketScoreCard.help.HelpContentData;
+import com.theNewCone.cricketScoreCard.intf.DrawerController;
+
+import java.util.HashMap;
+import java.util.List;
+
+public class HomeActivity extends AppCompatActivity
+		implements NavigationView.OnNavigationItemSelectedListener, DrawerController {
+
+	private static final String FRAGMENT = "Fragment";
+	private static final String FRAGMENT_TAG = "FragmentTag";
+	DrawerLayout drawer;
+	ActionBarDrawerToggle toggle;
+	NavigationView navigationView;
+
+	Toolbar toolbar;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.home_activity);
+		if (savedInstanceState == null) {
+			getSupportFragmentManager().beginTransaction()
+					.replace(R.id.frame_container, HomeFragment.newInstance())
+					.commitNow();
+		}
+
+		setupDrawer();
+
+		new HelpContentData(this);
+	}
+
+	@Override
+	public void onBackPressed() {
+		DrawerLayout drawer = findViewById(R.id.drawer_layout);
+		if (drawer.isDrawerOpen(GravityCompat.START)) {
+			drawer.closeDrawer(GravityCompat.START);
+		} else {
+			if(getSupportFragmentManager().getBackStackEntryCount() > 0)
+				getSupportFragmentManager().popBackStack();
+			else {
+				if (isFragmentVisible(HomeFragment.class.getSimpleName())) {
+					finish();
+				} else {
+					super.onBackPressed();
+				}
+			}
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_home, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+		HashMap<String, Object> fragDtlMap = getFragmentDetails(item);
+
+		if(fragDtlMap.size()  == 2) {
+			Fragment fragment = (Fragment) fragDtlMap.get(FRAGMENT);
+			String fragmentTag = (String) fragDtlMap.get(FRAGMENT_TAG);
+
+			if(fragment !=  null && fragmentTag != null) {
+				getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.frame_container, fragment, fragmentTag)
+                        .addToBackStack(fragmentTag)
+                        .commit();
+			}
+		}
+
+		drawer.closeDrawer(GravityCompat.START);
+
+		return true;
+	}
+
+	@Override
+	public void setDrawerEnabled(boolean enabled) {
+		updateDrawerEnabled(enabled);
+	}
+
+	@Override
+	public void disableAllDrawerMenuItems() {
+		int menuSize = navigationView.getMenu().size();
+		for(int i=0; i<menuSize; i++) {
+			MenuItem item = navigationView.getMenu().getItem(i);
+			if(item.isVisible())
+				item.setEnabled(false);
+		}
+	}
+
+	@Override
+	public void disableDrawerMenuItem(int id) {
+		MenuItem item = navigationView.getMenu().findItem(id);
+		if(item != null)
+			item.setEnabled(false);
+	}
+
+	@Override
+	public void enableAllDrawerMenuItems() {
+		int menuSize = navigationView.getMenu().size();
+		for(int i=0; i<menuSize; i++) {
+			MenuItem item = navigationView.getMenu().getItem(i);
+			if(item.isVisible())
+				item.setEnabled(true);
+		}
+	}
+
+	@Override
+	public void enableDrawerMenuItem(int id) {
+		MenuItem item = navigationView.getMenu().findItem(id);
+		if(item != null)
+			item.setEnabled(true);
+	}
+
+	void setupDrawer() {
+		toolbar = findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
+
+		drawer = findViewById(R.id.drawer_layout);
+		toggle = new ActionBarDrawerToggle(
+				this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+		updateDrawerEnabled(true);
+
+		drawer.addDrawerListener(toggle);
+		toggle.syncState();
+
+		navigationView = findViewById(R.id.nav_view);
+		navigationView.setNavigationItemSelectedListener(this);
+	}
+
+	public void updateDrawerEnabled(boolean enabled) {
+		int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+		drawer.setDrawerLockMode(lockMode);
+		toggle.setDrawerIndicatorEnabled(enabled);
+	}
+
+	private HashMap<String, Object> getFragmentDetails(@NonNull MenuItem item) {
+		HashMap<String, Object> respMap = new HashMap<>();
+
+		switch (item.getItemId()) {
+			case R.id.nav_home:
+				if(!isFragmentVisible(HomeFragment.class.getSimpleName())) {
+					respMap.put(FRAGMENT, HomeFragment.newInstance());
+					respMap.put(FRAGMENT_TAG, HomeFragment.class.getSimpleName());
+				}
+				break;
+
+			case R.id.nav_manage_player:
+				if(!isFragmentVisible(PlayerFragment.class.getSimpleName())) {
+					respMap.put(FRAGMENT, PlayerFragment.newInstance());
+					respMap.put(FRAGMENT_TAG, PlayerFragment.class.getSimpleName());
+				}
+				break;
+
+			case R.id.nav_manage_team:
+				if(!isFragmentVisible(TeamFragment.class.getSimpleName())) {
+					respMap.put(FRAGMENT, TeamFragment.newInstance());
+					respMap.put(FRAGMENT_TAG, TeamFragment.class.getSimpleName());
+				}
+				break;
+
+			case R.id.nav_new_match:
+				if(!isFragmentVisible(NewMatchFragment.class.getSimpleName())) {
+					respMap.put(FRAGMENT, NewMatchFragment.newInstance());
+					respMap.put(FRAGMENT_TAG, NewMatchFragment.class.getSimpleName());
+				}
+				break;
+
+			case R.id.nav_faq:
+				startActivity(new Intent(this, HelpListActivity.class));
+				break;
+		}
+
+		return respMap;
+	}
+
+	private boolean isFragmentVisible(@NonNull String fragmentTag) {
+		List<Fragment> fragList = getSupportFragmentManager().getFragments();
+
+		for(Fragment frag : fragList) {
+			if(frag != null && frag.isVisible() && fragmentTag.equals(frag.getTag()))
+				return true;
+		}
+
+		return false;
+	}
+}

@@ -38,4 +38,11 @@
 	<color name="pink_700">#C2185B</color>
 
 	<color name="lineSeparator">#E0F2F1</color>
+
+	<color name="black_trans_80">#80000000</color>
+	<color name="black_trans_70">#70000000</color>
+	<color name="black_trans_60">#60000000</color>
+	<color name="black_trans_40">#40000000</color>
+	<color name="black_trans_20">#20000000</color>
+	<color name="black_trans_10">#10000000</color>
 </resources>

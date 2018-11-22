@@ -20,6 +20,10 @@
 			android:id="@+id/nav_new_match"
 			android:icon="@drawable/ic_add_screen"
 			android:title="@string/nav_drawer_new_match" />
+		<item
+			android:id="@+id/nav_faq"
+			android:icon="@drawable/ic_help"
+			android:title="@string/nav_drawer_info" />
 	</group>
 
 </menu>

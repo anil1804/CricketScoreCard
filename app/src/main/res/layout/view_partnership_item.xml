@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_gravity="center_horizontal"
+	android:gravity="center_horizontal">
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<TextView
+			style="@style/TextViewStyle"
+			android:id="@+id/tvPGBatsmanLeftName"
+			android:layout_alignParentStart="true"/>
+
+		<TextView
+			style="@style/TextViewStyle"
+			android:id="@+id/tvPGBatsmanLeftScore"
+			android:layout_toEndOf="@id/tvPGBatsmanLeftName"
+			android:gravity="start"/>
+
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/llPGRuns"
+			android:layout_centerHorizontal="true">
+
+			<TextView
+				style="@style/TextViewStyle"
+				android:id="@+id/tvPGTotal"/>
+
+			<TextView
+				style="@style/TextViewStyle"
+				android:id="@+id/tvPGExtras"
+				android:visibility="gone"/>
+
+		</LinearLayout>
+
+		<TextView
+			style="@style/TextViewStyle"
+			android:id="@+id/tvPGBatsmanRightScore"
+			android:layout_toStartOf="@id/tvPGBatsmanRightName"
+			android:gravity="end"/>
+
+		<TextView
+			style="@style/TextViewStyle"
+			android:id="@+id/tvPGBatsmanRightName"
+			android:layout_alignParentEnd="true"
+			android:gravity="end"/>
+
+	</RelativeLayout>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<ImageView
+			style="@style/ImageButtonStyle.Runs"
+			android:id="@+id/ivPGBatsmanLeftScore"
+			android:layout_toStartOf="@id/ivPGExtras"
+			android:layout_alignBottom="@id/ivPGExtras"
+			android:padding="0dp"
+			android:layout_margin="0.5dp"
+			android:contentDescription="@string/runsScored"/>
+
+		<ImageView
+			style="@style/ImageButtonStyle.Extras"
+			android:id="@+id/ivPGExtras"
+			android:layout_centerHorizontal="true"
+			android:padding="0dp"
+			android:layout_margin="0.5dp"
+			android:contentDescription="@string/runsScored"/>
+
+		<ImageView
+			style="@style/ImageButtonStyle.Runs"
+			android:id="@+id/ivPGBatsmanRightScore"
+			android:layout_toEndOf="@id/ivPGExtras"
+			android:layout_alignBottom="@id/ivPGExtras"
+			android:padding="0dp"
+			android:layout_margin="0.5dp"
+			android:contentDescription="@string/runsScored"/>
+
+	</RelativeLayout>
+
+	<View style="@style/LineSeparator"/>
+
+</LinearLayout>

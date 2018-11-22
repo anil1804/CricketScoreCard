@@ -123,6 +123,14 @@
 		<item name="android:textSize">14sp</item>
 	</style>
 
+	<style name="TextViewStyle.Medium">
+		<item name="android:textSize">14sp</item>
+	</style>
+
+	<style name="TextViewStyle.Medium.MorePadding">
+		<item name="android:padding">12dp</item>
+	</style>
+
 	<style name="TextViewStyle.Bold.Medium.MorePadding">
 		<item name="android:padding">12dp</item>
 	</style>
@@ -212,11 +220,26 @@
 
 	<style name="oversLeft">Overs Left</style>
 
-    <style name="LinearLayoutItemView">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
-        <item name="android:orientation">horizontal</item>
-    </style>
+	<style name="LinearLayoutItemView">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:paddingTop">8dp</item>
+		<item name="android:paddingBottom">8dp</item>
+		<item name="android:orientation">horizontal</item>
+	</style>
+
+	<style name="ImageViewPartnership">
+		<item name="android:layout_width">1dp</item>
+		<item name="android:layout_height">20dp</item>
+		<item name="android:padding">0dp</item>
+		<item name="android:layout_margin">0dp</item>
+	</style>
+
+	<style name="ImageButtonStyle.Runs">
+		<item name="android:background">@drawable/shape_rectangle_runs</item>
+	</style>
+
+	<style name="ImageButtonStyle.Extras">
+		<item name="android:background">@drawable/shape_rectangle_extras</item>
+	</style>
 </resources>

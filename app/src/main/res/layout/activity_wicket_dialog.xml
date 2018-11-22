@@ -139,104 +139,98 @@
 				android:id="@+id/llRORuns"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:orientation="vertical">
+				android:orientation="horizontal">
 
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:orientation="horizontal">
-
-					<TextView
-						android:id="@+id/tvRORunsScoredText"
-						android:layout_margin="@dimen/viewMarginDefault"
-						style="@style/TextViewStyle"
-						android:text="@string/runsScored"/>
-
-					<SeekBar
-						android:id="@+id/sbRORuns"
-						android:layout_width="0dp"
-						android:layout_weight="1"
-						android:layout_height="match_parent"
-						android:max="7"
-						android:progress="1"/>
-
-				</LinearLayout>
-
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
+				<TextView
+					android:id="@+id/tvRORunsScoredText"
 					android:layout_margin="@dimen/viewMarginDefault"
-					android:orientation="vertical">
+					style="@style/TextViewStyle"
+					android:text="@string/runsScored"/>
 
-					<CheckBox
-						android:id="@+id/cbIsExtra"
-						style="@style/TextViewStyle"
-						android:checked="false"
-						android:text="@string/isExtra"/>
+				<SeekBar
+					android:id="@+id/sbRORuns"
+					android:layout_width="0dp"
+					android:layout_weight="1"
+					android:layout_height="match_parent"
+					android:max="7"
+					android:progress="1"/>
 
-					<GridLayout
-						android:id="@+id/glRORunsExtra"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:visibility="gone"
-						android:columnCount="4"
-						android:columnOrderPreserved="true">
+			</LinearLayout>
 
-						<RadioButton
-							android:id="@+id/rbROWide"
-							style="@style/RadioButtonStyle"
-							android:text="@string/btnWideText"
-							android:checked="true"/>
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="@dimen/viewMarginDefault"
+				android:orientation="vertical"
+				android:id="@+id/llExtra">
 
-						<RadioButton
-							android:id="@+id/rbRONoBall"
-							style="@style/RadioButtonStyle"
-							android:text="@string/btnNoBallText" />
+				<CheckBox
+					android:id="@+id/cbIsExtra"
+					style="@style/TextViewStyle"
+					android:checked="false"
+					android:text="@string/isExtra"/>
 
-						<RadioButton
-							android:id="@+id/rbROBye"
-							style="@style/RadioButtonStyle"
-							android:text="@string/btnByeText"/>
+				<GridLayout
+					android:id="@+id/glRORunsExtra"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:visibility="gone"
+					android:columnCount="4"
+					android:columnOrderPreserved="true">
 
-						<RadioButton
-							android:id="@+id/rbROLegBye"
-							style="@style/RadioButtonStyle"
-							android:text="@string/btnLegByeText"/>
+					<RadioButton
+						android:id="@+id/rbROWide"
+						style="@style/RadioButtonStyle"
+						android:text="@string/btnWideText"
+						android:checked="true"/>
 
-					</GridLayout>
+					<RadioButton
+						android:id="@+id/rbRONoBall"
+						style="@style/RadioButtonStyle"
+						android:text="@string/btnNoBallText" />
 
-					<RadioGroup
-						android:id="@+id/rgRONoBall"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:orientation="vertical"
-						android:visibility="gone">
+					<RadioButton
+						android:id="@+id/rbROBye"
+						style="@style/RadioButtonStyle"
+						android:text="@string/btnByeText"/>
 
-						<RadioButton
-							android:id="@+id/rbRONoBallNone"
-							style="@style/RadioButtonStyle"
-							android:padding="0dp"
-							android:layout_margin="0dp"
-							android:checked="true"
-							android:text="@string/onlyNoBall"/>
+					<RadioButton
+						android:id="@+id/rbROLegBye"
+						style="@style/RadioButtonStyle"
+						android:text="@string/btnLegByeText"/>
 
-						<RadioButton
-							android:id="@+id/rbRONoBallBye"
-							android:padding="0dp"
-							android:layout_margin="0dp"
-							style="@style/RadioButtonStyle"
-							android:text="@string/noBallAndByes"/>
+				</GridLayout>
 
-						<RadioButton
-							android:id="@+id/rbRONoBallLegBye"
-							android:padding="0dp"
-							android:layout_margin="0dp"
-							style="@style/RadioButtonStyle"
-							android:text="@string/noBallAndLB"/>
+				<RadioGroup
+					android:id="@+id/rgRONoBall"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					android:visibility="gone">
 
-					</RadioGroup>
+					<RadioButton
+						android:id="@+id/rbRONoBallNone"
+						style="@style/RadioButtonStyle"
+						android:padding="0dp"
+						android:layout_margin="0dp"
+						android:checked="true"
+						android:text="@string/onlyNoBall"/>
 
-				</LinearLayout>
+					<RadioButton
+						android:id="@+id/rbRONoBallBye"
+						android:padding="0dp"
+						android:layout_margin="0dp"
+						style="@style/RadioButtonStyle"
+						android:text="@string/noBallAndByes"/>
+
+					<RadioButton
+						android:id="@+id/rbRONoBallLegBye"
+						android:padding="0dp"
+						android:layout_margin="0dp"
+						style="@style/RadioButtonStyle"
+						android:text="@string/noBallAndLB"/>
+
+				</RadioGroup>
 
 			</LinearLayout>
 
