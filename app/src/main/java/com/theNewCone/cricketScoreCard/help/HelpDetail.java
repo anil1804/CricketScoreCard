@@ -3,30 +3,40 @@ package com.theNewCone.cricketScoreCard.help;
 import android.support.annotation.NonNull;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class HelpDetail implements Serializable {
-	private int contentID, sourceID, order;
+	private int contentID, order;
+	private List<Integer> sourceIDList;
 	private ViewType viewType;
 	private String text, content;
 
-	HelpDetail(int contentID, @NonNull ViewType viewType, String text) {
+	HelpDetail(int contentID, String text) {
 		this.contentID = contentID;
-		this.viewType = viewType;
+		this.viewType = ViewType.TEXT;
 		this.text = text;
 	}
 
-	public HelpDetail(int contentID, @NonNull ViewType viewType, int sourceID) {
+	HelpDetail(int contentID, String text, List<Integer> sourceIDList) {
 		this.contentID = contentID;
-		this.viewType = viewType;
-		this.sourceID = sourceID;
+		this.viewType = ViewType.TEXT;
+		this.text = text;
+		this.sourceIDList = sourceIDList;
 	}
 
-	public HelpDetail(int contentID, String content, @NonNull ViewType viewType, String text, int srcID, int order) {
+	HelpDetail(int contentID, boolean isSeparator) {
+		if(isSeparator) {
+			this.contentID = contentID;
+			this.viewType = ViewType.SEPARATOR;
+		}
+	}
+
+	public HelpDetail(int contentID, String content, ViewType viewType, String text, List<Integer> sourceIDList, int order) {
 		this.contentID = contentID;
 		this.content = content;
 		this.viewType = viewType;
 		this.text = text;
-		this.sourceID = srcID;
+		this.sourceIDList = sourceIDList;
 		this.order = order;
 	}
 
@@ -34,16 +44,12 @@ public class HelpDetail implements Serializable {
 		return contentID;
 	}
 
-	public int getSourceID() {
-		return sourceID;
+	public List<Integer> getSourceIDList() {
+		return sourceIDList;
 	}
 
 	public int getOrder() {
 		return order;
-	}
-
-	public ViewType getViewType() {
-		return viewType;
 	}
 
 	public String getText() {
@@ -54,7 +60,15 @@ public class HelpDetail implements Serializable {
 		return content;
 	}
 
+	public ViewType getViewType() {
+		return viewType;
+	}
+
 	public enum ViewType {
-		TEXT, IMAGE
+		TEXT, SEPARATOR
+	}
+
+	public enum FormattingType {
+		BOLD, ITALIC, UNDERLINE, SECTION_HEADER, HIGHLIGHT, HEADER
 	}
 }

@@ -19,23 +19,13 @@ import com.theNewCone.cricketScoreCard.fragment.HelpDetailFragment;
 
 import com.theNewCone.cricketScoreCard.help.HelpContent;
 import com.theNewCone.cricketScoreCard.help.HelpContentLoader;
+import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
-/**
- * An activity representing a list of Question. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link HelpDetailActivity} representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
- */
 public class HelpListActivity extends AppCompatActivity {
 
-	/**
-	 * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-	 * device.
-	 */
+	private final static String BUNDLE_HELP_CONTENTS = "HelpContents";
 	private boolean mTwoPane;
-	HelpContentLoader helpContentLoader;
+	HelpContent[] helpContents;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,23 +40,47 @@ public class HelpListActivity extends AppCompatActivity {
 			mTwoPane = true;
 		}
 
-		View recyclerView = findViewById(R.id.question_list);
+		RecyclerView recyclerView = findViewById(R.id.question_list);
 		assert recyclerView != null;
 
-		helpContentLoader = new HelpContentLoader(this);
-		setupRecyclerView((RecyclerView) recyclerView);
+		if(savedInstanceState != null) {
+			helpContents =
+					CommonUtils.objectArrToHelpContentArr((
+							Object[]) savedInstanceState.getSerializable(BUNDLE_HELP_CONTENTS));
+		} else {
+			SparseArray<HelpContent> helpContentSparseArray = new HelpContentLoader(this).getHelpContentItems();
+			int helpContentSize = helpContentSparseArray != null ? helpContentSparseArray.size() : 0;
+			helpContents = new HelpContent[helpContentSize];
+
+			for (int i = 0; i < helpContentSize; i++) {
+				helpContents[i] = helpContentSparseArray.valueAt(i);
+			}
+		}
+
+		recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, helpContents, mTwoPane));
 	}
 
-	private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-		recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, helpContentLoader.getHelpContentItems(), mTwoPane));
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putSerializable(BUNDLE_HELP_CONTENTS, helpContents);
 	}
 
 	public static class SimpleItemRecyclerViewAdapter
 			extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
 		private final AppCompatActivity mParentActivity;
-		private final SparseArray<HelpContent> mValues;
+		private final HelpContent[] helpContents;
 		private final boolean mTwoPane;
+
+		SimpleItemRecyclerViewAdapter(HelpListActivity parent,
+									  HelpContent[] items,
+									  boolean twoPane) {
+			helpContents = items;
+			mParentActivity = parent;
+			mTwoPane = twoPane;
+		}
+
 		private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -88,14 +102,6 @@ public class HelpListActivity extends AppCompatActivity {
 			}
 		};
 
-		SimpleItemRecyclerViewAdapter(HelpListActivity parent,
-									  SparseArray<HelpContent> items,
-									  boolean twoPane) {
-			mValues = items;
-			mParentActivity = parent;
-			mTwoPane = twoPane;
-		}
-
 		@Override
 		@NonNull
 		public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -106,7 +112,7 @@ public class HelpListActivity extends AppCompatActivity {
 
 		@Override
 		public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-			HelpContent currentContent = mValues.valueAt(position);
+			HelpContent currentContent = helpContents[position];
 			holder.mIdView.setText(String.valueOf(currentContent.getContentID()));
 			holder.mContentView.setText(currentContent.getContent());
 
@@ -117,7 +123,7 @@ public class HelpListActivity extends AppCompatActivity {
 
 		@Override
 		public int getItemCount() {
-			return mValues.size();
+			return helpContents.length;
 		}
 
 		class ViewHolder extends RecyclerView.ViewHolder {

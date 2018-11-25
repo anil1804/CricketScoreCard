@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jjoe64.graphview.series.DataPoint;
 import com.theNewCone.cricketScoreCard.Constants;
+import com.theNewCone.cricketScoreCard.help.HelpContent;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.match.Match;
 import com.theNewCone.cricketScoreCard.match.MatchState;
@@ -234,40 +235,22 @@ public class CommonUtils {
         return matches;
     }
 
-    public static OverInfo[] objectArrToOverInfoArr(Object[] objArr) {
-		OverInfo[] overInfoData = null;
+    public static HelpContent[] objectArrToHelpContentArr(Object[] objArr) {
+		HelpContent[] helpContentData = null;
 
         if(objArr != null) {
-            overInfoData = new OverInfo[objArr.length];
+			helpContentData = new HelpContent[objArr.length];
 
             int i=0;
             for(Object obj : objArr) {
-                if(obj instanceof OverInfo) {
-                    overInfoData[i] = (OverInfo) obj;
+                if(obj instanceof HelpContent) {
+					helpContentData[i] = (HelpContent) obj;
                     i++;
                 }
             }
         }
 
-        return overInfoData;
-    }
-
-    public static Partnership[] objectArrToPartnershipArr(Object[] objArr) {
-		Partnership[] partnershipData = null;
-
-        if(objArr != null) {
-			partnershipData = new Partnership[objArr.length];
-
-            int i=0;
-            for(Object obj : objArr) {
-                if(obj instanceof Partnership) {
-					partnershipData[i] = (Partnership) obj;
-                    i++;
-                }
-            }
-        }
-
-        return partnershipData;
+        return helpContentData;
     }
 
     public static DataPoint[] objectArrToDataPointArr(Object[] objArr) {
@@ -381,20 +364,6 @@ public class CommonUtils {
 		}
 
 		return null;
-	}
-
-	public static String[] listToArray(List<String> theList) {
-		String[] stringArr = null;
-
-		if(theList != null && theList.size() > 0) {
-			stringArr = new String[theList.size()];
-
-			int i=0;
-			for(String theStr : theList)
-				stringArr[i++] = theStr;
-		}
-
-		return stringArr;
 	}
 
 	public static String listToString(List<String> theList, String separator) {

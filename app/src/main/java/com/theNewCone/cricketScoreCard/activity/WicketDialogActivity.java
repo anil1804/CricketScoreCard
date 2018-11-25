@@ -216,7 +216,7 @@ public class WicketDialogActivity extends FragmentActivity
 				setViewVisibility(View.VISIBLE, View.VISIBLE, View.VISIBLE, View.VISIBLE);
 				outBatsman = null;
 				effectedBy = null;
-				tvEffectedBy.setText(R.string.runoutBy);
+				tvEffectedBy.setText(R.string.runOutBy);
 				dismissalType = WicketData.DismissalType.RUN_OUT;
 				break;
 

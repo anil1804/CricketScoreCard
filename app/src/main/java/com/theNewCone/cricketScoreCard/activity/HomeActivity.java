@@ -1,6 +1,11 @@
 package com.theNewCone.cricketScoreCard.activity;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -10,9 +15,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.fragment.HomeFragment;
 import com.theNewCone.cricketScoreCard.fragment.NewMatchFragment;
@@ -20,6 +27,7 @@ import com.theNewCone.cricketScoreCard.fragment.PlayerFragment;
 import com.theNewCone.cricketScoreCard.fragment.TeamFragment;
 import com.theNewCone.cricketScoreCard.help.HelpContentData;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
+import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +35,6 @@ import java.util.List;
 public class HomeActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener, DrawerController {
 
-	private static final String FRAGMENT = "Fragment";
-	private static final String FRAGMENT_TAG = "FragmentTag";
 	DrawerLayout drawer;
 	ActionBarDrawerToggle toggle;
 	NavigationView navigationView;
@@ -45,9 +51,8 @@ public class HomeActivity extends AppCompatActivity
 					.commitNow();
 		}
 
+		loadHelpContent();
 		setupDrawer();
-
-		new HelpContentData(this);
 	}
 
 	@Override
@@ -85,8 +90,8 @@ public class HomeActivity extends AppCompatActivity
 		HashMap<String, Object> fragDtlMap = getFragmentDetails(item);
 
 		if(fragDtlMap.size()  == 2) {
-			Fragment fragment = (Fragment) fragDtlMap.get(FRAGMENT);
-			String fragmentTag = (String) fragDtlMap.get(FRAGMENT_TAG);
+			Fragment fragment = (Fragment) fragDtlMap.get(Constants.FRAGMENT);
+			String fragmentTag = (String) fragDtlMap.get(Constants.FRAGMENT_TAG);
 
 			if(fragment !=  null && fragmentTag != null) {
 				getSupportFragmentManager().beginTransaction()
@@ -169,29 +174,29 @@ public class HomeActivity extends AppCompatActivity
 		switch (item.getItemId()) {
 			case R.id.nav_home:
 				if(!isFragmentVisible(HomeFragment.class.getSimpleName())) {
-					respMap.put(FRAGMENT, HomeFragment.newInstance());
-					respMap.put(FRAGMENT_TAG, HomeFragment.class.getSimpleName());
+					respMap.put(Constants.FRAGMENT, HomeFragment.newInstance());
+					respMap.put(Constants.FRAGMENT_TAG, HomeFragment.class.getSimpleName());
 				}
 				break;
 
 			case R.id.nav_manage_player:
 				if(!isFragmentVisible(PlayerFragment.class.getSimpleName())) {
-					respMap.put(FRAGMENT, PlayerFragment.newInstance());
-					respMap.put(FRAGMENT_TAG, PlayerFragment.class.getSimpleName());
+					respMap.put(Constants.FRAGMENT, PlayerFragment.newInstance());
+					respMap.put(Constants.FRAGMENT_TAG, PlayerFragment.class.getSimpleName());
 				}
 				break;
 
 			case R.id.nav_manage_team:
 				if(!isFragmentVisible(TeamFragment.class.getSimpleName())) {
-					respMap.put(FRAGMENT, TeamFragment.newInstance());
-					respMap.put(FRAGMENT_TAG, TeamFragment.class.getSimpleName());
+					respMap.put(Constants.FRAGMENT, TeamFragment.newInstance());
+					respMap.put(Constants.FRAGMENT_TAG, TeamFragment.class.getSimpleName());
 				}
 				break;
 
 			case R.id.nav_new_match:
 				if(!isFragmentVisible(NewMatchFragment.class.getSimpleName())) {
-					respMap.put(FRAGMENT, NewMatchFragment.newInstance());
-					respMap.put(FRAGMENT_TAG, NewMatchFragment.class.getSimpleName());
+					respMap.put(Constants.FRAGMENT, NewMatchFragment.newInstance());
+					respMap.put(Constants.FRAGMENT_TAG, NewMatchFragment.class.getSimpleName());
 				}
 				break;
 
@@ -212,5 +217,37 @@ public class HomeActivity extends AppCompatActivity
 		}
 
 		return false;
+	}
+
+	private void loadHelpContent() {
+		if(isAppUpdated() || !(new DatabaseHandler(this).hasHelpContent()))
+		{
+			HelpContentData helpContentData = new HelpContentData(this);
+			helpContentData.loadHelpContent();
+		}
+	}
+
+	private boolean isAppUpdated() {
+		boolean isAppUpdated = false;
+		long lastModified = 0L;
+		try {
+			ComponentName componentName = new ComponentName(this, HomeActivity.class);
+			PackageInfo pkgInfo = this.getPackageManager().getPackageInfo(componentName.getPackageName(), 0);
+			lastModified = pkgInfo.lastUpdateTime;
+		} catch (PackageManager.NameNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		long storedLastModified = prefs.getLong(Constants.PREFS_APP_LAST_MODIFIED, 0L);
+
+		Log.i(Constants.LOG_TAG, String.format("Stored Value - %d, New Value - %d", storedLastModified, lastModified));
+
+		if(storedLastModified == 0L || storedLastModified < lastModified) {
+			isAppUpdated = true;
+			prefs.edit().putLong(Constants.PREFS_APP_LAST_MODIFIED, lastModified).apply();
+		}
+
+		return isAppUpdated;
 	}
 }

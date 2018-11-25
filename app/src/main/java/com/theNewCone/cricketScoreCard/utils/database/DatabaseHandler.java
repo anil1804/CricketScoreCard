@@ -30,7 +30,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public final int CODE_NEW_MATCH_DUP_RECORD = -10;
     public final int CODE_NEW_HELP_CONTENT_DUP_RECORD = -10;
 
-    private static final int DB_VERSION = 5;
+    private static final int DB_VERSION = 14;
     private static final String DB_NAME = "CricketScoreCard";
 
 	private static final String SAVE_AUTO = "Auto";
@@ -83,7 +83,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private final String TBL_HELP_DETAILS_CONTENT_ID = "ContentID";
 	private final String TBL_HELP_DETAILS_VIEW_TYPE = "ViewType";
 	private final String TBL_HELP_DETAILS_TEXT = "Text";
-	private final String TBL_HELP_DETAILS_SRC_ID = "SourceID";
+	private final String TBL_HELP_DETAILS_SRC_ID_JSON = "SourceIDJson";
 	private final String TBL_HELP_DETAILS_ORDER = "ContentOrder";
 
     public DatabaseHandler(Context context) {
@@ -103,26 +103,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    	if(oldVersion < 5) {
-			createHelpContentTable(db);
-			createHelpDetailsTable(db);
-		}
-    	if(oldVersion < 4) {
-    		String alterMatchTableSQL = String.format(Locale.getDefault(),
-					"ALTER TABLE %s ADD COLUMN %s TEXT", TBL_MATCH, TBL_MATCH_DATE);
-    		db.execSQL(alterMatchTableSQL);
-
-    		alterMatchTableSQL = String.format(Locale.getDefault(),
-					"ALTER TABLE %s ADD COLUMN %s INTEGER DEFAULT 0", TBL_MATCH, TBL_MATCH_IS_COMPLETE);
-    		db.execSQL(alterMatchTableSQL);
-
-    		alterMatchTableSQL = String.format(Locale.getDefault(),
-					"ALTER TABLE %s ADD COLUMN %s TEXT", TBL_MATCH, TBL_MATCH_JSON);
-    		db.execSQL(alterMatchTableSQL);
-		}
-    	if(oldVersion < 3) {
-    		db.delete(TBL_STATE, null, null);
-		}
     	if(oldVersion < 2) {
 			String alterTeamTableSQL = String.format(Locale.getDefault(),
 					"ALTER TABLE %s ADD COLUMN %s INTEGER DEFAULT 0", TBL_TEAM, TBL_TEAM_ARCHIVED);
@@ -132,6 +112,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			String alterPlayerTableSQL = String.format(Locale.getDefault(),
 					"ALTER TABLE %s ADD COLUMN %s INTEGER DEFAULT 0", TBL_PLAYER, TBL_PLAYER_ARCHIVED);
 			db.execSQL(alterPlayerTableSQL);
+		}
+		if(oldVersion < 3) {
+			db.delete(TBL_STATE, null, null);
+		}
+		if(oldVersion < 4) {
+			String alterMatchTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s TEXT", TBL_MATCH, TBL_MATCH_DATE);
+			db.execSQL(alterMatchTableSQL);
+
+			alterMatchTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s INTEGER DEFAULT 0", TBL_MATCH, TBL_MATCH_IS_COMPLETE);
+			db.execSQL(alterMatchTableSQL);
+
+			alterMatchTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s TEXT", TBL_MATCH, TBL_MATCH_JSON);
+			db.execSQL(alterMatchTableSQL);
+		}
+		if(oldVersion < 5) {
+			createHelpContentTable(db);
+			createHelpDetailsTable(db);
+		}
+		if(oldVersion < 14) {
+			String dropTableSQL = "DROP TABLE IF EXISTS " + TBL_HELP_DETAILS;
+			db.execSQL(dropTableSQL);
+			createHelpDetailsTable(db);
 		}
     }
 
@@ -221,11 +226,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private void createHelpDetailsTable(SQLiteDatabase db) {
     	String createTableSQL =
 				"CREATE TABLE " + TBL_HELP_DETAILS + "("
-						+ TBL_HELP_DETAILS_CONTENT_ID + " INTEGER PRIMARY KEY, "
+						+ TBL_HELP_DETAILS_CONTENT_ID + " INTEGER , "
 						+ TBL_HELP_DETAILS_VIEW_TYPE + " TEXT, "
 						+ TBL_HELP_DETAILS_TEXT + " TEXT, "
-						+ TBL_HELP_DETAILS_SRC_ID + " INT, "
-						+ TBL_HELP_DETAILS_ORDER + " INT"
+						+ TBL_HELP_DETAILS_SRC_ID_JSON + " TEXT, "
+						+ TBL_HELP_DETAILS_ORDER + " INTEGER"
 						+ ")";
 
     	db.execSQL(createTableSQL);
@@ -1069,6 +1074,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	return (int) contentID;
 	}
 
+	public boolean hasHelpContent() {
+    	boolean hasContent = false;
+
+		String selectQuery = String.format(Locale.getDefault(), "SELECT %s FROM %s", TBL_HELP_CONTENT_ID, TBL_HELP_CONTENT);
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		if(cursor != null && cursor.moveToFirst()) {
+			hasContent = true;
+			cursor.close();
+		}
+		db.close();
+
+		return hasContent;
+	}
+
 	public List<HelpContent> getAllHelpContent() {
     	List<HelpContent> helpContentList = new ArrayList<>();
     	String selectQuery = "SELECT * FROM " + TBL_HELP_CONTENT;
@@ -1091,7 +1112,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return helpContentList;
 	}
 
-	public void addHelpDetails(HelpDetail helpDetail) {
+	public long addHelpDetails(HelpDetail helpDetail) {
 		int maxContentOrder = 0;
 		SQLiteDatabase db = this.getWritableDatabase();
 		String getMaxContentOrderIDSQL =
@@ -1105,17 +1126,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		ContentValues values = new ContentValues();
 		values.put(TBL_HELP_DETAILS_CONTENT_ID, helpDetail.getContentID());
-		values.put(TBL_HELP_DETAILS_VIEW_TYPE, helpDetail.getViewType().toString());
 		if(helpDetail.getText() != null) {
 			values.put(TBL_HELP_DETAILS_TEXT, helpDetail.getText());
 		}
-		if(helpDetail.getSourceID() > 0) {
-			values.put(TBL_HELP_DETAILS_SRC_ID, helpDetail.getSourceID());
+		if(helpDetail.getSourceIDList() != null) {
+			values.put(TBL_HELP_DETAILS_SRC_ID_JSON, CommonUtils.intListToJSON(helpDetail.getSourceIDList()));
+		}
+		if(helpDetail.getViewType() != null) {
+			values.put(TBL_HELP_DETAILS_VIEW_TYPE, helpDetail.getViewType().toString());
 		}
 		values.put(TBL_HELP_DETAILS_ORDER, maxContentOrder + 1);
 
-		db.insert(TBL_HELP_DETAILS, null, values);
+		long rowID = db.insert(TBL_HELP_DETAILS, null, values);
 		db.close();
+
+		return rowID;
 	}
 
 	private List<HelpDetail> getHelpDetails(int contentID, String content) {
@@ -1132,20 +1157,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				Cursor cursor = db.rawQuery(selectQuery, null);
 				if (cursor != null && cursor.moveToFirst()) {
 					do {
-						HelpDetail.ViewType type =
-								HelpDetail.ViewType.valueOf(cursor.getString(cursor.getColumnIndex(TBL_HELP_DETAILS_VIEW_TYPE)));
+						HelpDetail.ViewType viewType = HelpDetail.ViewType.valueOf(cursor.getString(cursor.getColumnIndex(TBL_HELP_DETAILS_VIEW_TYPE)));
 						String text = cursor.getString(cursor.getColumnIndex(TBL_HELP_DETAILS_TEXT));
-						int sourceID = cursor.getInt(cursor.getColumnIndex(TBL_HELP_DETAILS_SRC_ID));
+						String srcIDJson = cursor.getString(cursor.getColumnIndex(TBL_HELP_DETAILS_SRC_ID_JSON));
 						int order = cursor.getInt(cursor.getColumnIndex(TBL_HELP_DETAILS_ORDER));
 
-						helpDetailList.add(new HelpDetail(contentID, content, type, text, sourceID, order));
+						helpDetailList.add(new HelpDetail(contentID, content, viewType, text, CommonUtils.jsonToIntList(srcIDJson), order));
 					} while (cursor.moveToNext());
 
 					cursor.close();
 				}
 			}
+
+			db.close();
 		}
 
 		return helpDetailList;
+	}
+
+	public void clearHelpContent() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TBL_HELP_CONTENT, null, null);
+		db.delete(TBL_HELP_DETAILS, null, null);
+
+		db.close();
 	}
 }

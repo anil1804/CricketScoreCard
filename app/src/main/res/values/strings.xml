@@ -77,7 +77,7 @@
 	<string name="headerWickets">W</string>
 	<string name="headerEconomy">ER</string>
 
-	<string name="extrasText">Extras :\t</string>
+	<string name="extrasText"><b>Extras :\t</b></string>
 	<string name="legByes">Lb - %1$d</string>
 	<string name="byes">B - %1$d</string>
 	<string name="wides">Wd - %1$d</string>
@@ -147,7 +147,7 @@
 	<string name="isExtra">Is Extra?</string>
 	<string name="runsScored">Runs Scored = %1$d</string>
 	<string name="caughtBy">Caught By</string>
-	<string name="runoutBy">Run Out By</string>
+	<string name="runOutBy">Run Out By</string>
 	<string name="batsmanOutText">Batsman?</string>
 
 	<!-- Player Resources -->
@@ -220,5 +220,5 @@
 	<string name="playerScore">%1$d(%2$d)</string>
 	<string name="title_question_list">Question</string>
 	<string name="title_question_detail">Question Detail</string>
-	<string name="nav_drawer_info">Help/FAQ</string>
+	<string name="nav_drawer_info">Help</string>
 </resources>
