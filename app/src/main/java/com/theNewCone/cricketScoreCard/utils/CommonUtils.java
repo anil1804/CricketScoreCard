@@ -450,4 +450,8 @@ public class CommonUtils {
 
 		return displayMetrics.widthPixels;
 	}
+
+	public static int dpToPx(final Context context, final int dp) {
+		return dp * Math.round(context.getResources().getDisplayMetrics().density);
+	}
 }

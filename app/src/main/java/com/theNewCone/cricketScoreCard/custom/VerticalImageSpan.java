@@ -9,9 +9,12 @@ import android.support.annotation.Nullable;
 import android.text.style.ImageSpan;
 
 public class VerticalImageSpan extends ImageSpan {
+	private int width, height;
 
-	public VerticalImageSpan(Drawable drawable) {
+	public VerticalImageSpan(Drawable drawable, int height, int width) {
 		super(drawable);
+		this.height = height;
+		this.width = width;
 	}
 
 	/**
@@ -20,6 +23,10 @@ public class VerticalImageSpan extends ImageSpan {
 	@Override
 	public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fontMetricsInt) {
 		Drawable drawable = getDrawable();
+
+		if(width > 0 & height > 0)
+			drawable.setBounds(0, 0, width, height);
+
 		Rect rect = drawable.getBounds();
 		if (fontMetricsInt != null) {
 			Paint.FontMetricsInt fmPaint = paint.getFontMetricsInt();
@@ -65,5 +72,4 @@ public class VerticalImageSpan extends ImageSpan {
 			canvas.restore();
 		}
 	}
-
 }

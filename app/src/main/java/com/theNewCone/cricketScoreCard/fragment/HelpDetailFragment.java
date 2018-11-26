@@ -3,14 +3,11 @@ package com.theNewCone.cricketScoreCard.fragment;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
-import android.support.design.resources.TextAppearance;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.style.AlignmentSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.RelativeSizeSpan;
@@ -28,6 +25,7 @@ import com.theNewCone.cricketScoreCard.comparator.HelpDetailComparator;
 import com.theNewCone.cricketScoreCard.custom.VerticalImageSpan;
 import com.theNewCone.cricketScoreCard.help.HelpContent;
 import com.theNewCone.cricketScoreCard.help.HelpDetail;
+import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -135,9 +133,12 @@ public class HelpDetailFragment extends Fragment {
 				while(continueScan) {
 					if(imageSourceIDList.size() > i) {
 						ImageSpan imageSpan = new ImageSpan(getContext(), imageSourceIDList.get(i++));
-						VerticalImageSpan vImageSpan = new VerticalImageSpan(imageSpan.getDrawable());
 						int start = helpText.indexOf(searchString, searchFromIndex);
 						int end = start + searchString.length();
+
+						VerticalImageSpan vImageSpan = new VerticalImageSpan(imageSpan.getDrawable(),
+								CommonUtils.dpToPx(getContext(), 18),
+								CommonUtils.dpToPx(getContext(), 18));
 						ssBuilder.setSpan(vImageSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 						searchFromIndex = end;
