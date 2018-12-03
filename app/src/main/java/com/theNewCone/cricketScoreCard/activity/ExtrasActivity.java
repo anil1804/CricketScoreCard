@@ -19,7 +19,7 @@ import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
 import java.util.Locale;
 
-public class ExtraDialogActivity extends Activity
+public class ExtrasActivity extends Activity
 	implements View.OnClickListener{
 
 	public final static String ARG_NB_EXTRA = "NB_Extra";
@@ -37,7 +37,7 @@ public class ExtraDialogActivity extends Activity
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_extra_dialog);
+		setContentView(R.layout.activity_extras);
 		this.setFinishOnTouchOutside(false);
 
 		setupView();

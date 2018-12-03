@@ -691,7 +691,10 @@ public class HelpContentData {
 					"on <b><i>Yes</i></b> will restore the match. You will only loose the " +
 					"information about the last delivery. All other information will be restored." +
 					"\n\n<hi>Beware, clicking on <b><i>No</i></b> will result in deleting the " +
-					"instance and you will not be able to restore the match anymore</hi>";
+					"instance and you will not be able to restore the match anymore</hi>" +
+					"\n\nHowever, in case you clicked on any other portion of the screen and the " +
+					"pop-up accidentally got closed, please restart your app to see the pop-up " +
+					"again.";
 			dbh.addHelpDetails(new HelpDetail(contentID, text));
 			dbh.addHelpDetails(new HelpDetail(contentID, true));
 		}

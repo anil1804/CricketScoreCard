@@ -11,7 +11,7 @@ public class OverInfo implements Serializable {
 	private List<BallInfo> ballInfoList;
 	private boolean isMaiden;
 
-	OverInfo(int overNumber) {
+	public OverInfo(int overNumber) {
 		this.overNumber = overNumber;
 	}
 

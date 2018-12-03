@@ -89,7 +89,7 @@ public class ScoreCardActivity extends AppCompatActivity {
 
 		TabLayout tabLayout = findViewById(R.id.tabs);
 		tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.lime_50));
-		tabLayout.setTabTextColors(getResources().getColor(R.color.colorPrimaryDark), getResources().getColor(R.color.lime_A100));
+		tabLayout.setTabTextColors(getResources().getColor(R.color.colorPrimaryDark_default), getResources().getColor(R.color.lime_A100));
 
 		TabLayout.Tab team1Tab = tabLayout.getTabAt(0);
 		TabLayout.Tab team2Tab = tabLayout.getTabAt(1);

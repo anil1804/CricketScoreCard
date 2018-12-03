@@ -15,6 +15,7 @@ public class Partnership implements Serializable {
 		this.player1 = player1;
 		this.player2 = player2;
 		this.startScore = startScore;
+		this.currScore = startScore;
 
 		this.p1BallsPlayed = 0;
 		this.p1RunsScored = 0;

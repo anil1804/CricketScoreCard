@@ -33,10 +33,10 @@
 			</intent-filter>
 		</activity>
 		<activity
-			android:name=".activity.ExtraDialogActivity"
+			android:name=".activity.ExtrasActivity"
 			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
 		<activity
-			android:name=".activity.WicketDialogActivity"
+			android:name=".activity.WicketActivity"
 			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
 		<activity
 			android:name=".activity.PlayerSelectActivity"
@@ -74,7 +74,7 @@
 			android:name=".activity.PartnershipGraphActivity"
 			android:screenOrientation="userPortrait" />
 		<activity
-			android:name=".activity.RunRateGraphActivity"
+			android:name=".activity.RunsGraphActivity"
 			android:screenOrientation="userLandscape" />
 		<activity
 			android:name=".activity.HelpListActivity"

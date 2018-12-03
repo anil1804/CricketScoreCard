@@ -2,9 +2,11 @@ package com.theNewCone.cricketScoreCard.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.R;
@@ -18,10 +20,16 @@ public class CompletedMatchViewAdapter extends RecyclerView.Adapter<CompletedMat
 
     private final List<Match> savedMatchList;
     private final ListInteractionListener mListener;
+    private final boolean isMultiSelect;
 
-    public CompletedMatchViewAdapter(List<Match> savedMatchList, ListInteractionListener listener) {
+    private SparseBooleanArray selMatchIDs;
+
+    public CompletedMatchViewAdapter(List<Match> savedMatchList, ListInteractionListener listener, boolean isMultiSelect) {
         this.savedMatchList = savedMatchList;
         mListener = listener;
+        this.isMultiSelect = isMultiSelect;
+
+        selMatchIDs = new SparseBooleanArray();
     }
 
     @Override
@@ -39,18 +47,32 @@ public class CompletedMatchViewAdapter extends RecyclerView.Adapter<CompletedMat
         String matchVersus = holder.match.getTeam1ShortName() + " v " +
 				holder.match.getTeam2ShortName();
 
-        holder.tvSavedName.setVisibility(View.GONE);
+        holder.llSavedMatchData.setVisibility(View.GONE);
         holder.tvMatchName.setText(holder.match.getName());
         holder.tvTeamVersus.setText(matchVersus);
         holder.tvMatchDate.setText(holder.match.getDate() != null ?
                 CommonUtils.dateToString(holder.match.getDate(), "MMM dd, yyyy") : "");
 
+        if (selMatchIDs.get(holder.match.getId())) {
+            holder.mView.setSelected(true);
+        } else {
+            holder.mView.setSelected(false);
+        }
+
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != mListener) {
-                	mListener.onListFragmentInteraction(holder.match);
+			if (null != mListener) {
+				if(!isMultiSelect) {
+					mListener.onListFragmentInteraction(holder.match);
+				} else {
+
+					boolean isPresent = selMatchIDs.get(holder.match.getId());
+					mListener.onListFragmentMultiSelect(holder.match, isPresent);
+					selMatchIDs.put(holder.match.getId(), !isPresent);
+					notifyItemChanged(position);
 				}
+			}
 			}
 		});
     }
@@ -63,12 +85,13 @@ public class CompletedMatchViewAdapter extends RecyclerView.Adapter<CompletedMat
     class ViewHolder extends RecyclerView.ViewHolder {
         Match match;
         final View mView;
-        final TextView tvSavedName, tvMatchName, tvTeamVersus, tvMatchDate;
+        final TextView tvMatchName, tvTeamVersus, tvMatchDate;
+		final LinearLayout llSavedMatchData;
 
         ViewHolder(View view) {
             super(view);
             mView = view;
-            tvSavedName = view.findViewById(R.id.tvSaveName);
+			llSavedMatchData = view.findViewById(R.id.llSavedMatchData);
             tvMatchName = view.findViewById(R.id.tvMatchName);
             tvTeamVersus = view.findViewById(R.id.tvTeamVersus);
             tvMatchDate = view.findViewById(R.id.tvMatchDate);

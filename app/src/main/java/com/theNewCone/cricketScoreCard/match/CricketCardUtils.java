@@ -13,7 +13,7 @@ import com.theNewCone.cricketScoreCard.scorecard.WicketData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CricketCardUtils {
+public class CricketCardUtils implements Cloneable {
     private int numConsecutiveDots = 0, tossWonByTeamID, maxWickets;
 	private boolean newOver;
 
@@ -111,6 +111,37 @@ public class CricketCardUtils {
 		this.team2 = team2;
 		this.maxWickets = maxWickets;
 		this.newOver = true;
+	}
+
+	private CricketCardUtils cloneCCUtils(CricketCardUtils ccUtils) {
+    	CricketCardUtils cricketCardUtils =
+				new CricketCardUtils(ccUtils.getCard(), ccUtils.getMatchName(), ccUtils.getTeam1(),
+						ccUtils.getTeam2(), ccUtils.getMaxWickets());
+
+		cricketCardUtils.numConsecutiveDots = ccUtils.numConsecutiveDots;
+		cricketCardUtils.tossWonByTeamID = ccUtils.tossWonByTeamID;
+		cricketCardUtils.newOver = ccUtils.newOver;
+		cricketCardUtils.result = ccUtils.result;
+		cricketCardUtils.prevInningsCard = ccUtils.prevInningsCard;
+		cricketCardUtils.bowler = ccUtils.bowler;
+		cricketCardUtils.nextBowler = ccUtils.nextBowler;
+		cricketCardUtils.prevBowler = ccUtils.prevBowler;
+		cricketCardUtils.currentFacing = ccUtils.currentFacing;
+		cricketCardUtils.otherBatsman = ccUtils.otherBatsman;
+		cricketCardUtils.playerOfMatch = ccUtils.playerOfMatch;
+
+		return cricketCardUtils;
+	}
+
+	public CricketCardUtils clone() {
+    	CricketCardUtils cricketCardUtils;
+    	try {
+    		cricketCardUtils = (CricketCardUtils) super.clone();
+		} catch (CloneNotSupportedException e) {
+			cricketCardUtils = cloneCCUtils(this);
+		}
+
+		return cricketCardUtils;
 	}
 
 	public void updateFacingBatsman(BatsmanStats batsman) {

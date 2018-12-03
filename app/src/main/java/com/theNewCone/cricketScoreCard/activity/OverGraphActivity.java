@@ -75,9 +75,7 @@ public class OverGraphActivity extends Activity {
 		final double size = scale * 10/maxXLimit;
 
 		/*Data points for runs and wickets*/
-		DataPoint[] runsDataPoints = new DataPoint[overInfoList.size()];
 		int maxRuns = 0, maxWickets = 0;
-		int i = 0;
 
 		for (OverInfo overInfo : overInfoList) {
 			int runsScored = overInfo.getRunsScored();
@@ -87,6 +85,15 @@ public class OverGraphActivity extends Activity {
 			double maxValue = (runsScored + wickets * size/scale * 2);
 			maxYValue = maxValue > maxYValue ? maxValue : maxYValue;
 		}
+
+		if(overInfoList.size() == 1)
+		{
+			OverInfo overInfo = new OverInfo(overInfoList.size() + 1);
+			overInfoList.add(overInfo);
+		}
+
+		DataPoint[] runsDataPoints = new DataPoint[overInfoList.size()];
+		int i = 0;
 
 		for (OverInfo overInfo : overInfoList) {
 			int runsScored = overInfo.getRunsScored();
@@ -129,7 +136,7 @@ public class OverGraphActivity extends Activity {
 		graph.getViewport().setYAxisBoundsManual(true);
 		graph.getViewport().setMinY(0);
 		graph.getViewport().setMaxY(maxYValue + size/scale * 2);
-		graph.getViewport().setBackgroundColor(getResources().getColor(R.color.cyan_400));
+		graph.getViewport().setBackgroundColor(getResources().getColor(R.color.cyan_200));
 
 		graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
 		graph.getGridLabelRenderer().setLabelsSpace(xLabelSpace);

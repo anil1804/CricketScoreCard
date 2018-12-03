@@ -21,11 +21,14 @@ import android.view.MenuItem;
 
 import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
+import com.theNewCone.cricketScoreCard.custom.ThemeColors;
 import com.theNewCone.cricketScoreCard.fragment.HomeFragment;
 import com.theNewCone.cricketScoreCard.fragment.NewMatchFragment;
 import com.theNewCone.cricketScoreCard.fragment.PlayerFragment;
+import com.theNewCone.cricketScoreCard.fragment.StringDialog;
 import com.theNewCone.cricketScoreCard.fragment.TeamFragment;
 import com.theNewCone.cricketScoreCard.help.HelpContentData;
+import com.theNewCone.cricketScoreCard.intf.DialogItemClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
@@ -33,7 +36,18 @@ import java.util.HashMap;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity
-		implements NavigationView.OnNavigationItemSelectedListener, DrawerController {
+		implements NavigationView.OnNavigationItemSelectedListener, DrawerController, DialogItemClickListener {
+
+	private final String DIALOG_THEME_SELECT = "ThemeSelect";
+
+	private final String THEME_DEFAULT = "Default";
+	private final String THEME_BLUE = "Blue";
+	private final String THEME_BROWN = "Brown";
+	private final String THEME_GREEN = "Green";
+	private final String THEME_LIME = "Lime";
+	private final String THEME_RED = "Red";
+
+	String[] themeValues = {THEME_DEFAULT, THEME_BLUE, THEME_BROWN, THEME_GREEN, THEME_LIME, THEME_RED};
 
 	DrawerLayout drawer;
 	ActionBarDrawerToggle toggle;
@@ -43,6 +57,7 @@ public class HomeActivity extends AppCompatActivity
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		new ThemeColors(this);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home_activity);
 		if (savedInstanceState == null) {
@@ -82,6 +97,11 @@ public class HomeActivity extends AppCompatActivity
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.menu_changeTheme:
+				showThemeDialog();
+				break;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -143,6 +163,15 @@ public class HomeActivity extends AppCompatActivity
 		MenuItem item = navigationView.getMenu().findItem(id);
 		if(item != null)
 			item.setEnabled(true);
+	}
+
+	@Override
+	public void onItemSelect(String type, String value, int position) {
+		switch (type) {
+			case DIALOG_THEME_SELECT:
+				applyTheme(value);
+				break;
+		}
 	}
 
 	void setupDrawer() {
@@ -249,5 +278,41 @@ public class HomeActivity extends AppCompatActivity
 		}
 
 		return isAppUpdated;
+	}
+
+	private void showThemeDialog() {
+		StringDialog dialog = StringDialog.newInstance("Select Theme", themeValues, DIALOG_THEME_SELECT);
+		dialog.setDialogItemClickListener(this);
+		dialog.show(this.getSupportFragmentManager(), DIALOG_THEME_SELECT);
+	}
+
+	private void applyTheme(String value) {
+		int theme;
+		switch (value) {
+			case THEME_BLUE:
+				theme = R.style.AppTheme_NoActionBar_Blue;
+				break;
+
+			case THEME_BROWN:
+				theme = R.style.AppTheme_NoActionBar_Brown;
+				break;
+
+			case THEME_GREEN:
+				theme = R.style.AppTheme_NoActionBar_Green;
+				break;
+
+			case THEME_LIME:
+				theme = R.style.AppTheme_NoActionBar_Lime;
+				break;
+
+			case THEME_RED:
+				theme = R.style.AppTheme_NoActionBar_Red;
+				break;
+
+			default:
+				theme = R.style.AppTheme_NoActionBar;
+				break;
+		}
+		ThemeColors.applyTheme(this, theme);
 	}
 }

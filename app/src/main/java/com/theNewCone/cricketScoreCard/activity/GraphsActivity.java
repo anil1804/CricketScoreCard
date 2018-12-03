@@ -114,7 +114,7 @@ public class GraphsActivity extends Activity
 	}
 
 	private void showRunRateGraph() {
-		Intent rrgIntent = new Intent(this, RunRateGraphActivity.class);
+		Intent rrgIntent = new Intent(this, RunsGraphActivity.class);
 		rrgIntent.putExtra(ARG_CRICKET_CARD, currentCard);
 		rrgIntent.putExtra(ARG_CRICKET_CARD_PREV_INNS, previousCard);
 		startActivity(rrgIntent);

@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/menu_loadData" app:showAsAction="never" android:title="@string/upload" android:icon="@drawable/ic_upload"/>
-    <item android:id="@+id/menu_quit" app:showAsAction="never" android:title="@string/quit" android:icon="@drawable/ic_stop"/>
+
+    <item android:id="@+id/menu_clearFinishedMatches" app:showAsAction="never"
+        android:title="@string/clearFinishedMatches" android:icon="@drawable/ic_clear"/>
+
+	<item android:id="@+id/menu_changeTheme" app:showAsAction="never" android:title="@string/changeTheme" android:visible="false"/>
+
+    <item android:id="@+id/menu_quit" app:showAsAction="never" android:title="@string/quit"
+        android:icon="@drawable/ic_stop"/>
+
 </menu>

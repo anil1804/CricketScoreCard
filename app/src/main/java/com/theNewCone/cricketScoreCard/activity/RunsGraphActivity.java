@@ -22,7 +22,7 @@ import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RunRateGraphActivity extends Activity {
+public class RunsGraphActivity extends Activity {
 
 	GraphView graph;
 
@@ -167,7 +167,7 @@ public class RunRateGraphActivity extends Activity {
 		graph.getViewport().setYAxisBoundsManual(true);
 		graph.getViewport().setMinY(0);
 		graph.getViewport().setMaxY(maxYValue);
-		graph.getViewport().setBackgroundColor(getResources().getColor(R.color.cyan_400));
+		graph.getViewport().setBackgroundColor(getResources().getColor(R.color.cyan_100));
 		graph.animate();
 
 		graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);

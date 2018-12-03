@@ -26,7 +26,7 @@ import com.theNewCone.cricketScoreCard.scorecard.WicketData;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
 
-public class WicketDialogActivity extends FragmentActivity
+public class WicketActivity extends FragmentActivity
 	implements View.OnClickListener, DialogItemClickListener {
 
 	private static final int ACTIVITY_REQ_CODE_FIELDER_SELECT = 1;
@@ -62,7 +62,7 @@ public class WicketDialogActivity extends FragmentActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_wicket_dialog);
+		setContentView(R.layout.activity_wicket);
 
 		Intent incomingIntent = getIntent();
 		if(incomingIntent != null) {
@@ -401,6 +401,10 @@ public class WicketDialogActivity extends FragmentActivity
 		llOutBatsman.setVisibility(outBatsmanVisibility);
 		llRORuns.setVisibility(runsVisibility);
 		llExtra.setVisibility(isExtraVisibility);
+
+		if(llExtra.getVisibility() == View.GONE) {
+			extraData = null;
+		}
 	}
 
 	private void showFielderDialog() {

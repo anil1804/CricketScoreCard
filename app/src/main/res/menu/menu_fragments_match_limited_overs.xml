@@ -9,4 +9,5 @@
     <item android:id="@+id/menu_change_facing" app:showAsAction="never" android:icon="@drawable/ic_download" android:title="@string/changeFacing"/>
     <item android:id="@+id/menu_batsman_hurt" app:showAsAction="never" android:icon="@drawable/ic_download" android:title="@string/batsmanHurt"/>
     <item android:id="@+id/menu_bowler_hurt" app:showAsAction="never" android:icon="@drawable/ic_download" android:title="@string/bowlerHurt"/>
+    <item android:id="@+id/menu_close" app:showAsAction="never" android:icon="@drawable/ic_stop" android:title="@string/quit"/>
 </menu>

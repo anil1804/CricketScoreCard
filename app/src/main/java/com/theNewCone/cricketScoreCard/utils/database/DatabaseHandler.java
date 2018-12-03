@@ -30,7 +30,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public final int CODE_NEW_MATCH_DUP_RECORD = -10;
     public final int CODE_NEW_HELP_CONTENT_DUP_RECORD = -10;
 
-    private static final int DB_VERSION = 14;
+    private static final int DB_VERSION = 15;
     private static final String DB_NAME = "CricketScoreCard";
 
 	private static final String SAVE_AUTO = "Auto";
@@ -73,6 +73,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private final String TBL_MATCH_TEAM2 = "Team2";
     private final String TBL_MATCH_DATE = "DatePlayed";
     private final String TBL_MATCH_IS_COMPLETE = "isComplete";
+    private final String TBL_MATCH_IS_ARCHIVED = "isArchived";
     private final String TBL_MATCH_JSON = "MatchData";
 
     private final String TBL_HELP_CONTENT = "HelpContent";
@@ -137,6 +138,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			String dropTableSQL = "DROP TABLE IF EXISTS " + TBL_HELP_DETAILS;
 			db.execSQL(dropTableSQL);
 			createHelpDetailsTable(db);
+		}
+		if(oldVersion < 15) {
+			String alterMatchTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s INTEGER", TBL_MATCH, TBL_MATCH_IS_ARCHIVED);
+			db.execSQL(alterMatchTableSQL);
 		}
     }
 
@@ -205,6 +211,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         + TBL_MATCH_TEAM2 + " INTEGER, "
 						+ TBL_MATCH_DATE + " TEXT, "
 						+ TBL_MATCH_IS_COMPLETE + " INTEGER DEFAULT 0, "
+						+ TBL_MATCH_IS_ARCHIVED + " INTEGER DEFAULT 0, "
 						+ TBL_MATCH_JSON + " TEXT, "
                         + "FOREIGN KEY (" + TBL_MATCH_TEAM1 + ") REFERENCES " + TBL_TEAM + "(" + TBL_TEAM_ID + "), "
                         + "FOREIGN KEY (" + TBL_MATCH_TEAM2 + ") REFERENCES " + TBL_TEAM + "(" + TBL_TEAM_ID + ")"
@@ -474,13 +481,39 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return matchStateID;
 	}
 
-    public void deleteMatch(int matchStateID) {
+    public void deleteMatchState(int matchStateID) {
     	String query = String.format(Locale.getDefault(),
 				"DELETE FROM %s WHERE %s = %d", TBL_STATE, TBL_STATE_ID, matchStateID);
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.execSQL(query);
 		db.close();
+	}
+
+    public boolean deleteMatches(Match[] matches) {
+    	int rowsUpdated = 0;
+    	if(matches != null && matches.length > 0) {
+    		StringBuilder whereClauseSB = new StringBuilder();
+    		whereClauseSB.append(TBL_MATCH_ID);
+    		whereClauseSB.append(" IN (");
+
+			for(Match match : matches) {
+				whereClauseSB.append(match.getId());
+				whereClauseSB.append(", ");
+			}
+
+			whereClauseSB.delete(whereClauseSB.length() - 2, whereClauseSB.length());
+			whereClauseSB.append(")");
+
+			ContentValues values = new ContentValues();
+			values.put(TBL_MATCH_IS_ARCHIVED, 1);
+
+			SQLiteDatabase db = this.getWritableDatabase();
+			rowsUpdated = db.update(TBL_MATCH, values, whereClauseSB.toString(), null);
+			db.close();
+		}
+
+		return (matches != null && rowsUpdated == matches.length);
 	}
 
 	public void clearMatchStateHistory(int ignoreCount, int matchID, int matchStateID) {
@@ -1002,11 +1035,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				"SELECT %s AS %s, %s AS %s, %s, %s, %s, " +
 						"(SELECT %s FROM %s WHERE %s = %s) AS %s, " +
 						"(SELECT %s FROM %s WHERE %s = %s) AS %s " +
-						"FROM %s WHERE %s = 1",
+						"FROM %s WHERE %s = 1 AND (%s = 0 OR %s IS NULL)",
 				TBL_MATCH+"."+TBL_MATCH_ID, MATCH_ID, TBL_MATCH+"."+TBL_MATCH_NAME, MATCH_NAME, TBL_MATCH_DATE, TBL_MATCH_TEAM1, TBL_MATCH_TEAM2,
 				TBL_TEAM_SHORT_NAME, TBL_TEAM, TBL_TEAM+"."+TBL_TEAM_ID, TBL_MATCH+"."+TBL_MATCH_TEAM1, TEAM1_SHORT_NAME,
 				TBL_TEAM_SHORT_NAME, TBL_TEAM, TBL_TEAM+"."+TBL_TEAM_ID, TBL_MATCH+"."+TBL_MATCH_TEAM2, TEAM2_SHORT_NAME,
-				TBL_MATCH, TBL_MATCH_IS_COMPLETE);
+				TBL_MATCH, TBL_MATCH_IS_COMPLETE, TBL_MATCH_IS_ARCHIVED, TBL_MATCH_IS_ARCHIVED);
 
     	SQLiteDatabase db = this.getReadableDatabase();
     	Cursor cursor = db.rawQuery(selectQuery, null);

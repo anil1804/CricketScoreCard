@@ -35,6 +35,8 @@
 	<string name="saveMatch">Save Match</string>
 	<string name="changeFacing">Change Facing Batsman</string>
 	<string name="batsmanHurt">Batsman Hurt</string>
+	<string name="clearFinishedMatches">Clear Finished Matches</string>
+	<string name="changeTheme">Change Theme</string>
 
 	<!--Common Resources -->
 	<string name="ok">OK</string>
@@ -162,11 +164,12 @@
 	<string name="getPlayerList">Get Player List</string>
 	<string name="noPlayersFound">No Players Found</string>
 	<string name="playerData">Player</string>
-	<string name="players">Players</string>
+	<string name="players">Player Count</string>
 	<string name="style">Style</string>
 	<string name="batStyle">Bat</string>
 	<string name="bowlStyle">Bowl</string>
 	<string name="isWK">is WK?</string>
+	<string name="updateTeams">Update Teams</string>
 
 	<!-- Match Resources -->
 	<string name="enterMatchName">Match Name</string>
@@ -203,7 +206,7 @@
 	<string name="noTeamsFound">No Teams Found</string>
 	<string name="getTeamList">Get Team List</string>
 	<string name="updatePlayers">Update Players</string>
-	<string name="teams">Teams</string>
+	<string name="teams">Team Count</string>
 	<string name="teamData">Team</string>
 
 	<!-- Match Summary -->

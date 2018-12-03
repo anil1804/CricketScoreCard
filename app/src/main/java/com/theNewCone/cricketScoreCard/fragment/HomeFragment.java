@@ -31,19 +31,21 @@ import java.util.Locale;
 
 public class HomeFragment extends Fragment implements View.OnClickListener, ConfirmationDialogClickListener {
 
-	//private static final String STRING_DIALOG_LOAD_SAVED_MATCHES = "LoadSavedMatches";
-
 	private static final int REQ_CODE_MATCH_LIST_LOAD = 1;
 	private static final int REQ_CODE_MATCH_LIST_DELETE = 2;
-	private static final int REQ_CODE_MATCH_LIST_FINISHED = 3;
+	private static final int REQ_CODE_MATCH_LIST_FINISHED_LOAD = 3;
+	private static final int REQ_CODE_MATCH_LIST_FINISHED_DELETE = 4;
 
-	private static final int CONFIRMATION_CODE_DELETE_MATCHES = 1;
+	private static final int CONFIRMATION_CODE_DELETE_SAVED_MATCHES = 1;
 	private static final int CONFIRMATION_CODE_LOAD_LAST_MATCH = 2;
+	private static final int CONFIRMATION_CODE_DELETE_FINISHED_MATCHES = 3;
 
 	DatabaseHandler dbHandler;
 
-	MatchState[] matchesToDelete;
+	MatchState[] matchStatesToDelete;
 	int matchStateID = -1;
+
+	Match[] matchesToDelete;
 
 	public static HomeFragment newInstance() {
 		return new HomeFragment();
@@ -93,18 +95,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.menu_loadData:
-				if(new AddDBData(getContext()).addAll())
-					Toast.makeText(getContext(), "Data uploaded successfully", Toast.LENGTH_SHORT).show();
-				else
-					Toast.makeText(getContext(), "Data upload failed", Toast.LENGTH_SHORT).show();
-				break;
 
 			case R.id.menu_quit:
 				if(getActivity() != null) {
 					getActivity().finishAndRemoveTask();
 				}
 				break;
+
+			case R.id.menu_clearFinishedMatches:
+				displayFinishedMatches(true, REQ_CODE_MATCH_LIST_FINISHED_DELETE);
+				break;
+
 		}
 		return true;
 	}
@@ -150,7 +151,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 					break;
 
 				case R.id.btnFinishedMatches:
-					displayFinishedMatches();
+					displayFinishedMatches(false, REQ_CODE_MATCH_LIST_FINISHED_LOAD);
 					break;
 			}
 		}
@@ -170,19 +171,33 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 
 			case REQ_CODE_MATCH_LIST_DELETE:
 				if(resultCode == MatchStateSelectActivity.RESP_CODE_OK) {
-					matchesToDelete = CommonUtils.objectArrToMatchStateArr(
+					matchStatesToDelete = CommonUtils.objectArrToMatchStateArr(
 							(Object[]) data.getSerializableExtra(MatchStateSelectActivity.ARG_RESP_SEL_MATCHES));
 
-					if(matchesToDelete.length > 0 && getFragmentManager() != null) {
-						ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance(CONFIRMATION_CODE_DELETE_MATCHES,
-								"Confirm Delete", String.format(Locale.getDefault(), "Do you want to delete these %d saved matches?", matchesToDelete.length));
+					if(matchStatesToDelete.length > 0 && getFragmentManager() != null) {
+						ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance(CONFIRMATION_CODE_DELETE_SAVED_MATCHES,
+								"Confirm Delete", String.format(Locale.getDefault(), "Do you want to delete these %d saved matches?", matchStatesToDelete.length));
 						confirmationDialog.setConfirmationClickListener(this);
 						confirmationDialog.show(getFragmentManager(), "DeleteSavedMatches");
 					}
 				}
 				break;
 
-			case REQ_CODE_MATCH_LIST_FINISHED:
+			case REQ_CODE_MATCH_LIST_FINISHED_DELETE:
+				if(resultCode == CompletedMatchSelectActivity.RESP_CODE_OK) {
+					matchesToDelete = CommonUtils.objectArrToMatchArr(
+							(Object[]) data.getSerializableExtra(CompletedMatchSelectActivity.ARG_RESP_SEL_MATCHES));
+
+					if(matchesToDelete.length > 0 && getFragmentManager() != null) {
+						ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance(CONFIRMATION_CODE_DELETE_FINISHED_MATCHES,
+								"Confirm Delete", String.format(Locale.getDefault(), "Do you want to delete these %d finished matches?", matchesToDelete.length));
+						confirmationDialog.setConfirmationClickListener(this);
+						confirmationDialog.show(getFragmentManager(), "DeleteSavedMatches");
+					}
+				}
+				break;
+
+			case REQ_CODE_MATCH_LIST_FINISHED_LOAD:
 				if(resultCode == CompletedMatchSelectActivity.RESP_CODE_OK) {
 					Match selMatch = (Match) data.getSerializableExtra(CompletedMatchSelectActivity.ARG_RESP_SEL_MATCH);
 					if(getActivity() != null) {
@@ -202,12 +217,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	@Override
 	public void onConfirmationClick(int confirmationCode, boolean accepted) {
 		switch (confirmationCode) {
-			case CONFIRMATION_CODE_DELETE_MATCHES:
+			case CONFIRMATION_CODE_DELETE_SAVED_MATCHES:
 				if(accepted) {
-					if(dbHandler.deleteSavedMatchStates(matchesToDelete)) {
-						Toast.makeText(getContext(), "Matches Deleted", Toast.LENGTH_SHORT).show();
+					if(dbHandler.deleteSavedMatchStates(matchStatesToDelete)) {
+						Toast.makeText(getContext(), "Saved Match Instances Deleted", Toast.LENGTH_SHORT).show();
 					} else {
-						Toast.makeText(getContext(), "Unable to delete all matches. Please retry", Toast.LENGTH_LONG).show();
+						Toast.makeText(getContext(), "Unable to delete all saved matches. Please retry", Toast.LENGTH_LONG).show();
+					}
+				}
+				break;
+			case CONFIRMATION_CODE_DELETE_FINISHED_MATCHES:
+				if(accepted) {
+					if(dbHandler.deleteMatches(matchesToDelete)) {
+						Toast.makeText(getContext(), "Finished Matches Deleted", Toast.LENGTH_SHORT).show();
+					} else {
+						Toast.makeText(getContext(), "Unable to delete all finished matches. Please retry", Toast.LENGTH_LONG).show();
 					}
 				}
 				break;
@@ -259,12 +283,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 		}
 	}
 
-	private void displayFinishedMatches() {
+	private void displayFinishedMatches(boolean isMulti, int requestCode) {
 		List<Match> finishedMatches = dbHandler.getCompletedMatches();
 		if(finishedMatches.size() > 0) {
 			Intent finishedMatchesIntent = new Intent(getContext(), CompletedMatchSelectActivity.class);
 			finishedMatchesIntent.putExtra(CompletedMatchSelectActivity.ARG_MATCH_LIST, finishedMatches.toArray());
-			startActivityForResult(finishedMatchesIntent, REQ_CODE_MATCH_LIST_FINISHED);
+			finishedMatchesIntent.putExtra(CompletedMatchSelectActivity.ARG_IS_MULTI_SELECT, isMulti);
+			startActivityForResult(finishedMatchesIntent, requestCode);
 		} else {
 			Toast.makeText(getContext(), "No Finished Matches found.", Toast.LENGTH_SHORT).show();
 		}

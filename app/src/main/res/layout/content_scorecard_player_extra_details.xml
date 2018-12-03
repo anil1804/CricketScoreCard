@@ -131,7 +131,7 @@
 		android:orientation="horizontal"
 		android:paddingTop="5dp"
 		android:paddingBottom="15dp"
-		android:background="@color/lime_100">
+		android:background="@color/gray_300">
 
 		<TextView
 			style="@style/TextViewStyle"

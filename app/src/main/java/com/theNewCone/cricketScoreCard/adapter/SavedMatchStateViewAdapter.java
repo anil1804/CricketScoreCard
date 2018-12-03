@@ -50,6 +50,7 @@ public class SavedMatchStateViewAdapter extends RecyclerView.Adapter<SavedMatchS
 		Match match = holder.matchState.getMatch();
 
         holder.tvSavedName.setText(holder.matchState.getSavedName());
+        holder.tvSavedDate.setText(CommonUtils.dateToString(holder.matchState.getSavedDate(), "MMM dd HH:mm"));
         holder.tvMatchName.setText(match.getName());
         holder.tvTeamVersus.setText(matchVersus);
         holder.tvMatchDate.setText(match.getDate() != null ? CommonUtils.dateToString(match.getDate()) : "");
@@ -64,18 +65,17 @@ public class SavedMatchStateViewAdapter extends RecyclerView.Adapter<SavedMatchS
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-						if(!isMultiSelect) {
-							mListener.onListFragmentInteraction(holder.matchState);
-						} else {
-
-							boolean isPresent = selMatchStateIDs.get(holder.matchState.getId());
-							mListener.onListFragmentMultiSelect(holder.matchState, isPresent);
-							selMatchStateIDs.put(holder.matchState.getId(), !isPresent);
-							notifyItemChanged(position);
-						}
+					if(!isMultiSelect) {
+						mListener.onListFragmentInteraction(holder.matchState);
+					} else {
+						boolean isPresent = selMatchStateIDs.get(holder.matchState.getId());
+						mListener.onListFragmentMultiSelect(holder.matchState, isPresent);
+						selMatchStateIDs.put(holder.matchState.getId(), !isPresent);
+						notifyItemChanged(position);
 					}
 				}
-	        });
+			}
+		});
     }
 
     @Override
@@ -86,12 +86,13 @@ public class SavedMatchStateViewAdapter extends RecyclerView.Adapter<SavedMatchS
     class ViewHolder extends RecyclerView.ViewHolder {
         MatchState matchState;
         final View mView;
-        final TextView tvSavedName, tvMatchName, tvTeamVersus, tvMatchDate;
+        final TextView tvSavedName, tvSavedDate, tvMatchName, tvTeamVersus, tvMatchDate;
 
         ViewHolder(View view) {
             super(view);
             mView = view;
             tvSavedName = view.findViewById(R.id.tvSaveName);
+            tvSavedDate = view.findViewById(R.id.tvSaveDate);
             tvMatchName = view.findViewById(R.id.tvMatchName);
             tvTeamVersus = view.findViewById(R.id.tvTeamVersus);
             tvMatchDate = view.findViewById(R.id.tvMatchDate);

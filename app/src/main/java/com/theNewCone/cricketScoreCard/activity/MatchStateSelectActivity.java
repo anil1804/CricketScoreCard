@@ -73,7 +73,7 @@ public class MatchStateSelectActivity extends Activity
 			rcvMatchList.setItemAnimator(new DefaultItemAnimator());
 
 			if(!isMultiSelect)
-				findViewById(R.id.llMatchSelectButtons).setVisibility(View.GONE);
+				findViewById(R.id.btnSelMatchOK).setVisibility(View.GONE);
 		}
 	}
 
@@ -87,7 +87,6 @@ public class MatchStateSelectActivity extends Activity
 			case R.id.btnSelMatchCancel:
 				sendResponse(RESP_CODE_CANCEL);
 				break;
-
 		}
 	}
 
