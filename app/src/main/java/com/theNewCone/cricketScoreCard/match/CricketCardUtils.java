@@ -15,7 +15,7 @@ import java.util.List;
 
 public class CricketCardUtils implements Cloneable {
     private int numConsecutiveDots = 0, tossWonByTeamID, maxWickets;
-	private boolean newOver;
+	private boolean newOver, matchTied = false, isAbandoned;
 
 	private String matchName, result;
 
@@ -23,7 +23,7 @@ public class CricketCardUtils implements Cloneable {
 
     private BowlerStats bowler, nextBowler, prevBowler;
 	private BatsmanStats currentFacing, otherBatsman;
-	private Team team1, team2;
+	private Team team1, team2, winningTeam;
 	private Player playerOfMatch;
 
 	private List<String> last12Balls;
@@ -92,8 +92,10 @@ public class CricketCardUtils implements Cloneable {
 		return result;
 	}
 
-	public void setResult(String result) {
+	public void setResult(String result, Team winningTeam, boolean matchTied) {
 		this.result = result;
+		this.winningTeam = winningTeam;
+		this.matchTied = true;
 	}
 
 	public Player getPlayerOfMatch() {
@@ -102,6 +104,22 @@ public class CricketCardUtils implements Cloneable {
 
 	public void setPlayerOfMatch(Player playerOfMatch) {
 		this.playerOfMatch = playerOfMatch;
+	}
+
+	public boolean isMatchTied() {
+		return matchTied;
+	}
+
+	public Team getWinningTeam() {
+		return winningTeam;
+	}
+
+	public boolean isAbandoned() {
+		return isAbandoned;
+	}
+
+	public void setAbandoned(boolean abandoned) {
+		isAbandoned = abandoned;
 	}
 
 	public CricketCardUtils(CricketCard card, String matchName, Team team1, Team team2, int maxWickets) {

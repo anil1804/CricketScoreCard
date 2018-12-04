@@ -20,10 +20,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.theNewCone.cricketScoreCard.Constants;
+import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.activity.BatsmanSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.BowlerSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.ExtrasActivity;
-import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.activity.GraphsActivity;
 import com.theNewCone.cricketScoreCard.activity.InputActivity;
 import com.theNewCone.cricketScoreCard.activity.MatchStateSelectActivity;
@@ -1145,15 +1145,20 @@ public class LimitedOversFragment extends Fragment
 		int maxWickets = ccUtils.getMaxWickets();
 
 		String result;
+		Team winningTeam = null;
+		boolean matchTied = false;
 		if(score >= target) {
-			result = String.format(Locale.getDefault(), "%s WON by %d wickets", ccUtils.getTeam2().getName(), (maxWickets - wicketsFallen));
+			winningTeam = ccUtils.getTeam2();
+			result = String.format(Locale.getDefault(), "%s WON by %d wickets", winningTeam.getName(), (maxWickets - wicketsFallen));
 		} else if(score < (target - 1)) {
-			result = String.format(Locale.getDefault(), "%s won by %d runs", ccUtils.getTeam1().getName(), (target - 1 - score));
+			winningTeam = ccUtils.getTeam1();
+			result = String.format(Locale.getDefault(), "%s won by %d runs", winningTeam.getName(), (target - 1 - score));
 		} else {
 			result = "Match TIED";
+			matchTied = true;
 		}
 
-		ccUtils.setResult(result);
+		ccUtils.setResult(result, winningTeam, matchTied);
 
 		theView.findViewById(R.id.llScoring).setVisibility(View.GONE);
 		tvResult.setVisibility(View.VISIBLE);

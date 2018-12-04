@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.adapter.TeamViewAdapter;
@@ -18,6 +19,7 @@ import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class TeamSelectActivity extends Activity
 	implements View.OnClickListener, ListInteractionListener {
@@ -26,11 +28,14 @@ public class TeamSelectActivity extends Activity
 	public static final String ARG_EXISTING_TEAMS = "CurrentAssociatedTeams";
 	public static final String ARG_RESP_TEAM = "SelectedTeam";
 	public static final String ARG_RESP_TEAMS = "SelectedTeams";
+	public static final String ARG_SELECT_COUNT = "SelectionCount";
 
 	public static int RESP_CODE_OK = 1;
 	public static int RESP_CODE_CANCEL = -1;
 
+
 	private static boolean isMultiSelect = false;
+	private static int selectionCount = -1;
 
 	List<Team> selTeams;
 	Team selTeam;
@@ -52,6 +57,7 @@ public class TeamSelectActivity extends Activity
 			if(currentlyAssociatedTeams != null) {
 				selTeams.addAll(new DatabaseHandler(this).getTeams(currentlyAssociatedTeams));
 			}
+			selectionCount = extras.getInt(ARG_SELECT_COUNT, -1);
 		}
 
 		setContentView(R.layout.activity_team_select);
@@ -94,7 +100,14 @@ public class TeamSelectActivity extends Activity
 				break;
 
 			case R.id.btnTeamSelectOK:
-				sendResponse(RESP_CODE_OK);
+				if (selectionCount > -1 && selTeams != null && selTeams.size() != selectionCount) {
+					Toast.makeText(this, String.format(Locale.getDefault()
+							, "Expected %d teams. Selected %d teams. Please selected %d teams."
+							, selectionCount, selTeams.size(), selectionCount),
+							Toast.LENGTH_LONG).show();
+				} else {
+					sendResponse(RESP_CODE_OK);
+				}
 				break;
 
 		}

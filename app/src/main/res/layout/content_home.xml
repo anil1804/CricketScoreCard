@@ -56,10 +56,46 @@
 
     </LinearLayout>
 
-    <!-- Separator -->
-    <View style="@style/LineSeparator.Dark.Margin"/>
+	<!-- Separator -->
+	<View style="@style/LineSeparator.Dark.Margin" />
 
-    <TextView
+	<TextView
+		style="@style/TextViewStyle.Bold.Medium"
+		android:text="@string/tournament" />
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="start"
+		android:orientation="horizontal">
+
+		<Button
+			android:id="@+id/btnNewTournament"
+			style="@style/ButtonStyle.Medium"
+			android:contentDescription="@string/newTournament"
+			android:drawableTop="@drawable/ic_new_trophy"
+			android:text="@string/newTournament" />
+
+		<Button
+			android:id="@+id/btnLoadTournament"
+			style="@style/ButtonStyle.Medium"
+			android:contentDescription="@string/loadTournament"
+			android:drawableTop="@drawable/ic_trophy"
+			android:text="@string/loadTournament" />
+
+		<Button
+			android:id="@+id/btnFinishedTournaments"
+			style="@style/ButtonStyle.Medium"
+			android:contentDescription="@string/finishedTournament"
+			android:drawableTop="@drawable/ic_finished_trophy"
+			android:text="@string/finishedTournament" />
+
+	</LinearLayout>
+
+	<!-- Separator -->
+	<View style="@style/LineSeparator.Dark.Margin" />
+
+	<TextView
         style="@style/TextViewStyle.Bold.Medium"
         android:text="@string/manage"/>
 

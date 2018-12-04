@@ -23,7 +23,6 @@ import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.match.Match;
 import com.theNewCone.cricketScoreCard.match.MatchState;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
-import com.theNewCone.cricketScoreCard.utils.database.AddDBData;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
 import java.util.List;
@@ -70,6 +69,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
         theView.findViewById(R.id.btnLoadMatch).setOnClickListener(this);
         theView.findViewById(R.id.btnDeleteMatches).setOnClickListener(this);
         theView.findViewById(R.id.btnFinishedMatches).setOnClickListener(this);
+		theView.findViewById(R.id.btnNewTournament).setOnClickListener(this);
+		theView.findViewById(R.id.btnLoadTournament).setOnClickListener(this);
+		theView.findViewById(R.id.btnFinishedTournaments).setOnClickListener(this);
 
 		dbHandler = new DatabaseHandler(getContext());
 
@@ -152,6 +154,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 
 				case R.id.btnFinishedMatches:
 					displayFinishedMatches(false, REQ_CODE_MATCH_LIST_FINISHED_LOAD);
+					break;
+
+				case R.id.btnNewTournament:
+					fragmentTag = NewTournamentFragment.class.getSimpleName();
+					fragMgr.beginTransaction()
+							.replace(R.id.frame_container, NewTournamentFragment.newInstance(), fragmentTag)
+							.addToBackStack(fragmentTag)
+							.commit();
 					break;
 			}
 		}

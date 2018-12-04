@@ -464,20 +464,12 @@ public class NewMatchFragment extends Fragment
 	}
 
     private void updateMaxPerBowler() {
-		maxPerBowler = (maxOvers % 5 == 0) ? maxOvers / 5 : (maxOvers / 5 + 1);
-
-		if(maxPerBowler > 0) {
-			if (maxOvers / maxPerBowler > (numPlayers)) {
-				int oversPerBowler = maxOvers / numPlayers;
-				maxPerBowler = (maxOvers % numPlayers == 0) ? oversPerBowler : (oversPerBowler + 1);
-			}
-		}
-
+		maxPerBowler = CommonUtils.updateMaxPerBowler(maxOvers, numPlayers);
 		etMaxPerBowler.setText(String.valueOf(maxPerBowler));
 	}
 
     private void updateNumPlayers() {
-		numPlayers = maxWickets + 1;
+		numPlayers = CommonUtils.updateNumPlayers(maxWickets);
 		etNumPlayers.setText(String.valueOf(numPlayers));
 	}
 

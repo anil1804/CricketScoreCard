@@ -224,4 +224,30 @@
 	<string name="title_question_list">Question</string>
 	<string name="title_question_detail">Question Detail</string>
 	<string name="nav_drawer_info">Help</string>
+	<string name="newTournament">New</string>
+	<string name="loadTournament">Ongoing</string>
+	<string name="finishedTournament">Finished</string>
+	<string name="tournament">Tournament</string>
+
+	<!-- Tournament Names -->
+	<string name="tournamentName">Tournament Name</string>
+	<string name="roundRobin">Round Robin</string>
+	<string name="groups">Groups</string>
+	<string name="tournamentType">Tournament Type: </string>
+	<string name="selectTeams">Select Teams</string>
+	<string name="selectedTeams">Selected Teams : </string>
+	<string name="numGroups">Num. of Groups</string>
+	<string name="tournamentStages">Tournament Stages : </string>
+	<string name="superFourStage">Super Four</string>
+	<string name="knockOut">Knock Out</string>
+	<string name="qualifiers">Qualifier-Eliminator</string>
+	<string name="superSixStage">Super Six</string>
+	<string name="schedule">Schedule</string>
+	<string name="manageGroups">View/Edit Groups</string>
+	<string name="selectedTeamsCount">Num. of Teams : </string>
+	<string name="numTeams">Num. of Teams</string>
+	<string name="bilateral">Bilateral</string>
+	<string name="confirm">Confirm</string>
+	<string name="numRounds">Num. of Rounds</string>
+	<string name="numMatches">Num. of Matches</string>
 </resources>

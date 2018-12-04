@@ -14,6 +14,7 @@ import com.theNewCone.cricketScoreCard.match.Match;
 import com.theNewCone.cricketScoreCard.match.MatchState;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.player.Player;
+import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
 import java.text.ParseException;
@@ -29,8 +30,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public final int CODE_NEW_TEAM_DUP_RECORD = -10;
     public final int CODE_NEW_MATCH_DUP_RECORD = -10;
     public final int CODE_NEW_HELP_CONTENT_DUP_RECORD = -10;
-
-    private static final int DB_VERSION = 15;
+	private static final int DB_VERSION = 16;
+	public final int CODE_NEW_TOURNAMENT_DUP_RECORD = -10;
     private static final String DB_NAME = "CricketScoreCard";
 
 	private static final String SAVE_AUTO = "Auto";
@@ -86,6 +87,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private final String TBL_HELP_DETAILS_TEXT = "Text";
 	private final String TBL_HELP_DETAILS_SRC_ID_JSON = "SourceIDJson";
 	private final String TBL_HELP_DETAILS_ORDER = "ContentOrder";
+	private final String TBL_TOURNAMENT = "Tournament";
+	private final String TBL_TOURNAMENT_ID = "ID";
+	private final String TBL_TOURNAMENT_NAME = "Name";
+	private final String TBL_TOURNAMENT_JSON = "Content";
+	private final String TBL_TOURNAMENT_IS_SCHEDULED = "isScheduled";
+	private final String TBL_TOURNAMENT_IS_COMPLETE = "isComplete";
 
     public DatabaseHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -100,6 +107,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         createMatchTable(db);
         createHelpContentTable(db);
         createHelpDetailsTable(db);
+		createTournamentTable(db);
     }
 
     @Override
@@ -143,6 +151,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			String alterMatchTableSQL = String.format(Locale.getDefault(),
 					"ALTER TABLE %s ADD COLUMN %s INTEGER", TBL_MATCH, TBL_MATCH_IS_ARCHIVED);
 			db.execSQL(alterMatchTableSQL);
+		}
+		if (oldVersion < 16) {
+			createTournamentTable(db);
 		}
     }
 
@@ -241,6 +252,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 						+ ")";
 
     	db.execSQL(createTableSQL);
+	}
+
+	private void createTournamentTable(SQLiteDatabase db) {
+		String createTableSQL =
+				"CREATE TABLE " + TBL_TOURNAMENT + "("
+						+ TBL_TOURNAMENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+						+ TBL_TOURNAMENT_NAME + " TEXT, "
+						+ TBL_TOURNAMENT_JSON + " TEXT, "
+						+ TBL_TOURNAMENT_IS_SCHEDULED + " INTEGER DEFAULT 0, "
+						+ TBL_TOURNAMENT_IS_COMPLETE + " INTEGER DEFAULT 0"
+						+ ")";
+
+		db.execSQL(createTableSQL);
 	}
 
     private int saveMatchState(int matchID, String matchJson, int isAuto, String saveName, String matchName) {
@@ -1214,5 +1238,55 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.delete(TBL_HELP_DETAILS, null, null);
 
 		db.close();
+	}
+
+	public int createNewTournament(Tournament tournament) {
+		int rowID = 0;
+		if (tournament != null) {
+			ContentValues values = new ContentValues();
+
+			values.put(TBL_TOURNAMENT_NAME, tournament.getName());
+			values.put(TBL_TOURNAMENT_JSON, CommonUtils.convertTournamentToJSON(tournament));
+			if (tournament.getSchedule() != null)
+				values.put(TBL_TOURNAMENT_IS_SCHEDULED, 1);
+
+			SQLiteDatabase db = this.getWritableDatabase();
+
+			boolean alreadyExists = false;
+			String selectQuery = String.format(Locale.getDefault(),
+					"SELECT %s FROM %s WHERE %s = '%s'",
+					TBL_TOURNAMENT_ID, TBL_TOURNAMENT, TBL_TOURNAMENT_NAME, tournament.getName());
+			Cursor cursor = db.rawQuery(selectQuery, null);
+
+			if (cursor != null && cursor.moveToFirst()) {
+				alreadyExists = true;
+				cursor.close();
+			}
+
+			rowID = CODE_NEW_TOURNAMENT_DUP_RECORD;
+
+			if (!alreadyExists)
+				rowID = (int) db.insert(TBL_TOURNAMENT, null, values);
+
+			db.close();
+		}
+
+		return rowID;
+	}
+
+	public boolean updateTournament(Tournament tournament) {
+		ContentValues values = new ContentValues();
+
+		values.put(TBL_TOURNAMENT_NAME, tournament.getName());
+		values.put(TBL_TOURNAMENT_JSON, CommonUtils.convertTournamentToJSON(tournament));
+		if (tournament.getSchedule() != null)
+			values.put(TBL_TOURNAMENT_IS_SCHEDULED, 1);
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		int rowsUpdated = db.update(TBL_TOURNAMENT, values, TBL_TOURNAMENT_ID + " = ?", new String[]{String.valueOf(tournament.getId())});
+
+		db.close();
+
+		return (rowsUpdated == 1);
 	}
 }

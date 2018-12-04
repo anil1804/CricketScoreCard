@@ -1,0 +1,302 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context="com.theNewCone.cricketScoreCard.fragment.NewTournamentFragment">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<GridLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:columnCount="2"
+			android:columnOrderPreserved="true"
+			android:orientation="horizontal">
+
+			<TextView
+				android:id="@+id/tvTournamentName"
+				style="@style/TextViewStyle.Bold.Medium"
+				android:layout_marginBottom="10dp"
+				android:labelFor="@id/etTournamentName"
+				android:text="@string/tournamentName" />
+
+			<EditText
+				android:id="@+id/etTournamentName"
+				style="@style/EditTextStyle"
+				android:inputType="text"
+				android:maxLength="30"
+				android:minWidth="200dp" />
+
+			<View
+				style="@style/LineSeparator"
+				android:layout_columnSpan="2" />
+
+			<TextView
+				style="@style/TextViewStyle.Bold.Medium"
+				android:layout_marginBottom="10dp"
+				android:text="@string/numTeams" />
+
+			<EditText
+				android:id="@+id/etTournamentTeamCount"
+				style="@style/EditTextStyle"
+				android:inputType="number"
+				android:maxLength="2"
+				android:minWidth="50dp"
+				android:text="@string/two" />
+
+			<TextView
+				style="@style/TextViewStyle.Bold.Medium"
+				android:background="@color/gray_100"
+				android:text="@string/selectTeams" />
+
+			<Button
+				android:id="@+id/btnSelectTournamentTeams"
+				style="@style/ButtonStyle.Small"
+				android:drawableStart="@drawable/ic_edit" />
+
+			<TextView
+				style="@style/TextViewStyle.Bold.Medium"
+				android:layout_columnSpan="2"
+				android:text="@string/selectedTeams" />
+
+			<TextView
+				android:id="@+id/tvSelectedTeams"
+				style="@style/TextViewStyle.Medium"
+				android:layout_width="match_parent"
+				android:layout_columnSpan="2" />
+
+			<View
+				style="@style/LineSeparator"
+				android:layout_columnSpan="2" />
+
+			<LinearLayout
+				android:id="@+id/llTournamentType"
+				android:layout_columnSpan="2"
+				android:visibility="gone">
+
+				<TextView
+					style="@style/TextViewStyle.Bold.Medium"
+					android:text="@string/tournamentType" />
+
+				<GridLayout
+					android:id="@+id/rgTournamentType"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:columnCount="2">
+
+					<RadioButton
+						android:id="@+id/rbTTRoundRobin"
+						style="@style/RadioButtonStyle.SmallPadding"
+						android:text="@string/roundRobin" />
+
+					<RadioButton
+						android:id="@+id/rbTTGroups"
+						style="@style/RadioButtonStyle.SmallPadding"
+						android:text="@string/groups" />
+
+					<RadioButton
+						android:id="@+id/rbTTKnockOut"
+						style="@style/RadioButtonStyle.SmallPadding"
+						android:text="@string/knockOut" />
+
+					<RadioButton
+						android:id="@+id/rbTTBilateral"
+						style="@style/RadioButtonStyle.SmallPadding"
+						android:text="@string/bilateral" />
+
+				</GridLayout>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:id="@+id/llGroupSize"
+				android:layout_columnSpan="2"
+				android:orientation="horizontal"
+				android:visibility="gone">
+
+				<TextView
+					style="@style/TextViewStyle.Bold.Medium"
+					android:labelFor="@id/etTournamentGroups"
+					android:text="@string/numGroups" />
+
+				<EditText
+					android:id="@+id/etTournamentGroups"
+					style="@style/EditTextStyle"
+					android:inputType="number"
+					android:maxLength="1"
+					android:minWidth="50dp" />
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:id="@+id/llNumRounds"
+				android:layout_columnSpan="2"
+				android:orientation="horizontal"
+				android:visibility="gone">
+
+				<TextView
+					android:id="@+id/tvNumRounds"
+					style="@style/TextViewStyle.Bold.Medium"
+					android:labelFor="@id/etTournamentGroups"
+					android:text="@string/numRounds" />
+
+				<EditText
+					android:id="@+id/etNumRounds"
+					style="@style/EditTextStyle"
+					android:inputType="number"
+					android:maxLength="1"
+					android:minWidth="50dp" />
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:id="@+id/llTournamentStage"
+				android:layout_columnSpan="2"
+				android:visibility="gone">
+
+				<TextView
+					style="@style/TextViewStyle.Bold.Medium"
+					android:layout_marginTop="10dp"
+					android:text="@string/tournamentStages" />
+
+				<GridLayout
+					android:id="@+id/rgTournamentStage"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="10dp"
+					android:columnCount="2">
+
+					<RadioButton
+						android:id="@+id/rbTSSuperFourStage"
+						style="@style/RadioButtonStyle.NoPadding"
+						android:text="@string/superFourStage" />
+
+					<RadioButton
+						android:id="@+id/rbTSSuperSixStage"
+						style="@style/RadioButtonStyle.NoPadding"
+						android:text="@string/superSixStage" />
+
+					<RadioButton
+						android:id="@+id/rbTSKnockOut"
+						style="@style/RadioButtonStyle.NoPadding"
+						android:text="@string/knockOut" />
+
+					<RadioButton
+						android:id="@+id/rbTSQualifiers"
+						style="@style/RadioButtonStyle.NoPadding"
+						android:text="@string/qualifiers" />
+
+					<RadioButton
+						android:id="@+id/rbTSNone"
+						style="@style/RadioButtonStyle.NoPadding"
+						android:text="@string/none" />
+
+				</GridLayout>
+
+			</LinearLayout>
+
+			<View
+				style="@style/LineSeparator"
+				android:layout_columnSpan="2" />
+
+		</GridLayout>
+
+		<View style="@style/LineSeparator" />
+
+		<LinearLayout
+			android:id="@+id/llGroupValidation"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"
+			android:orientation="vertical">
+
+			<Button
+				android:id="@+id/btnTournamentValidate"
+				style="@style/ButtonStyle.Medium"
+				android:drawableTop="@drawable/ic_check"
+				android:text="@string/validate" />
+
+		</LinearLayout>
+
+		<View style="@style/LineSeparator" />
+
+		<GridLayout
+			android:id="@+id/glOversAndPlayers"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:columnCount="4"
+			android:columnOrderPreserved="true"
+			android:visibility="gone">
+
+			<TextView
+				style="@style/TextViewStyle.Bold.Medium.MorePadding"
+				android:labelFor="@id/etMaxOvers"
+				android:text="@string/maxOvers" />
+
+			<EditText
+				android:id="@+id/etMaxOvers"
+				style="@style/EditTextStyle"
+				android:layout_width="50dp"
+				android:gravity="center_horizontal"
+				android:inputType="number"
+				android:maxLength="2"
+				android:text="@string/maxOversValue" />
+
+			<TextView
+				style="@style/TextViewStyle.Bold.Medium.MorePadding"
+				android:labelFor="@id/etMaxPerBowler"
+				android:text="@string/maxOversPerBowler" />
+
+			<EditText
+				android:id="@+id/etMaxPerBowler"
+				style="@style/EditTextStyle"
+				android:layout_width="50dp"
+				android:gravity="center_horizontal"
+				android:inputType="number"
+				android:maxLength="2" />
+
+			<TextView
+				style="@style/TextViewStyle.Bold.Medium.MorePadding"
+				android:labelFor="@id/etMaxWickets"
+				android:text="@string/maxWickets" />
+
+			<EditText
+				android:id="@+id/etMaxWickets"
+				style="@style/EditTextStyle"
+				android:layout_width="50dp"
+				android:gravity="center_horizontal"
+				android:inputType="number"
+				android:maxLength="2"
+				android:text="@string/maxWicketsValue" />
+
+			<TextView
+				style="@style/TextViewStyle.Bold.Medium.MorePadding"
+				android:labelFor="@id/etNumPlayers"
+				android:text="@string/numPlayers" />
+
+			<EditText
+				android:id="@+id/etNumPlayers"
+				style="@style/EditTextStyle"
+				android:layout_width="50dp"
+				android:gravity="center_horizontal"
+				android:inputType="number"
+				android:maxLength="2" />
+
+		</GridLayout>
+
+		<View style="@style/LineSeparator" />
+
+		<Button
+			android:id="@+id/btnConfirmTournament"
+			style="@style/ButtonStyle.Medium"
+			android:layout_gravity="center_horizontal"
+			android:drawableTop="@drawable/ic_done_all"
+			android:text="@string/confirm"
+			android:visibility="gone" />
+
+	</LinearLayout>
+
+</ScrollView>

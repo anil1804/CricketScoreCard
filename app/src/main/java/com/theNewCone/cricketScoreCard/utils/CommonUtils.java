@@ -14,13 +14,12 @@ import com.theNewCone.cricketScoreCard.help.HelpContent;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.match.Match;
 import com.theNewCone.cricketScoreCard.match.MatchState;
-import com.theNewCone.cricketScoreCard.match.OverInfo;
-import com.theNewCone.cricketScoreCard.match.Partnership;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.player.BatsmanStats;
 import com.theNewCone.cricketScoreCard.player.BowlerStats;
 import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.scorecard.Extra;
+import com.theNewCone.cricketScoreCard.tournament.Tournament;
 
 import java.lang.reflect.Type;
 import java.text.DecimalFormat;
@@ -453,5 +452,77 @@ public class CommonUtils {
 
 	public static int dpToPx(final Context context, final int dp) {
 		return dp * Math.round(context.getResources().getDisplayMetrics().density);
+	}
+
+	public static int updateNumPlayers(int maxWickets) {
+		return maxWickets + 1;
+	}
+
+	public static int updateMaxPerBowler(int maxOvers, int numPlayers) {
+		int maxPerBowler = (maxOvers % 5 == 0) ? maxOvers / 5 : (maxOvers / 5 + 1);
+
+		if (maxPerBowler > 0 && numPlayers > 0) {
+			if (maxOvers / maxPerBowler > (numPlayers)) {
+				int oversPerBowler = maxOvers / numPlayers;
+				maxPerBowler = (maxOvers % numPlayers == 0) ? oversPerBowler : (oversPerBowler + 1);
+			}
+		}
+
+		return maxPerBowler;
+	}
+
+	public static boolean isDivisibleBy(int number, int divisor) {
+		return (divisor > 1 && number > divisor && number % divisor == 0);
+	}
+
+	public static boolean isPowerOf(int number, int divisor) {
+		if (divisor > 1) {
+			if (number > divisor) {
+				if (number % divisor == 0) {
+					return isPowerOf(number / divisor, divisor);
+				} else {
+					return false;
+				}
+			} else return number == divisor;
+		}
+
+		return false;
+	}
+
+	public static boolean isPrime(int number) {
+		if (number > 0 && number < 4)
+			return true;
+
+		for (int i = 2; i <= number / 2; i++) {
+			if (number % i == 0)
+				return false;
+		}
+
+		return true;
+	}
+
+	public static String convertTournamentToJSON(Tournament tournamentObj) {
+		if (tournamentObj != null) {
+			Gson gson = new Gson();
+			Type type = new TypeToken<Tournament>() {
+			}.getType();
+
+			return gson.toJson(tournamentObj, type);
+		}
+
+		return null;
+	}
+
+	public static Tournament convertJSONToTournament(String jsonString) {
+		Tournament tournament = null;
+		if (jsonString != null) {
+			Gson gson = new Gson();
+			Type type = new TypeToken<Tournament>() {
+			}.getType();
+
+			tournament = gson.fromJson(jsonString, type);
+		}
+
+		return tournament;
 	}
 }
