@@ -41,8 +41,9 @@ public class CompletedMatchViewAdapter extends RecyclerView.Adapter<CompletedMat
     }
 
     @Override
-    public void onBindViewHolder(@NonNull  final ViewHolder holder, final int position) {
-        holder.match = savedMatchList.get(position);
+	public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+		final int adapterPosition = holder.getAdapterPosition();
+		holder.match = savedMatchList.get(adapterPosition);
 
         String matchVersus = holder.match.getTeam1ShortName() + " v " +
 				holder.match.getTeam2ShortName();
@@ -70,7 +71,7 @@ public class CompletedMatchViewAdapter extends RecyclerView.Adapter<CompletedMat
 					boolean isPresent = selMatchIDs.get(holder.match.getId());
 					mListener.onListFragmentMultiSelect(holder.match, isPresent);
 					selMatchIDs.put(holder.match.getId(), !isPresent);
-					notifyItemChanged(position);
+					notifyItemChanged(adapterPosition);
 				}
 			}
 			}

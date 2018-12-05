@@ -30,7 +30,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public final int CODE_NEW_TEAM_DUP_RECORD = -10;
     public final int CODE_NEW_MATCH_DUP_RECORD = -10;
     public final int CODE_NEW_HELP_CONTENT_DUP_RECORD = -10;
-	private static final int DB_VERSION = 16;
+	private static final int DB_VERSION = 17;
 	public final int CODE_NEW_TOURNAMENT_DUP_RECORD = -10;
     private static final String DB_NAME = "CricketScoreCard";
 
@@ -87,12 +87,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private final String TBL_HELP_DETAILS_TEXT = "Text";
 	private final String TBL_HELP_DETAILS_SRC_ID_JSON = "SourceIDJson";
 	private final String TBL_HELP_DETAILS_ORDER = "ContentOrder";
+
 	private final String TBL_TOURNAMENT = "Tournament";
 	private final String TBL_TOURNAMENT_ID = "ID";
 	private final String TBL_TOURNAMENT_NAME = "Name";
+	private final String TBL_TOURNAMENT_TEAM_SIZE = "TeamSize";
+	private final String TBL_TOURNAMENT_FORMAT = "Format";
 	private final String TBL_TOURNAMENT_JSON = "Content";
 	private final String TBL_TOURNAMENT_IS_SCHEDULED = "isScheduled";
 	private final String TBL_TOURNAMENT_IS_COMPLETE = "isComplete";
+	private final String TBL_TOURNAMENT_CREATED_DATE = "CreatedDate";
 
     public DatabaseHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -153,6 +157,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			db.execSQL(alterMatchTableSQL);
 		}
 		if (oldVersion < 16) {
+			createTournamentTable(db);
+		}
+		if (oldVersion < 17) {
+			String dropTableSQL = "DROP TABLE IF EXISTS " + TBL_TOURNAMENT;
+			db.execSQL(dropTableSQL);
+
 			createTournamentTable(db);
 		}
     }
@@ -259,7 +269,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				"CREATE TABLE " + TBL_TOURNAMENT + "("
 						+ TBL_TOURNAMENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 						+ TBL_TOURNAMENT_NAME + " TEXT, "
+						+ TBL_TOURNAMENT_TEAM_SIZE + " INTEGER, "
+						+ TBL_TOURNAMENT_FORMAT + " TEXT, "
 						+ TBL_TOURNAMENT_JSON + " TEXT, "
+						+ TBL_TOURNAMENT_CREATED_DATE + " TEXT, "
 						+ TBL_TOURNAMENT_IS_SCHEDULED + " INTEGER DEFAULT 0, "
 						+ TBL_TOURNAMENT_IS_COMPLETE + " INTEGER DEFAULT 0"
 						+ ")";
@@ -1246,7 +1259,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			ContentValues values = new ContentValues();
 
 			values.put(TBL_TOURNAMENT_NAME, tournament.getName());
+			values.put(TBL_TOURNAMENT_TEAM_SIZE, tournament.getTeams().length);
+			values.put(TBL_TOURNAMENT_FORMAT, tournament.getFormat().toString());
 			values.put(TBL_TOURNAMENT_JSON, CommonUtils.convertTournamentToJSON(tournament));
+			values.put(TBL_TOURNAMENT_CREATED_DATE, CommonUtils.currTimestamp());
 			if (tournament.getSchedule() != null)
 				values.put(TBL_TOURNAMENT_IS_SCHEDULED, 1);
 
@@ -1288,5 +1304,64 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 
 		return (rowsUpdated == 1);
+	}
+
+	public boolean completeTournament(int tournamentID) {
+		ContentValues values = new ContentValues();
+
+		values.put(TBL_TOURNAMENT_IS_COMPLETE, 1);
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		int rowsUpdated = db.update(TBL_TOURNAMENT, values, TBL_TOURNAMENT_ID + " = ?", new String[]{String.valueOf(tournamentID)});
+
+		db.close();
+
+		return (rowsUpdated == 1);
+	}
+
+	public List<Tournament> getTournaments(boolean getCompleted) {
+		List<Tournament> tournamentList = new ArrayList<>();
+
+		String sqlQuery = String.format(Locale.getDefault(),
+				"SELECT %s, %s, %s, %s, %s " +
+						"FROM %s WHERE %s = %d"
+				, TBL_TOURNAMENT_ID, TBL_TOURNAMENT_NAME, TBL_TOURNAMENT_TEAM_SIZE, TBL_TOURNAMENT_FORMAT, TBL_TOURNAMENT_CREATED_DATE
+				, TBL_TOURNAMENT, TBL_TOURNAMENT_IS_COMPLETE, (getCompleted ? 1 : 0));
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(sqlQuery, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			do {
+				int id = cursor.getInt(cursor.getColumnIndex(TBL_TOURNAMENT_ID));
+				String name = cursor.getString(cursor.getColumnIndex(TBL_TOURNAMENT_NAME));
+				String createdDate = cursor.getString(cursor.getColumnIndex(TBL_TOURNAMENT_CREATED_DATE));
+				int teamSize = cursor.getInt(cursor.getColumnIndex(TBL_TOURNAMENT_TEAM_SIZE));
+				String format = cursor.getString(cursor.getColumnIndex(TBL_TOURNAMENT_FORMAT));
+
+				tournamentList.add(new Tournament(id, name, teamSize, Tournament.TournamentFormat.valueOf(format), createdDate));
+			} while (cursor.moveToNext());
+			cursor.close();
+		}
+		db.close();
+
+		return tournamentList;
+	}
+
+	public Tournament getTournamentContent(int tournamentID) {
+		Tournament tournament = null;
+
+		String selectQuery = String.format(Locale.getDefault(), "SELECT %s FROM %s WHERE %s = %d",
+				TBL_TOURNAMENT_JSON, TBL_TOURNAMENT, TBL_TOURNAMENT_ID, tournamentID);
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		if (cursor.moveToFirst()) {
+			String tournamentData = cursor.getString(0);
+			tournament = CommonUtils.convertJSONToTournament(tournamentData);
+		}
+		cursor.close();
+		db.close();
+
+		return tournament;
 	}
 }

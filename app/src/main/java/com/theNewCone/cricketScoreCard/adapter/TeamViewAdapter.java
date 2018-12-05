@@ -43,9 +43,10 @@ public class TeamViewAdapter extends RecyclerView.Adapter<TeamViewAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull  final ViewHolder holder, final int position) {
+	public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+		final int adapterPosition = holder.getAdapterPosition();
 
-        holder.team = teamList.get(position);
+		holder.team = teamList.get(adapterPosition);
         holder.tvTeamName.setText(holder.team.getName());
         holder.tvTeamShortName.setText(holder.team.getShortName());
 
@@ -65,7 +66,7 @@ public class TeamViewAdapter extends RecyclerView.Adapter<TeamViewAdapter.ViewHo
 						boolean isPresent = selTeamIDs.get(holder.team.getId());
 						mListener.onListFragmentMultiSelect(holder.team, isPresent);
 						selTeamIDs.put(holder.team.getId(), !isPresent);
-						notifyItemChanged(position);
+						notifyItemChanged(adapterPosition);
 					}
 				}
 			}

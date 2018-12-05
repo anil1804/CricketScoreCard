@@ -26,7 +26,7 @@ public class CompletedMatchSelectActivity extends Activity
 	public static final String ARG_MATCH_LIST = "MatchList";
 	public static final String ARG_IS_MULTI_SELECT = "isMultiSelect";
 	public static final String ARG_RESP_SEL_MATCH = "SelectedMatch";
-	public static final String ARG_RESP_SEL_MATCHES = "SelectedMatch";
+	public static final String ARG_RESP_SEL_MATCHES = "SelectedMatches";
 
 	public static final int RESP_CODE_OK = 1;
 	public static final int RESP_CODE_CANCEL = -1;

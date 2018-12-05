@@ -57,7 +57,7 @@ public class HomeActivity extends AppCompatActivity
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		new ThemeColors(this);
+		//new ThemeColors(this);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home_activity);
 		if (savedInstanceState == null) {

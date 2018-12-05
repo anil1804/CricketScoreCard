@@ -46,7 +46,7 @@ public class InformationDialog extends DialogFragment {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setTitle(title)
 				.setMessage(message)
-				.setNeutralButton("OK", null);
+				.setPositiveButton("OK", null);
 		return builder.create();
 	}
 }

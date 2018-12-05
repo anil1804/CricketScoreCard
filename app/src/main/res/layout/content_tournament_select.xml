@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_gravity="center"
+	android:background="@android:color/transparent"
+	android:gravity="center"
+	tools:context=".activity.TournamentSelectActivity">
+
+	<ScrollView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/llTournamentSelectButtons"
+		app:layout_constraintTop_toTopOf="parent">
+
+		<android.support.v7.widget.RecyclerView
+			android:id="@+id/rcvTournamentList"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="60dp" />
+
+	</ScrollView>
+
+	<LinearLayout
+		android:id="@+id/llTournamentSelectButtons"
+		style="@style/LinearLayoutStyleSubmit"
+		app:layout_constraintBottom_toBottomOf="parent">
+
+		<Button
+			android:id="@+id/btnSelTournamentCancel"
+			style="@style/ButtonStyle.Submit"
+			android:text="@string/cancel" />
+
+		<Button
+			android:id="@+id/btnSelTournamentOK"
+			style="@style/ButtonStyle.Submit"
+			android:text="@string/ok" />
+
+	</LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

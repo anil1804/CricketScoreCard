@@ -270,6 +270,24 @@ public class CommonUtils {
         return dataPoints;
     }
 
+	public static Tournament[] objectArrToTournamentArr(Object[] objArr) {
+		Tournament[] tournaments = null;
+
+		if (objArr != null) {
+			tournaments = new Tournament[objArr.length];
+
+			int i = 0;
+			for (Object obj : objArr) {
+				if (obj instanceof Tournament) {
+					tournaments[i] = (Tournament) obj;
+					i++;
+				}
+			}
+		}
+
+		return tournaments;
+	}
+
     public static String convertToJSON(CricketCardUtils ccUtilsObj) {
 		if(ccUtilsObj != null) {
 			Gson gson = new Gson();

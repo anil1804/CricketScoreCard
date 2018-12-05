@@ -79,7 +79,7 @@
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium"
-					android:text="@string/tournamentType" />
+					android:text="@string/tournamentFormat" />
 
 				<GridLayout
 					android:id="@+id/rgTournamentType"

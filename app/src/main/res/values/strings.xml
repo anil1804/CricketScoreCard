@@ -233,7 +233,7 @@
 	<string name="tournamentName">Tournament Name</string>
 	<string name="roundRobin">Round Robin</string>
 	<string name="groups">Groups</string>
-	<string name="tournamentType">Tournament Type: </string>
+	<string name="tournamentFormat">Tournament Format: </string>
 	<string name="selectTeams">Select Teams</string>
 	<string name="selectedTeams">Selected Teams : </string>
 	<string name="numGroups">Num. of Groups</string>
@@ -250,4 +250,7 @@
 	<string name="confirm">Confirm</string>
 	<string name="numRounds">Num. of Rounds</string>
 	<string name="numMatches">Num. of Matches</string>
+	<string name="tournamentTeamSizePrefix">Team Size :</string>
+	<string name="tournamentFormatPrefix">Format :</string>
+	<string name="tournamentCreatedDate">Created at :</string>
 </resources>

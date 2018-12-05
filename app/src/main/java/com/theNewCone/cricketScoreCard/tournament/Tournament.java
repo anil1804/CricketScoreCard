@@ -5,16 +5,18 @@ import com.theNewCone.cricketScoreCard.match.Team;
 import java.io.Serializable;
 
 public class Tournament implements Serializable {
-	private int id, numGroups, numRounds;
+	private int id, numGroups, numRounds, teamSize;
 	private String name;
 	private Team[] teams;
+	private Group[] groups;
 	private int maxOvers, maxWickets, players, maxPerBowler;
-	private TournamentType type;
+	private TournamentFormat format;
 	private TournamentStageType stageType;
 	private Schedule schedule;
+	private String createdDate;
 
 	public Tournament(String name, Team[] teams, int maxOvers, int maxWickets, int players, int maxPerBowler,
-					  int numGroups, int numRounds, TournamentType type, TournamentStageType stageType) {
+					  int numGroups, int numRounds, TournamentFormat format, TournamentStageType stageType) {
 		this.numGroups = numGroups;
 		this.numRounds = numRounds;
 		this.name = name;
@@ -23,12 +25,13 @@ public class Tournament implements Serializable {
 		this.maxWickets = maxWickets;
 		this.players = players;
 		this.maxPerBowler = maxPerBowler;
-		this.type = type;
+		this.format = format;
 		this.stageType = stageType;
+		this.teamSize = (teams != null) ? teams.length : 0;
 	}
 
 	public Tournament(String name, Team[] teams, int maxOvers, int maxWickets, int players, int maxPerBowler,
-					  int numRounds, TournamentType type, TournamentStageType stageType) {
+					  int numRounds, TournamentFormat format, TournamentStageType stageType) {
 		this.numGroups = -1;
 		this.numRounds = numRounds;
 		this.name = name;
@@ -37,12 +40,13 @@ public class Tournament implements Serializable {
 		this.maxWickets = maxWickets;
 		this.players = players;
 		this.maxPerBowler = maxPerBowler;
-		this.type = type;
+		this.format = format;
 		this.stageType = stageType;
+		this.teamSize = (teams != null) ? teams.length : 0;
 	}
 
 	public Tournament(int id, String name, Team[] teams, int maxOvers, int maxWickets, int players, int maxPerBowler,
-					  int numGroups, int numRounds, TournamentType type, TournamentStageType stageType) {
+					  int numGroups, int numRounds, TournamentFormat format, TournamentStageType stageType) {
 		this.id = id;
 		this.numGroups = numGroups;
 		this.numRounds = numRounds;
@@ -52,8 +56,17 @@ public class Tournament implements Serializable {
 		this.maxWickets = maxWickets;
 		this.players = players;
 		this.maxPerBowler = maxPerBowler;
-		this.type = type;
+		this.format = format;
 		this.stageType = stageType;
+		this.teamSize = (teams != null) ? teams.length : 0;
+	}
+
+	public Tournament(int id, String name, int teamSize, TournamentFormat format, String createdDate) {
+		this.id = id;
+		this.teamSize = teamSize;
+		this.name = name;
+		this.format = format;
+		this.createdDate = createdDate;
 	}
 
 	public int getId() {
@@ -76,6 +89,10 @@ public class Tournament implements Serializable {
 		return teams;
 	}
 
+	public Group[] getGroups() {
+		return groups;
+	}
+
 	public int getMaxOvers() {
 		return maxOvers;
 	}
@@ -92,8 +109,8 @@ public class Tournament implements Serializable {
 		return maxPerBowler;
 	}
 
-	public TournamentType getType() {
-		return type;
+	public void setGroups(Group[] groups) {
+		this.groups = groups;
 	}
 
 	public TournamentStageType getStageType() {
@@ -108,7 +125,19 @@ public class Tournament implements Serializable {
 		this.schedule = schedule;
 	}
 
-	public enum TournamentType {
+	public TournamentFormat getFormat() {
+		return format;
+	}
+
+	public int getTeamSize() {
+		return teamSize;
+	}
+
+	public String getCreatedDate() {
+		return createdDate;
+	}
+
+	public enum TournamentFormat {
 		ROUND_ROBIN, GROUPS, KNOCK_OUT, BILATERAL
 	}
 

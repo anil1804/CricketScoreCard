@@ -57,17 +57,21 @@
     </LinearLayout>
 
 	<!-- Separator -->
-	<View style="@style/LineSeparator.Dark.Margin" />
+	<View
+		style="@style/LineSeparator.Dark.Margin"
+		android:visibility="gone" />
 
 	<TextView
 		style="@style/TextViewStyle.Bold.Medium"
-		android:text="@string/tournament" />
+		android:text="@string/tournament"
+		android:visibility="gone" />
 
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:gravity="start"
-		android:orientation="horizontal">
+		android:orientation="horizontal"
+		android:visibility="gone">
 
 		<Button
 			android:id="@+id/btnNewTournament"

@@ -41,7 +41,7 @@ public class NewTournamentFragment extends Fragment
 	GridLayout rgTTGroup, rgTSGroup, glOversAndPlayers;
 	private Team[] selTeams;
 	private int numTeams, numGroups, numRounds, maxOvers, maxWickets, maxPerBowler, numPlayers;
-	private Tournament.TournamentType type = null;
+	private Tournament.TournamentFormat type = null;
 	private Tournament.TournamentStageType stageType = null;
 
 	public NewTournamentFragment() {
@@ -90,7 +90,7 @@ public class NewTournamentFragment extends Fragment
 
 			case R.id.rbTTRoundRobin:
 				clearOtherCheckedRadioButtons(rgTTGroup, view.getId());
-				type = Tournament.TournamentType.ROUND_ROBIN;
+				type = Tournament.TournamentFormat.ROUND_ROBIN;
 
 				setVisibility();
 				updateStageOptions();
@@ -98,7 +98,7 @@ public class NewTournamentFragment extends Fragment
 
 			case R.id.rbTTGroups:
 				clearOtherCheckedRadioButtons(rgTTGroup, view.getId());
-				type = Tournament.TournamentType.GROUPS;
+				type = Tournament.TournamentFormat.GROUPS;
 
 				setVisibility();
 				updateStageOptions();
@@ -106,7 +106,7 @@ public class NewTournamentFragment extends Fragment
 
 			case R.id.rbTTKnockOut:
 				clearOtherCheckedRadioButtons(rgTTGroup, view.getId());
-				type = Tournament.TournamentType.KNOCK_OUT;
+				type = Tournament.TournamentFormat.KNOCK_OUT;
 				stageType = Tournament.TournamentStageType.NONE;
 
 				setVisibility();
@@ -115,7 +115,7 @@ public class NewTournamentFragment extends Fragment
 
 			case R.id.rbTTBilateral:
 				clearOtherCheckedRadioButtons(rgTTGroup, view.getId());
-				type = Tournament.TournamentType.BILATERAL;
+				type = Tournament.TournamentFormat.BILATERAL;
 				stageType = Tournament.TournamentStageType.NONE;
 
 				setVisibility();
@@ -513,6 +513,12 @@ public class NewTournamentFragment extends Fragment
 		if (numTeams < 2) {
 			messageSB.append(errorNumber++);
 			messageSB.append(". Invalid Number of teams. Have to be at-least 2 teams");
+		} else if (selTeams == null || selTeams.length == 0) {
+			messageSB.append(errorNumber++);
+			messageSB.append(". Teams not selected. Please select the teams");
+		} else if (numTeams != selTeams.length) {
+			messageSB.append(errorNumber++);
+			messageSB.append(". Number of teams provided and number of teams selected do no match.");
 		}
 
 		if (type == null) {
@@ -527,14 +533,14 @@ public class NewTournamentFragment extends Fragment
 				messageSB.append(". Number of Rounds should be at-least one.");
 			}
 
-			if (type == Tournament.TournamentType.KNOCK_OUT) {
+			if (type == Tournament.TournamentFormat.KNOCK_OUT) {
 				if (!CommonUtils.isPowerOf(numTeams, 2)) {
 					messageSB.append(errorNumber++);
 					messageSB.append(". Number of teams have to be a power of 2 for Knock Out type of tournament.");
 				}
 			}
 
-			if (type == Tournament.TournamentType.GROUPS) {
+			if (type == Tournament.TournamentFormat.GROUPS) {
 				if (numTeams / numGroups <= 2) {
 					messageSB.append(errorNumber++);
 					messageSB.append(". A group should contain at-least 3 teams. Please choose a different format/decrease number of groups.");
@@ -549,7 +555,7 @@ public class NewTournamentFragment extends Fragment
 				}
 			}
 
-			if (type == Tournament.TournamentType.ROUND_ROBIN) {
+			if (type == Tournament.TournamentFormat.ROUND_ROBIN) {
 				if (numTeams < 3) {
 					messageSB.append(errorNumber++);
 					messageSB.append(". At least 3 teams required for round-robin.");
@@ -561,7 +567,7 @@ public class NewTournamentFragment extends Fragment
 				}
 			}
 
-			if (type == Tournament.TournamentType.BILATERAL) {
+			if (type == Tournament.TournamentFormat.BILATERAL) {
 				if (numTeams != 2) {
 					messageSB.append(errorNumber++);
 					messageSB.append(". Only 2 teams allowed for a bilateral series.");
@@ -572,7 +578,7 @@ public class NewTournamentFragment extends Fragment
 				messageSB.append(errorNumber++);
 				messageSB.append(". Tournament Stage Type not selected.");
 			} else {
-				if (type == Tournament.TournamentType.GROUPS) {
+				if (type == Tournament.TournamentFormat.GROUPS) {
 					if (stageType == Tournament.TournamentStageType.KNOCK_OUT) {
 						if (!(CommonUtils.isPowerOf(numGroups, 2)
 								|| CommonUtils.isPowerOf(numGroups * 2, 2)

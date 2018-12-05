@@ -43,8 +43,9 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull  final ViewHolder holder, final int position) {
-        holder.player = playerList.get(position);
+	public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+		final int adapterPosition = holder.getAdapterPosition();
+		holder.player = playerList.get(adapterPosition);
         String playerNameText = holder.player.getName() + (holder.player.isWicketKeeper() ? " (w)" : "");
         holder.tvPlayerName.setText(playerNameText);
         holder.tvBatStyle.setText(holder.player.getBattingStyle().toString());
@@ -66,7 +67,7 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
 							boolean isPresent = selPlayerIDs.get(holder.player.getID());
 							mListener.onListFragmentMultiSelect(holder.player, isPresent);
 							selPlayerIDs.put(holder.player.getID(), !isPresent);
-							notifyItemChanged(position);
+							notifyItemChanged(adapterPosition);
 						}
 					}
 				}

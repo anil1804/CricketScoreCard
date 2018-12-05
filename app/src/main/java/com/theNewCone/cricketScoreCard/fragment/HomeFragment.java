@@ -17,11 +17,13 @@ import android.widget.Toast;
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.activity.CompletedMatchSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.MatchStateSelectActivity;
+import com.theNewCone.cricketScoreCard.activity.TournamentSelectActivity;
 import com.theNewCone.cricketScoreCard.intf.ConfirmationDialogClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.match.Match;
 import com.theNewCone.cricketScoreCard.match.MatchState;
+import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
@@ -34,6 +36,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	private static final int REQ_CODE_MATCH_LIST_DELETE = 2;
 	private static final int REQ_CODE_MATCH_LIST_FINISHED_LOAD = 3;
 	private static final int REQ_CODE_MATCH_LIST_FINISHED_DELETE = 4;
+	private static final int REQ_CODE_TOURNAMENT_LOAD_RUNNING = 5;
+	private static final int REQ_CODE_TOURNAMENT_LOAD_FINISHED = 6;
 
 	private static final int CONFIRMATION_CODE_DELETE_SAVED_MATCHES = 1;
 	private static final int CONFIRMATION_CODE_LOAD_LAST_MATCH = 2;
@@ -157,11 +161,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 					break;
 
 				case R.id.btnNewTournament:
-					fragmentTag = NewTournamentFragment.class.getSimpleName();
-					fragMgr.beginTransaction()
-							.replace(R.id.frame_container, NewTournamentFragment.newInstance(), fragmentTag)
-							.addToBackStack(fragmentTag)
-							.commit();
+					startNewTournament(fragMgr);
+					break;
+
+				case R.id.btnLoadTournament:
+					showTournamentsDialog(false, REQ_CODE_TOURNAMENT_LOAD_RUNNING, false);
+					break;
+
+				case R.id.btnFinishedTournaments:
+					showTournamentsDialog(false, REQ_CODE_TOURNAMENT_LOAD_FINISHED, true);
 					break;
 			}
 		}
@@ -221,6 +229,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 					}
 				}
 				break;
+
+			case REQ_CODE_TOURNAMENT_LOAD_RUNNING:
+				if (resultCode == TournamentSelectActivity.RESP_CODE_OK) {
+					Tournament tournament = (Tournament) data.getSerializableExtra(TournamentSelectActivity.ARG_RESP_SEL_TOURNAMENT);
+					Tournament actualTournament = dbHandler.getTournamentContent(tournament.getId());
+					if (actualTournament.getSchedule() != null) {
+						//TODO: Route to the Tournament Home Screen
+					} else {
+						if (actualTournament.getFormat() == Tournament.TournamentFormat.GROUPS) {
+							//TODO: Route to Tournament Groups confirmation screen
+						} else {
+							//TODO: Route to Tournament Schedule Screen
+						}
+					}
+				}
 		}
 	}
 
@@ -302,6 +325,40 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 			startActivityForResult(finishedMatchesIntent, requestCode);
 		} else {
 			Toast.makeText(getContext(), "No Finished Matches found.", Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	private void startNewTournament(FragmentManager fragMgr) {
+		String fragmentTag;
+		if (dbHandler.getTeams(null, 0).size() < 2) {
+			String title = "Not enough Teams";
+			String message = "Need at-least 2 teams to start a tournament.\n" +
+					"Use 'Manage Teams' to create teams before starting a new tournament.";
+			if (getFragmentManager() != null) {
+				InformationDialog infoDialog = InformationDialog.newInstance(title, message);
+				infoDialog.show(getFragmentManager(), "NotEnoughTeams");
+			} else {
+				Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+			}
+		} else {
+
+			fragmentTag = NewTournamentFragment.class.getSimpleName();
+			fragMgr.beginTransaction()
+					.replace(R.id.frame_container, NewTournamentFragment.newInstance(), fragmentTag)
+					.addToBackStack(fragmentTag)
+					.commit();
+		}
+	}
+
+	private void showTournamentsDialog(boolean isMulti, int requestCode, boolean getCompleted) {
+		List<Tournament> tournamentList = dbHandler.getTournaments(getCompleted);
+		if (tournamentList.size() > 0) {
+			Intent showTournamentsIntent = new Intent(getContext(), TournamentSelectActivity.class);
+			showTournamentsIntent.putExtra(TournamentSelectActivity.ARG_TOURNAMENT_LIST, tournamentList.toArray());
+			startActivityForResult(showTournamentsIntent, requestCode);
+		} else {
+			String message = "No " + (getCompleted ? "Finished" : "Running") + " Tournaments Found.";
+			Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
 		}
 	}
 }

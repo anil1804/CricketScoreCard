@@ -12,7 +12,7 @@ public class ThemeColors {
 
 	public ThemeColors(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		int theme = prefs.getInt(APPLIED_THEME, R.style.AppTheme);
+		int theme = prefs.getInt(APPLIED_THEME, R.style.AppTheme_NoActionBar);
 		context.setTheme(theme);
 	}
 
