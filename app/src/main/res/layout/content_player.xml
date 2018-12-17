@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+	android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
@@ -42,22 +42,40 @@
             android:labelFor="@id/etPlayerAge"
             android:text="@string/playerBattingStyle"/>
 
-        <TextView
-            style="@style/TextViewStyle"
-            android:id="@+id/tvPlayerBatStyle"
-            android:text="@string/selectBatStyle"/>
+		<LinearLayout>
 
-        <TextView
+			<TextView
+				android:id="@+id/tvPlayerBatStyle"
+				style="@style/TextViewStyle"
+				android:text="@string/selectBatStyle" />
+
+			<Button
+				android:id="@+id/btnSelectPlayerBatStyle"
+				style="@style/ButtonStyle.Small"
+				android:drawableStart="@drawable/ic_edit" />
+
+		</LinearLayout>
+
+		<TextView
             style="@style/TextViewStyle.Bold.Medium.MorePadding"
             android:labelFor="@id/etPlayerAge"
             android:text="@string/playerBowlingStyle"/>
 
-        <TextView
-            style="@style/TextViewStyle"
-            android:id="@+id/tvPlayerBowlStyle"
-            android:text="@string/selectBowlStyle"/>
+		<LinearLayout>
 
-        <CheckBox
+			<TextView
+				android:id="@+id/tvPlayerBowlStyle"
+				style="@style/TextViewStyle"
+				android:text="@string/selectBowlStyle" />
+
+			<Button
+				android:id="@+id/btnSelectPlayerBowlStyle"
+				style="@style/ButtonStyle.Small"
+				android:drawableStart="@drawable/ic_edit" />
+
+		</LinearLayout>
+
+		<CheckBox
             style="@style/TextViewStyle.Bold.Medium.MorePadding"
             android:id="@+id/cbIsPlayerWK"
             android:checked="false"
@@ -65,19 +83,34 @@
             android:textAlignment="viewStart"
             android:layout_columnSpan="2"/>
 
-        <TextView
-            style="@style/TextViewStyle.Bold.Medium.MorePadding"
-            android:labelFor="@id/tvTeams"
-            android:text="@string/teams"/>
+		<View
+			style="@style/LineSeparator.Dark.Margin"
+			android:layout_columnSpan="2" />
 
-        <TextView
-            style="@style/TextViewStyle"
-            android:id="@+id/tvTeams"
-            android:text="@string/none"/>
+		<TextView
+			style="@style/TextViewStyle.Bold.Medium.MorePadding"
+			android:labelFor="@id/tvTeams"
+			android:text="@string/teams" />
 
-    </GridLayout>
+		<LinearLayout>
 
-    <LinearLayout
+			<TextView
+				android:id="@+id/tvTeams"
+				style="@style/TextViewStyle"
+				android:text="@string/none" />
+
+			<Button
+				android:id="@+id/btnPlayerManageTeams"
+				style="@style/ButtonStyle.Small"
+				android:drawableStart="@drawable/ic_assign" />
+
+		</LinearLayout>
+
+	</GridLayout>
+
+	<View style="@style/LineSeparator.Dark.Margin" />
+
+	<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -106,5 +139,7 @@
             android:text="@string/clear"/>
 
     </LinearLayout>
+
+	<View style="@style/LineSeparator.Dark.Margin" />
 
 </LinearLayout>

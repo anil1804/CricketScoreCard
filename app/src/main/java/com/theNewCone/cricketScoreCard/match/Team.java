@@ -1,5 +1,7 @@
 package com.theNewCone.cricketScoreCard.match;
 
+import android.support.annotation.Nullable;
+
 import com.theNewCone.cricketScoreCard.player.Player;
 
 import java.io.Serializable;
@@ -86,5 +88,13 @@ public class Team implements Serializable {
 		}
 
     	return false;
+	}
+
+	@Override
+	public boolean equals(@Nullable Object obj) {
+		if (obj instanceof Team)
+			return this.id == ((Team) obj).id;
+		else
+			return super.equals(obj);
 	}
 }

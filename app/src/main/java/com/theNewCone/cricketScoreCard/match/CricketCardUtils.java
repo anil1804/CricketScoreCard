@@ -4,18 +4,22 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.theNewCone.cricketScoreCard.Constants;
+import com.theNewCone.cricketScoreCard.enumeration.DismissalType;
+import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
 import com.theNewCone.cricketScoreCard.player.BatsmanStats;
 import com.theNewCone.cricketScoreCard.player.BowlerStats;
 import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.scorecard.Extra;
 import com.theNewCone.cricketScoreCard.scorecard.WicketData;
+import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CricketCardUtils implements Cloneable {
     private int numConsecutiveDots = 0, tossWonByTeamID, maxWickets;
-	private boolean newOver, matchTied = false, isAbandoned;
+	private boolean newOver, matchTied = false, isAbandoned = false;
+	private boolean isTournament = false;
 
 	private String matchName, result;
 
@@ -25,6 +29,7 @@ public class CricketCardUtils implements Cloneable {
 	private BatsmanStats currentFacing, otherBatsman;
 	private Team team1, team2, winningTeam;
 	private Player playerOfMatch;
+	private MatchInfo matchInfo;
 
 	private List<String> last12Balls;
 
@@ -92,10 +97,11 @@ public class CricketCardUtils implements Cloneable {
 		return result;
 	}
 
-	public void setResult(String result, Team winningTeam, boolean matchTied) {
+	public void setResult(String result, Team winningTeam, boolean matchTied, boolean isAbandoned) {
 		this.result = result;
 		this.winningTeam = winningTeam;
-		this.matchTied = true;
+		this.matchTied = matchTied;
+		this.isAbandoned = isAbandoned;
 	}
 
 	public Player getPlayerOfMatch() {
@@ -118,8 +124,17 @@ public class CricketCardUtils implements Cloneable {
 		return isAbandoned;
 	}
 
-	public void setAbandoned(boolean abandoned) {
-		isAbandoned = abandoned;
+	public boolean isTournament() {
+		return isTournament;
+	}
+
+	public MatchInfo getMatchInfo() {
+		return matchInfo;
+	}
+
+	public void setMatchInfo(MatchInfo matchInfo) {
+		this.matchInfo = matchInfo;
+		this.isTournament = true;
 	}
 
 	public CricketCardUtils(CricketCard card, String matchName, Team team1, Team team2, int maxWickets) {
@@ -279,7 +294,7 @@ public class CricketCardUtils implements Cloneable {
 		boolean isOut = false;
 		if(wicketData != null) {
 			isOut = true;
-			Player effectedBy = (wicketData.getDismissalType() == WicketData.DismissalType.STUMPED)
+			Player effectedBy = (wicketData.getDismissalType() == DismissalType.STUMPED)
 					? card.getBowlingTeam().getWicketKeeper() : wicketData.getEffectedBy();
 
             if(currentFacing.getPosition() == wicketData.getBatsman().getPosition()) {
@@ -309,12 +324,12 @@ public class CricketCardUtils implements Cloneable {
 
 	private void checkNextBatsmanFacingBall(int runs, Extra extra) {
     	if(extra != null) {
-    		if(extra.getType() == Extra.ExtraType.BYE
-					|| extra.getType() == Extra.ExtraType.LEG_BYE
-					|| extra.getType() == Extra.ExtraType.WIDE
-					|| (extra.getType() == Extra.ExtraType.NO_BALL && (
-							extra.getSubType() == Extra.ExtraType.BYE
-									|| extra.getSubType() == Extra.ExtraType.LEG_BYE
+			if (extra.getType() == ExtraType.BYE
+					|| extra.getType() == ExtraType.LEG_BYE
+					|| extra.getType() == ExtraType.WIDE
+					|| (extra.getType() == ExtraType.NO_BALL && (
+					extra.getSubType() == ExtraType.BYE
+							|| extra.getSubType() == ExtraType.LEG_BYE
 					))) {
     			runs = extra.getRuns();
 			}
@@ -387,7 +402,7 @@ public class CricketCardUtils implements Cloneable {
 
 		if(wicketData != null) {
 			card.incWicketsFallen();
-			if(wicketData.getDismissalType() == WicketData.DismissalType.TIMED_OUT) {
+			if (wicketData.getDismissalType() == DismissalType.TIMED_OUT) {
 				bowlerBalls = 0;
 				batsmanBalls = 0;
 			}
@@ -419,7 +434,7 @@ public class CricketCardUtils implements Cloneable {
 	}
 
 	public void updateBatsmanHurt(BatsmanStats hurtBatsman) {
-		hurtBatsman.setDismissalType(WicketData.DismissalType.RETIRED_HURT);
+		hurtBatsman.setDismissalType(DismissalType.RETIRED_HURT);
 		hurtBatsman.evaluateStrikeRate();
 		hurtBatsman.setNotOut(true);
 

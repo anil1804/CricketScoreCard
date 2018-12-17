@@ -1,5 +1,6 @@
 package com.theNewCone.cricketScoreCard.match;
 
+import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
 import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.scorecard.Extra;
 import com.theNewCone.cricketScoreCard.scorecard.WicketData;
@@ -30,7 +31,7 @@ public class BallInfo implements Serializable {
 
 	int getAllRunsScored() {
 		int allRuns = runsScored;
-		if(extra != null && (extra.getType() == Extra.ExtraType.BYE || extra.getType() == Extra.ExtraType.LEG_BYE))
+		if (extra != null && (extra.getType() == ExtraType.BYE || extra.getType() == ExtraType.LEG_BYE))
 			allRuns += extra.getRuns();
 
 		return allRuns;

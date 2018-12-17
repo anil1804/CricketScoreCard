@@ -10,9 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.R;
+import com.theNewCone.cricketScoreCard.enumeration.DismissalType;
 import com.theNewCone.cricketScoreCard.intf.ItemClickListener;
 import com.theNewCone.cricketScoreCard.player.BatsmanStats;
-import com.theNewCone.cricketScoreCard.scorecard.WicketData;
 
 import java.util.List;
 
@@ -84,7 +84,7 @@ public class BatsmanListAdapter extends RecyclerView.Adapter<BatsmanListAdapter.
              }
 
             //Disabling batsman who are out or currently playing
-            if (batsman.getPosition() < newBatsmanPosition && batsman.getDismissalType() != WicketData.DismissalType.RETIRED_HURT) {
+			if (batsman.getPosition() < newBatsmanPosition && batsman.getDismissalType() != DismissalType.RETIRED_HURT) {
                 llBatsmanItem.setEnabled(false);
             }
 

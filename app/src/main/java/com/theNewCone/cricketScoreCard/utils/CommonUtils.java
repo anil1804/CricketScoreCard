@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jjoe64.graphview.series.DataPoint;
 import com.theNewCone.cricketScoreCard.Constants;
+import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
 import com.theNewCone.cricketScoreCard.help.HelpContent;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.match.Match;
@@ -18,13 +19,14 @@ import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.player.BatsmanStats;
 import com.theNewCone.cricketScoreCard.player.BowlerStats;
 import com.theNewCone.cricketScoreCard.player.Player;
-import com.theNewCone.cricketScoreCard.scorecard.Extra;
+import com.theNewCone.cricketScoreCard.tournament.Group;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 
 import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -95,7 +97,7 @@ public class CommonUtils {
 		return df.format(number);
 	}
 
-	public static String[] getExtraDetailsArray(Extra.ExtraType extraType, Extra.ExtraType extraSubType) {
+	public static String[] getExtraDetailsArray(ExtraType extraType, ExtraType extraSubType) {
 		String[] extraRunsArray = null;
 
 		switch (extraType) {
@@ -490,7 +492,7 @@ public class CommonUtils {
 	}
 
 	public static boolean isDivisibleBy(int number, int divisor) {
-		return (divisor > 1 && number > divisor && number % divisor == 0);
+		return (divisor > 1 && number >= divisor && number % divisor == 0);
 	}
 
 	public static boolean isPowerOf(int number, int divisor) {
@@ -521,9 +523,19 @@ public class CommonUtils {
 
 	public static String convertTournamentToJSON(Tournament tournamentObj) {
 		if (tournamentObj != null) {
+			List<Group> groupList = new ArrayList<>();
+			if (tournamentObj.getGroupList() != null) {
+				groupList.addAll(tournamentObj.getGroupList());
+			}
+			tournamentObj.setGroupList(null);
+
 			Gson gson = new Gson();
 			Type type = new TypeToken<Tournament>() {
 			}.getType();
+
+			if (groupList.size() > 0) {
+				tournamentObj.setGroupList(groupList);
+			}
 
 			return gson.toJson(tournamentObj, type);
 		}

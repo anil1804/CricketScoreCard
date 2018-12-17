@@ -34,17 +34,32 @@
             android:inputType="text"
             android:id="@+id/etTeamShortName"/>
 
-        <TextView
+		<View
+			style="@style/LineSeparator.Dark.Margin"
+			android:layout_columnSpan="2" />
+
+		<TextView
             style="@style/TextViewStyle.Bold.Medium.MorePadding"
             android:text="@string/players"
             android:labelFor="@id/tvPlayers"/>
 
-        <TextView
-            style="@style/TextViewStyle"
-            android:id="@+id/tvPlayers"
-            android:text="@string/none"/>
+		<LinearLayout>
 
-    </GridLayout>
+			<TextView
+				android:id="@+id/tvPlayers"
+				style="@style/TextViewStyle"
+				android:text="@string/none" />
+
+			<Button
+				android:id="@+id/btnTeamManagePlayers"
+				style="@style/ButtonStyle.Small"
+				android:drawableStart="@drawable/ic_assign" />
+
+		</LinearLayout>
+
+	</GridLayout>
+
+	<View style="@style/LineSeparator.Dark.Margin" />
 
 	<LinearLayout
 		android:layout_width="match_parent"
@@ -75,5 +90,7 @@
 			android:visibility="gone"/>
 
 	</LinearLayout>
+
+	<View style="@style/LineSeparator.Dark.Margin" />
 
 </LinearLayout>

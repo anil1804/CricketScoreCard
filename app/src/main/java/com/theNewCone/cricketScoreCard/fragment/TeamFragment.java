@@ -29,6 +29,7 @@ import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TeamFragment extends Fragment
@@ -39,7 +40,7 @@ public class TeamFragment extends Fragment
 
 	private static final int CONFIRMATION_DELETE_TEAM = 1;
 
-    Button btnSaveTeam, btnDeleteTeam, btnReset;
+	Button btnSaveTeam, btnDeleteTeam, btnReset, btnManagePlayers;
     EditText etTeamName, etShortName;
     TextView tvPlayers;
 
@@ -114,9 +115,13 @@ public class TeamFragment extends Fragment
 		btnDeleteTeam = theView.findViewById(R.id.btnDeleteTeam);
 		btnReset = theView.findViewById(R.id.btnResetData);
 
+		btnManagePlayers = theView.findViewById(R.id.btnTeamManagePlayers);
+
 		btnSaveTeam.setOnClickListener(this);
 		btnDeleteTeam.setOnClickListener(this);
 		btnReset.setOnClickListener(this);
+
+		btnManagePlayers.setOnClickListener(this);
 	}
 
 	@Override
@@ -133,6 +138,13 @@ public class TeamFragment extends Fragment
 			case R.id.btnResetData:
 				selTeam = null;
 				populateData();
+				break;
+
+			case R.id.btnTeamManagePlayers:
+				if (selTeam != null && selTeam.getId() > 0)
+					showPlayerListDialog();
+				else
+					Toast.makeText(getContext(), "Select/Create a team to update player list", Toast.LENGTH_SHORT).show();
 				break;
         }
     }
@@ -161,9 +173,15 @@ public class TeamFragment extends Fragment
 
 			case REQ_CODE_UPDATE_PLAYERS:
 				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
-					selPlayers =
-							CommonUtils.objectArrToPlayerArr((Object[]) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYERS));
+					Player[] players = CommonUtils.objectArrToPlayerArr((Object[]) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYERS));
 
+					if (!Arrays.equals(players, selPlayers)) {
+						Toast.makeText(getContext(),
+								"Player List has Changed. Please click on 'Save' for changes to be updated.",
+								Toast.LENGTH_LONG).show();
+					}
+
+					selPlayers = players;
 					tvPlayers.setText(String.valueOf(selPlayers != null && selPlayers.length > 0 ? selPlayers.length : getString(R.string.none)));
 				}
 		}

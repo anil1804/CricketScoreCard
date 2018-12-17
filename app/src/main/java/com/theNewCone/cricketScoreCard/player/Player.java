@@ -1,7 +1,10 @@
 package com.theNewCone.cricketScoreCard.player;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.theNewCone.cricketScoreCard.enumeration.BattingType;
+import com.theNewCone.cricketScoreCard.enumeration.BowlingType;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
 import java.io.Serializable;
@@ -77,11 +80,11 @@ public class Player implements Serializable {
 		this.isWicketKeeper = isWicketKeeper;
 	}
 
-	public enum BattingType {
-		LHB, RHB, NOT_SELECTED
-	}
-
-	public enum BowlingType {
-		RF, RFM, RMF, RM, LF, LFM, LMF, LM, OB, LB, SLA, SLC, NONE, NOT_SELECTED
+	@Override
+	public boolean equals(@Nullable Object obj) {
+		if (obj instanceof Player)
+			return this.id == ((Player) obj).id;
+		else
+			return super.equals(obj);
 	}
 }

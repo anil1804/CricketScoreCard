@@ -1,5 +1,7 @@
 package com.theNewCone.cricketScoreCard.scorecard;
 
+import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
+
 import java.io.Serializable;
 
 public class Extra implements Serializable {
@@ -34,7 +36,4 @@ public class Extra implements Serializable {
 		return subType;
 	}
 
-	public enum ExtraType {
-		WIDE, NO_BALL, LEG_BYE, BYE, PENALTY, NONE
-	}
 }

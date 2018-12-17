@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
-import com.theNewCone.cricketScoreCard.scorecard.Extra;
+import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
 import java.util.Locale;
@@ -31,7 +31,7 @@ public class ExtrasActivity extends Activity
 
 	RadioGroup rgExtraNB, rgExtraRuns;
 
-	Extra.ExtraType extraType;
+	ExtraType extraType;
 	Intent incomingIntent;
 
 	@Override
@@ -55,15 +55,15 @@ public class ExtrasActivity extends Activity
 				break;
 
 			case R.id.rbExtraNBNone:
-				populateRuns(Extra.ExtraType.NONE);
+				populateRuns(ExtraType.NONE);
 				break;
 
 			case R.id.rbExtraNBBye:
-				populateRuns(Extra.ExtraType.BYE);
+				populateRuns(ExtraType.BYE);
 				break;
 
 			case R.id.rbExtraNBLegBye:
-				populateRuns(Extra.ExtraType.LEG_BYE);
+				populateRuns(ExtraType.LEG_BYE);
 				break;
 
 			case R.id.rbExtraOtherRuns:
@@ -93,7 +93,7 @@ public class ExtrasActivity extends Activity
 
 		incomingIntent = getIntent();
 		if(incomingIntent != null) {
-			extraType = (Extra.ExtraType) incomingIntent.getSerializableExtra(Constants.ARG_EXTRA_TYPE);
+			extraType = (ExtraType) incomingIntent.getSerializableExtra(Constants.ARG_EXTRA_TYPE);
 		}
 
 		tvExtra.setText(getExtraText());
@@ -105,7 +105,7 @@ public class ExtrasActivity extends Activity
 				break;
 		}
 
-		populateRuns(Extra.ExtraType.NONE);
+		populateRuns(ExtraType.NONE);
 	}
 
 	private String getExtraText() {
@@ -121,7 +121,7 @@ public class ExtrasActivity extends Activity
 		}
 	}
 
-	private void populateRuns(Extra.ExtraType extraSubType) {
+	private void populateRuns(ExtraType extraSubType) {
 		int i=0;
 
 		RadioButton rbExtraOtherRuns = findViewById(R.id.rbExtraOtherRuns);
@@ -158,21 +158,21 @@ public class ExtrasActivity extends Activity
 	}
 
 	private void processExtras(int resultCode) {
-		Extra.ExtraType extraNBType = Extra.ExtraType.NONE;
+		ExtraType extraNBType = ExtraType.NONE;
 		int numRuns = -1;
 		String team = Constants.BATTING_TEAM;
 
 		boolean validationOk = true;
 
 		if(resultCode == RESULT_CODE_OK) {
-			if (extraType == Extra.ExtraType.NO_BALL) {
+			if (extraType == ExtraType.NO_BALL) {
 				int rgExtraNBSelId = rgExtraNB.getCheckedRadioButtonId();
 				RadioButton rbExtraNB = findViewById(rgExtraNBSelId);
 
 				if (getString(R.string.extraNBBye).equals(rbExtraNB.getText().toString())) {
-					extraNBType = Extra.ExtraType.BYE;
+					extraNBType = ExtraType.BYE;
 				} else if (getString(R.string.extraNBLegBye).equals(rbExtraNB.getText().toString())) {
-					extraNBType = Extra.ExtraType.LEG_BYE;
+					extraNBType = ExtraType.LEG_BYE;
 				}
 			}
 

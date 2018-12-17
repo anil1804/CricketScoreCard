@@ -3,6 +3,7 @@ package com.theNewCone.cricketScoreCard.match;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
 import com.theNewCone.cricketScoreCard.player.BatsmanStats;
 import com.theNewCone.cricketScoreCard.player.BowlerStats;
 import com.theNewCone.cricketScoreCard.player.Player;
@@ -241,7 +242,7 @@ public class CricketCard implements Serializable {
 		int runs = runsScored;
 		if(extra != null) {
 			runs += extra.getRuns();
-			if(extra.getType() == Extra.ExtraType.WIDE || extra.getType() == Extra.ExtraType.NO_BALL)
+			if (extra.getType() == ExtraType.WIDE || extra.getType() == ExtraType.NO_BALL)
 				runs++;
 		}
 
@@ -293,7 +294,7 @@ public class CricketCard implements Serializable {
 
 	void addNewBall(int runsScored, BowlerStats bowler, Extra extra, WicketData wicketData) {
 		currBallNum = incrementNextBallNumber ? currBallNum + 1 : currBallNum;
-		incrementNextBallNumber = (extra == null || (extra.getType() != Extra.ExtraType.NO_BALL && extra.getType() != Extra.ExtraType.WIDE));
+		incrementNextBallNumber = (extra == null || (extra.getType() != ExtraType.NO_BALL && extra.getType() != ExtraType.WIDE));
 
 		BallInfo ballInfo = new BallInfo(currBallNum, runsScored, extra, wicketData, bowler.getPlayer());
 		currOver.newBallBowled(ballInfo);

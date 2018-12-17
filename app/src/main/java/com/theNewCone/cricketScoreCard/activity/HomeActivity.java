@@ -23,6 +23,7 @@ import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.custom.ThemeColors;
 import com.theNewCone.cricketScoreCard.fragment.HomeFragment;
+import com.theNewCone.cricketScoreCard.fragment.LimitedOversFragment;
 import com.theNewCone.cricketScoreCard.fragment.NewMatchFragment;
 import com.theNewCone.cricketScoreCard.fragment.PlayerFragment;
 import com.theNewCone.cricketScoreCard.fragment.StringDialog;
@@ -30,6 +31,8 @@ import com.theNewCone.cricketScoreCard.fragment.TeamFragment;
 import com.theNewCone.cricketScoreCard.help.HelpContentData;
 import com.theNewCone.cricketScoreCard.intf.DialogItemClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
+import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
+import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
 import java.util.HashMap;
@@ -37,6 +40,9 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener, DrawerController, DialogItemClickListener {
+
+	public static final String ARG_TOURNAMENT = "Tournament";
+	public static final String ARG_MATCH_INFO = "MatchInfo";
 
 	private final String DIALOG_THEME_SELECT = "ThemeSelect";
 
@@ -54,17 +60,43 @@ public class HomeActivity extends AppCompatActivity
 	NavigationView navigationView;
 
 	Toolbar toolbar;
+	private DatabaseHandler dbHandler;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		dbHandler = new DatabaseHandler(this);
+
 		//new ThemeColors(this);
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.home_activity);
+		setContentView(R.layout.activity_home);
 		if (savedInstanceState == null) {
-			getSupportFragmentManager().beginTransaction()
-					.replace(R.id.frame_container, HomeFragment.newInstance())
-					.commitNow();
+			Tournament tournament = null;
+			MatchInfo matchInfo = null;
+			if (getIntent() != null && getIntent().getExtras() != null) {
+				Bundle bundle = getIntent().getExtras();
+				tournament = (Tournament) bundle.getSerializable(ARG_TOURNAMENT);
+				matchInfo = (MatchInfo) bundle.getSerializable(ARG_MATCH_INFO);
+
+			}
+
+			if (tournament != null && matchInfo != null) {
+				if (matchInfo.getMatchID() <= 0) {
+					getSupportFragmentManager().beginTransaction()
+							.replace(R.id.frame_container, NewMatchFragment.newInstance(tournament, matchInfo))
+							.commitNow();
+				} else {
+					int matchStateID = dbHandler.getSavedMatchStateIDs(DatabaseHandler.SAVE_MANUAL, matchInfo.getMatchID(), null, true).get(0);
+					getSupportFragmentManager().beginTransaction()
+							.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID, matchInfo))
+							.commitNow();
+				}
+			} else {
+				getSupportFragmentManager().beginTransaction()
+						.replace(R.id.frame_container, HomeFragment.newInstance())
+						.commitNow();
+			}
 		}
+
 
 		loadHelpContent();
 		setupDrawer();
@@ -98,8 +130,9 @@ public class HomeActivity extends AppCompatActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.menu_changeTheme:
-				showThemeDialog();
+			case R.id.menu_help:
+				HashMap<String, Object> fragDtlMap = getFragmentDetails(item);
+				replaceFragment(fragDtlMap);
 				break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -108,18 +141,7 @@ public class HomeActivity extends AppCompatActivity
 	@Override
 	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 		HashMap<String, Object> fragDtlMap = getFragmentDetails(item);
-
-		if(fragDtlMap.size()  == 2) {
-			Fragment fragment = (Fragment) fragDtlMap.get(Constants.FRAGMENT);
-			String fragmentTag = (String) fragDtlMap.get(Constants.FRAGMENT_TAG);
-
-			if(fragment !=  null && fragmentTag != null) {
-				getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.frame_container, fragment, fragmentTag)
-                        .addToBackStack(fragmentTag)
-                        .commit();
-			}
-		}
+		replaceFragment(fragDtlMap);
 
 		drawer.closeDrawer(GravityCompat.START);
 
@@ -171,6 +193,20 @@ public class HomeActivity extends AppCompatActivity
 			case DIALOG_THEME_SELECT:
 				applyTheme(value);
 				break;
+		}
+	}
+
+	private void replaceFragment(HashMap<String, Object> fragDtlMap) {
+		if (fragDtlMap.size() == 2) {
+			Fragment fragment = (Fragment) fragDtlMap.get(Constants.FRAGMENT);
+			String fragmentTag = (String) fragDtlMap.get(Constants.FRAGMENT_TAG);
+
+			if (fragment != null && fragmentTag != null) {
+				getSupportFragmentManager().beginTransaction()
+						.replace(R.id.frame_container, fragment, fragmentTag)
+						.addToBackStack(fragmentTag)
+						.commit();
+			}
 		}
 	}
 
@@ -229,7 +265,8 @@ public class HomeActivity extends AppCompatActivity
 				}
 				break;
 
-			case R.id.nav_faq:
+			case R.id.nav_help:
+			case R.id.menu_help:
 				startActivity(new Intent(this, HelpListActivity.class));
 				break;
 
@@ -250,7 +287,7 @@ public class HomeActivity extends AppCompatActivity
 	}
 
 	private void loadHelpContent() {
-		if(isAppUpdated() || !(new DatabaseHandler(this).hasHelpContent()))
+		if (isAppUpdated() || dbHandler.hasHelpContent())
 		{
 			HelpContentData helpContentData = new HelpContentData(this);
 			helpContentData.loadHelpContent();

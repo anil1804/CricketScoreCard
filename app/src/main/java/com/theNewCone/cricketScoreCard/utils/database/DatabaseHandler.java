@@ -8,12 +8,20 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.theNewCone.cricketScoreCard.Constants;
+import com.theNewCone.cricketScoreCard.enumeration.BattingType;
+import com.theNewCone.cricketScoreCard.enumeration.BowlingType;
+import com.theNewCone.cricketScoreCard.enumeration.Stage;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentStageType;
 import com.theNewCone.cricketScoreCard.help.HelpContent;
 import com.theNewCone.cricketScoreCard.help.HelpDetail;
+import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.match.Match;
 import com.theNewCone.cricketScoreCard.match.MatchState;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.player.Player;
+import com.theNewCone.cricketScoreCard.tournament.Group;
+import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
@@ -30,8 +38,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public final int CODE_NEW_TEAM_DUP_RECORD = -10;
     public final int CODE_NEW_MATCH_DUP_RECORD = -10;
     public final int CODE_NEW_HELP_CONTENT_DUP_RECORD = -10;
-	private static final int DB_VERSION = 17;
 	public final int CODE_NEW_TOURNAMENT_DUP_RECORD = -10;
+
+	public static final int maxUndoAllowed = Integer.MAX_VALUE;
     private static final String DB_NAME = "CricketScoreCard";
 
 	private static final String SAVE_AUTO = "Auto";
@@ -45,7 +54,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private final String TBL_STATE_NAME = "Name";
     private final String TBL_STATE_ORDER = "SaveOrder";
     private final String TBL_STATE_MATCH_ID = "MatchID";
-    public static final int maxUndoAllowed = 6;
+	private static final int DB_VERSION = 20;
 
     private final String TBL_PLAYER = "Player";
     private final String TBL_PLAYER_ID = "ID";
@@ -97,6 +106,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private final String TBL_TOURNAMENT_IS_SCHEDULED = "isScheduled";
 	private final String TBL_TOURNAMENT_IS_COMPLETE = "isComplete";
 	private final String TBL_TOURNAMENT_CREATED_DATE = "CreatedDate";
+	private final String TBL_GROUP = "TournamentGroup";
+	private final String TBL_GROUP_ID = "ID";
+	private final String TBL_GROUP_NUMBER = "TournamentGroupNumber";
+	private final String TBL_GROUP_NAME = "Name";
+	private final String TBL_GROUP_TOURNAMENT_ID = "TournamentID";
+	private final String TBL_GROUP_NUM_ROUNDS = "NumberOfRounds";
+	private final String TBL_GROUP_STAGE_TYPE = "StageType";
+	private final String TBL_GROUP_STAGE = "Stage";
+	private final String TBL_GROUP_TEAMS = "TeamIDs";
+	private final String TBL_GROUP_IS_SCHEDULED = "Scheduled";
+
+	private final String TBL_MATCH_INFO = "GroupMatchInfo";
+	private final String TBL_MATCH_INFO_ID = "ID";
+	private final String TBL_MATCH_INFO_NUMBER = "MatchNumber";
+	private final String TBL_MATCH_INFO_MATCH_ID = "MatchID";
+	private final String TBL_MATCH_INFO_GROUP_ID = "GroupID";
+	private final String TBL_MATCH_INFO_GROUP_NUMBER = "GroupNumber";
+	private final String TBL_MATCH_INFO_GROUP_NAME = "GroupName";
+	private final String TBL_MATCH_INFO_STAGE = "Stage";
+	private final String TBL_MATCH_INFO_TEAM1_ID = "Team1ID";
+	private final String TBL_MATCH_INFO_TEAM2_ID = "Team2ID";
+	private final String TBL_MATCH_INFO_WINNER_ID = "WinningTeamID";
+	private final String TBL_MATCH_INFO_DATE = "MatchDate";
+	private final String TBL_MATCH_INFO_HAS_STARTED = "hasStarted";
+	private final String TBL_MATCH_INFO_IS_COMPLETE = "isComplete";
 
     public DatabaseHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -112,6 +146,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         createHelpContentTable(db);
         createHelpDetailsTable(db);
 		createTournamentTable(db);
+		createGroupTable(db);
+		createMatchInfoTable(db);
     }
 
     @Override
@@ -164,6 +200,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			db.execSQL(dropTableSQL);
 
 			createTournamentTable(db);
+		}
+		if (oldVersion < 18) {
+			createGroupTable(db);
+			createMatchInfoTable(db);
+		}
+		if (oldVersion < 19) {
+			String alterMatchInfoTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s INTEGER", TBL_MATCH_INFO, TBL_MATCH_INFO_GROUP_NUMBER);
+			db.execSQL(alterMatchInfoTableSQL);
+		}
+		if (oldVersion < 20) {
+			String alterMatchInfoTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s INTEGER", TBL_MATCH_INFO, TBL_MATCH_INFO_WINNER_ID);
+			db.execSQL(alterMatchInfoTableSQL);
 		}
     }
 
@@ -280,6 +330,44 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.execSQL(createTableSQL);
 	}
 
+	private void createGroupTable(SQLiteDatabase db) {
+		String createTableSQL =
+				"CREATE TABLE " + TBL_GROUP + "("
+						+ TBL_GROUP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+						+ TBL_GROUP_NUMBER + " INTEGER, "
+						+ TBL_GROUP_NAME + " TEXT, "
+						+ TBL_GROUP_TOURNAMENT_ID + " INTEGER, "
+						+ TBL_GROUP_NUM_ROUNDS + " INTEGER, "
+						+ TBL_GROUP_STAGE_TYPE + " TEXT, "
+						+ TBL_GROUP_STAGE + " TEXT, "
+						+ TBL_GROUP_TEAMS + " TEXT, "
+						+ TBL_GROUP_IS_SCHEDULED + " INTEGER DEFAULT 0"
+						+ ")";
+
+		db.execSQL(createTableSQL);
+	}
+
+	private void createMatchInfoTable(SQLiteDatabase db) {
+		String createTableSQL =
+				"CREATE TABLE " + TBL_MATCH_INFO + "("
+						+ TBL_MATCH_INFO_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+						+ TBL_MATCH_INFO_NUMBER + " INTEGER, "
+						+ TBL_MATCH_INFO_MATCH_ID + " INTEGER, "
+						+ TBL_MATCH_INFO_GROUP_ID + " INTEGER, "
+						+ TBL_MATCH_INFO_GROUP_NUMBER + " INTEGER, "
+						+ TBL_MATCH_INFO_GROUP_NAME + " TEXT, "
+						+ TBL_MATCH_INFO_STAGE + " TEXT, "
+						+ TBL_MATCH_INFO_TEAM1_ID + " INTEGER, "
+						+ TBL_MATCH_INFO_TEAM2_ID + " INTEGER, "
+						+ TBL_MATCH_INFO_DATE + " TEXT, "
+						+ TBL_MATCH_INFO_HAS_STARTED + " INTEGER DEFAULT 0, "
+						+ TBL_MATCH_INFO_IS_COMPLETE + " INTEGER DEFAULT 0, "
+						+ TBL_MATCH_INFO_WINNER_ID + " INTEGER"
+						+ ")";
+
+		db.execSQL(createTableSQL);
+	}
+
     private int saveMatchState(int matchID, String matchJson, int isAuto, String saveName, String matchName) {
         ContentValues values = new ContentValues();
         String timestamp = CommonUtils.currTimestamp();
@@ -361,7 +449,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	return count;
 	}
 
-    public List<MatchState> getSavedMatches(String autoOrManual, int matchID, String partialName) {
+	public List<MatchState> getSavedMatches(String autoOrManual, int matchID, String partialName, boolean includeTournaments) {
 		List<MatchState> savedMatches = new ArrayList<>();
 		final String MATCH_STATE_ID = "MatchStateID";
 		final String MATCH_SAVE_NAME = "MatchSaveName";
@@ -402,6 +490,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             selectQuery += " AND " + TBL_STATE_NAME + " LIKE '%" + partialName + "%'";
         }
 
+		if (!includeTournaments) {
+			selectQuery += " AND " + TBL_STATE_MATCH_ID + " NOT IN " +
+					"(SELECT DISTINCT" + TBL_MATCH_INFO_MATCH_ID + " FROM " + TBL_MATCH_INFO + ")";
+		}
+
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -441,6 +534,50 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		return savedMatches;
     }
+
+	public List<Integer> getSavedMatchStateIDs(String autoOrManual, int matchID, String partialName, boolean includeTournaments) {
+		List<Integer> savedMatchStateIDList = new ArrayList<>();
+
+		String selectQuery = String.format(Locale.getDefault(),
+				"SELECT %s FROM %s WHERE %s > 0",
+				TBL_STATE_ID, TBL_STATE, TBL_STATE_ID);
+
+		switch (autoOrManual) {
+			case SAVE_AUTO:
+				selectQuery += " AND " + TBL_STATE_IS_AUTO + "=1";
+				break;
+
+			case SAVE_MANUAL:
+				selectQuery += " AND " + TBL_STATE_IS_AUTO + "=0";
+				break;
+		}
+
+		if (matchID > 0) {
+			selectQuery += " AND " + TBL_STATE_MATCH_ID + " = " + matchID;
+		} else if (partialName != null) {
+			partialName = partialName.replaceAll("\\*", "%");
+			selectQuery += " AND " + TBL_STATE_NAME + " LIKE '%" + partialName + "%'";
+		}
+
+		if (!includeTournaments) {
+			selectQuery += " AND " + TBL_STATE_MATCH_ID + " NOT IN " +
+					"(SELECT DISTINCT" + TBL_MATCH_INFO_MATCH_ID + " FROM " + TBL_MATCH_INFO + ")";
+		}
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		if (cursor != null && cursor.moveToFirst()) {
+			do {
+				savedMatchStateIDList.add(cursor.getInt(0));
+			} while (cursor.moveToNext());
+
+			cursor.close();
+		}
+		db.close();
+
+		return savedMatchStateIDList;
+	}
 
 	public boolean deleteSavedMatchStates(MatchState[] matchesToDelete) {
 		StringBuilder whereClauseSB = null;
@@ -700,7 +837,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		if(player.getID() == -1)
 			rowID = db.insert(TBL_PLAYER, null, values);
 		else
-			rowID = db.update(TBL_PLAYER, values, TBL_PLAYER_ID + " = ?", new String[]{String.valueOf(player.getID())});
+			rowID = player.getID();
+		db.update(TBL_PLAYER, values, TBL_PLAYER_ID + " = ?", new String[]{String.valueOf(player.getID())});
         db.close();
 
         return (int) rowID;
@@ -721,7 +859,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				int isWK = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_IS_WK));
 				//String teamAssociation = cursor.getString(cursor.getColumnIndex(TBL_PLAYER_TEAM_ASSOCIATION));
 
-				player = new Player(id, name, age, Player.BattingType.valueOf(batStyle), Player.BowlingType.valueOf(bowlStyle), isWK == 1);
+				player = new Player(id, name, age, BattingType.valueOf(batStyle), BowlingType.valueOf(bowlStyle), isWK == 1);
 				//player.setTeamsAssociatedToFromJSON(teamAssociation);
 				player.setTeamsAssociatedTo(getAssociatedTeams(id));
 
@@ -771,7 +909,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		if(team.getId() == -1)
 			rowID = db.insert(TBL_TEAM, null, values);
 		else
-			rowID = db.update(TBL_TEAM, values, TBL_TEAM_ID + " = ?", new String[]{String.valueOf(team.getId())});
+			rowID = team.getId();
+		db.update(TBL_TEAM, values, TBL_TEAM_ID + " = ?", new String[]{String.valueOf(team.getId())});
 
         db.close();
 
@@ -828,10 +967,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return teamList;
     }
 
-    public List<Team> getTeams(List<Integer> teamIDList) {
+	public List<Team> getTeams(List<Integer> teamIDList) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		return getTeams(teamIDList, db);
+	}
+
+	public List<Team> getTeams(List<Integer> teamIDList, SQLiteDatabase db) {
 		List<Team> teamList = new ArrayList<>();
 
 		if(teamIDList != null && teamIDList.size() > 0) {
+			boolean hasDBConn = true;
 			StringBuilder whereClauseSB = new StringBuilder(" WHERE " + TBL_TEAM_ID + " IN (");
 
 			for (int teamID : teamIDList) {
@@ -847,13 +992,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 			String selectQuery = "SELECT * FROM " + TBL_TEAM + whereClauseSB.toString();
 
-			SQLiteDatabase db = this.getReadableDatabase();
+			if (db == null) {
+				db = this.getReadableDatabase();
+				hasDBConn = false;
+			}
 			Cursor cursor = db.rawQuery(selectQuery, null);
 
 			teamList = getTeamsFromCursor(cursor);
 
 			cursor.close();
-			db.close();
+
+			if (!hasDBConn)
+				db.close();
 		}
 
 		return teamList;
@@ -1101,8 +1251,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	return matchList;
 	}
 
-	public String getCompletedMatch(int matchID) {
-    	String matchData = null;
+	public CricketCardUtils getCompletedMatch(int matchID) {
+		CricketCardUtils ccUtils = null;
 
 		String selectQuery = String.format(Locale.getDefault(),
 				"SELECT %s FROM %s WHERE %s = %d", TBL_MATCH_JSON, TBL_MATCH, TBL_MATCH_ID, matchID);
@@ -1110,12 +1260,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		if(cursor.moveToFirst()) {
-			matchData = cursor.getString(0);
+			String matchData = cursor.getString(0);
+			ccUtils = CommonUtils.convertToCCUtils(matchData);
 		}
 		cursor.close();
 		db.close();
 
-    	return matchData;
+		return ccUtils;
 	}
 
 	public int addHelpContent(String content) {
@@ -1263,7 +1414,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			values.put(TBL_TOURNAMENT_FORMAT, tournament.getFormat().toString());
 			values.put(TBL_TOURNAMENT_JSON, CommonUtils.convertTournamentToJSON(tournament));
 			values.put(TBL_TOURNAMENT_CREATED_DATE, CommonUtils.currTimestamp());
-			if (tournament.getSchedule() != null)
+			if (tournament.isScheduled())
 				values.put(TBL_TOURNAMENT_IS_SCHEDULED, 1);
 
 			SQLiteDatabase db = this.getWritableDatabase();
@@ -1295,7 +1446,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		values.put(TBL_TOURNAMENT_NAME, tournament.getName());
 		values.put(TBL_TOURNAMENT_JSON, CommonUtils.convertTournamentToJSON(tournament));
-		if (tournament.getSchedule() != null)
+		if (tournament.isScheduled())
 			values.put(TBL_TOURNAMENT_IS_SCHEDULED, 1);
 
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -1338,7 +1489,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				int teamSize = cursor.getInt(cursor.getColumnIndex(TBL_TOURNAMENT_TEAM_SIZE));
 				String format = cursor.getString(cursor.getColumnIndex(TBL_TOURNAMENT_FORMAT));
 
-				tournamentList.add(new Tournament(id, name, teamSize, Tournament.TournamentFormat.valueOf(format), createdDate));
+				tournamentList.add(new Tournament(id, name, teamSize, TournamentFormat.valueOf(format), createdDate));
 			} while (cursor.moveToNext());
 			cursor.close();
 		}
@@ -1358,9 +1509,245 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		if (cursor.moveToFirst()) {
 			String tournamentData = cursor.getString(0);
 			tournament = CommonUtils.convertJSONToTournament(tournamentData);
+
+			List<Group> groupList = getTournamentGroups(tournamentID);
+			if (groupList.size() > 0)
+				tournament.setGroupList(groupList);
 		}
 		cursor.close();
 		db.close();
+
+		return tournament;
+	}
+
+	public int addNewGroup(int tournamentID, Group group) {
+		int rowID = 0;
+		if (group != null) {
+			Team[] teams = group.getTeams();
+			List<Integer> teamIDs = new ArrayList<>();
+			for (Team team : teams) {
+				teamIDs.add(team.getId());
+			}
+
+			ContentValues values = new ContentValues();
+			values.put(TBL_GROUP_NUMBER, group.getGroupNumber());
+			values.put(TBL_GROUP_NAME, group.getName());
+			values.put(TBL_GROUP_NUM_ROUNDS, group.getNumRounds());
+			values.put(TBL_GROUP_STAGE_TYPE, group.getStageType().toString());
+			values.put(TBL_GROUP_STAGE, group.getStage().toString());
+			values.put(TBL_GROUP_IS_SCHEDULED, group.isScheduled());
+			values.put(TBL_GROUP_TOURNAMENT_ID, tournamentID);
+			values.put(TBL_GROUP_TEAMS, CommonUtils.intListToJSON(teamIDs));
+
+			SQLiteDatabase db = this.getWritableDatabase();
+			if (group.getId() > 0) {
+				rowID = group.getId();
+				db.update(TBL_GROUP, values, TBL_GROUP_ID + " = ?", new String[]{String.valueOf(rowID)});
+			} else {
+				rowID = (int) db.insert(TBL_GROUP, null, values);
+			}
+
+			db.close();
+		}
+
+		return rowID;
+	}
+
+	private List<Group> getTournamentGroups(int tournamentID) {
+		List<Group> groupList = new ArrayList<>();
+
+		if (tournamentID > 0) {
+			String sqlQuery = String.format(Locale.getDefault(),
+					"SELECT * FROM %s WHERE %s = %d", TBL_GROUP, TBL_GROUP_TOURNAMENT_ID, tournamentID);
+
+			SQLiteDatabase db = this.getReadableDatabase();
+			Cursor cursor = db.rawQuery(sqlQuery, null);
+
+			if (cursor != null && cursor.moveToFirst()) {
+				do {
+					int id = cursor.getInt(cursor.getColumnIndex(TBL_GROUP_ID));
+					int number = cursor.getInt(cursor.getColumnIndex(TBL_GROUP_NUMBER));
+					String name = cursor.getString(cursor.getColumnIndex(TBL_GROUP_NAME));
+					TournamentStageType type = TournamentStageType.valueOf(cursor.getString(cursor.getColumnIndex(TBL_GROUP_STAGE_TYPE)));
+					Stage stage = Stage.valueOf(cursor.getString(cursor.getColumnIndex(TBL_GROUP_STAGE)));
+					int numRounds = cursor.getInt(cursor.getColumnIndex(TBL_GROUP_NUM_ROUNDS));
+					boolean isScheduled = cursor.getInt(cursor.getColumnIndex(TBL_GROUP_IS_SCHEDULED)) == 1;
+
+					List<Integer> teamIDs = CommonUtils.jsonToIntList(cursor.getString(cursor.getColumnIndex(TBL_GROUP_TEAMS)));
+					List<Team> teamList = getTeams(teamIDs, db);
+
+					Group group = new Group(number, teamList.size(), name,
+							CommonUtils.objectArrToTeamArr(teamList.toArray()),
+							numRounds, type, stage);
+
+					group.setId(id);
+					group.setScheduled(isScheduled);
+
+					List<MatchInfo> matchInfoList = getGroupMatchInfo(id, db);
+					if (matchInfoList.size() > 0)
+						group.setMatchInfoList(matchInfoList);
+
+					groupList.add(group);
+				} while (cursor.moveToNext());
+
+				cursor.close();
+			}
+		}
+
+		return groupList;
+	}
+
+	public int addNewMatchInfo(int groupID, MatchInfo matchInfo) {
+		ContentValues values = new ContentValues();
+		int rowID = 0;
+		if (matchInfo != null) {
+			values.put(TBL_MATCH_INFO_NUMBER, matchInfo.getMatchNumber());
+			values.put(TBL_MATCH_INFO_GROUP_ID, groupID);
+			values.put(TBL_MATCH_INFO_GROUP_NUMBER, matchInfo.getGroupNumber());
+			values.put(TBL_MATCH_INFO_GROUP_NAME, matchInfo.getGroupName());
+			values.put(TBL_MATCH_INFO_STAGE, matchInfo.getTournamentStage().toString());
+			values.put(TBL_MATCH_INFO_TEAM1_ID, matchInfo.getTeam1().getId());
+			values.put(TBL_MATCH_INFO_TEAM2_ID, matchInfo.getTeam2().getId());
+
+			SQLiteDatabase db = this.getWritableDatabase();
+			if (matchInfo.getId() > 0) {
+				rowID = matchInfo.getId();
+				db.update(TBL_MATCH_INFO, values, TBL_MATCH_INFO_ID, new String[]{String.valueOf(rowID)});
+			} else {
+				rowID = (int) db.insert(TBL_MATCH_INFO, null, values);
+			}
+			db.close();
+		}
+
+		return rowID;
+	}
+
+	public void startTournamentMatch(MatchInfo matchInfo) {
+		ContentValues values = new ContentValues();
+
+		if (matchInfo != null && matchInfo.getId() > 0) {
+			values.put(TBL_MATCH_INFO_HAS_STARTED, 1);
+			values.put(TBL_MATCH_INFO_MATCH_ID, matchInfo.getMatchID());
+			values.put(TBL_MATCH_INFO_DATE, CommonUtils.currTimestamp("yyyy.MMMdd"));
+
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.update(TBL_MATCH_INFO, values, TBL_MATCH_INFO_ID + " = ?", new String[]{String.valueOf(matchInfo.getId())});
+			db.close();
+		}
+	}
+
+	public void completeTournamentMatch(int matchInfoID, int matchID, int winnerTeamID) {
+		ContentValues values = new ContentValues();
+
+		if (matchInfoID > 0) {
+			values.put(TBL_MATCH_INFO_IS_COMPLETE, 1);
+			values.put(TBL_MATCH_INFO_HAS_STARTED, 1);
+			values.put(TBL_MATCH_INFO_WINNER_ID, winnerTeamID);
+
+			if (matchID > 0)
+				values.put(TBL_MATCH_INFO_MATCH_ID, matchID);
+
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.update(TBL_MATCH_INFO, values, null, null);
+			db.close();
+		}
+	}
+
+	private List<MatchInfo> getGroupMatchInfo(int groupID, SQLiteDatabase db) {
+		List<MatchInfo> matchInfoList = new ArrayList<>();
+
+		if (groupID > 0) {
+			boolean hasDBConn = true;
+
+			String sqlQuery = String.format(Locale.getDefault(),
+					"SELECT * FROM %s WHERE %s = %d", TBL_MATCH_INFO, TBL_MATCH_INFO_GROUP_ID, groupID);
+
+			if (db == null) {
+				db = this.getReadableDatabase();
+				hasDBConn = false;
+			}
+			Cursor cursor = db.rawQuery(sqlQuery, null);
+
+			if (cursor != null && cursor.moveToFirst()) {
+				do {
+					int id = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_INFO_ID));
+					int number = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_INFO_NUMBER));
+					int matchID = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_INFO_MATCH_ID));
+					int groupNumber = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_INFO_GROUP_NUMBER));
+					String groupName = cursor.getString(cursor.getColumnIndex(TBL_MATCH_INFO_GROUP_NAME));
+					Stage stage = Stage.valueOf(cursor.getString(cursor.getColumnIndex(TBL_MATCH_INFO_STAGE)));
+					int team1ID = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_INFO_TEAM1_ID));
+					int team2ID = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_INFO_TEAM2_ID));
+					int winningTeamID = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_INFO_WINNER_ID));
+					String matchDate = cursor.getString(cursor.getColumnIndex(TBL_MATCH_INFO_DATE));
+					boolean hasStarted = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_INFO_HAS_STARTED)) == 1;
+					boolean isComplete = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_INFO_IS_COMPLETE)) == 1;
+
+					List<Integer> teamIDs = new ArrayList<>();
+					teamIDs.add(team1ID);
+					teamIDs.add(team2ID);
+
+					List<Team> teamList = getTeams(teamIDs, db);
+
+					Team team1 = null, team2 = null, winningTeam = null;
+					for (Team team : teamList) {
+						if (team.getId() == team1ID) {
+							team1 = team;
+						} else if (team.getId() == team2ID) {
+							team2 = team;
+						}
+
+						if (winningTeamID > 0 && winningTeamID == team.getId())
+							winningTeam = team;
+					}
+
+					MatchInfo matchInfo = new MatchInfo(number, groupNumber, groupName, stage);
+					matchInfo.setTeam1(team1);
+					matchInfo.setTeam2(team2);
+					matchInfo.setId(id);
+					matchInfo.setMatchID(matchID);
+					matchInfo.setHasStarted(hasStarted);
+					matchInfo.setMatchDate(matchDate);
+					matchInfo.setComplete(isComplete);
+					if (winningTeam != null)
+						matchInfo.setWinningTeam(winningTeam);
+
+					matchInfoList.add(matchInfo);
+				} while (cursor.moveToNext());
+
+				cursor.close();
+			}
+
+			if (!hasDBConn)
+				db.close();
+		}
+
+		return matchInfoList;
+	}
+
+	public Tournament getTournamentByMatchInfoID(int matchInfoID) {
+		Tournament tournament = null;
+
+		if (matchInfoID > 0) {
+			int tournamentID = 0;
+			SQLiteDatabase db = this.getReadableDatabase();
+
+			String sqlQuery = String.format(Locale.getDefault(),
+					"SELECT %s FROM %s WHERE %s = " +
+							"(SELECT %s FROM %s WHERE %s = %d)",
+					TBL_GROUP_TOURNAMENT_ID, TBL_GROUP, TBL_GROUP_ID,
+					TBL_MATCH_INFO_GROUP_ID, TBL_MATCH_INFO, TBL_MATCH_INFO_ID, matchInfoID);
+			Cursor cursor = db.rawQuery(sqlQuery, null, null);
+			if (cursor != null && cursor.moveToFirst()) {
+				tournamentID = cursor.getInt(0);
+				cursor.close();
+			}
+
+			db.close();
+
+			if (tournamentID > 0)
+				tournament = getTournamentContent(tournamentID);
+		}
 
 		return tournament;
 	}

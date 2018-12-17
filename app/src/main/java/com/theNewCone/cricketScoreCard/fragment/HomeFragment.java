@@ -17,7 +17,9 @@ import android.widget.Toast;
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.activity.CompletedMatchSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.MatchStateSelectActivity;
+import com.theNewCone.cricketScoreCard.activity.TournamentActivity;
 import com.theNewCone.cricketScoreCard.activity.TournamentSelectActivity;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.intf.ConfirmationDialogClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
@@ -25,6 +27,7 @@ import com.theNewCone.cricketScoreCard.match.Match;
 import com.theNewCone.cricketScoreCard.match.MatchState;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
+import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
 import java.util.List;
@@ -65,7 +68,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
 							 @Nullable Bundle savedInstanceState) {
         View theView;
-		theView = inflater.inflate(R.layout.home_fragment, container, false);
+		theView = inflater.inflate(R.layout.fragment_home, container, false);
 
 		theView.findViewById(R.id.btnNewMatch).setOnClickListener(this);
 		theView.findViewById(R.id.btnManagePlayer).setOnClickListener(this);
@@ -219,7 +222,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 				if(resultCode == CompletedMatchSelectActivity.RESP_CODE_OK) {
 					Match selMatch = (Match) data.getSerializableExtra(CompletedMatchSelectActivity.ARG_RESP_SEL_MATCH);
 					if(getActivity() != null) {
-						CricketCardUtils ccUtils = CommonUtils.convertToCCUtils(dbHandler.getCompletedMatch(selMatch.getId()));
+						CricketCardUtils ccUtils = dbHandler.getCompletedMatch(selMatch.getId());
 						FragmentManager fragMgr = getActivity().getSupportFragmentManager();
 						String fragmentTag = MatchSummaryFragment.class.getSimpleName();
 						fragMgr.beginTransaction()
@@ -232,16 +235,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 
 			case REQ_CODE_TOURNAMENT_LOAD_RUNNING:
 				if (resultCode == TournamentSelectActivity.RESP_CODE_OK) {
-					Tournament tournament = (Tournament) data.getSerializableExtra(TournamentSelectActivity.ARG_RESP_SEL_TOURNAMENT);
-					Tournament actualTournament = dbHandler.getTournamentContent(tournament.getId());
-					if (actualTournament.getSchedule() != null) {
-						//TODO: Route to the Tournament Home Screen
-					} else {
-						if (actualTournament.getFormat() == Tournament.TournamentFormat.GROUPS) {
-							//TODO: Route to Tournament Groups confirmation screen
+					Tournament tempTournament = (Tournament) data.getSerializableExtra(TournamentSelectActivity.ARG_RESP_SEL_TOURNAMENT);
+					Tournament tournament = dbHandler.getTournamentContent(tempTournament.getId());
+					if (tournament.getFormat() == TournamentFormat.GROUPS) {
+						if (tournament.getGroupList() == null || tournament.getGroupList().size() == 0) {
+							showGroupConfirmation(tournament);
+						} else if (!tournament.isScheduled()) {
+							showScheduleView(tournament);
 						} else {
-							//TODO: Route to Tournament Schedule Screen
+							showTournamentHome(tournament);
 						}
+					} else {
+						TournamentUtils tournamentUtils = new TournamentUtils(getContext());
+						tournament = tournamentUtils.createInitialGroups(tournament);
+						showScheduleView(tournament);
 					}
 				}
 		}
@@ -286,14 +293,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 			String fragmentTag = NewMatchFragment.class.getSimpleName();
 
 			getActivity().getSupportFragmentManager().beginTransaction()
-					.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID), fragmentTag)
+					.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID, null), fragmentTag)
 					.addToBackStack(fragmentTag)
 					.commit();
 		}
 	}
 
 	private void showSavedMatchDialog(boolean isMulti, int requestCode) {
-		List<MatchState> savedMatchDataList = dbHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, 0, null);
+		List<MatchState> savedMatchDataList = dbHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, 0, null, false);
 		if(savedMatchDataList != null && savedMatchDataList.size() > 0) {
 			Intent getMatchListIntent = new Intent(getContext(), MatchStateSelectActivity.class);
 			getMatchListIntent.putExtra(MatchStateSelectActivity.ARG_MATCH_LIST, savedMatchDataList.toArray());
@@ -360,5 +367,35 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 			String message = "No " + (getCompleted ? "Finished" : "Running") + " Tournaments Found.";
 			Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	private void showGroupConfirmation(Tournament tournament) {
+		if (getActivity() != null) {
+			FragmentManager fragMgr = getActivity().getSupportFragmentManager();
+			String fragmentTag = TournamentGroupsFragment.class.getSimpleName();
+
+			fragMgr.beginTransaction()
+					.replace(R.id.frame_container, TournamentGroupsFragment.newInstance(tournament), fragmentTag)
+					.addToBackStack(fragmentTag)
+					.commit();
+		}
+	}
+
+	private void showScheduleView(Tournament tournament) {
+		if (getActivity() != null) {
+			FragmentManager fragMgr = getActivity().getSupportFragmentManager();
+			String fragmentTag = TournamentScheduleFragment.class.getSimpleName();
+
+			fragMgr.beginTransaction()
+					.replace(R.id.frame_container, TournamentScheduleFragment.newInstance(tournament, 0), fragmentTag)
+					.addToBackStack(fragmentTag)
+					.commit();
+		}
+	}
+
+	private void showTournamentHome(Tournament tournament) {
+		Intent intent = new Intent(getContext(), TournamentActivity.class);
+		intent.putExtra(TournamentActivity.ARG_TOURNAMENT, tournament);
+		startActivity(intent);
 	}
 }

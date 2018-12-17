@@ -242,7 +242,7 @@
 	<string name="knockOut">Knock Out</string>
 	<string name="qualifiers">Qualifier-Eliminator</string>
 	<string name="superSixStage">Super Six</string>
-	<string name="schedule">Schedule</string>
+	<string name="matchInfo">Schedule</string>
 	<string name="manageGroups">View/Edit Groups</string>
 	<string name="selectedTeamsCount">Num. of Teams : </string>
 	<string name="numTeams">Num. of Teams</string>
@@ -253,4 +253,17 @@
 	<string name="tournamentTeamSizePrefix">Team Size :</string>
 	<string name="tournamentFormatPrefix">Format :</string>
 	<string name="tournamentCreatedDate">Created at :</string>
+	<string name="help">Help</string>
+	<string name="reOrderGroups">\nReorder\nGroups</string>
+	<string name="title_fragment_new_tournament">New Tournament</string>
+	<string name="title_fragment_tournament_schedule">Schedule</string>
+	<string name="next">Next</string>
+	<string name="start">Start</string>
+	<string name="previous">Previous</string>
+	<string name="title_fragment_tournament_groups">Groups</string>
+	<string name="title_activity_tournament">Tournament</string>
+	<string name="tournamentSchedule">Schedule</string>
+	<string name="tournamentPoints">Points</string>
+	<string name="abandon">Abandon Match</string>
+	<string name="reOrderSchedule">\nReorder\nSchedule</string>
 </resources>

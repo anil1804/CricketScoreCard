@@ -90,6 +90,11 @@
 		<activity
 			android:name=".activity.TournamentSelectActivity"
 			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
+		<activity
+			android:name=".activity.TournamentActivity"
+			android:label="@string/title_activity_tournament"
+			android:screenOrientation="userPortrait"
+			android:theme="@style/AppTheme.NoActionBar" />
 	</application>
 
 </manifest>

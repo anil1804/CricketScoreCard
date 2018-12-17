@@ -1,6 +1,6 @@
 package com.theNewCone.cricketScoreCard.player;
 
-import com.theNewCone.cricketScoreCard.scorecard.WicketData;
+import com.theNewCone.cricketScoreCard.enumeration.DismissalType;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
 import java.io.Serializable;
@@ -17,7 +17,7 @@ public class BatsmanStats implements Serializable {
 	private double strikeRate;
 	private boolean notOut = true;
 	private Player wicketEffectedBy, player;
-	private WicketData.DismissalType dismissalType;
+	private DismissalType dismissalType;
 	private BowlerStats wicketTakenBy;
 
 	public String getBatsmanName() {
@@ -80,11 +80,11 @@ public class BatsmanStats implements Serializable {
 		this.wicketTakenBy = wicketTakenBy;
 	}
 
-	public WicketData.DismissalType getDismissalType() {
+	public DismissalType getDismissalType() {
 		return dismissalType;
 	}
 
-	public void setDismissalType(WicketData.DismissalType dismissalType) {
+	public void setDismissalType(DismissalType dismissalType) {
 		this.dismissalType = dismissalType;
 	}
 

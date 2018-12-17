@@ -31,9 +31,13 @@ import com.theNewCone.cricketScoreCard.activity.ScoreCardActivity;
 import com.theNewCone.cricketScoreCard.activity.WicketActivity;
 import com.theNewCone.cricketScoreCard.async.LoadCCUtils;
 import com.theNewCone.cricketScoreCard.async.StoreCCUtils;
+import com.theNewCone.cricketScoreCard.enumeration.DismissalType;
+import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
+import com.theNewCone.cricketScoreCard.enumeration.MatchResult;
 import com.theNewCone.cricketScoreCard.intf.ConfirmationDialogClickListener;
 import com.theNewCone.cricketScoreCard.intf.DialogItemClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
+import com.theNewCone.cricketScoreCard.match.BallInfo;
 import com.theNewCone.cricketScoreCard.match.CricketCard;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.match.MatchState;
@@ -43,7 +47,9 @@ import com.theNewCone.cricketScoreCard.player.BowlerStats;
 import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.scorecard.Extra;
 import com.theNewCone.cricketScoreCard.scorecard.WicketData;
+import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
+import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
 import java.util.HashMap;
@@ -56,8 +62,9 @@ import java.util.concurrent.TimeoutException;
 
 public class LimitedOversFragment extends Fragment
 	implements View.OnClickListener, ConfirmationDialogClickListener, DialogItemClickListener {
+
 	View theView;
-	WicketData.DismissalType dismissalType;
+	DismissalType dismissalType;
     DatabaseHandler dbHandler;
 
     private static final int REQ_CODE_EXTRA_DIALOG = 1;
@@ -111,6 +118,8 @@ public class LimitedOversFragment extends Fragment
 	BatsmanStats newBatsman, outBatsman;
 	BowlerStats hurtBowler;
 
+	MatchInfo matchInfo;
+
 	private int matchStateID = -1;
 	private int matchID, currentUndoCount;
 	private boolean startInnings = true, isLoad = false, isUndo = false;
@@ -119,6 +128,7 @@ public class LimitedOversFragment extends Fragment
 
 	boolean bowlerChanged = false, newBatsmanArrived = false;
 	boolean enableBatsmanHurtOption = true, enableChangeFacingOption = true, enableBowlerHurtOption = true;
+	boolean isTournament = false;
 
 	StoreCCUtils storeCCUtils;
 	LoadCCUtils loadCCUtils;
@@ -126,19 +136,29 @@ public class LimitedOversFragment extends Fragment
 	public LimitedOversFragment() {
 	}
 
-	public static LimitedOversFragment loadInstance(int matchStateID) {
+	public static LimitedOversFragment loadInstance(int matchStateID, MatchInfo matchInfo) {
 		LimitedOversFragment fragment = new LimitedOversFragment();
 		fragment.matchStateID = matchStateID;
 		fragment.isLoad = true;
+
+		if (matchInfo != null) {
+			fragment.matchInfo = matchInfo;
+			fragment.isTournament = true;
+		}
 
 		return fragment;
 	}
 
 	public static LimitedOversFragment newInstance(int matchID, String matchName, Team battingTeam, Team bowlingTeam,
-												   Team tossWonBy, int maxOvers, int maxWickets, int maxPerBowler) {
+												   Team tossWonBy, int maxOvers, int maxWickets, int maxPerBowler,
+												   MatchInfo matchInfo) {
 
 		LimitedOversFragment fragment = new LimitedOversFragment();
 
+		if (matchInfo != null) {
+			fragment.matchInfo = matchInfo;
+			fragment.isTournament = true;
+		}
 		fragment.initCricketCard(matchID, matchName, battingTeam, bowlingTeam, tossWonBy, maxOvers, maxWickets, maxPerBowler);
 
 		return fragment;
@@ -148,15 +168,22 @@ public class LimitedOversFragment extends Fragment
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-        dbHandler = new DatabaseHandler(getContext());
 
-        if(isLoad) {
+		dbHandler = new DatabaseHandler(getContext());
+
+		if (isLoad) {
 			if (matchStateID > 0) {
 				loadMatch(matchStateID);
 			} else {
 				Toast.makeText(getContext(), "Unable to Load match.", Toast.LENGTH_LONG).show();
 				if (getActivity() != null)
 					getActivity().onBackPressed();
+			}
+		} else {
+			if (isTournament) {
+				startTournamentMatch();
+				saveMatchName = ccUtils.getMatchName();
+				saveMatch(saveMatchName);
 			}
 		}
 	}
@@ -189,14 +216,16 @@ public class LimitedOversFragment extends Fragment
 
 		isLoad = false;
 		initialSetup();
-		if(ccUtils != null)
-			updateLayout(false, true);
+		if (ccUtils != null) {
+			dismissalType = determineDismissalType();
+			updateLayout(getSelectFacingBatsman(), true);
+		}
 
 		if(getActivity() != null) {
 			DrawerController drawerController = (DrawerController) getActivity();
 			drawerController.setDrawerEnabled(true);
 			drawerController.disableAllDrawerMenuItems();
-			drawerController.enableDrawerMenuItem(R.id.nav_faq);
+			drawerController.enableDrawerMenuItem(R.id.nav_help);
 			getActivity().setTitle(getString(R.string.title_fragment_limited_overs));
 		}
 
@@ -235,10 +264,14 @@ public class LimitedOversFragment extends Fragment
 		MenuItem batsmanHurtItem = menu.findItem(R.id.menu_batsman_hurt);
 		MenuItem bowlerHurtItem = menu.findItem(R.id.menu_bowler_hurt);
 		MenuItem changeFacingItem = menu.findItem(R.id.menu_change_facing);
+		MenuItem abandonItem = menu.findItem(R.id.menu_abandon);
 
 		batsmanHurtItem.setEnabled(enableBatsmanHurtOption);
 		bowlerHurtItem.setEnabled(enableBowlerHurtOption);
 		changeFacingItem.setEnabled(enableChangeFacingOption);
+
+		abandonItem.setVisible(isTournament);
+
 	}
 
 	@Override
@@ -307,6 +340,10 @@ public class LimitedOversFragment extends Fragment
 				graphIntent.putExtra(GraphsActivity.ARG_CRICKET_CARD_UTILS, CommonUtils.convertToJSON(ccUtils));
 				startActivity(graphIntent);
 				break;
+
+			case R.id.menu_abandon:
+				completeMatch(MatchResult.NO_RESULT.toString(), null, false, true);
+				break;
 		}
 
 		return true;
@@ -348,23 +385,23 @@ public class LimitedOversFragment extends Fragment
 				break;
 
 			case R.id.btnExtraPenalty:
-				displayExtrasDialog(Extra.ExtraType.PENALTY);
+				displayExtrasDialog(ExtraType.PENALTY);
 				break;
 
 			case R.id.btnExtrasLegByes:
-				displayExtrasDialog(Extra.ExtraType.LEG_BYE);
+				displayExtrasDialog(ExtraType.LEG_BYE);
 				break;
 
 			case R.id.btnExtrasByes:
-				displayExtrasDialog(Extra.ExtraType.BYE);
+				displayExtrasDialog(ExtraType.BYE);
 				break;
 
 			case R.id.btnExtrasWides:
-				displayExtrasDialog(Extra.ExtraType.WIDE);
+				displayExtrasDialog(ExtraType.WIDE);
 				break;
 
 			case R.id.btnExtrasNoBall:
-				displayExtrasDialog(Extra.ExtraType.NO_BALL);
+				displayExtrasDialog(ExtraType.NO_BALL);
 				break;
 
 			case R.id.btnSelBatsman:
@@ -405,8 +442,8 @@ public class LimitedOversFragment extends Fragment
 		switch (requestCode) {
 			case REQ_CODE_EXTRA_DIALOG:
 				if (resultCode == ExtrasActivity.RESULT_CODE_OK) {
-					Extra.ExtraType extraType = (Extra.ExtraType) data.getSerializableExtra(Constants.ARG_EXTRA_TYPE);
-					Extra.ExtraType extraSubType = (Extra.ExtraType) data.getSerializableExtra(ExtrasActivity.ARG_NB_EXTRA);
+					ExtraType extraType = (ExtraType) data.getSerializableExtra(Constants.ARG_EXTRA_TYPE);
+					ExtraType extraSubType = (ExtraType) data.getSerializableExtra(ExtrasActivity.ARG_NB_EXTRA);
 					int extraRuns = data.getIntExtra(ExtrasActivity.ARG_EXTRA_RUNS, -1);
 					String team = data.getStringExtra(ExtrasActivity.ARG_TEAM);
 
@@ -439,19 +476,7 @@ public class LimitedOversFragment extends Fragment
 						ccUtils.newBatsman(newBatsman);
 
 						if(dismissalType != null) {
-							switch (dismissalType) {
-								case RUN_OUT:
-								case RETIRED:
-								case RETIRED_HURT:
-								case OBSTRUCTING_FIELD:
-								case CAUGHT:
-									updateLayout(true, false);
-									break;
-
-								default:
-									updateLayout(false, false);
-									break;
-							}
+							updateLayout(getSelectFacingBatsman(), false);
 							dismissalType = null;
 						} else {
 							if(startInnings)
@@ -517,7 +542,7 @@ public class LimitedOversFragment extends Fragment
 				if(resultCode == BatsmanSelectActivity.RESP_CODE_OK) {
 					BatsmanStats selBatsman = (BatsmanStats) data.getSerializableExtra(BatsmanSelectActivity.ARG_SEL_BATSMAN);
 					if(selBatsman != null) {
-						dismissalType = WicketData.DismissalType.RETIRED_HURT;
+						dismissalType = DismissalType.RETIRED_HURT;
 						ccUtils.updateBatsmanHurt(selBatsman);
 						outBatsman = selBatsman;
 						updateLayout(false, false);
@@ -640,8 +665,11 @@ public class LimitedOversFragment extends Fragment
 						String.valueOf(maxOvers), maxPerBowler, maxWickets, 1);
 
 		ccUtils = new CricketCardUtils(card, matchName, battingTeam, bowlingTeam, maxWickets);
-
 		ccUtils.setTossWonBy(tossWonBy.getId());
+
+		if (matchInfo != null) {
+			ccUtils.setMatchInfo(matchInfo);
+		}
 	}
 
 	private void loadMatch(int matchStateID) {
@@ -884,13 +912,13 @@ public class LimitedOversFragment extends Fragment
 		}
 	}
 
-	private void processExtra(Extra.ExtraType extraType, int numExtraRuns, String penaltyFavouringTeam, Extra.ExtraType extraSubType) {
+	private void processExtra(ExtraType extraType, int numExtraRuns, String penaltyFavouringTeam, ExtraType extraSubType) {
         Extra extra = null;
         switch (extraType) {
             case PENALTY:
 				autoSaveMatch();
                 if(numExtraRuns > 0) {
-                    extra = new Extra(Extra.ExtraType.PENALTY, numExtraRuns);
+					extra = new Extra(ExtraType.PENALTY, numExtraRuns);
                     ccUtils.addPenalty(extra, penaltyFavouringTeam);
                     updateLayout(false, true);
                     String toastText = String.format(Locale.getDefault(),
@@ -902,21 +930,21 @@ public class LimitedOversFragment extends Fragment
 
             case LEG_BYE:
                 if(numExtraRuns > 0) {
-                    extra = new Extra(Extra.ExtraType.LEG_BYE, numExtraRuns);
+					extra = new Extra(ExtraType.LEG_BYE, numExtraRuns);
                     newBallBowled(extra, 0, null);
                 }
                 break;
 
             case BYE:
                 if(numExtraRuns > 0) {
-                    extra = new Extra(Extra.ExtraType.BYE, numExtraRuns);
+					extra = new Extra(ExtraType.BYE, numExtraRuns);
                     newBallBowled(extra, 0, null);
                 }
                 break;
 
             case WIDE:
                 if(numExtraRuns >= 0) {
-                    extra = new Extra(Extra.ExtraType.WIDE, numExtraRuns);
+					extra = new Extra(ExtraType.WIDE, numExtraRuns);
                     newBallBowled(extra, 0, null);
                 }
                 break;
@@ -924,11 +952,11 @@ public class LimitedOversFragment extends Fragment
             case NO_BALL:
                 if(numExtraRuns >= 0) {
                 	int batsmanRuns = 0;
-                    if(extraSubType == null || extraSubType == Extra.ExtraType.NONE) {
-						extra = new Extra(Extra.ExtraType.NO_BALL, 0, extraSubType);
+					if (extraSubType == null || extraSubType == ExtraType.NONE) {
+						extra = new Extra(ExtraType.NO_BALL, 0, extraSubType);
 						batsmanRuns = numExtraRuns;
-					} else if (extraSubType == Extra.ExtraType.BYE || extraSubType == Extra.ExtraType.LEG_BYE) {
-						extra = new Extra(Extra.ExtraType.NO_BALL, numExtraRuns, extraSubType);
+					} else if (extraSubType == ExtraType.BYE || extraSubType == ExtraType.LEG_BYE) {
+						extra = new Extra(ExtraType.NO_BALL, numExtraRuns, extraSubType);
 					}
 					newBallBowled(extra, batsmanRuns, null);
                 }
@@ -947,7 +975,7 @@ public class LimitedOversFragment extends Fragment
 		displayBatsmanSelect(ccUtils.getCard().getBattingTeam().getMatchPlayers(), batsmenPlayed, REQ_CODE_BATSMAN_DIALOG, batsmen.size());
 	}
 
-	private void displayExtrasDialog(Extra.ExtraType type) {
+	private void displayExtrasDialog(ExtraType type) {
 		Intent dialogIntent = new Intent(getContext(), ExtrasActivity.class);
 		dialogIntent.putExtra(Constants.ARG_EXTRA_TYPE, type);
 		startActivityForResult(dialogIntent, REQ_CODE_EXTRA_DIALOG);
@@ -1158,7 +1186,7 @@ public class LimitedOversFragment extends Fragment
 			matchTied = true;
 		}
 
-		ccUtils.setResult(result, winningTeam, matchTied);
+		completeMatch(result, winningTeam, matchTied, false);
 
 		theView.findViewById(R.id.llScoring).setVisibility(View.GONE);
 		tvResult.setVisibility(View.VISIBLE);
@@ -1204,7 +1232,7 @@ public class LimitedOversFragment extends Fragment
 	}
 
 	private void showSavedMatchDialog() {
-		List<MatchState> savedMatchDataList = dbHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, matchID, null);
+		List<MatchState> savedMatchDataList = dbHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, matchID, null, false);
 		if(savedMatchDataList != null && savedMatchDataList.size() > 0) {
 			Intent getMatchListIntent = new Intent(getContext(), MatchStateSelectActivity.class);
 			getMatchListIntent.putExtra(MatchStateSelectActivity.ARG_MATCH_LIST, savedMatchDataList.toArray());
@@ -1304,4 +1332,56 @@ public class LimitedOversFragment extends Fragment
 		enableBowlerHurtOption = savedBundle.getBoolean(BUNDLE_ENABLE_OPTION_BOWLER_HURT, false);
 	}
 
+	private void startTournamentMatch() {
+		if (matchInfo != null) {
+			matchInfo.setMatchID(matchID);
+			dbHandler.startTournamentMatch(matchInfo);
+		}
+	}
+
+	private void completeMatch(String result, Team winningTeam, boolean matchTied, boolean isAbandoned) {
+		ccUtils.setResult(result, winningTeam, matchTied, isAbandoned);
+
+		if (isTournament) {
+			int winningTeamID = winningTeam != null ? winningTeam.getId() : 0;
+			dbHandler.completeTournamentMatch(ccUtils.getMatchInfo().getId(), matchID, winningTeamID);
+			TournamentUtils utils = new TournamentUtils(getContext());
+			utils.checkTournamentStageComplete(matchInfo.getId());
+		}
+	}
+
+	private boolean getSelectFacingBatsman() {
+		boolean selectFacing = false;
+		if (dismissalType != null) {
+			switch (dismissalType) {
+				case RUN_OUT:
+				case RETIRED:
+				case RETIRED_HURT:
+				case OBSTRUCTING_FIELD:
+				case CAUGHT:
+					selectFacing = true;
+					break;
+			}
+		}
+
+		return selectFacing;
+	}
+
+	private DismissalType determineDismissalType() {
+		DismissalType dismissalType = null;
+		if (ccUtils != null) {
+			if (Double.parseDouble(ccUtils.getCard().getTotalOversBowled()) > 0
+					|| !ccUtils.isNewOver()) {
+				if (ccUtils.getCurrentFacing() == null || ccUtils.getOtherBatsman() == null) {
+					List<BallInfo> ballInfoList = ccUtils.getCard().getCurrOver().getBallInfo();
+					BallInfo lastBallInfo = ballInfoList.get(ballInfoList.size() - 1);
+					if (lastBallInfo.getWicketData() != null) {
+						dismissalType = lastBallInfo.getWicketData().getDismissalType();
+					}
+				}
+			}
+		}
+
+		return dismissalType;
+	}
 }

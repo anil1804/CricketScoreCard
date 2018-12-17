@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.theNewCone.cricketScoreCard.R;
+import com.theNewCone.cricketScoreCard.enumeration.DismissalType;
+import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
 import com.theNewCone.cricketScoreCard.fragment.StringDialog;
 import com.theNewCone.cricketScoreCard.intf.DialogItemClickListener;
 import com.theNewCone.cricketScoreCard.player.BatsmanStats;
@@ -44,7 +46,7 @@ public class WicketActivity extends FragmentActivity
 	BatsmanStats facingBatsman, otherBatsman, outBatsman;
 	BowlerStats bowler;
 	Player effectedBy;
-	WicketData.DismissalType dismissalType;
+	DismissalType dismissalType;
 	Extra extraData;
 	Player[] fieldingTeam;
 	boolean newBatsmanArrived;
@@ -206,7 +208,7 @@ public class WicketActivity extends FragmentActivity
 				clearOtherCheckedRadioButtons(glWicket, view.getId());
 				setViewVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE);
 				tvEffectedBy.setText(R.string.caughtBy);
-				dismissalType = WicketData.DismissalType.CAUGHT;
+				dismissalType = DismissalType.CAUGHT;
 				effectedBy = null;
 				outBatsman = facingBatsman;
 				break;
@@ -217,7 +219,7 @@ public class WicketActivity extends FragmentActivity
 				outBatsman = null;
 				effectedBy = null;
 				tvEffectedBy.setText(R.string.runOutBy);
-				dismissalType = WicketData.DismissalType.RUN_OUT;
+				dismissalType = DismissalType.RUN_OUT;
 				break;
 
 			case R.id.rbWktObstruct:
@@ -225,7 +227,7 @@ public class WicketActivity extends FragmentActivity
 				setViewVisibility(View.GONE, View.VISIBLE, View.VISIBLE, View.VISIBLE);
 				outBatsman = null;
 				effectedBy = null;
-				dismissalType = WicketData.DismissalType.OBSTRUCTING_FIELD;
+				dismissalType = DismissalType.OBSTRUCTING_FIELD;
 				break;
 
 			case R.id.rbWktBowled:
@@ -233,7 +235,7 @@ public class WicketActivity extends FragmentActivity
 				setViewVisibility(View.GONE, View.GONE, View.GONE, View.GONE);
 				effectedBy = null;
 				outBatsman = facingBatsman;
-				dismissalType = WicketData.DismissalType.BOWLED;
+				dismissalType = DismissalType.BOWLED;
 				break;
 
 			case R.id.rbWktHitTwice:
@@ -241,7 +243,7 @@ public class WicketActivity extends FragmentActivity
 				setViewVisibility(View.GONE, View.GONE, View.GONE, View.GONE);
 				effectedBy = null;
 				outBatsman = facingBatsman;
-				dismissalType = WicketData.DismissalType.HIT_BALL_TWICE;
+				dismissalType = DismissalType.HIT_BALL_TWICE;
 				break;
 
 			case R.id.rbWktHitWicket:
@@ -249,7 +251,7 @@ public class WicketActivity extends FragmentActivity
 				setViewVisibility(View.GONE, View.GONE, View.GONE, View.GONE);
 				effectedBy = null;
 				outBatsman = facingBatsman;
-				dismissalType = WicketData.DismissalType.HIT_WICKET;
+				dismissalType = DismissalType.HIT_WICKET;
 				break;
 
 			case R.id.rbWktLBW:
@@ -257,7 +259,7 @@ public class WicketActivity extends FragmentActivity
 				setViewVisibility(View.GONE, View.GONE, View.GONE, View.GONE);
 				effectedBy = null;
 				outBatsman = facingBatsman;
-				dismissalType = WicketData.DismissalType.LBW;
+				dismissalType = DismissalType.LBW;
 				break;
 
 			case R.id.rbWktRetiredHurt:
@@ -265,7 +267,7 @@ public class WicketActivity extends FragmentActivity
 				setViewVisibility(View.GONE, View.VISIBLE, View.GONE, View.GONE);
 				outBatsman = null;
 				effectedBy = null;
-				dismissalType = WicketData.DismissalType.RETIRED;
+				dismissalType = DismissalType.RETIRED;
 				break;
 
 			case R.id.rbWktStump:
@@ -273,7 +275,7 @@ public class WicketActivity extends FragmentActivity
 				setViewVisibility(View.GONE, View.GONE, View.GONE, View.VISIBLE);
 				effectedBy = null;
 				outBatsman = facingBatsman;
-				dismissalType = WicketData.DismissalType.STUMPED;
+				dismissalType = DismissalType.STUMPED;
 				break;
 
 			case R.id.rbWktTimedOut:
@@ -281,7 +283,7 @@ public class WicketActivity extends FragmentActivity
 				setViewVisibility(View.GONE, View.VISIBLE, View.GONE, View.GONE);
 				outBatsman = null;
 				effectedBy = null;
-				dismissalType = WicketData.DismissalType.TIMED_OUT;
+				dismissalType = DismissalType.TIMED_OUT;
 				break;
 
 			/*Capturing details if the runs scored as extras, during a Run-out/Field Obstruction*/
@@ -289,9 +291,9 @@ public class WicketActivity extends FragmentActivity
 				if(cbIsExtra.isChecked()) {
                     glRORunsExtra.setVisibility(View.VISIBLE);
                     findViewById(R.id.rbROWide).setSelected(true);
-                    extraData = new Extra(Extra.ExtraType.WIDE, sbRORuns.getProgress());
+					extraData = new Extra(ExtraType.WIDE, sbRORuns.getProgress());
 
-                    if(dismissalType == WicketData.DismissalType.STUMPED) {
+					if (dismissalType == DismissalType.STUMPED) {
                     	findViewById(R.id.rbRONoBall).setEnabled(false);
 						findViewById(R.id.rbROBye).setEnabled(false);
 						findViewById(R.id.rbROLegBye).setEnabled(false);
@@ -308,41 +310,41 @@ public class WicketActivity extends FragmentActivity
 				break;
 
 			case R.id.rbROWide:
-			    extraData = new Extra(Extra.ExtraType.WIDE, sbRORuns.getProgress());
+				extraData = new Extra(ExtraType.WIDE, sbRORuns.getProgress());
                 adjustROExtraRuns(view);
                 rgRONB.setVisibility(View.GONE);
 			    break;
 
 			case R.id.rbROBye:
-                extraData = new Extra(Extra.ExtraType.BYE, sbRORuns.getProgress());
+				extraData = new Extra(ExtraType.BYE, sbRORuns.getProgress());
                 adjustROExtraRuns(view);
                 rgRONB.setVisibility(View.GONE);
                 break;
 
             case R.id.rbROLegBye:
-                extraData = new Extra(Extra.ExtraType.LEG_BYE, sbRORuns.getProgress());
+				extraData = new Extra(ExtraType.LEG_BYE, sbRORuns.getProgress());
 				adjustROExtraRuns(view);
 				rgRONB.setVisibility(View.GONE);
 				break;
 
 			case R.id.rbRONoBall:
-                extraData = new Extra(Extra.ExtraType.NO_BALL, sbRORuns.getProgress(), Extra.ExtraType.NONE);
+				extraData = new Extra(ExtraType.NO_BALL, sbRORuns.getProgress(), ExtraType.NONE);
 				adjustROExtraRuns(view);
 				rgRONB.setVisibility(View.VISIBLE);
 				break;
 
 			case R.id.rbRONoBallNone:
-                extraData = new Extra(Extra.ExtraType.NO_BALL, sbRORuns.getProgress(), Extra.ExtraType.NONE);
+				extraData = new Extra(ExtraType.NO_BALL, sbRORuns.getProgress(), ExtraType.NONE);
                 adjustROExtraRuns(view);
                 break;
 
 			case R.id.rbRONoBallBye:
-                extraData = new Extra(Extra.ExtraType.NO_BALL, sbRORuns.getProgress(), Extra.ExtraType.BYE);
+				extraData = new Extra(ExtraType.NO_BALL, sbRORuns.getProgress(), ExtraType.BYE);
                 adjustROExtraRuns(view);
                 break;
 
 			case R.id.rbRONoBallLegBye:
-                extraData = new Extra(Extra.ExtraType.NO_BALL, sbRORuns.getProgress(), Extra.ExtraType.LEG_BYE);
+				extraData = new Extra(ExtraType.NO_BALL, sbRORuns.getProgress(), ExtraType.LEG_BYE);
                 adjustROExtraRuns(view);
                 break;
 		}
@@ -425,7 +427,7 @@ public class WicketActivity extends FragmentActivity
 	    Intent batsmanIntent = new Intent(this, BatsmanSelectActivity.class);
 
 		BatsmanStats[] batsmen;
-	    if(dismissalType != null && dismissalType == WicketData.DismissalType.TIMED_OUT) {
+		if (dismissalType != null && dismissalType == DismissalType.TIMED_OUT) {
 			if(facingBatsman.getBallsPlayed() == 0 && otherBatsman.getBallsPlayed() == 0) {
 				if(facingBatsman.getPosition() <= 2 && otherBatsman.getPosition() <= 2) {
 					batsmen = new BatsmanStats[]{facingBatsman, otherBatsman};

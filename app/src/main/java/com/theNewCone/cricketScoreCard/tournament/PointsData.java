@@ -1,19 +1,25 @@
 package com.theNewCone.cricketScoreCard.tournament;
 
-import com.theNewCone.cricketScoreCard.match.MatchResult;
+import com.theNewCone.cricketScoreCard.enumeration.MatchResult;
 import com.theNewCone.cricketScoreCard.match.Team;
 
-class PointsTable {
+import java.io.Serializable;
+
+public class PointsData implements Serializable {
 	private Team team;
 	private int maxOvers, maxWickets, tempMaxOversBowled = -1, tempMaxOversPlayed = -1;
 	private int played, won, lost, tied, noResult, points;
-	private int totalRunsScored, totalsRunsGiven;
+	private int totalRunsScored, totalsRunsGiven, totalWicketsLost, totalWicketsTaken;
 	private double totalOversPlayed, totalOversBowled, netRunRate;
 
-	public PointsTable(Team team, int maxOvers, int maxWickets) {
+	public PointsData(Team team, int maxOvers, int maxWickets) {
 		this.team = team;
 		this.maxOvers = maxOvers;
 		this.maxWickets = maxWickets;
+	}
+
+	public Team getTeam() {
+		return team;
 	}
 
 	public int getPlayed() {
@@ -44,6 +50,14 @@ class PointsTable {
 		return netRunRate;
 	}
 
+	public int getTotalWicketsLost() {
+		return totalWicketsLost;
+	}
+
+	public int getTotalWicketsTaken() {
+		return totalWicketsTaken;
+	}
+
 	public void updateMaxOvers(int maxOversBowled, int maxOverPlayed) {
 		this.tempMaxOversBowled = maxOversBowled;
 		this.tempMaxOversPlayed = maxOverPlayed;
@@ -53,6 +67,8 @@ class PointsTable {
 								   int runsGiven, String oversBowled, int wicketsTaken) {
 		this.totalRunsScored += runsScored;
 		this.totalsRunsGiven += runsGiven;
+		this.totalWicketsLost += wicketsLost;
+		this.totalWicketsTaken += wicketsTaken;
 
 		oversPlayed = (wicketsLost == maxWickets) ?
 				(tempMaxOversPlayed > 0 ? String.valueOf(tempMaxOversPlayed) : String.valueOf(maxOvers)) :

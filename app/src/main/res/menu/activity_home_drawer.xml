@@ -21,7 +21,7 @@
 			android:icon="@drawable/ic_add_screen"
 			android:title="@string/nav_drawer_new_match" />
 		<item
-			android:id="@+id/nav_faq"
+			android:id="@+id/nav_help"
 			android:icon="@drawable/ic_help"
 			android:title="@string/nav_drawer_info" />
 	</group>

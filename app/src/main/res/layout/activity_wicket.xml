@@ -78,7 +78,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical"
-			android:background="@color/lime_A100"
+			android:background="@color/lime_100"
 			android:visibility="gone">
 
 			<TextView

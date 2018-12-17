@@ -3,6 +3,7 @@ package com.theNewCone.cricketScoreCard.scorecard;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.theNewCone.cricketScoreCard.enumeration.DismissalType;
 import com.theNewCone.cricketScoreCard.player.BatsmanStats;
 import com.theNewCone.cricketScoreCard.player.BowlerStats;
 import com.theNewCone.cricketScoreCard.player.Player;
@@ -53,17 +54,4 @@ public class WicketData implements Serializable {
 		return isBowlersWicket;
 	}
 
-	public enum DismissalType {
-		RETIRED,
-		BOWLED,
-		CAUGHT,
-		HIT_BALL_TWICE,
-		HIT_WICKET,
-		LBW,
-		OBSTRUCTING_FIELD,
-		RUN_OUT,
-		STUMPED,
-		TIMED_OUT,
-		RETIRED_HURT
-	}
 }

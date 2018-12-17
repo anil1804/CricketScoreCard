@@ -62,10 +62,11 @@
 	</style>
 
 	<style name="ButtonStyle.Small">
-		<item name="android:layout_width">25dp</item>
-		<item name="android:layout_height">25dp</item>
+		<item name="android:layout_width">40dp</item>
+		<item name="android:layout_height">40dp</item>
+		<item name="android:scaleType">fitCenter</item>
 		<item name="android:layout_margin">2dp</item>
-		<item name="android:background">@drawable/button_rounded_rectangle_small</item>
+		<item name="android:background">@drawable/button_rounded_rectangle_small_selector</item>
 	</style>
 
 	<style name="ButtonStyle.Medium">
@@ -75,7 +76,7 @@
 		<item name="android:scaleType">fitCenter</item>
 		<item name="android:textSize">10sp</item>
 		<item name="android:tint">@color/colorPrimaryDark_default</item>
-		<item name="android:background">@drawable/button_rounded_rectangle_medium</item>
+		<item name="android:background">@drawable/button_rounded_rectangle_medium_selector</item>
 		<item name="android:gravity">center_horizontal|bottom</item>
 		<item name="android:textColor">@color/colorPrimaryDark_default</item>
 	</style>
@@ -160,6 +161,13 @@
 		<item name="android:padding">12dp</item>
 	</style>
 
+	<style name="TextViewStyle.BigMargin">
+		<item name="android:layout_marginStart">12dp</item>
+		<item name="android:layout_marginEnd">12dp</item>
+		<item name="android:layout_marginTop">20dp</item>
+		<item name="android:layout_marginBottom">20dp</item>
+	</style>
+
 	<style name="TextViewStyle.Big">
 		<item name="android:textSize">16sp</item>
 	</style>
@@ -175,8 +183,38 @@
 		<item name="android:layout_marginBottom">20dp</item>
 	</style>
 
+	<style name="TextViewStyle.Big.Bold.Heading">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:textAllCaps">true</item>
+		<item name="android:paddingTop">10dp</item>
+		<item name="android:paddingBottom">10dp</item>
+		<item name="android:background">@color/gray_300</item>
+	</style>
+
 	<style name="TextViewStyle.Big.Bold.Highlight">
 		<item name="android:textColor">@color/orange_600</item>
+	</style>
+
+	<style name="TextViewStyle.Large">
+		<item name="android:textSize">20sp</item>
+	</style>
+
+	<style name="TextViewStyle.Large.Bold">
+		<item name="android:textStyle">bold</item>
+	</style>
+
+	<style name="TextViewStyle.Large.BigMargin">
+		<item name="android:layout_marginStart">12dp</item>
+		<item name="android:layout_marginEnd">12dp</item>
+		<item name="android:layout_marginTop">20dp</item>
+		<item name="android:layout_marginBottom">20dp</item>
+	</style>
+
+	<style name="TextViewStyle.Large.Bold.BigMargin">
+		<item name="android:layout_marginStart">12dp</item>
+		<item name="android:layout_marginEnd">12dp</item>
+		<item name="android:layout_marginTop">20dp</item>
+		<item name="android:layout_marginBottom">20dp</item>
 	</style>
 
 	<style name="TextViewStyle.TableRow">
@@ -234,6 +272,10 @@
 
 	<style name="LineSeparator.Dark">
 		<item name="android:background">@color/teal_A100</item>
+	</style>
+
+	<style name="LineSeparator.PrimaryDark">
+		<item name="android:background">@color/colorPrimaryDark_default</item>
 	</style>
 
 	<style name="LineSeparator.Dark.SmallMargin">

@@ -1,5 +1,6 @@
 package com.theNewCone.cricketScoreCard.match;
 
+import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
 import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.scorecard.Extra;
 
@@ -88,7 +89,7 @@ public class Partnership implements Serializable {
 
 		if(extra != null) {
 			extras += extra.getRuns();
-			if(extra.getType() == Extra.ExtraType.NO_BALL || extra.getType() == Extra.ExtraType.WIDE)
+			if (extra.getType() == ExtraType.NO_BALL || extra.getType() == ExtraType.WIDE)
 				extras++;
 		}
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -19,6 +20,9 @@ import android.widget.Toast;
 
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.activity.TeamSelectActivity;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentStageType;
+import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
@@ -41,8 +45,8 @@ public class NewTournamentFragment extends Fragment
 	GridLayout rgTTGroup, rgTSGroup, glOversAndPlayers;
 	private Team[] selTeams;
 	private int numTeams, numGroups, numRounds, maxOvers, maxWickets, maxPerBowler, numPlayers;
-	private Tournament.TournamentFormat type = null;
-	private Tournament.TournamentStageType stageType = null;
+	private TournamentFormat type = null;
+	private TournamentStageType stageType = null;
 
 	public NewTournamentFragment() {
 		// Required empty public constructor
@@ -63,6 +67,9 @@ public class NewTournamentFragment extends Fragment
 		theView = inflater.inflate(R.layout.fragment_new_tournament, container, false);
 
 		initialize();
+
+		if (getActivity() != null)
+			getActivity().setTitle(getString(R.string.title_fragment_new_tournament));
 
 		return theView;
 	}
@@ -90,7 +97,7 @@ public class NewTournamentFragment extends Fragment
 
 			case R.id.rbTTRoundRobin:
 				clearOtherCheckedRadioButtons(rgTTGroup, view.getId());
-				type = Tournament.TournamentFormat.ROUND_ROBIN;
+				type = TournamentFormat.ROUND_ROBIN;
 
 				setVisibility();
 				updateStageOptions();
@@ -98,7 +105,7 @@ public class NewTournamentFragment extends Fragment
 
 			case R.id.rbTTGroups:
 				clearOtherCheckedRadioButtons(rgTTGroup, view.getId());
-				type = Tournament.TournamentFormat.GROUPS;
+				type = TournamentFormat.GROUPS;
 
 				setVisibility();
 				updateStageOptions();
@@ -106,8 +113,8 @@ public class NewTournamentFragment extends Fragment
 
 			case R.id.rbTTKnockOut:
 				clearOtherCheckedRadioButtons(rgTTGroup, view.getId());
-				type = Tournament.TournamentFormat.KNOCK_OUT;
-				stageType = Tournament.TournamentStageType.NONE;
+				type = TournamentFormat.KNOCK_OUT;
+				stageType = TournamentStageType.NONE;
 
 				setVisibility();
 				updateStageOptions();
@@ -115,8 +122,8 @@ public class NewTournamentFragment extends Fragment
 
 			case R.id.rbTTBilateral:
 				clearOtherCheckedRadioButtons(rgTTGroup, view.getId());
-				type = Tournament.TournamentFormat.BILATERAL;
-				stageType = Tournament.TournamentStageType.NONE;
+				type = TournamentFormat.BILATERAL;
+				stageType = TournamentStageType.NONE;
 
 				setVisibility();
 				updateStageOptions();
@@ -124,26 +131,26 @@ public class NewTournamentFragment extends Fragment
 
 			case R.id.rbTSSuperFourStage:
 				clearOtherCheckedRadioButtons(rgTSGroup, view.getId());
-				stageType = Tournament.TournamentStageType.SUPER_FOUR;
+				stageType = TournamentStageType.SUPER_FOUR;
 				break;
 
 			case R.id.rbTSSuperSixStage:
 				clearOtherCheckedRadioButtons(rgTSGroup, view.getId());
-				stageType = Tournament.TournamentStageType.SUPER_SIX;
+				stageType = TournamentStageType.SUPER_SIX;
 				break;
 
 			case R.id.rbTSKnockOut:
 				clearOtherCheckedRadioButtons(rgTSGroup, view.getId());
-				stageType = Tournament.TournamentStageType.KNOCK_OUT;
+				stageType = TournamentStageType.KNOCK_OUT;
 				break;
 
 			case R.id.rbTSQualifiers:
 				clearOtherCheckedRadioButtons(rgTSGroup, view.getId());
-				stageType = Tournament.TournamentStageType.QUALIFIER;
+				stageType = TournamentStageType.QUALIFIER;
 				break;
 
 			case R.id.rbTSNone:
-				stageType = Tournament.TournamentStageType.NONE;
+				stageType = TournamentStageType.NONE;
 				break;
 		}
 	}
@@ -319,7 +326,7 @@ public class NewTournamentFragment extends Fragment
 
 			case KNOCK_OUT:
 			case BILATERAL:
-				stageType = Tournament.TournamentStageType.NONE;
+				stageType = TournamentStageType.NONE;
 				rgTSGroup.setVisibility(View.VISIBLE);
 				rbTSNone.setChecked(true);
 				noneOk = true;
@@ -498,6 +505,12 @@ public class NewTournamentFragment extends Fragment
 		etNumRounds.setEnabled(false);
 		setRadioGroupEnabled(rgTTGroup, false);
 		setRadioGroupEnabled(rgTSGroup, false);
+
+		if (getActivity() != null) {
+			DrawerController drawerController = (DrawerController) getActivity();
+			drawerController.disableAllDrawerMenuItems();
+			drawerController.enableDrawerMenuItem(R.id.menu_help);
+		}
 	}
 
 	private boolean validate() {
@@ -533,14 +546,14 @@ public class NewTournamentFragment extends Fragment
 				messageSB.append(". Number of Rounds should be at-least one.");
 			}
 
-			if (type == Tournament.TournamentFormat.KNOCK_OUT) {
+			if (type == TournamentFormat.KNOCK_OUT) {
 				if (!CommonUtils.isPowerOf(numTeams, 2)) {
 					messageSB.append(errorNumber++);
 					messageSB.append(". Number of teams have to be a power of 2 for Knock Out type of tournament.");
 				}
 			}
 
-			if (type == Tournament.TournamentFormat.GROUPS) {
+			if (type == TournamentFormat.GROUPS) {
 				if (numTeams / numGroups <= 2) {
 					messageSB.append(errorNumber++);
 					messageSB.append(". A group should contain at-least 3 teams. Please choose a different format/decrease number of groups.");
@@ -555,7 +568,7 @@ public class NewTournamentFragment extends Fragment
 				}
 			}
 
-			if (type == Tournament.TournamentFormat.ROUND_ROBIN) {
+			if (type == TournamentFormat.ROUND_ROBIN) {
 				if (numTeams < 3) {
 					messageSB.append(errorNumber++);
 					messageSB.append(". At least 3 teams required for round-robin.");
@@ -567,7 +580,7 @@ public class NewTournamentFragment extends Fragment
 				}
 			}
 
-			if (type == Tournament.TournamentFormat.BILATERAL) {
+			if (type == TournamentFormat.BILATERAL) {
 				if (numTeams != 2) {
 					messageSB.append(errorNumber++);
 					messageSB.append(". Only 2 teams allowed for a bilateral series.");
@@ -578,21 +591,21 @@ public class NewTournamentFragment extends Fragment
 				messageSB.append(errorNumber++);
 				messageSB.append(". Tournament Stage Type not selected.");
 			} else {
-				if (type == Tournament.TournamentFormat.GROUPS) {
-					if (stageType == Tournament.TournamentStageType.KNOCK_OUT) {
+				if (type == TournamentFormat.GROUPS) {
+					if (stageType == TournamentStageType.KNOCK_OUT) {
 						if (!(CommonUtils.isPowerOf(numGroups, 2)
 								|| CommonUtils.isPowerOf(numGroups * 2, 2)
 								|| (numTeams / numGroups >= 4 && CommonUtils.isPowerOf(numGroups * 4, 2)))) {
 							messageSB.append(errorNumber++);
 							messageSB.append(". Number of Groups not suitable for Knock-Out Stages.");
 						}
-					} else if (stageType == Tournament.TournamentStageType.SUPER_FOUR) {
+					} else if (stageType == TournamentStageType.SUPER_FOUR) {
 						if (!(CommonUtils.isDivisibleBy(numGroups, 4)
 								|| CommonUtils.isDivisibleBy(numGroups * 2, 4))) {
 							messageSB.append(errorNumber++);
 							messageSB.append(". Number of Groups not suitable for Super-Four Stage.");
 						}
-					} else if (stageType == Tournament.TournamentStageType.SUPER_SIX) {
+					} else if (stageType == TournamentStageType.SUPER_SIX) {
 						if (!(CommonUtils.isDivisibleBy(numGroups, 6)
 								|| CommonUtils.isDivisibleBy(numGroups * 2, 6)
 								|| CommonUtils.isDivisibleBy(numGroups * 3, 6))) {
@@ -667,9 +680,24 @@ public class NewTournamentFragment extends Fragment
 
 		int id = dbh.createNewTournament(tournament);
 
-		if (id == dbh.CODE_NEW_TOURNAMENT_DUP_RECORD)
+		if (id == dbh.CODE_NEW_TOURNAMENT_DUP_RECORD) {
 			Toast.makeText(getContext(), "A tournament with the same name already exists. Try a different name", Toast.LENGTH_LONG).show();
-		else
+		} else {
+			tournament.setId(id);
 			Toast.makeText(getContext(), "Tournament created successfully", Toast.LENGTH_SHORT).show();
+
+			showGroupConfirmation(tournament);
+		}
+	}
+
+	private void showGroupConfirmation(Tournament tournament) {
+		if (getActivity() != null) {
+			FragmentManager fragMgr = getActivity().getSupportFragmentManager();
+			String fragmentTag = TournamentGroupsFragment.class.getSimpleName();
+			fragMgr.beginTransaction()
+					.replace(R.id.frame_container, TournamentGroupsFragment.newInstance(tournament), fragmentTag)
+					.addToBackStack(fragmentTag)
+					.commit();
+		}
 	}
 }

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.R;
+import com.theNewCone.cricketScoreCard.enumeration.BowlingType;
 import com.theNewCone.cricketScoreCard.intf.ListInteractionListener;
 import com.theNewCone.cricketScoreCard.player.Player;
 
@@ -49,7 +50,7 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
         String playerNameText = holder.player.getName() + (holder.player.isWicketKeeper() ? " (w)" : "");
         holder.tvPlayerName.setText(playerNameText);
         holder.tvBatStyle.setText(holder.player.getBattingStyle().toString());
-        holder.tvBowlStyle.setText(holder.player.getBowlingStyle() != Player.BowlingType.NONE  ? holder.player.getBowlingStyle().toString() : "");
+		holder.tvBowlStyle.setText(holder.player.getBowlingStyle() != BowlingType.NONE ? holder.player.getBowlingStyle().toString() : "");
 
 		if (selPlayerIDs.get(holder.player.getID())) {
 			holder.mView.setSelected(true);

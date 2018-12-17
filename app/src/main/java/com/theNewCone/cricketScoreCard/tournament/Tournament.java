@@ -1,19 +1,28 @@
 package com.theNewCone.cricketScoreCard.tournament;
 
+import android.support.annotation.NonNull;
+
+import com.theNewCone.cricketScoreCard.comparator.GroupComparator;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentStageType;
 import com.theNewCone.cricketScoreCard.match.Team;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Tournament implements Serializable {
 	private int id, numGroups, numRounds, teamSize;
 	private String name;
 	private Team[] teams;
-	private Group[] groups;
+	private List<Group> groupList;
 	private int maxOvers, maxWickets, players, maxPerBowler;
 	private TournamentFormat format;
 	private TournamentStageType stageType;
-	private Schedule schedule;
 	private String createdDate;
+	private boolean isScheduled = false;
+	private Team tournamentWinner;
 
 	public Tournament(String name, Team[] teams, int maxOvers, int maxWickets, int players, int maxPerBowler,
 					  int numGroups, int numRounds, TournamentFormat format, TournamentStageType stageType) {
@@ -73,6 +82,10 @@ public class Tournament implements Serializable {
 		return id;
 	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public int getNumGroups() {
 		return numGroups;
 	}
@@ -89,8 +102,12 @@ public class Tournament implements Serializable {
 		return teams;
 	}
 
-	public Group[] getGroups() {
-		return groups;
+	public List<Group> getGroupList() {
+		return groupList;
+	}
+
+	public void setGroupList(List<Group> groupList) {
+		this.groupList = groupList;
 	}
 
 	public int getMaxOvers() {
@@ -109,20 +126,27 @@ public class Tournament implements Serializable {
 		return maxPerBowler;
 	}
 
-	public void setGroups(Group[] groups) {
-		this.groups = groups;
+	public void addToGroups(@NonNull Group group) {
+		if (groupList == null)
+			groupList = new ArrayList<>();
+
+		groupList.add(group);
+
+		Collections.sort(groupList, new GroupComparator());
+	}
+
+	public void replaceGroup(Group group) {
+		groupList.remove(group);
+		addToGroups(group);
+	}
+
+	public void clearGroups() {
+		if (groupList != null)
+			groupList.clear();
 	}
 
 	public TournamentStageType getStageType() {
 		return stageType;
-	}
-
-	public Schedule getSchedule() {
-		return schedule;
-	}
-
-	public void setSchedule(Schedule schedule) {
-		this.schedule = schedule;
 	}
 
 	public TournamentFormat getFormat() {
@@ -137,11 +161,25 @@ public class Tournament implements Serializable {
 		return createdDate;
 	}
 
-	public enum TournamentFormat {
-		ROUND_ROBIN, GROUPS, KNOCK_OUT, BILATERAL
+	public boolean isScheduled() {
+		return isScheduled;
 	}
 
-	public enum TournamentStageType {
-		SUPER_FOUR, SUPER_SIX, KNOCK_OUT, QUALIFIER, NONE
+	public void setTournamentWinner(Team tournamentWinner) {
+		this.tournamentWinner = tournamentWinner;
+	}
+
+	public void checkScheduled() {
+		if (groupList != null) {
+			for (Group group : groupList) {
+				if (!group.isScheduled()) {
+					isScheduled = false;
+					return;
+				}
+			}
+			isScheduled = true;
+		} else {
+			isScheduled = false;
+		}
 	}
 }

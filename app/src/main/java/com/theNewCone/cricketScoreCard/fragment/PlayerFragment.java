@@ -1,6 +1,5 @@
 package com.theNewCone.cricketScoreCard.fragment;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,6 +20,8 @@ import android.widget.Toast;
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.activity.PlayerSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.TeamSelectActivity;
+import com.theNewCone.cricketScoreCard.enumeration.BattingType;
+import com.theNewCone.cricketScoreCard.enumeration.BowlingType;
 import com.theNewCone.cricketScoreCard.intf.ConfirmationDialogClickListener;
 import com.theNewCone.cricketScoreCard.intf.DialogItemClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
@@ -30,18 +31,18 @@ import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class PlayerFragment extends Fragment
 		implements DialogItemClickListener, View.OnClickListener, ConfirmationDialogClickListener {
+
     TextView tvBatStyle, tvBowlStyle, tvTeams;
     EditText etName, etAge;
     CheckBox cbIsWK;
     Player selPlayer;
 
+	Button btnSelectBatStyle, btnSelectBowlSytle, btnManageTeams;
     Button btnDelete;
     List<Integer> associatedToTeams;
     Team[] selTeams;
@@ -125,10 +126,12 @@ public class PlayerFragment extends Fragment
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.tvPlayerBatStyle:
+			case R.id.btnSelectPlayerBatStyle:
+			case R.id.tvPlayerBatStyle:
                 showBattingStyleDialog();
                 break;
 
+			case R.id.btnSelectPlayerBowlStyle:
             case R.id.tvPlayerBowlStyle:
                 showBowlingStyleDialog();
                 break;
@@ -144,6 +147,10 @@ public class PlayerFragment extends Fragment
             case R.id.btnPlayerDelete:
                 confirmDeletePlayer();
                 break;
+
+			case R.id.btnPlayerManageTeams:
+				showTeamsSelectDialog();
+				break;
         }
     }
 
@@ -156,13 +163,19 @@ public class PlayerFragment extends Fragment
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-
+		DatabaseHandler dbHandler = new DatabaseHandler(getContext());
 		switch (requestCode) {
 			case REQ_CODE_TEAM_SELECT:
 				if(resultCode == TeamSelectActivity.RESP_CODE_OK) {
 					Team[] teams = CommonUtils.objectArrToTeamArr((Object []) data.getSerializableExtra(TeamSelectActivity.ARG_RESP_TEAMS));
 
 					if(teams !=  null) {
+						if (!Arrays.equals(selTeams, teams)) {
+							Toast.makeText(getContext(),
+									"Team List has Changed. Please click on 'Save' for changes to be updated.",
+									Toast.LENGTH_LONG).show();
+						}
+
 						List<Integer> teamIDList = new ArrayList<>();
 						selTeams = teams;
 
@@ -179,7 +192,8 @@ public class PlayerFragment extends Fragment
 			case REQ_CODE_DISPLAY_ALL_PLAYERS:
 				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
 					selPlayer = (Player) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYER);
-					selPlayer = new DatabaseHandler(getContext()).getPlayer(selPlayer.getID());
+					selPlayer = dbHandler.getPlayer(selPlayer.getID());
+					selTeams = CommonUtils.objectArrToTeamArr(dbHandler.getTeams(selPlayer.getTeamsAssociatedTo()).toArray());
 					populateData();
 				}
 				break;
@@ -205,6 +219,10 @@ public class PlayerFragment extends Fragment
 
 		cbIsWK = theView.findViewById(R.id.cbIsPlayerWK);
 
+		btnSelectBatStyle = theView.findViewById(R.id.btnSelectPlayerBatStyle);
+		btnSelectBowlSytle = theView.findViewById(R.id.btnSelectPlayerBowlStyle);
+		btnManageTeams = theView.findViewById(R.id.btnPlayerManageTeams);
+
 		btnDelete = theView.findViewById(R.id.btnPlayerDelete);
 
 		tvBatStyle.setOnClickListener(this);
@@ -212,17 +230,22 @@ public class PlayerFragment extends Fragment
 
 		theView.findViewById(R.id.btnPlayerSave).setOnClickListener(this);
 		theView.findViewById(R.id.btnPlayerClear).setOnClickListener(this);
+
+		btnSelectBatStyle.setOnClickListener(this);
+		btnSelectBowlSytle.setOnClickListener(this);
+		btnManageTeams.setOnClickListener(this);
+
 		btnDelete.setOnClickListener(this);
 	}
 
 	private void showBattingStyleDialog() {
 		if(getFragmentManager() != null) {
-			Player.BattingType[] battingTypes = Player.BattingType.values();
+			BattingType[] battingTypes = BattingType.values();
 			String[] battingStyles = new String[battingTypes.length-1];
 
 			int i=0;
-			for(Player.BattingType type : battingTypes)
-				if(type != Player.BattingType.NOT_SELECTED)
+			for (BattingType type : battingTypes)
+				if (type != BattingType.NOT_SELECTED)
 					battingStyles[i++] = type.toString();
 
 			StringDialog dialog = StringDialog.newInstance("Select Batting Style", battingStyles, StringDialog.ARG_TYPE_BAT_STYLE);
@@ -233,15 +256,15 @@ public class PlayerFragment extends Fragment
 
 	private void showBowlingStyleDialog() {
 		if(getFragmentManager() != null) {
-			Player.BowlingType[] bowlingTypes = Player.BowlingType.values();
+			BowlingType[] bowlingTypes = BowlingType.values();
 			String[] bowlingStyles = new String[bowlingTypes.length-1];
 
 			int i=0;
-			for(Player.BowlingType type : bowlingTypes)
-				if(type != Player.BowlingType.NOT_SELECTED && type != Player.BowlingType.NONE)
+			for (BowlingType type : bowlingTypes)
+				if (type != BowlingType.NOT_SELECTED && type != BowlingType.NONE)
 					bowlingStyles[i++] = type.toString();
 
-			bowlingStyles[i] = Player.BowlingType.NONE.toString();
+			bowlingStyles[i] = BowlingType.NONE.toString();
 
 			StringDialog dialog = StringDialog.newInstance("Select Bowling Style", bowlingStyles, StringDialog.ARG_TYPE_BOWL_STYLE);
 			dialog.setDialogItemClickListener(this);
@@ -253,10 +276,10 @@ public class PlayerFragment extends Fragment
 		if(selPlayer != null) {
 			etName.setText(selPlayer.getName());
 			etAge.setText(selPlayer.getAge() > 0 ? String.valueOf(selPlayer.getAge()) : "");
-			tvBatStyle.setText(selPlayer.getBattingStyle() == Player.BattingType.NOT_SELECTED
+			tvBatStyle.setText(selPlayer.getBattingStyle() == BattingType.NOT_SELECTED
 					? getString(R.string.selectBatStyle)
 					: selPlayer.getBattingStyle().toString());
-			tvBowlStyle.setText(selPlayer.getBowlingStyle() == Player.BowlingType.NOT_SELECTED
+			tvBowlStyle.setText(selPlayer.getBowlingStyle() == BowlingType.NOT_SELECTED
 					? getString(R.string.selectBowlStyle)
 					: selPlayer.getBowlingStyle().toString());
 			cbIsWK.setChecked(selPlayer.isWicketKeeper());
@@ -300,12 +323,12 @@ public class PlayerFragment extends Fragment
     private void storePlayer() {
     	int playerID = selPlayer != null ? selPlayer.getID() : -1;
     	int age = (etAge.getText().toString().trim().length() > 0) ? Integer.parseInt(etAge.getText().toString()) : -1;
-    	Player.BattingType batStyle = tvBatStyle.getText().toString().equals(getString(R.string.selectBatStyle))
-				? Player.BattingType.NOT_SELECTED
-				: Player.BattingType.valueOf(tvBatStyle.getText().toString());
-    	Player.BowlingType bowlStyle = tvBowlStyle.getText().toString().equals(getString(R.string.selectBowlStyle))
-				? Player.BowlingType.NOT_SELECTED
-				: Player.BowlingType.valueOf(tvBowlStyle.getText().toString());
+		BattingType batStyle = tvBatStyle.getText().toString().equals(getString(R.string.selectBatStyle))
+				? BattingType.NOT_SELECTED
+				: BattingType.valueOf(tvBatStyle.getText().toString());
+		BowlingType bowlStyle = tvBowlStyle.getText().toString().equals(getString(R.string.selectBowlStyle))
+				? BowlingType.NOT_SELECTED
+				: BowlingType.valueOf(tvBowlStyle.getText().toString());
 
     	List<Integer> teamIDList = selPlayer != null ? selPlayer.getTeamsAssociatedTo() : null;
 

@@ -27,6 +27,8 @@ import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.match.Match;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.player.Player;
+import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
+import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
@@ -36,9 +38,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class NewMatchFragment extends Fragment
     implements View.OnClickListener, DialogItemClickListener {
 
@@ -51,6 +50,10 @@ public class NewMatchFragment extends Fragment
 
 	private final String ENUM_TYPE_TEAM1 = "Team1Select";
 	private final String ENUM_TYPE_TEAM2 = "Team2Select";
+
+	private Tournament tournament = null;
+	private MatchInfo matchInfo = null;
+	private boolean isTournament = false;
 
     EditText etMatchName, etMaxOvers, etMaxWickets, etMaxPerBowler, etNumPlayers;
     TextView tvTeam1, tvTeam2, tvTeam1Capt, tvTeam1WK, tvTeam2Capt, tvTeam2WK;
@@ -70,8 +73,16 @@ public class NewMatchFragment extends Fragment
     }
 
     public static NewMatchFragment newInstance() {
-        return new NewMatchFragment();
+		return new NewMatchFragment();
     }
+
+	public static NewMatchFragment newInstance(Tournament tournament, MatchInfo matchInfo) {
+		NewMatchFragment fragment = new NewMatchFragment();
+		fragment.tournament = tournament;
+		fragment.matchInfo = matchInfo;
+		fragment.isTournament = true;
+		return fragment;
+	}
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -87,6 +98,9 @@ public class NewMatchFragment extends Fragment
 		}
 
 		loadViews(theView);
+
+		if (isTournament)
+			updateViewForTournament();
 
         updateView(theView);
 
@@ -412,6 +426,36 @@ public class NewMatchFragment extends Fragment
 		rbTossBowl.setOnClickListener(this);
 	}
 
+	private void updateViewForTournament() {
+		team1 = matchInfo.getTeam1();
+		team2 = matchInfo.getTeam2();
+
+		setTournamentMatchName();
+
+		tvTeam1.setText(matchInfo.getTeam1().getName());
+		tvTeam2.setText(matchInfo.getTeam2().getName());
+		tvTeam1.setEnabled(false);
+		tvTeam2.setEnabled(false);
+
+		maxOvers = tournament.getMaxOvers();
+		maxPerBowler = tournament.getMaxPerBowler();
+		maxWickets = tournament.getMaxWickets();
+		numPlayers = tournament.getPlayers();
+
+		etMaxOvers.setText(String.valueOf(maxOvers));
+		etMaxPerBowler.setText(String.valueOf(maxPerBowler));
+		etMaxWickets.setText(String.valueOf(maxWickets));
+		etNumPlayers.setText(String.valueOf(numPlayers));
+
+		etMaxOvers.setEnabled(false);
+		etMaxPerBowler.setEnabled(false);
+		etMaxWickets.setEnabled(false);
+		etNumPlayers.setEnabled(false);
+
+		rbTossTeam1.setText(team1.getShortName());
+		rbTossTeam2.setText(team2.getShortName());
+	}
+
 	private void updateView(View theView) {
 		getTeams();
 
@@ -434,7 +478,7 @@ public class NewMatchFragment extends Fragment
 		}
 
 		if(team1 != null) {
-			tvTeam1.setText(team1.getShortName());
+			tvTeam1.setText(team1.getName());
 			btnNMSelectTeam1.setVisibility(View.VISIBLE);
 			if(team1Players != null) {
 				tvTeam1Capt.setVisibility(View.VISIBLE);
@@ -447,8 +491,9 @@ public class NewMatchFragment extends Fragment
 				}
 			}
 		}
+
 		if(team2 != null) {
-			tvTeam2.setText(team2.getShortName());
+			tvTeam2.setText(team2.getName());
 			btnNMSelectTeam2.setVisibility(View.VISIBLE);
 			if(team2Players != null) {
 				tvTeam2Capt.setVisibility(View.VISIBLE);
@@ -490,19 +535,18 @@ public class NewMatchFragment extends Fragment
 		}
 	}
 
+	private void setTournamentMatchName() {
+		String teamName = tournament.getName() + " : " + team1.getShortName() + " v " + team2.getShortName();
+		etMatchName.setText(teamName);
+		etMatchName.setEnabled(false);
+	}
+
 	private void displayTeamSelect(String teamSelect) {
 		if(getFragmentManager() != null) {
 			String[] teamDetails = new String[teams.size()];
 
 			int i=0;
 			int ignoreTeam = -1;
-			/*if(teamSelect.equals(ENUM_TYPE_TEAM1) && team2 != null) {
-				teamDetails = new String[teams.size() - 1];
-				ignoreTeam = team2.getId();
-			} else if(teamSelect.equals(ENUM_TYPE_TEAM2) && team1 != null) {
-				teamDetails = new String[teams.size() - 1];
-				ignoreTeam = team1.getId();
-			}*/
 
 			for(Team team : teams) {
 				if(team.getId() != ignoreTeam) {
@@ -699,7 +743,7 @@ public class NewMatchFragment extends Fragment
 				LimitedOversFragment fragment =
 						LimitedOversFragment.newInstance(matchID, etMatchName.getText().toString(),
 								battingTeam, bowlingTeam, tossWonBy,
-								maxOvers, maxWickets, maxPerBowler);
+								maxOvers, maxWickets, maxPerBowler, matchInfo);
 
 				fragMgr.beginTransaction()
 						.replace(R.id.frame_container, fragment, fragmentTag)
