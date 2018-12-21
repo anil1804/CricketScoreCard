@@ -127,62 +127,94 @@
 			<GridLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:columnCount="4"
+				android:columnCount="6"
 				android:columnOrderPreserved="true">
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
 					android:text="@string/maxOvers"
-                    android:labelFor="@id/etMaxOvers"/>
+					android:layout_columnWeight="3"
+					android:labelFor="@id/etMaxOvers" />
 
-                <EditText
+				<TextView
+					android:id="@+id/tvMaxOvers"
+					style="@style/TextViewStyle.Bold"
+					android:layout_columnWeight="1"
+					android:visibility="gone" />
+
+				<EditText
                     android:id="@+id/etMaxOvers"
                     style="@style/EditTextStyle"
                     android:layout_width="50dp"
                     android:gravity="center_horizontal"
                     android:inputType="number"
                     android:maxLength="2"
-                    android:text="@string/maxOversValue" />
+					android:layout_columnWeight="1"
+					android:text="@string/maxOversValue" />
 
                 <TextView
                     style="@style/TextViewStyle.Bold.Medium.MorePadding"
                     android:text="@string/maxOversPerBowler"
-                    android:labelFor="@id/etMaxPerBowler"/>
+					android:layout_columnWeight="3"
+					android:labelFor="@id/etMaxPerBowler" />
 
-                <EditText
+				<TextView
+					android:id="@+id/tvMaxPerBowler"
+					style="@style/TextViewStyle.Bold"
+					android:layout_columnWeight="1"
+					android:visibility="gone" />
+
+				<EditText
                     android:id="@+id/etMaxPerBowler"
                     style="@style/EditTextStyle"
                     android:layout_width="50dp"
                     android:gravity="center_horizontal"
                     android:inputType="number"
-                    android:maxLength="2" />
+					android:layout_columnWeight="1"
+					android:maxLength="2" />
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
 					android:text="@string/maxWickets"
-                    android:labelFor="@id/etMaxWickets"/>
+					android:layout_columnWeight="3"
+					android:labelFor="@id/etMaxWickets" />
 
-                <EditText
+				<TextView
+					android:id="@+id/tvMaxWickets"
+					style="@style/TextViewStyle.Bold"
+					android:layout_columnWeight="1"
+					android:visibility="gone" />
+
+				<EditText
                     android:id="@+id/etMaxWickets"
                     style="@style/EditTextStyle"
                     android:layout_width="50dp"
                     android:gravity="center_horizontal"
                     android:inputType="number"
                     android:maxLength="2"
-                    android:text="@string/maxWicketsValue" />
+					android:layout_columnWeight="1"
+					android:text="@string/maxWicketsValue" />
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
 					android:text="@string/numPlayers"
-                    android:labelFor="@id/etNumPlayers"/>
+					android:layout_columnWeight="3"
+					android:labelFor="@id/etNumPlayers" />
 
-                <EditText
+				<TextView
+					android:id="@+id/tvNumPlayers"
+					style="@style/TextViewStyle.Bold"
+					android:layout_columnWeight="1"
+					android:visibility="gone" />
+
+				<EditText
                     android:id="@+id/etNumPlayers"
                     style="@style/EditTextStyle"
                     android:layout_width="50dp"
                     android:gravity="center_horizontal"
                     android:inputType="number"
-                    android:maxLength="2" />
+					android:layout_columnWeight="1"
+					android:maxLength="2" />
 
 			</GridLayout>
 
@@ -206,8 +238,8 @@
 				<Button
 					android:id="@+id/btnValidate"
 					style="@style/ButtonStyle.Medium"
-                    android:drawableTop="@drawable/ic_check"
-					android:text="@string/validate" />
+					android:drawableTop="@drawable/ic_toss"
+					android:text="@string/toss" />
 
 			</LinearLayout>
 

@@ -171,9 +171,9 @@ public class TournamentGroupsFragment extends Fragment
 		List<Group> groupList = tournament.getGroupList();
 		for (int i = 0; i < groupList.size(); i++) {
 			Group group = groupList.get(i);
-			int groupId = dbHandler.addNewGroup(tournament.getId(), group);
+			int groupId = dbHandler.updateGroup(tournament.getId(), group);
 			group.setId(groupId);
-			tournament.replaceGroup(group);
+			tournament.updateGroup(group);
 		}
 	}
 }

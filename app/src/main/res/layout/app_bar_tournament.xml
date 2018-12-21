@@ -5,7 +5,7 @@
 	android:id="@+id/main_content"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context=".activity.TournamentActivity">
+	tools:context=".activity.TournamentHomeActivity">
 
 	<android.support.design.widget.AppBarLayout
 		android:id="@+id/appbar"
@@ -37,11 +37,11 @@
 				android:layout_height="wrap_content"
 				android:text="@string/tournamentSchedule" />
 
-			<!--<android.support.design.widget.TabItem
-					android:id="@+id/tabTournamentPoints"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="@string/tournamentPoints" />-->
+			<android.support.design.widget.TabItem
+				android:id="@+id/tabTournamentPoints"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/tournamentPoints" />
 
 		</android.support.design.widget.TabLayout>
 

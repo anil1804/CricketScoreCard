@@ -15,4 +15,8 @@
 	<dimen name="appbar_padding_top">8dp</dimen>
 	<dimen name="app_bar_height">200dp</dimen>
 	<dimen name="item_width">120dp</dimen>
+
+	<dimen name="item_value_width_low">30dp</dimen>
+	<dimen name="item_value_width_med">45dp</dimen>
+	<dimen name="item_value_width_high">60dp</dimen>
 </resources>

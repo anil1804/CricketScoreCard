@@ -5,9 +5,12 @@ import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import com.theNewCone.cricketScoreCard.comparator.PointsDataComparator;
+import com.theNewCone.cricketScoreCard.enumeration.MatchResult;
 import com.theNewCone.cricketScoreCard.enumeration.Stage;
 import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.enumeration.TournamentStageType;
+import com.theNewCone.cricketScoreCard.match.CricketCard;
+import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.tournament.Group;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
@@ -93,7 +96,7 @@ public class TournamentUtils {
 
 	private Group createBilateralSchedule(Group group) {
 		for (int a = 0; a < group.getNumRounds(); a++) {
-			group.addToSchedule(new MatchInfo(a, group.getGroupNumber(), group.getName(), Stage.NONE,
+			group.updateMatchInfo(new MatchInfo(a, group.getGroupNumber(), group.getName(), Stage.NONE,
 					group.getTeams()[0], group.getTeams()[1]));
 		}
 
@@ -117,12 +120,18 @@ public class TournamentUtils {
 		unselectedTeams.addAll(Arrays.asList(group.getTeams()));
 
 		for (int i = 0; i < group.getMatchesPerRound(); i++) {
-			Team team1 = getNextTeam(null);
-			Team team2 = getNextTeam(team1);
+			Team team1, team2;
+			if (stage == Stage.ROUND_1) {
+				team1 = getNextTeam(null);
+				team2 = getNextTeam(team1);
+			} else {
+				team1 = unselectedTeams.get(i * 2);
+				team2 = unselectedTeams.get(i * 2 + 1);
+			}
 
 			MatchInfo matchInfo = new MatchInfo((i + 1), group.getGroupNumber(), group.getName(),
 					stage, team1, team2);
-			group.addToSchedule(matchInfo);
+			group.updateMatchInfo(matchInfo);
 		}
 
 		return group;
@@ -152,7 +161,7 @@ public class TournamentUtils {
 
 			MatchInfo matchInfo = new MatchInfo(matchNumber++, group.getGroupNumber(), group.getName(),
 					stage, team1, team2);
-			group.addToSchedule(matchInfo);
+			group.updateMatchInfo(matchInfo);
 
 			/*Get List of teams paired with Team-2*/
 			List<Integer> scheduledWithTeam2 = groupMatches.get(team2.getId());
@@ -200,30 +209,34 @@ public class TournamentUtils {
 		unselectedTeams.clear();
 		unselectedTeams.addAll(Arrays.asList(tournament.getTeams()));
 
-		tournament.clearGroups();
+		clearCurrentGroups(tournament);
 
 		Group group;
 		Stage groupStage;
 		switch (tournament.getFormat()) {
 			case ROUND_ROBIN:
 				groupStage = Stage.ROUND_ROBIN;
-				group = new Group(1, tournament.getTeamSize(), groupStage.toString(), tournament.getTeams(),
-						tournament.getNumRounds(), tournament.getStageType(), groupStage);
-				tournament.addToGroups(group);
+				group = new Group(1, tournament.getTeamSize(), groupStage.enumString(), tournament.getTeams(),
+						tournament.getNumRounds(), tournament.getStageType(), groupStage,
+						tournament.getMaxOvers(), tournament.getMaxWickets());
+				tournament.updateGroup(group);
+
 				break;
 
 			case BILATERAL:
 				groupStage = Stage.NONE;
-				group = new Group(1, 2, groupStage.toString(), tournament.getTeams(),
-						tournament.getNumRounds(), tournament.getStageType(), groupStage);
-				tournament.addToGroups(group);
+				group = new Group(1, 2, groupStage.enumString(), tournament.getTeams(),
+						tournament.getNumRounds(), tournament.getStageType(), groupStage,
+						tournament.getMaxOvers(), tournament.getMaxWickets());
+				tournament.updateGroup(group);
 				break;
 
 			case KNOCK_OUT:
 				groupStage = Stage.ROUND_1;
-				group = new Group(1, tournament.getTeamSize(), groupStage.toString() + tournament.getTeamSize(),
-						tournament.getTeams(), 1, tournament.getStageType(), groupStage);
-				tournament.addToGroups(group);
+				group = new Group(1, tournament.getTeamSize(), groupStage.enumString(),
+						tournament.getTeams(), 1, tournament.getStageType(), groupStage,
+						tournament.getMaxOvers(), tournament.getMaxWickets());
+				tournament.updateGroup(group);
 				break;
 
 			case GROUPS:
@@ -234,15 +247,21 @@ public class TournamentUtils {
 					}
 
 					groupStage = Stage.GROUP;
-					group = new Group((i + 1), groupTeams.length, groupStage.toString(),
-							groupTeams, tournament.getNumRounds(), tournament.getStageType(), groupStage);
+					int groupNumber = i + 1;
+					group = new Group(groupNumber, groupTeams.length, "Group-" + groupNumber,
+							groupTeams, tournament.getNumRounds(), tournament.getStageType(), groupStage,
+							tournament.getMaxOvers(), tournament.getMaxWickets());
 
-					tournament.addToGroups(group);
+					tournament.updateGroup(group);
 				}
 				break;
 		}
 
 		return tournament;
+	}
+
+	private void clearCurrentGroups(Tournament tournament) {
+		tournament.clearGroups();
 	}
 
 	private void progressToNextStage(Tournament tournament) {
@@ -254,20 +273,20 @@ public class TournamentUtils {
 			int groupNumber = tournamentGroupList.size() + 1;
 			switch (tournament.getStageType()) {
 				case KNOCK_OUT:
-					progressToNextStage_KnockOut(tournament, lastGroup, lastGroupsStage, groupNumber);
+					tournament = progressToNextStage_KnockOut(tournament, lastGroup, lastGroupsStage, groupNumber);
 					break;
 
 				case QUALIFIER:
-					progressToNextStage_Qualifiers(tournament, tournamentGroupList, lastGroup, groupNumber);
+					tournament = progressToNextStage_Qualifiers(tournament, tournamentGroupList, lastGroup, groupNumber);
 					break;
 
 				case ROUND_ROBIN:
-					progressToNextStage_RoundRobin(tournament, tournamentGroupList, lastGroup, groupNumber);
+					tournament = progressToNextStage_RoundRobin(tournament, tournamentGroupList, lastGroup, groupNumber);
 					break;
 
 				case SUPER_FOUR:
 				case SUPER_SIX:
-					progressToNextStage_Supers(tournament, tournamentGroupList, lastGroup, groupNumber);
+					tournament = progressToNextStage_Supers(tournament, tournamentGroupList, lastGroup, groupNumber);
 					break;
 
 				case NONE:
@@ -294,10 +313,46 @@ public class TournamentUtils {
 					}
 					break;
 			}
+
+			for (int i = 0; i < tournamentGroupList.size(); i++) {
+				Group group = tournamentGroupList.get(i);
+				if (group.getId() == 0) {
+					group = saveNewGroup(tournament, group);
+					tournament.updateGroup(group);
+					i = 0;
+				}
+			}
 		}
 	}
 
-	private void progressToNextStage_KnockOut(Tournament tournament, Group lastGroup, Stage lastGroupsStage, int groupNumber) {
+	private Group saveNewGroup(Tournament tournament, Group group) {
+		int groupID = dbHandler.updateGroup(tournament.getId(), group);
+		group.setId(groupID);
+
+		List<MatchInfo> matchInfoList = group.getMatchInfoList();
+		if (matchInfoList != null) {
+			for (int i = 0; i < matchInfoList.size(); i++) {
+				MatchInfo matchInfo = matchInfoList.get(i);
+				dbHandler.addNewMatchInfo(groupID, matchInfo);
+			}
+
+			group.setMatchInfoList(matchInfoList);
+		}
+
+		List<PointsData> pointsDataList = group.getPointsData();
+		if (pointsDataList != null) {
+			for (int i = 0; i < pointsDataList.size(); i++) {
+				PointsData pointsData = pointsDataList.get(i);
+				dbHandler.addNewPointsDataRecord(pointsData, groupID, tournament.getMaxOvers(), tournament.getMaxWickets());
+			}
+
+			group.updatePointsTable(pointsDataList);
+		}
+
+		return group;
+	}
+
+	private Tournament progressToNextStage_KnockOut(Tournament tournament, Group lastGroup, Stage lastGroupsStage, int groupNumber) {
 		Group group;
 		List<Team> winningsTeams = new ArrayList<>();
 
@@ -350,20 +405,22 @@ public class TournamentUtils {
 
 		if (groupStage != Stage.NONE) {
 			group = new Group(groupNumber, winningsTeams.size(),
-					groupStage.toString(), CommonUtils.objectArrToTeamArr(winningsTeams.toArray()),
-					1, tournament.getStageType(), groupStage);
+					groupStage.enumString(), CommonUtils.objectArrToTeamArr(winningsTeams.toArray()),
+					1, tournament.getStageType(), groupStage,
+					tournament.getMaxOvers(), tournament.getMaxWickets());
 			group = createSchedule(group, groupStage);
-
-			tournament.addToGroups(group);
+			tournament.updateGroup(group);
 		} else {
 			if (lastGroup.getMatchInfoList() != null) {
 				MatchInfo matchInfo = lastGroup.getMatchInfoList().get(0);
 				completeTournament(tournament, matchInfo.getWinningTeam());
 			}
 		}
+
+		return tournament;
 	}
 
-	private void progressToNextStage_Qualifiers(Tournament tournament, List<Group> tournamentGroupList, Group lastGroup, int groupNumber) {
+	private Tournament progressToNextStage_Qualifiers(Tournament tournament, List<Group> tournamentGroupList, Group lastGroup, int groupNumber) {
 		Group group;
 		if (lastGroup.getStage() == Stage.ROUND_1) {
 			List<PointsData> pointsData = lastGroup.getPointsData();
@@ -373,16 +430,18 @@ public class TournamentUtils {
 			Team fourthTeam = pointsData.get(3).getTeam();
 
 			Stage groupStage = Stage.QUALIFIER;
-			group = new Group(groupNumber++, 2, groupStage.toString(),
-					new Team[]{topTeam, secondTeam}, 1, tournament.getStageType(), groupStage);
+			group = new Group(groupNumber++, 2, groupStage.enumString(),
+					new Team[]{topTeam, secondTeam}, 1, tournament.getStageType(), groupStage,
+					tournament.getMaxOvers(), tournament.getMaxWickets());
 			group = createSchedule(group, groupStage);
-			tournament.addToGroups(group);
+			tournament.updateGroup(group);
 
 			groupStage = Stage.QUALIFIER;
-			group = new Group(groupNumber, 2, groupStage.toString(),
-					new Team[]{thirdTeam, fourthTeam}, 1, tournament.getStageType(), groupStage);
+			group = new Group(groupNumber, 2, groupStage.enumString(),
+					new Team[]{thirdTeam, fourthTeam}, 1, tournament.getStageType(), groupStage,
+					tournament.getMaxOvers(), tournament.getMaxWickets());
 			group = createSchedule(group, groupStage);
-			tournament.addToGroups(group);
+			tournament.updateGroup(group);
 		} else if (lastGroup.getStage() == Stage.ELIMINATOR_1) {
 			MatchInfo qualifierOne = tournamentGroupList.get(tournamentGroupList.size() - 2).getMatchInfoList().get(0);
 			MatchInfo eliminatorOne = lastGroup.getMatchInfoList().get(0);
@@ -391,30 +450,34 @@ public class TournamentUtils {
 			Team eliminatorTwoTeam1 = qualifierOne.getTeam1().equals(qualifierOneWinTeam) ? qualifierOne.getTeam2() : qualifierOne.getTeam1();
 
 			Stage groupStage = Stage.ELIMINATOR_2;
-			group = new Group(groupNumber, 2, groupStage.toString(),
+			group = new Group(groupNumber, 2, groupStage.enumString(),
 					new Team[]{eliminatorTwoTeam1, eliminatorOne.getWinningTeam()}, 1,
-					tournament.getStageType(), groupStage);
+					tournament.getStageType(), groupStage,
+					tournament.getMaxOvers(), tournament.getMaxWickets());
 			group = createSchedule(group, groupStage);
-			tournament.addToGroups(group);
+			tournament.updateGroup(group);
 
 		} else if (lastGroup.getStage() == Stage.ELIMINATOR_2) {
 			MatchInfo qualifierOne = tournamentGroupList.get(tournamentGroupList.size() - 3).getMatchInfoList().get(0);
 			MatchInfo qualifierTwo = lastGroup.getMatchInfoList().get(0);
 
 			Stage groupStage = Stage.FINAL;
-			group = new Group(groupNumber, 2, groupStage.toString(),
+			group = new Group(groupNumber, 2, groupStage.enumString(),
 					new Team[]{qualifierOne.getWinningTeam(), qualifierTwo.getWinningTeam()},
-					1, tournament.getStageType(), groupStage);
+					1, tournament.getStageType(), groupStage,
+					tournament.getMaxOvers(), tournament.getMaxWickets());
 			group = createSchedule(group, groupStage);
-			tournament.addToGroups(group);
+			tournament.updateGroup(group);
 
 		} else if (lastGroup.getStage() == Stage.FINAL) {
 			MatchInfo matchInfo = lastGroup.getMatchInfoList().get(0);
 			completeTournament(tournament, matchInfo.getWinningTeam());
 		}
+
+		return tournament;
 	}
 
-	private void progressToNextStage_RoundRobin(Tournament tournament, List<Group> tournamentGroupList, Group lastGroup, int groupNumber) {
+	private Tournament progressToNextStage_RoundRobin(Tournament tournament, List<Group> tournamentGroupList, Group lastGroup, int groupNumber) {
 		Group group;
 		if (lastGroup.getStage() == Stage.GROUP) {
 			int numTeamsFromGroup = 2;
@@ -431,18 +494,21 @@ public class TournamentUtils {
 			}
 
 			Stage groupStage = Stage.ROUND_ROBIN;
-			group = new Group(groupNumber, nextStageGroupList.size(), groupStage.toString(),
+			group = new Group(groupNumber, nextStageGroupList.size(), groupStage.enumString(),
 					CommonUtils.objectArrToTeamArr(nextStageGroupList.toArray()), 1,
-					tournament.getStageType(), groupStage);
+					tournament.getStageType(), groupStage,
+					tournament.getMaxOvers(), tournament.getMaxWickets());
 			group = createGroupSchedule(group, groupStage);
-			tournament.addToGroups(group);
+			tournament.updateGroup(group);
 		} else {
 			MatchInfo matchInfo = lastGroup.getMatchInfoList().get(0);
 			completeTournament(tournament, matchInfo.getWinningTeam());
 		}
+
+		return tournament;
 	}
 
-	private void progressToNextStage_Supers(Tournament tournament, List<Group> tournamentGroupList, Group lastGroup, int groupNumber) {
+	private Tournament progressToNextStage_Supers(Tournament tournament, List<Group> tournamentGroupList, Group lastGroup, int groupNumber) {
 		Group group;
 		List<Team> nextStageTeamList = new ArrayList<>();
 		switch (tournament.getFormat()) {
@@ -478,33 +544,130 @@ public class TournamentUtils {
 
 		Stage groupStage = tournament.getStageType() == TournamentStageType.SUPER_FOUR
 				? Stage.SUPER_FOUR : Stage.SUPER_SIX;
-		group = new Group(groupNumber, nextStageTeamList.size(), groupStage.toString(),
+		group = new Group(groupNumber, nextStageTeamList.size(), groupStage.enumString(),
 				CommonUtils.objectArrToTeamArr(nextStageTeamList.toArray()), 1,
-				tournament.getStageType(), groupStage);
+				tournament.getStageType(), groupStage,
+				tournament.getMaxOvers(), tournament.getMaxWickets());
 		group = createGroupSchedule(group, groupStage);
-		tournament.addToGroups(group);
+		tournament.updateGroup(group);
+
+		return tournament;
 	}
 
-	public void checkTournamentStageComplete(int matchInfoID) {
+	public void checkTournamentStageComplete(Tournament tournament) {
 		boolean isComplete = true;
 
-		Tournament tournament = dbHandler.getTournamentByMatchInfoID(matchInfoID);
-		for (Group group : tournament.getGroupList()) {
-			for (MatchInfo matchInfo : group.getMatchInfoList()) {
-				if (!matchInfo.isComplete()) {
-					isComplete = false;
-					break;
+		if (tournament != null) {
+			for (Group group : tournament.getGroupList()) {
+				if (group.getMatchInfoList() != null) {
+					for (MatchInfo matchInfo : group.getMatchInfoList()) {
+						if (!matchInfo.isComplete()) {
+							int matchID = matchInfo.getMatchID();
+							boolean isMatchComplete = matchID > 0 && dbHandler.checkIfMatchComplete(matchID);
+							if (isMatchComplete) {
+								closeTournamentMatch(matchID);
+							} else {
+								isComplete = false;
+								break;
+							}
+						}
+					}
 				}
 			}
-		}
 
-		if (isComplete)
-			progressToNextStage(tournament);
+			if (isComplete)
+				progressToNextStage(tournament);
+		}
+	}
+
+	private void checkTournamentStageComplete(int matchInfoID) {
+		Tournament tournament = dbHandler.getTournamentByMatchInfoID(matchInfoID);
+		checkTournamentStageComplete(tournament);
 	}
 
 	private void completeTournament(Tournament tournament, Team winner) {
 		tournament.setTournamentWinner(winner);
 		dbHandler.updateTournament(tournament);
 		dbHandler.completeTournament(tournament.getId());
+	}
+
+	public Tournament storePointsData(Tournament tournament) {
+		List<Group> groupList = tournament.getGroupList();
+		if (groupList != null) {
+			for (Group group : groupList) {
+				List<PointsData> pointsTable = group.getPointsData();
+				if (pointsTable != null) {
+					for (PointsData pointsData : pointsTable) {
+						int id = dbHandler.addNewPointsDataRecord(pointsData, group.getId(), tournament.getMaxOvers(), tournament.getMaxWickets());
+						pointsData.setId(id);
+					}
+				}
+			}
+		}
+		return tournament;
+	}
+
+	private void closeTournamentMatch(int matchID) {
+		CricketCardUtils ccUtils = dbHandler.getCompletedMatchData(matchID);
+		closeTournamentMatch(ccUtils);
+	}
+
+	public void closeTournamentMatch(CricketCardUtils ccUtils) {
+		if (ccUtils != null) {
+			int winningTeamID = ccUtils.getWinningTeam() != null ? ccUtils.getWinningTeam().getId() : 0;
+			dbHandler.completeTournamentMatch(ccUtils.getMatchInfo().getId(), ccUtils.getMatchInfo().getMatchID(), winningTeamID);
+			checkTournamentStageComplete(ccUtils.getMatchInfo().getId());
+			updatePointsData(ccUtils);
+		}
+	}
+
+	private void updatePointsData(CricketCardUtils ccUtils) {
+		CricketCard firstInningsCard = ccUtils.getPrevInningsCard(), secondInningsCard = ccUtils.getCard();
+		MatchInfo matchInfo = ccUtils.getMatchInfo();
+		if (matchInfo.getMatchID() == 0 || matchInfo.getGroupID() == 0) {
+			matchInfo = dbHandler.getMatchInfo(matchInfo.getId());
+		}
+		if (ccUtils.isAbandoned()) {
+			if (ccUtils.getCard().getInnings() == 1) {
+				firstInningsCard = ccUtils.getCard();
+				secondInningsCard = null;
+			} else {
+				firstInningsCard = ccUtils.getPrevInningsCard();
+				secondInningsCard = ccUtils.getCard();
+			}
+		}
+
+		int groupID = matchInfo.getGroupID();
+		PointsData pointsDataTeam1 = dbHandler.getTeamPointsData(groupID, ccUtils.getTeam1().getId());
+		PointsData pointsDataTeam2 = dbHandler.getTeamPointsData(groupID, ccUtils.getTeam2().getId());
+
+		MatchResult team1Result = MatchResult.NO_RESULT, team2Result = MatchResult.NO_RESULT;
+		if (ccUtils.isMatchTied()) {
+			team1Result = MatchResult.TIED;
+			team2Result = MatchResult.TIED;
+		} else if (!ccUtils.isAbandoned()) {
+			int winningTeamId = ccUtils.getWinningTeam().getId();
+			team1Result = (ccUtils.getTeam1().getId() == winningTeamId) ? MatchResult.WON : MatchResult.LOST;
+			team2Result = (ccUtils.getTeam2().getId() == winningTeamId) ? MatchResult.WON : MatchResult.LOST;
+		}
+
+		int team1Score, team1Wickets, team2Score, team2Wickets;
+		String team1Overs, team2Overs;
+
+		team1Score = firstInningsCard != null ? firstInningsCard.getScore() : 0;
+		team1Wickets = firstInningsCard != null ? firstInningsCard.getWicketsFallen() : 0;
+		team1Overs = firstInningsCard != null ? firstInningsCard.getTotalOversBowled() : "0";
+
+		team2Score = secondInningsCard != null ? secondInningsCard.getScore() : 0;
+		team2Wickets = secondInningsCard != null ? secondInningsCard.getWicketsFallen() : 0;
+		team2Overs = secondInningsCard != null ? secondInningsCard.getTotalOversBowled() : "0";
+
+		pointsDataTeam1.addPlayedMatchData(team1Result, team1Score, team1Overs, team1Wickets,
+				team2Score, team2Overs, team2Wickets);
+		pointsDataTeam2.addPlayedMatchData(team2Result, team2Score, team2Overs, team2Wickets,
+				team1Score, team1Overs, team1Wickets);
+
+		dbHandler.updatePointsDataRecord(pointsDataTeam1);
+		dbHandler.updatePointsDataRecord(pointsDataTeam2);
 	}
 }

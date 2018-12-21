@@ -6,4 +6,9 @@
 		android:icon="@drawable/ic_help"
 		android:title="@string/help"
 		app:showAsAction="ifRoom" />
+	<item
+		android:id="@+id/menu_home"
+		android:icon="@drawable/ic_home"
+		android:title="@string/nav_drawer_home"
+		app:showAsAction="ifRoom" />
 </menu>

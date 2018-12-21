@@ -17,7 +17,8 @@ import android.widget.Toast;
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.activity.CompletedMatchSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.MatchStateSelectActivity;
-import com.theNewCone.cricketScoreCard.activity.TournamentActivity;
+import com.theNewCone.cricketScoreCard.activity.TournamentCompleteActivity;
+import com.theNewCone.cricketScoreCard.activity.TournamentHomeActivity;
 import com.theNewCone.cricketScoreCard.activity.TournamentSelectActivity;
 import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.intf.ConfirmationDialogClickListener;
@@ -25,6 +26,7 @@ import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.match.Match;
 import com.theNewCone.cricketScoreCard.match.MatchState;
+import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
@@ -113,6 +115,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 
 			case R.id.menu_clearFinishedMatches:
 				displayFinishedMatches(true, REQ_CODE_MATCH_LIST_FINISHED_DELETE);
+				break;
+
+			case R.id.menu_trophy:
+				startActivity(new Intent(getContext(), TournamentCompleteActivity.class));
 				break;
 
 		}
@@ -222,7 +228,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 				if(resultCode == CompletedMatchSelectActivity.RESP_CODE_OK) {
 					Match selMatch = (Match) data.getSerializableExtra(CompletedMatchSelectActivity.ARG_RESP_SEL_MATCH);
 					if(getActivity() != null) {
-						CricketCardUtils ccUtils = dbHandler.getCompletedMatch(selMatch.getId());
+						CricketCardUtils ccUtils = dbHandler.getCompletedMatchData(selMatch.getId());
 						FragmentManager fragMgr = getActivity().getSupportFragmentManager();
 						String fragmentTag = MatchSummaryFragment.class.getSimpleName();
 						fragMgr.beginTransaction()
@@ -246,9 +252,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 							showTournamentHome(tournament);
 						}
 					} else {
-						TournamentUtils tournamentUtils = new TournamentUtils(getContext());
-						tournament = tournamentUtils.createInitialGroups(tournament);
-						showScheduleView(tournament);
+						if (!tournament.isScheduled()) {
+							if (tournament.getGroupList() == null) {
+								TournamentUtils tournamentUtils = new TournamentUtils(getContext());
+								tournament = tournamentUtils.createInitialGroups(tournament);
+								showScheduleView(tournament);
+							}
+						} else {
+							showTournamentHome(tournament);
+						}
 					}
 				}
 		}
@@ -292,8 +304,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 		if(getActivity() != null) {
 			String fragmentTag = NewMatchFragment.class.getSimpleName();
 
+			MatchInfo matchInfo = dbHandler.getMatchInfoBasedOnMatchStateID(matchStateID);
+
 			getActivity().getSupportFragmentManager().beginTransaction()
-					.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID, null), fragmentTag)
+					.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID, matchInfo), fragmentTag)
 					.addToBackStack(fragmentTag)
 					.commit();
 		}
@@ -394,8 +408,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	}
 
 	private void showTournamentHome(Tournament tournament) {
-		Intent intent = new Intent(getContext(), TournamentActivity.class);
-		intent.putExtra(TournamentActivity.ARG_TOURNAMENT, tournament);
+		Intent intent = new Intent(getContext(), TournamentHomeActivity.class);
+		intent.putExtra(TournamentHomeActivity.ARG_TOURNAMENT, tournament);
 		startActivity(intent);
 	}
 }

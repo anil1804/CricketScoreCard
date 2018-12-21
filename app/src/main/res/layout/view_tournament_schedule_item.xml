@@ -7,7 +7,7 @@
 
 	<TextView
 		android:id="@+id/tvScheduleVersus"
-		style="@style/TextViewStyle.Large.BigMargin" />
+		style="@style/TextViewStyle.Big.Bold.BigMargin" />
 
 	<View style="@style/LineSeparator" />
 

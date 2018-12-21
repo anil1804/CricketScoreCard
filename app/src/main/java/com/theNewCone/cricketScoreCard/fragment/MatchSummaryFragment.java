@@ -31,11 +31,11 @@ public class MatchSummaryFragment extends Fragment {
 	private static final String BUNDLE_MATCH_INFO = "MatchInfo";
 
 	CricketCardUtils ccUtils;
-	Match matchInfo;
+	Match match;
 
-	public static MatchSummaryFragment newInstance(CricketCardUtils ccUtils, Match matchInfo) {
+	public static MatchSummaryFragment newInstance(CricketCardUtils ccUtils, Match match) {
 		MatchSummaryFragment fragment = new MatchSummaryFragment();
-		fragment.initialize(ccUtils, matchInfo);
+		fragment.initialize(ccUtils, match);
 
 		return fragment;
 	}
@@ -100,19 +100,19 @@ public class MatchSummaryFragment extends Fragment {
 		if(ccUtils != null)
 			outState.putString(BUNDLE_CC_UTILS, CommonUtils.convertToJSON(ccUtils));
 
-		if(matchInfo != null)
-			outState.putSerializable(BUNDLE_MATCH_INFO, matchInfo);
+		if (match != null)
+			outState.putSerializable(BUNDLE_MATCH_INFO, match);
 	}
 
 	private void initialize(CricketCardUtils ccUtils, Match matchInfo) {
 		this.ccUtils = ccUtils;
-		this.matchInfo = matchInfo;
+		this.match = matchInfo;
 	}
 
 	private void getSavedState(Bundle bundle) {
 		if(bundle != null) {
 			ccUtils = CommonUtils.convertToCCUtils(bundle.getString(BUNDLE_CC_UTILS));
-			matchInfo = (Match) bundle.getSerializable(BUNDLE_MATCH_INFO);
+			match = (Match) bundle.getSerializable(BUNDLE_MATCH_INFO);
 		}
 	}
 
@@ -138,9 +138,9 @@ public class MatchSummaryFragment extends Fragment {
 			tvSCTossInfo.setText(String.format(Locale.getDefault(),
 					"%s won the toss and elected to %s", tossWonBy.toUpperCase(), electedTo.toUpperCase()));
 
-			if(matchInfo != null && matchInfo.getDate() != null) {
+			if (match != null && match.getDate() != null) {
 				tvSCMatchDate.setText(String.format(Locale.getDefault(), "Played on %s",
-						CommonUtils.dateToString(matchInfo.getDate(), "EEEE, MMMM d, yyyy")));
+						CommonUtils.dateToString(match.getDate(), "EEEE, MMMM d, yyyy")));
 			}
 
 			String teamName = team1.getShortName() + " Team";

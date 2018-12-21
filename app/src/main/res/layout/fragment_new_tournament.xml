@@ -217,7 +217,7 @@
 				android:id="@+id/btnTournamentValidate"
 				style="@style/ButtonStyle.Medium"
 				android:drawableTop="@drawable/ic_check"
-				android:text="@string/validate" />
+				android:text="@string/setMatchData" />
 
 		</LinearLayout>
 

@@ -126,7 +126,7 @@ public class Tournament implements Serializable {
 		return maxPerBowler;
 	}
 
-	public void addToGroups(@NonNull Group group) {
+	private void addToGroups(@NonNull Group group) {
 		if (groupList == null)
 			groupList = new ArrayList<>();
 
@@ -135,8 +135,13 @@ public class Tournament implements Serializable {
 		Collections.sort(groupList, new GroupComparator());
 	}
 
-	public void replaceGroup(Group group) {
-		groupList.remove(group);
+	public void updateGroup(Group group) {
+		try {
+			groupList.remove(group);
+		} catch (Exception ex) {
+			//DO NOTHING
+		}
+
 		addToGroups(group);
 	}
 
@@ -163,6 +168,10 @@ public class Tournament implements Serializable {
 
 	public boolean isScheduled() {
 		return isScheduled;
+	}
+
+	public Team getTournamentWinner() {
+		return tournamentWinner;
 	}
 
 	public void setTournamentWinner(Team tournamentWinner) {

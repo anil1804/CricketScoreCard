@@ -11,19 +11,23 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.R;
+import com.theNewCone.cricketScoreCard.intf.ListInteractionListener;
 import com.theNewCone.cricketScoreCard.tournament.Group;
 
-import java.util.Arrays;
 import java.util.List;
 
-public class GroupViewAdapter extends RecyclerView.Adapter<GroupViewAdapter.ViewHolder> {
+public class TournamentGroupScheduleAdapter extends RecyclerView.Adapter<TournamentGroupScheduleAdapter.ViewHolder>
+		implements ListInteractionListener {
 
 	private final List<Group> groupList;
 	private final Context context;
+	private final ListInteractionListener listener;
 
-	public GroupViewAdapter(@NonNull List<Group> groupList, @NonNull Context context) {
+	public TournamentGroupScheduleAdapter(@NonNull List<Group> groupList, @NonNull Context context,
+										  ListInteractionListener listener) {
 		this.groupList = groupList;
 		this.context = context;
+		this.listener = listener;
 	}
 
 	@Override
@@ -44,7 +48,7 @@ public class GroupViewAdapter extends RecyclerView.Adapter<GroupViewAdapter.View
 		holder.rcvGroupTeamList.setHasFixedSize(false);
 
 		holder.rcvGroupTeamList.setLayoutManager(new LinearLayoutManager(context));
-		GroupTeamViewAdapter adapter = new GroupTeamViewAdapter(Arrays.asList(holder.group.getTeams()));
+		ScheduleViewAdapter adapter = new ScheduleViewAdapter(context, holder.group.getMatchInfoList(), this);
 		holder.rcvGroupTeamList.setAdapter(adapter);
 
 		LinearLayoutManager llm = new LinearLayoutManager(context);
@@ -57,6 +61,16 @@ public class GroupViewAdapter extends RecyclerView.Adapter<GroupViewAdapter.View
 	@Override
 	public int getItemCount() {
 		return groupList.size();
+	}
+
+	@Override
+	public void onListFragmentInteraction(Object selItem) {
+		listener.onListFragmentInteraction(selItem);
+	}
+
+	@Override
+	public void onListFragmentMultiSelect(Object selItem, boolean removeItem) {
+		listener.onListFragmentMultiSelect(selItem, removeItem);
 	}
 
 	class ViewHolder extends RecyclerView.ViewHolder {

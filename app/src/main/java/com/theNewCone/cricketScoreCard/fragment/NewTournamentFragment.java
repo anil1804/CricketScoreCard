@@ -26,6 +26,7 @@ import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
+import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
 public class NewTournamentFragment extends Fragment
@@ -114,7 +115,6 @@ public class NewTournamentFragment extends Fragment
 			case R.id.rbTTKnockOut:
 				clearOtherCheckedRadioButtons(rgTTGroup, view.getId());
 				type = TournamentFormat.KNOCK_OUT;
-				stageType = TournamentStageType.NONE;
 
 				setVisibility();
 				updateStageOptions();
@@ -123,7 +123,6 @@ public class NewTournamentFragment extends Fragment
 			case R.id.rbTTBilateral:
 				clearOtherCheckedRadioButtons(rgTTGroup, view.getId());
 				type = TournamentFormat.BILATERAL;
-				stageType = TournamentStageType.NONE;
 
 				setVisibility();
 				updateStageOptions();
@@ -325,6 +324,12 @@ public class NewTournamentFragment extends Fragment
 				break;
 
 			case KNOCK_OUT:
+				stageType = TournamentStageType.KNOCK_OUT;
+				rgTSGroup.setVisibility(View.VISIBLE);
+				rbTSNone.setChecked(true);
+				noneOk = true;
+				break;
+
 			case BILATERAL:
 				stageType = TournamentStageType.NONE;
 				rgTSGroup.setVisibility(View.VISIBLE);
@@ -673,6 +678,11 @@ public class NewTournamentFragment extends Fragment
 	}
 
 	private void createNewTournament() {
+		maxOvers = Integer.parseInt(etMaxOvers.getText().toString());
+		maxWickets = Integer.parseInt(etMaxWickets.getText().toString());
+		numPlayers = Integer.parseInt(etNumPlayers.getText().toString());
+		maxPerBowler = Integer.parseInt(etMaxPerBowler.getText().toString());
+
 		Tournament tournament = new Tournament(etTournamentName.getText().toString(), selTeams,
 				maxOvers, maxWickets, numPlayers, maxPerBowler, numGroups, numRounds, type, stageType);
 
@@ -686,7 +696,13 @@ public class NewTournamentFragment extends Fragment
 			tournament.setId(id);
 			Toast.makeText(getContext(), "Tournament created successfully", Toast.LENGTH_SHORT).show();
 
-			showGroupConfirmation(tournament);
+			if (type == TournamentFormat.GROUPS) {
+				showGroupConfirmation(tournament);
+			} else {
+				TournamentUtils utils = new TournamentUtils(getContext());
+				tournament = utils.createInitialGroups(tournament);
+				showScheduleConfirmation(tournament);
+			}
 		}
 	}
 
@@ -696,6 +712,17 @@ public class NewTournamentFragment extends Fragment
 			String fragmentTag = TournamentGroupsFragment.class.getSimpleName();
 			fragMgr.beginTransaction()
 					.replace(R.id.frame_container, TournamentGroupsFragment.newInstance(tournament), fragmentTag)
+					.addToBackStack(fragmentTag)
+					.commit();
+		}
+	}
+
+	private void showScheduleConfirmation(Tournament tournament) {
+		if (getActivity() != null) {
+			FragmentManager fragMgr = getActivity().getSupportFragmentManager();
+			String fragmentTag = TournamentScheduleFragment.class.getSimpleName();
+			fragMgr.beginTransaction()
+					.replace(R.id.frame_container, TournamentScheduleFragment.newInstance(tournament, 0), fragmentTag)
 					.addToBackStack(fragmentTag)
 					.commit();
 		}

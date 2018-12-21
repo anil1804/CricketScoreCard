@@ -24,6 +24,7 @@ import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.custom.ThemeColors;
 import com.theNewCone.cricketScoreCard.fragment.HomeFragment;
 import com.theNewCone.cricketScoreCard.fragment.LimitedOversFragment;
+import com.theNewCone.cricketScoreCard.fragment.MatchSummaryFragment;
 import com.theNewCone.cricketScoreCard.fragment.NewMatchFragment;
 import com.theNewCone.cricketScoreCard.fragment.PlayerFragment;
 import com.theNewCone.cricketScoreCard.fragment.StringDialog;
@@ -31,6 +32,8 @@ import com.theNewCone.cricketScoreCard.fragment.TeamFragment;
 import com.theNewCone.cricketScoreCard.help.HelpContentData;
 import com.theNewCone.cricketScoreCard.intf.DialogItemClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
+import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
+import com.theNewCone.cricketScoreCard.match.Match;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
@@ -85,10 +88,19 @@ public class HomeActivity extends AppCompatActivity
 							.replace(R.id.frame_container, NewMatchFragment.newInstance(tournament, matchInfo))
 							.commitNow();
 				} else {
-					int matchStateID = dbHandler.getSavedMatchStateIDs(DatabaseHandler.SAVE_MANUAL, matchInfo.getMatchID(), null, true).get(0);
-					getSupportFragmentManager().beginTransaction()
-							.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID, matchInfo))
-							.commitNow();
+					if (matchInfo.isComplete()) {
+						int matchID = matchInfo.getMatchID();
+						CricketCardUtils ccUtils = dbHandler.getCompletedMatchData(matchID);
+						Match match = dbHandler.getMatch(matchID);
+						getSupportFragmentManager().beginTransaction()
+								.replace(R.id.frame_container, MatchSummaryFragment.newInstance(ccUtils, match))
+								.commitNow();
+					} else {
+						int matchStateID = dbHandler.getSavedMatchStateIDs(DatabaseHandler.SAVE_MANUAL, matchInfo.getMatchID(), null, true).get(0);
+						getSupportFragmentManager().beginTransaction()
+								.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID, matchInfo))
+								.commitNow();
+					}
 				}
 			} else {
 				getSupportFragmentManager().beginTransaction()

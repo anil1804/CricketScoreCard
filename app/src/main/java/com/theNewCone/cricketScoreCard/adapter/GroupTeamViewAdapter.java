@@ -24,7 +24,7 @@ public class GroupTeamViewAdapter extends RecyclerView.Adapter<GroupTeamViewAdap
 	@NonNull
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		View view = LayoutInflater.from(parent.getContext())
-				.inflate(R.layout.tournament_groups_item_team_view, parent, false);
+				.inflate(R.layout.view_tournament_group_item_team, parent, false);
 		return new ViewHolder(view);
 	}
 

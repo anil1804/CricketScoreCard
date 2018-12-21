@@ -1,10 +1,8 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/constraintLayout"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context="com.theNewCone.cricketScoreCard.fragment.TournamentHomeScheduleFragment">
-
+	tools:context="com.theNewCone.cricketScoreCard.fragment.TournamentHomePointsTableFragment">
 
 	<ScrollView
 		android:id="@+id/svContent"
@@ -12,11 +10,11 @@
 		android:layout_height="wrap_content">
 
 		<android.support.v7.widget.RecyclerView
-			android:id="@+id/rcvScheduleList"
+			android:id="@+id/rcvPointsTableList"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="20dp" />
 
 	</ScrollView>
 
-</android.support.constraint.ConstraintLayout>
+</FrameLayout>

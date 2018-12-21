@@ -100,7 +100,7 @@ public class NewMatchFragment extends Fragment
 		loadViews(theView);
 
 		if (isTournament)
-			updateViewForTournament();
+			updateViewForTournament(theView);
 
         updateView(theView);
 
@@ -426,7 +426,7 @@ public class NewMatchFragment extends Fragment
 		rbTossBowl.setOnClickListener(this);
 	}
 
-	private void updateViewForTournament() {
+	private void updateViewForTournament(View view) {
 		team1 = matchInfo.getTeam1();
 		team2 = matchInfo.getTeam2();
 
@@ -447,34 +447,51 @@ public class NewMatchFragment extends Fragment
 		etMaxWickets.setText(String.valueOf(maxWickets));
 		etNumPlayers.setText(String.valueOf(numPlayers));
 
-		etMaxOvers.setEnabled(false);
-		etMaxPerBowler.setEnabled(false);
-		etMaxWickets.setEnabled(false);
-		etNumPlayers.setEnabled(false);
+		etMaxOvers.setVisibility(View.GONE);
+		etMaxPerBowler.setVisibility(View.GONE);
+		etMaxWickets.setVisibility(View.GONE);
+		etNumPlayers.setVisibility(View.GONE);
+
+		TextView tvMaxOvers = view.findViewById(R.id.tvMaxOvers);
+		TextView tvMaxPerBowler = view.findViewById(R.id.tvMaxPerBowler);
+		TextView tvMaxWickets = view.findViewById(R.id.tvMaxWickets);
+		TextView tvNumPlayers = view.findViewById(R.id.tvNumPlayers);
+
+		tvMaxOvers.setText(String.valueOf(maxOvers));
+		tvMaxPerBowler.setText(String.valueOf(maxPerBowler));
+		tvMaxWickets.setText(String.valueOf(maxWickets));
+		tvNumPlayers.setText(String.valueOf(numPlayers));
+
+		tvMaxOvers.setVisibility(View.VISIBLE);
+		tvMaxPerBowler.setVisibility(View.VISIBLE);
+		tvMaxWickets.setVisibility(View.VISIBLE);
+		tvNumPlayers.setVisibility(View.VISIBLE);
 
 		rbTossTeam1.setText(team1.getShortName());
 		rbTossTeam2.setText(team2.getShortName());
 	}
 
 	private void updateView(View theView) {
-		getTeams();
+		if (!isTournament) {
+			getTeams();
 
-		if(teams != null && teams.size() < 2) {
-			theView.findViewById(R.id.llNewMatch).setVisibility(View.GONE);
-			theView.findViewById(R.id.llInsufficientTeams).setVisibility(View.VISIBLE);
+			if (teams != null && teams.size() < 2) {
+				theView.findViewById(R.id.llNewMatch).setVisibility(View.GONE);
+				theView.findViewById(R.id.llInsufficientTeams).setVisibility(View.VISIBLE);
 
-			TextView tvInsufficientTeams = theView.findViewById(R.id.tvInsufficientTeams);
-			String insufficientTeamsText =
-					((teams.size() == 0) ? "No Team Available." : "Only 1 Team available.")
-							+ "\nNeed at-least 2 teams to play a match.";
-			tvInsufficientTeams.setText(insufficientTeamsText);
-		} else {
-			maxOvers = etMaxOvers.getText().toString().equals("")
-					? 0 : Integer.parseInt(etMaxOvers.getText().toString());
-			maxWickets = etMaxWickets.getText().toString().equals("")
-					? 0 :Integer.parseInt(etMaxWickets.getText().toString());
-			updateNumPlayers();
-			updateMaxPerBowler();
+				TextView tvInsufficientTeams = theView.findViewById(R.id.tvInsufficientTeams);
+				String insufficientTeamsText =
+						((teams.size() == 0) ? "No Team Available." : "Only 1 Team available.")
+								+ "\nNeed at-least 2 teams to play a match.";
+				tvInsufficientTeams.setText(insufficientTeamsText);
+			} else {
+				maxOvers = etMaxOvers.getText().toString().equals("")
+						? 0 : Integer.parseInt(etMaxOvers.getText().toString());
+				maxWickets = etMaxWickets.getText().toString().equals("")
+						? 0 : Integer.parseInt(etMaxWickets.getText().toString());
+				updateNumPlayers();
+				updateMaxPerBowler();
+			}
 		}
 
 		if(team1 != null) {

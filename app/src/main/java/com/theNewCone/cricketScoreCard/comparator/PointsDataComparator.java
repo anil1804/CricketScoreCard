@@ -20,6 +20,6 @@ public class PointsDataComparator implements Comparator<PointsData> {
 			}
 		}
 
-		return comparison;
+		return comparison * -1;
 	}
 }

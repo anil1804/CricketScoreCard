@@ -1,7 +1,5 @@
 package com.theNewCone.cricketScoreCard.enumeration;
 
-import android.support.annotation.NonNull;
-
 import java.io.Serializable;
 
 public enum Stage implements Serializable {
@@ -12,9 +10,7 @@ public enum Stage implements Serializable {
 	QUARTER_FINAL, SEMI_FINAL, FINAL,
 	NONE;
 
-	@NonNull
-	@Override
-	public String toString() {
+	public String enumString() {
 		String value = "None";
 		switch (this) {
 			case GROUP:

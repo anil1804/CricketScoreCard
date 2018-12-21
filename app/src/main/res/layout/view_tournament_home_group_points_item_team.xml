@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	tools:context="com.theNewCone.cricketScoreCard.fragment.TournamentGroupsFragment">
+
+	<LinearLayout
+		android:id="@+id/llPointsData"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<TextView
+			android:id="@+id/tvPTTeamName"
+			style="@style/TextViewStyle.Medium"
+			android:layout_width="0dp"
+			android:layout_weight="1" />
+
+		<TextView
+			android:id="@+id/tvPTPlayed"
+			style="@style/TextViewStyle.Medium"
+			android:layout_width="@dimen/item_value_width_low"
+			android:gravity="end" />
+
+		<TextView
+			android:id="@+id/tvPTWon"
+			style="@style/TextViewStyle.Medium"
+			android:layout_width="@dimen/item_value_width_low"
+			android:gravity="end" />
+
+		<TextView
+			android:id="@+id/tvPTLost"
+			style="@style/TextViewStyle.Medium"
+			android:layout_width="@dimen/item_value_width_low"
+			android:gravity="end" />
+
+		<TextView
+			android:id="@+id/tvPTTied"
+			style="@style/TextViewStyle.Medium"
+			android:layout_width="@dimen/item_value_width_low"
+			android:gravity="end" />
+
+		<TextView
+			android:id="@+id/tvPTNoResult"
+			style="@style/TextViewStyle.Medium"
+			android:layout_width="@dimen/item_value_width_med"
+			android:gravity="end" />
+
+		<TextView
+			android:id="@+id/tvPTPoints"
+			style="@style/TextViewStyle.Medium"
+			android:layout_width="@dimen/item_value_width_med"
+			android:gravity="end" />
+
+		<TextView
+			android:id="@+id/tvPTNetRunRate"
+			style="@style/TextViewStyle.Medium"
+			android:layout_width="@dimen/item_value_width_high"
+			android:gravity="end" />
+
+	</LinearLayout>
+
+	<View style="@style/LineSeparator" />
+
+</LinearLayout>

@@ -16,8 +16,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.theNewCone.cricketScoreCard.R;
-import com.theNewCone.cricketScoreCard.activity.TournamentActivity;
-import com.theNewCone.cricketScoreCard.adapter.ScheduleViewAdapter;
+import com.theNewCone.cricketScoreCard.activity.TournamentHomeActivity;
+import com.theNewCone.cricketScoreCard.adapter.ScheduleSetupViewAdapter;
 import com.theNewCone.cricketScoreCard.intf.ConfirmationDialogClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.tournament.Group;
@@ -152,6 +152,7 @@ public class TournamentScheduleFragment extends Fragment
 			case R.id.btnTournamentScheduleConfirm:
 				saveMatchInfo();
 				saveGroupInfo();
+				savePointsDataInfo();
 				showTournamentHome();
 				break;
 		}
@@ -170,8 +171,9 @@ public class TournamentScheduleFragment extends Fragment
 
 	private void saveGroupInfo() {
 		currentGroup.setScheduled(true);
+
+		tournament.updateGroup(currentGroup);
 		tournament.checkScheduled();
-		tournament.replaceGroup(currentGroup);
 		dbHandler.updateTournament(tournament);
 	}
 
@@ -186,7 +188,7 @@ public class TournamentScheduleFragment extends Fragment
 			}
 
 			if (currentGroup.getMatchInfoList() != null) {
-				ScheduleViewAdapter adapter = (ScheduleViewAdapter) rcvScheduleList.getAdapter();
+				ScheduleSetupViewAdapter adapter = (ScheduleSetupViewAdapter) rcvScheduleList.getAdapter();
 
 				if (adapter != null) {
 					for (int i = 0; i < adapter.getItemCount(); i++) {
@@ -195,7 +197,7 @@ public class TournamentScheduleFragment extends Fragment
 				}
 
 				rcvScheduleList.setLayoutManager(new LinearLayoutManager(getContext()));
-				adapter = new ScheduleViewAdapter(getContext(), currentGroup.getMatchInfoList(), true);
+				adapter = new ScheduleSetupViewAdapter(currentGroup.getMatchInfoList());
 				rcvScheduleList.setAdapter(adapter);
 
 				LinearLayoutManager llm = new LinearLayoutManager(getContext());
@@ -234,18 +236,27 @@ public class TournamentScheduleFragment extends Fragment
 	}
 
 	private void showTournamentHome() {
-		Intent intent = new Intent(getContext(), TournamentActivity.class);
-		intent.putExtra(TournamentActivity.ARG_TOURNAMENT, tournament);
+		Intent intent = new Intent(getContext(), TournamentHomeActivity.class);
+		intent.putExtra(TournamentHomeActivity.ARG_TOURNAMENT, tournament);
 		startActivity(intent);
 	}
 
 	private void saveMatchInfo() {
 		List<MatchInfo> matchInfoList = currentGroup.getMatchInfoList();
+		if (currentGroup.getId() == 0) {
+			int groupID = dbHandler.updateGroup(tournament.getId(), currentGroup);
+			currentGroup.setId(groupID);
+		}
+
 		for (int i = 0; i < matchInfoList.size(); i++) {
 			MatchInfo matchInfo = matchInfoList.get(i);
 			int rowID = dbHandler.addNewMatchInfo(currentGroup.getId(), matchInfo);
 			matchInfo.setId(rowID);
-			currentGroup.replaceMatchInfo(matchInfo);
+			currentGroup.updateMatchInfo(matchInfo);
 		}
+	}
+
+	private void savePointsDataInfo() {
+		tournament = new TournamentUtils(getContext()).storePointsData(tournament);
 	}
 }

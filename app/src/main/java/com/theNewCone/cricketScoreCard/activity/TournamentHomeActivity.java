@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,10 +18,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.theNewCone.cricketScoreCard.R;
-import com.theNewCone.cricketScoreCard.fragment.TournamentScheduleTabFragment;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
+import com.theNewCone.cricketScoreCard.fragment.TournamentHomePointsTableFragment;
+import com.theNewCone.cricketScoreCard.fragment.TournamentHomeScheduleFragment;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
+import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
 
-public class TournamentActivity extends AppCompatActivity
+import java.util.HashMap;
+
+public class TournamentHomeActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
 
 	public static final String ARG_TOURNAMENT = "Tournament";
@@ -32,6 +38,7 @@ public class TournamentActivity extends AppCompatActivity
 	Toolbar toolbar;
 
 	Tournament tournament = null;
+	HashMap<TournamentTab, Boolean> tabMap;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +47,6 @@ public class TournamentActivity extends AppCompatActivity
 
 		if (savedInstanceState != null) {
 			tournament = (Tournament) savedInstanceState.getSerializable(ARG_TOURNAMENT);
-		} else if (getIntent() != null && getIntent().getExtras() != null) {
-			Bundle bundle = getIntent().getExtras();
-			tournament = (Tournament) bundle.getSerializable(ARG_TOURNAMENT);
 		}
 
 		toolbar = findViewById(R.id.toolbar);
@@ -61,9 +65,44 @@ public class TournamentActivity extends AppCompatActivity
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+		if (getIntent() != null && getIntent().getExtras() != null) {
+			Bundle bundle = getIntent().getExtras();
+			tournament = (Tournament) bundle.getSerializable(ARG_TOURNAMENT);
+
+			if (tournament != null && tournament.getTournamentWinner() != null) {
+				Intent intent = new Intent(this, TournamentCompleteActivity.class);
+				intent.putExtra(TournamentCompleteActivity.ARG_WINNER, tournament.getTournamentWinner().getName());
+				startActivity(intent);
+
+				deriveTournamentTabs(tournament.getFormat());
+
+				TournamentUtils utils = new TournamentUtils(this);
+				utils.checkTournamentStageComplete(tournament);
+			}
+		}
+	}
+
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putSerializable(ARG_TOURNAMENT, tournament);
+	}
+
+	@Override
+	public void onBackPressed() {
+		DrawerLayout drawer = findViewById(R.id.drawer_layout);
+		if (drawer.isDrawerOpen(GravityCompat.START)) {
+			drawer.closeDrawer(GravityCompat.START);
+		} else {
+			int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+			while (backStackCount > 0) {
+				getSupportFragmentManager().popBackStack();
+				backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+			}
+			goHome();
+		}
 	}
 
 	@Override
@@ -77,6 +116,10 @@ public class TournamentActivity extends AppCompatActivity
 		switch (item.getItemId()) {
 			case R.id.menu_help:
 				showHelp();
+				break;
+
+			case R.id.menu_home:
+				goHome();
 				break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -137,6 +180,36 @@ public class TournamentActivity extends AppCompatActivity
 		startActivity(new Intent(this, HelpListActivity.class));
 	}
 
+	private void deriveTournamentTabs(TournamentFormat format) {
+		tabMap = new HashMap<>();
+
+		tabMap.put(TournamentTab.HOME, true);
+		tabMap.put(TournamentTab.SCHEDULE, true);
+		tabMap.put(TournamentTab.STATS, true);
+
+		switch (format) {
+			case BILATERAL:
+				tabMap.put(TournamentTab.POINTS, false);
+				break;
+
+			case KNOCK_OUT:
+				tabMap.put(TournamentTab.POINTS, false);
+				break;
+
+			case ROUND_ROBIN:
+				tabMap.put(TournamentTab.POINTS, true);
+				break;
+
+			case GROUPS:
+				tabMap.put(TournamentTab.POINTS, true);
+				break;
+		}
+	}
+
+	private enum TournamentTab {
+		HOME, SCHEDULE, POINTS, STATS
+	}
+
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 		SectionsPagerAdapter(FragmentManager fm) {
@@ -148,7 +221,11 @@ public class TournamentActivity extends AppCompatActivity
 			Fragment frag = null;
 			switch (position) {
 				case 0:
-					frag = TournamentScheduleTabFragment.newInstance(tournament);
+					frag = TournamentHomeScheduleFragment.newInstance(tournament);
+					break;
+
+				case 1:
+					frag = TournamentHomePointsTableFragment.newInstance(tournament);
 					break;
 			}
 			return frag;
@@ -156,7 +233,13 @@ public class TournamentActivity extends AppCompatActivity
 
 		@Override
 		public int getCount() {
-			return 1;
+			int count = 0;
+			for (Boolean isPresent : tabMap.values())
+				if (isPresent)
+					count++;
+
+			return count;
+
 		}
 	}
 }

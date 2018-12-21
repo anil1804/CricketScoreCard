@@ -31,7 +31,7 @@ public class SCBatsmanAdapter extends RecyclerView.Adapter<SCBatsmanAdapter.MyVi
 	@NonNull
 	@Override
 	public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View playerView = LayoutInflater.from(context).inflate(R.layout.scorecard_batsman_view, parent, false);
+		View playerView = LayoutInflater.from(context).inflate(R.layout.view_scorecard_batsman, parent, false);
 
 		return new MyViewHolder(playerView);
 	}

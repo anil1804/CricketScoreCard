@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,9 +24,11 @@ import com.theNewCone.cricketScoreCard.activity.BatsmanSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.BowlerSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.ExtrasActivity;
 import com.theNewCone.cricketScoreCard.activity.GraphsActivity;
+import com.theNewCone.cricketScoreCard.activity.HomeActivity;
 import com.theNewCone.cricketScoreCard.activity.InputActivity;
 import com.theNewCone.cricketScoreCard.activity.MatchStateSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.ScoreCardActivity;
+import com.theNewCone.cricketScoreCard.activity.TournamentHomeActivity;
 import com.theNewCone.cricketScoreCard.activity.WicketActivity;
 import com.theNewCone.cricketScoreCard.async.LoadCCUtils;
 import com.theNewCone.cricketScoreCard.async.StoreCCUtils;
@@ -48,6 +49,7 @@ import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.scorecard.Extra;
 import com.theNewCone.cricketScoreCard.scorecard.WicketData;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
+import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
@@ -128,7 +130,7 @@ public class LimitedOversFragment extends Fragment
 
 	boolean bowlerChanged = false, newBatsmanArrived = false;
 	boolean enableBatsmanHurtOption = true, enableChangeFacingOption = true, enableBowlerHurtOption = true;
-	boolean isTournament = false;
+	boolean isTournament = false, matchTied = false, isAbandoned = false;
 
 	StoreCCUtils storeCCUtils;
 	LoadCCUtils loadCCUtils;
@@ -342,7 +344,8 @@ public class LimitedOversFragment extends Fragment
 				break;
 
 			case R.id.menu_abandon:
-				completeMatch(MatchResult.NO_RESULT.toString(), null, false, true);
+				isAbandoned = true;
+				completeMatch(MatchResult.NO_RESULT.toString(), null);
 				break;
 		}
 
@@ -592,18 +595,21 @@ public class LimitedOversFragment extends Fragment
 			case CONFIRMATION_CODE_CLOSE_MATCH:
 				if(accepted) {
 					dbHandler.completeMatch(matchID, CommonUtils.convertToJSON(ccUtils));
+					TournamentUtils tournamentUtils = new TournamentUtils(getContext());
+					tournamentUtils.closeTournamentMatch(ccUtils);
+
 					dbHandler.clearAllMatchHistory(matchID);
 
-					if(getActivity() != null && getFragmentManager() != null && getFragmentManager().getBackStackEntryCount() > 0) {
+					if (getActivity() != null && getFragmentManager() != null) {
 						int backStackCount = getFragmentManager().getBackStackEntryCount();
-						for(int i=backStackCount-1; i>=0; i--) {
-							FragmentManager.BackStackEntry entry = getFragmentManager().getBackStackEntryAt(i);
-							if(HomeFragment.class.getSimpleName().equals(entry.getName())) {
-								getActivity().onBackPressed();
-							} else {
-								getFragmentManager().popBackStack();
-							}
+						while (backStackCount > 0) {
+							getFragmentManager().popBackStack();
+							backStackCount = getFragmentManager().getBackStackEntryCount();
 						}
+						if (isTournament)
+							goTournamentHome();
+						else
+							goHome();
 					}
 				}
 				break;
@@ -1174,7 +1180,6 @@ public class LimitedOversFragment extends Fragment
 
 		String result;
 		Team winningTeam = null;
-		boolean matchTied = false;
 		if(score >= target) {
 			winningTeam = ccUtils.getTeam2();
 			result = String.format(Locale.getDefault(), "%s WON by %d wickets", winningTeam.getName(), (maxWickets - wicketsFallen));
@@ -1186,7 +1191,7 @@ public class LimitedOversFragment extends Fragment
 			matchTied = true;
 		}
 
-		completeMatch(result, winningTeam, matchTied, false);
+		completeMatch(result, winningTeam);
 
 		theView.findViewById(R.id.llScoring).setVisibility(View.GONE);
 		tvResult.setVisibility(View.VISIBLE);
@@ -1339,15 +1344,8 @@ public class LimitedOversFragment extends Fragment
 		}
 	}
 
-	private void completeMatch(String result, Team winningTeam, boolean matchTied, boolean isAbandoned) {
+	private void completeMatch(String result, Team winningTeam) {
 		ccUtils.setResult(result, winningTeam, matchTied, isAbandoned);
-
-		if (isTournament) {
-			int winningTeamID = winningTeam != null ? winningTeam.getId() : 0;
-			dbHandler.completeTournamentMatch(ccUtils.getMatchInfo().getId(), matchID, winningTeamID);
-			TournamentUtils utils = new TournamentUtils(getContext());
-			utils.checkTournamentStageComplete(matchInfo.getId());
-		}
 	}
 
 	private boolean getSelectFacingBatsman() {
@@ -1383,5 +1381,16 @@ public class LimitedOversFragment extends Fragment
 		}
 
 		return dismissalType;
+	}
+
+	private void goHome() {
+		startActivity(new Intent(getContext(), HomeActivity.class));
+	}
+
+	private void goTournamentHome() {
+		Intent intent = new Intent(getContext(), TournamentHomeActivity.class);
+		Tournament tournament = dbHandler.getTournamentByMatchInfoID(matchInfo.getId());
+		intent.putExtra(TournamentHomeActivity.ARG_TOURNAMENT, tournament);
+		startActivity(intent);
 	}
 }

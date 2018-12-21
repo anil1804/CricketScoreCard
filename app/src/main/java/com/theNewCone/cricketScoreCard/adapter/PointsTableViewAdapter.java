@@ -13,24 +13,25 @@ import android.widget.TextView;
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.tournament.Group;
 
-import java.util.Arrays;
 import java.util.List;
 
-public class GroupViewAdapter extends RecyclerView.Adapter<GroupViewAdapter.ViewHolder> {
+public class PointsTableViewAdapter extends RecyclerView.Adapter<PointsTableViewAdapter.ViewHolder> {
 
 	private final List<Group> groupList;
 	private final Context context;
 
-	public GroupViewAdapter(@NonNull List<Group> groupList, @NonNull Context context) {
-		this.groupList = groupList;
+	public PointsTableViewAdapter(Context context, List<Group> groupList) {
 		this.context = context;
+		this.groupList = groupList;
 	}
 
 	@Override
 	@NonNull
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View view = LayoutInflater.from(parent.getContext())
-				.inflate(R.layout.view_tournament_group_item, parent, false);
+
+		View view = LayoutInflater.from(parent.getContext()).
+				inflate(R.layout.view_tournament_group_item, parent, false);
+
 		return new ViewHolder(view);
 	}
 
@@ -41,10 +42,10 @@ public class GroupViewAdapter extends RecyclerView.Adapter<GroupViewAdapter.View
 
 		holder.tvGroupName.setText(holder.group.getName());
 
+		holder.rcvGroupTeamList.setLayoutManager(new LinearLayoutManager(context));
 		holder.rcvGroupTeamList.setHasFixedSize(false);
 
-		holder.rcvGroupTeamList.setLayoutManager(new LinearLayoutManager(context));
-		GroupTeamViewAdapter adapter = new GroupTeamViewAdapter(Arrays.asList(holder.group.getTeams()));
+		PointsDataViewAdapter adapter = new PointsDataViewAdapter(context, holder.group.getPointsData());
 		holder.rcvGroupTeamList.setAdapter(adapter);
 
 		LinearLayoutManager llm = new LinearLayoutManager(context);
@@ -68,9 +69,9 @@ public class GroupViewAdapter extends RecyclerView.Adapter<GroupViewAdapter.View
 		ViewHolder(View view) {
 			super(view);
 			mView = view;
+
 			tvGroupName = view.findViewById(R.id.tvGroupName);
 			rcvGroupTeamList = view.findViewById(R.id.rcvGroupList);
 		}
 	}
-
 }

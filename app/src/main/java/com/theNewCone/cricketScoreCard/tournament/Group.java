@@ -23,6 +23,17 @@ public class Group implements Serializable {
 	private Stage stage;
 	private boolean isScheduled = false;
 
+	public Group(String name, @NonNull Stage stage) {
+		this.name = name;
+		this.stage = stage;
+	}
+
+	public Group(String name, Team[] teams, @NonNull Stage stage) {
+		this.name = name;
+		this.teams = teams;
+		this.stage = stage;
+	}
+
 	public Group(int groupNumber, int numberOfTeams, String name, Team[] teams, int numRounds
 			, @NonNull TournamentStageType stageType, @NonNull Stage stage) {
 		this.groupNumber = groupNumber;
@@ -35,6 +46,20 @@ public class Group implements Serializable {
 		this.matchesPerRound = calculateMatchesPerRound();
 	}
 
+	public Group(int groupNumber, int numberOfTeams, String name, Team[] teams, int numRounds
+			, @NonNull TournamentStageType stageType, @NonNull Stage stage, int maxOvers, int maxWickets) {
+		this.groupNumber = groupNumber;
+		this.numberOfTeams = numberOfTeams;
+		this.name = name;
+		this.teams = teams;
+		this.stageType = stageType;
+		this.numRounds = numRounds;
+		this.stage = stage;
+		this.matchesPerRound = calculateMatchesPerRound();
+
+		setupPointsData(maxOvers, maxWickets);
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -45,10 +70,6 @@ public class Group implements Serializable {
 
 	public int getGroupNumber() {
 		return groupNumber;
-	}
-
-	public int getNumberOfTeams() {
-		return numberOfTeams;
 	}
 
 	public String getName() {
@@ -72,7 +93,8 @@ public class Group implements Serializable {
 	}
 
 	public void setMatchInfoList(@NonNull List<MatchInfo> matchInfoList) {
-		this.matchInfoList = matchInfoList;
+		if (matchInfoList.size() > 0)
+			this.matchInfoList = matchInfoList;
 	}
 
 	public int getNumRounds() {
@@ -95,7 +117,7 @@ public class Group implements Serializable {
 		isScheduled = scheduled;
 	}
 
-	public void addToSchedule(@NonNull MatchInfo matchInfo) {
+	private void addToSchedule(@NonNull MatchInfo matchInfo) {
 		if (matchInfoList == null)
 			matchInfoList = new ArrayList<>();
 
@@ -103,8 +125,12 @@ public class Group implements Serializable {
 		Collections.sort(matchInfoList, new MatchInfoComparator());
 	}
 
-	public void replaceMatchInfo(MatchInfo matchInfo) {
-		matchInfoList.remove(matchInfo);
+	public void updateMatchInfo(MatchInfo matchInfo) {
+		try {
+			matchInfoList.remove(matchInfo);
+		} catch (Exception ex) {
+			//DO NOTHING
+		}
 		addToSchedule(matchInfo);
 	}
 
@@ -124,6 +150,10 @@ public class Group implements Serializable {
 			case ROUND_2:
 			case ROUND_3:
 				totalCount = getMatchCountByGroupStageType(TournamentStageType.KNOCK_OUT);
+				break;
+
+			case ROUND_ROBIN:
+				totalCount = getMatchCountByGroupStageType(TournamentStageType.ROUND_ROBIN);
 				break;
 
 			case QUARTER_FINAL:
@@ -174,7 +204,7 @@ public class Group implements Serializable {
 		return totalCount;
 	}
 
-	public void addToPointsTable(PointsData pointsData) {
+	private void addToPointsTable(PointsData pointsData) {
 		if (pointsTable == null) {
 			pointsTable = new ArrayList<>();
 		}
@@ -183,16 +213,17 @@ public class Group implements Serializable {
 		Collections.sort(pointsTable, new PointsDataComparator());
 	}
 
-	public void updatePointsData(PointsData pointsData) {
-		if (pointsTable == null)
-			addToPointsTable(pointsData);
-		else {
-			for (int i = 0; i < pointsTable.size(); i++) {
-				PointsData data = pointsTable.get(i);
-				if (data.getTeam().getId() == pointsData.getTeam().getId()) {
-					pointsTable.remove(data);
-					addToPointsTable(pointsData);
-				}
+	public void updatePointsTable(@NonNull List<PointsData> pointsTable) {
+		if (pointsTable.size() > 0) {
+			this.pointsTable = pointsTable;
+			Collections.sort(pointsTable, new PointsDataComparator());
+		}
+	}
+
+	private void setupPointsData(int maxOvers, int maxWickets) {
+		if (teams != null) {
+			for (Team team : teams) {
+				addToPointsTable(new PointsData(team, maxOvers, maxWickets));
 			}
 		}
 	}

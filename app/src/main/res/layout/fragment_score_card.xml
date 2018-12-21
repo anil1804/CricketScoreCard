@@ -61,7 +61,7 @@
 			android:layout_height="wrap_content"
 			android:paddingTop="10dp"
 			android:paddingBottom="5dp"
-			tools:listitem="@layout/scorecard_bowler_view" />
+			tools:listitem="@layout/view_scorecard_bowler" />
 
 		<!-- Separator -->
 		<View

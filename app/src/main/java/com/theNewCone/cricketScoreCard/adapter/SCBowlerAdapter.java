@@ -30,7 +30,7 @@ public class SCBowlerAdapter extends RecyclerView.Adapter<SCBowlerAdapter.MyView
 	@NonNull
 	@Override
 	public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View playerView = LayoutInflater.from(context).inflate(R.layout.scorecard_bowler_view, parent, false);
+		View playerView = LayoutInflater.from(context).inflate(R.layout.view_scorecard_bowler, parent, false);
 
 		return new MyViewHolder(playerView);
 	}

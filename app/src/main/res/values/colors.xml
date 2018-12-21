@@ -65,4 +65,6 @@
 	<color name="teal_100">#B2DFDB</color>
 	<color name="teal_200">#80CBC4</color>
 	<color name="teal_A100">#A7FFEB</color>
+
+	<color name="black_overlay">#66000000</color>
 </resources>

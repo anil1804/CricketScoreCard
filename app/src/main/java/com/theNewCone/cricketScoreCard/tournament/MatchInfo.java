@@ -8,24 +8,17 @@ import com.theNewCone.cricketScoreCard.match.Team;
 import java.io.Serializable;
 
 public class MatchInfo implements Serializable {
-	private int id, matchNumber, matchID, groupNumber;
+	private int id, matchNumber, matchID, groupNumber, groupID;
 	private Stage tournamentStage;
 	private Team team1, team2, winningTeam;
 	private String groupName, matchDate;
 	private boolean hasStarted, isComplete;
 
-	public MatchInfo(int matchNumber, int groupNumber, String groupName, @NonNull Stage tournamentStage, @NonNull Team team1, @NonNull Team team2) {
+	public MatchInfo(int matchNumber, int groupNumber, String groupName, @NonNull Stage tournamentStage, Team team1, Team team2) {
 		this.matchNumber = matchNumber;
 		this.tournamentStage = tournamentStage;
 		this.team1 = team1;
 		this.team2 = team2;
-		this.groupNumber = groupNumber;
-		this.groupName = groupName;
-	}
-
-	public MatchInfo(int matchNumber, int groupNumber, String groupName, @NonNull Stage tournamentStage) {
-		this.matchNumber = matchNumber;
-		this.tournamentStage = tournamentStage;
 		this.groupNumber = groupNumber;
 		this.groupName = groupName;
 	}
@@ -60,6 +53,14 @@ public class MatchInfo implements Serializable {
 
 	public String getGroupName() {
 		return groupName;
+	}
+
+	public int getGroupID() {
+		return groupID;
+	}
+
+	public void setGroupID(int groupID) {
+		this.groupID = groupID;
 	}
 
 	public Team getTeam1() {
