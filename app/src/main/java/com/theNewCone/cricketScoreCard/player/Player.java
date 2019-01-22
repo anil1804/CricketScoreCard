@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import com.theNewCone.cricketScoreCard.enumeration.BattingType;
 import com.theNewCone.cricketScoreCard.enumeration.BowlingType;
-import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -50,16 +49,8 @@ public class Player implements Serializable {
 		return teamsAssociatedTo;
 	}
 
-	public String getTeamsAssociatedToJSON() {
-		return CommonUtils.intListToJSON(teamsAssociatedTo);
-	}
-
 	public void setTeamsAssociatedTo(List<Integer> teamsAssociatedTo) {
 		this.teamsAssociatedTo = teamsAssociatedTo;
-	}
-
-	public void setTeamsAssociatedToFromJSON(String jsonString) {
-		this.teamsAssociatedTo = CommonUtils.jsonToIntList(jsonString);
 	}
 
 	public Player (@NonNull String name, int age, @NonNull BattingType battingStyle, @NonNull BowlingType bowlingStyle, boolean isWicketKeeper) {
@@ -75,6 +66,24 @@ public class Player implements Serializable {
 	    this.id = id;
 		this.name = name;
 		this.age = age;
+		this.battingStyle = battingStyle;
+		this.bowlingStyle = bowlingStyle;
+		this.isWicketKeeper = isWicketKeeper;
+	}
+
+	public Player(@NonNull String name, @NonNull BattingType battingStyle, @NonNull BowlingType bowlingStyle, boolean isWicketKeeper) {
+		this.id = -1;
+		this.name = name;
+		this.age = 0;
+		this.battingStyle = battingStyle;
+		this.bowlingStyle = bowlingStyle;
+		this.isWicketKeeper = isWicketKeeper;
+	}
+
+	public Player(int id, @NonNull String name, @NonNull BattingType battingStyle, @NonNull BowlingType bowlingStyle, boolean isWicketKeeper) {
+		this.id = id;
+		this.name = name;
+		this.age = 0;
 		this.battingStyle = battingStyle;
 		this.bowlingStyle = bowlingStyle;
 		this.isWicketKeeper = isWicketKeeper;
