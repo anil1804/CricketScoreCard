@@ -107,8 +107,18 @@ public class TournamentHomeScheduleFragment extends Fragment
 	public void onListFragmentInteraction(Object selItem) {
 		if (selItem instanceof MatchInfo) {
 			MatchInfo selMatch = (MatchInfo) selItem;
+
+			Group group = null;
+			for (Group tournamentGroup : tournament.getGroupList()) {
+				if (tournamentGroup.getId() == selMatch.getGroupID()) {
+					group = tournamentGroup;
+					break;
+				}
+			}
+
 			Intent intent = new Intent(getContext(), HomeActivity.class);
 			intent.putExtra(HomeActivity.ARG_TOURNAMENT, tournament);
+			intent.putExtra(HomeActivity.ARG_GROUP, group);
 			intent.putExtra(HomeActivity.ARG_MATCH_INFO, selMatch);
 			startActivity(intent);
 		}
