@@ -24,7 +24,6 @@ import com.theNewCone.cricketScoreCard.activity.BatsmanSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.BowlerSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.ExtrasActivity;
 import com.theNewCone.cricketScoreCard.activity.GraphsActivity;
-import com.theNewCone.cricketScoreCard.activity.HomeActivity;
 import com.theNewCone.cricketScoreCard.activity.InputActivity;
 import com.theNewCone.cricketScoreCard.activity.MatchStateSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.ScoreCardActivity;
@@ -34,6 +33,7 @@ import com.theNewCone.cricketScoreCard.async.LoadCCUtils;
 import com.theNewCone.cricketScoreCard.async.StoreCCUtils;
 import com.theNewCone.cricketScoreCard.enumeration.DismissalType;
 import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
+import com.theNewCone.cricketScoreCard.enumeration.InputType;
 import com.theNewCone.cricketScoreCard.enumeration.MatchResult;
 import com.theNewCone.cricketScoreCard.intf.ConfirmationDialogClickListener;
 import com.theNewCone.cricketScoreCard.intf.DialogItemClickListener;
@@ -49,7 +49,6 @@ import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.scorecard.Extra;
 import com.theNewCone.cricketScoreCard.scorecard.WicketData;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
-import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
@@ -78,6 +77,7 @@ public class LimitedOversFragment extends Fragment
     private static final int REQ_CODE_GET_MATCHES_TO_LOAD = 7;
     private static final int REQ_CODE_SEL_HURT_BATSMAN = 8;
     private static final int REQ_CODE_GET_OTHER_RUNS = 9;
+	private static final int REQ_CODE_GET_CANCELLED_RUNS = 10;
 
     private static final int CONFIRMATION_CODE_SAVE_MATCH = 1;
 	private static final int CONFIRMATION_CODE_EXIT_MATCH = 2;
@@ -134,6 +134,7 @@ public class LimitedOversFragment extends Fragment
 
 	StoreCCUtils storeCCUtils;
 	LoadCCUtils loadCCUtils;
+	private BallInfo lastBallInfo;
 
 	public LimitedOversFragment() {
 	}
@@ -347,6 +348,14 @@ public class LimitedOversFragment extends Fragment
 				isAbandoned = true;
 				completeMatch(MatchResult.NO_RESULT.toString(), null);
 				break;
+
+			case R.id.menu_cancel_runs:
+				cancelRuns();
+				break;
+
+			case R.id.menu_penalty:
+				displayExtrasDialog(ExtraType.PENALTY);
+				break;
 		}
 
 		return true;
@@ -519,7 +528,7 @@ public class LimitedOversFragment extends Fragment
 
 			case REQ_CODE_GET_SAVE_MATCH_NAME:
 				if(resultCode == InputActivity.RESP_CODE_OK) {
-					saveMatchName = data.getStringExtra(InputActivity.ARG_INPUT_TEXT);
+					saveMatchName = data.getStringExtra(InputActivity.ARG_TEXT_INPUT);
 					int rowID = saveMatch(saveMatchName);
 					if(rowID > 0) {
 						Toast.makeText(getContext(), "Match saved successfully.", Toast.LENGTH_SHORT).show();
@@ -555,7 +564,7 @@ public class LimitedOversFragment extends Fragment
 
 			case REQ_CODE_GET_OTHER_RUNS:
 				if(resultCode == InputActivity.RESP_CODE_OK) {
-					String numRuns = data.getStringExtra(InputActivity.ARG_INPUT_TEXT);
+					String numRuns = data.getStringExtra(InputActivity.ARG_TEXT_INPUT);
 					try {
 						int runs = Integer.parseInt(numRuns);
 						if(runs > Constants.MAX_RUNS_POSSIBLE) {
@@ -570,6 +579,34 @@ public class LimitedOversFragment extends Fragment
 					} catch (NumberFormatException nfEx) {
 						Toast.makeText(getContext(), "Invalid Number of runs", Toast.LENGTH_SHORT).show();
 					}
+				}
+				break;
+
+			case REQ_CODE_GET_CANCELLED_RUNS:
+				if (resultCode == InputActivity.RESP_CODE_OK) {
+					int cancelledRuns = data.getIntExtra(InputActivity.ARG_SB_PROGRESS_INPUT, 0);
+
+					//Setting the Sub-Type to the value from which the runs have to be deducted.
+					ExtraType extraSubType = ExtraType.NONE;
+					if (lastBallInfo.getExtra() != null) {
+						if (lastBallInfo.getExtra().getType() == ExtraType.LEG_BYE
+								|| lastBallInfo.getExtra().getType() == ExtraType.BYE
+								|| lastBallInfo.getExtra().getSubType() == ExtraType.WIDE) {
+							extraSubType = lastBallInfo.getExtra().getType();
+						} else if (lastBallInfo.getExtra().getType() == ExtraType.NO_BALL) {
+							extraSubType = lastBallInfo.getExtra().getSubType();
+						}
+					}
+
+					//If extra Sub-Type is NONE, then batsmen runs will be deducted.
+					// Else, Extras will be deducted
+					int extraCancelledRuns = 0;
+					if (extraSubType != ExtraType.NONE) {
+						extraCancelledRuns = cancelledRuns;
+						cancelledRuns = 0;
+					}
+					Extra extra = new Extra(ExtraType.CANCEL, extraCancelledRuns, extraSubType);
+					newBallBowled(extra, cancelledRuns, null);
 				}
 				break;
 		}
@@ -588,28 +625,43 @@ public class LimitedOversFragment extends Fragment
 			case CONFIRMATION_CODE_EXIT_MATCH:
 				if(accepted && getActivity() != null) {
 					dbHandler.clearMatchStateHistory(0, matchID, -1);
-					getActivity().onBackPressed();
+					if (getActivity() != null && getFragmentManager() != null) {
+
+						if (isTournament) {
+							CommonUtils.clearBackStackUntil(getFragmentManager(),
+									TournamentHomeActivity.class.getSimpleName());
+							//goTournamentHome();
+							getActivity().onBackPressed();
+						} else {
+							CommonUtils.clearBackStackUntil(getFragmentManager(),
+									HomeFragment.class.getSimpleName());
+							//goHome();
+							getActivity().onBackPressed();
+						}
+					}
 				}
 				break;
 
 			case CONFIRMATION_CODE_CLOSE_MATCH:
 				if(accepted) {
 					dbHandler.completeMatch(matchID, CommonUtils.convertToJSON(ccUtils));
-					TournamentUtils tournamentUtils = new TournamentUtils(getContext());
-					tournamentUtils.closeTournamentMatch(ccUtils);
 
 					dbHandler.clearAllMatchHistory(matchID);
 
 					if (getActivity() != null && getFragmentManager() != null) {
-						int backStackCount = getFragmentManager().getBackStackEntryCount();
-						while (backStackCount > 0) {
-							getFragmentManager().popBackStack();
-							backStackCount = getFragmentManager().getBackStackEntryCount();
+						if (isTournament) {
+							CommonUtils.clearBackStackUntil(getFragmentManager(),
+									TournamentHomeActivity.class.getSimpleName());
+//							goTournamentHome();
+							TournamentUtils tournamentUtils = new TournamentUtils(getContext());
+							tournamentUtils.closeTournamentMatch(ccUtils);
+							getActivity().onBackPressed();
+						} else {
+							CommonUtils.clearBackStackUntil(getFragmentManager(),
+									HomeFragment.class.getSimpleName());
+//							goHome();
+							getActivity().onBackPressed();
 						}
-						if (isTournament)
-							goTournamentHome();
-						else
-							goHome();
 					}
 				}
 				break;
@@ -984,6 +1036,10 @@ public class LimitedOversFragment extends Fragment
 	private void displayExtrasDialog(ExtraType type) {
 		Intent dialogIntent = new Intent(getContext(), ExtrasActivity.class);
 		dialogIntent.putExtra(Constants.ARG_EXTRA_TYPE, type);
+		if (type == ExtraType.PENALTY) {
+			dialogIntent.putExtra(ExtrasActivity.ARG_BATTING_TEAM, ccUtils.getCard().getBattingTeam());
+			dialogIntent.putExtra(ExtrasActivity.ARG_BOWLING_TEAM, ccUtils.getCard().getBowlingTeam());
+		}
 		startActivityForResult(dialogIntent, REQ_CODE_EXTRA_DIALOG);
 	}
 
@@ -1051,7 +1107,7 @@ public class LimitedOversFragment extends Fragment
 	private void showInputActivity(String inputText, int reqCode) {
 		Intent iaIntent = new Intent(getContext(), InputActivity.class);
 		if(inputText != null)
-			iaIntent.putExtra(InputActivity.ARG_INPUT_TEXT, inputText);
+			iaIntent.putExtra(InputActivity.ARG_TEXT_INPUT, inputText);
 		startActivityForResult(iaIntent, reqCode);
 	}
 
@@ -1383,14 +1439,39 @@ public class LimitedOversFragment extends Fragment
 		return dismissalType;
 	}
 
-	private void goHome() {
-		startActivity(new Intent(getContext(), HomeActivity.class));
-	}
+	private void cancelRuns() {
+		List<BallInfo> currentOverBallInfoList = ccUtils.getCard().getCurrOver().getBallInfo();
+		lastBallInfo = (currentOverBallInfoList != null) ? currentOverBallInfoList.get(currentOverBallInfoList.size() - 1) : null;
+		if (lastBallInfo == null) {
+			Toast.makeText(getContext(), "Nothing to cancel", Toast.LENGTH_SHORT).show();
+		} else {
+			int maxRunsToCancel = 0;
+			if (lastBallInfo.getExtra() != null) {
+				switch (lastBallInfo.getExtra().getType()) {
+					case BYE:
+					case LEG_BYE:
+					case WIDE:
+						maxRunsToCancel = lastBallInfo.getExtra().getRuns();
+						break;
 
-	private void goTournamentHome() {
-		Intent intent = new Intent(getContext(), TournamentHomeActivity.class);
-		Tournament tournament = dbHandler.getTournamentByMatchInfoID(matchInfo.getId());
-		intent.putExtra(TournamentHomeActivity.ARG_TOURNAMENT, tournament);
-		startActivity(intent);
+					case NO_BALL:
+						maxRunsToCancel = lastBallInfo.getRunsScored();
+						break;
+				}
+			} else {
+				maxRunsToCancel = lastBallInfo.getRunsScored();
+			}
+
+			if (maxRunsToCancel == 0) {
+				Toast.makeText(getContext(),
+						"No Runs scored by players in the previous delivery to cancel.", Toast.LENGTH_LONG).show();
+			} else {
+				Intent intent = new Intent(getContext(), InputActivity.class);
+				intent.putExtra(InputActivity.ARG_INPUT_TYPE, InputType.SEEK_BAR.toString());
+				intent.putExtra(InputActivity.ARG_TITLE, "Select Runs to be cancelled");
+				intent.putExtra(InputActivity.ARG_SB_MAX, maxRunsToCancel);
+				startActivityForResult(intent, REQ_CODE_GET_CANCELLED_RUNS);
+			}
+		}
 	}
 }
