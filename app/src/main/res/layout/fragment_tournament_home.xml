@@ -1,0 +1,72 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	tools:context="com.theNewCone.cricketScoreCard.fragment.TournamentHomeFragment">
+
+	<TextView
+		android:id="@+id/tvTHName"
+		style="@style/TextViewStyle.Large.Bold"
+		android:layout_gravity="center_horizontal"
+		android:gravity="center_horizontal" />
+
+	<GridLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:columnCount="2"
+		android:columnOrderPreserved="true">
+
+		<TextView
+			style="@style/TextViewStyle.Big.Bold"
+			android:text="@string/tournamentFormat2" />
+
+		<TextView
+			android:id="@+id/tvTHFormat"
+			style="@style/TextViewStyle.Big" />
+
+		<TextView
+			style="@style/TextViewStyle.Big.Bold"
+			android:text="@string/tournamentStages2" />
+
+		<TextView
+			android:id="@+id/tvTHStageType"
+			style="@style/TextViewStyle.Big" />
+
+		<TextView
+			style="@style/TextViewStyle.Big.Bold"
+			android:text="@string/teams" />
+
+		<TextView
+			android:id="@+id/tvTHTeams"
+			style="@style/TextViewStyle.Big" />
+
+	</GridLayout>
+
+	<LinearLayout
+		android:id="@+id/llTHWinner"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:layout_margin="50dp"
+		android:gravity="center_vertical"
+		android:orientation="horizontal"
+		android:visibility="gone">
+
+		<pl.droidsonroids.gif.GifImageView
+			android:id="@+id/givTrophy"
+			android:layout_width="100dp"
+			android:layout_height="100dp"
+			android:layout_gravity="center"
+			android:src="@drawable/trophy" />
+
+		<TextView
+			android:id="@+id/tvTHWinner"
+			style="@style/TextViewStyle.Large.Bold.BigMargin"
+			android:layout_height="100dp"
+			android:layout_gravity="center_horizontal"
+			android:gravity="center" />
+
+	</LinearLayout>
+
+</LinearLayout>
