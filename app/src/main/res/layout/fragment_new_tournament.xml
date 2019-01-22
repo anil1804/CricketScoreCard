@@ -27,7 +27,7 @@
 				android:id="@+id/etTournamentName"
 				style="@style/EditTextStyle"
 				android:inputType="text"
-				android:maxLength="30"
+				android:maxLength="25"
 				android:minWidth="200dp" />
 
 			<View
@@ -85,7 +85,8 @@
 					android:id="@+id/rgTournamentType"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:columnCount="2">
+					android:columnCount="2"
+					android:contentDescription="@string/tournamentFormat">
 
 					<RadioButton
 						android:id="@+id/rbTTRoundRobin"
@@ -127,7 +128,8 @@
 					style="@style/EditTextStyle"
 					android:inputType="number"
 					android:maxLength="1"
-					android:minWidth="50dp" />
+					android:minWidth="50dp"
+					android:text="@string/two" />
 
 			</LinearLayout>
 
@@ -167,7 +169,8 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="10dp"
-					android:columnCount="2">
+					android:columnCount="2"
+					android:contentDescription="@string/tournamentStages">
 
 					<RadioButton
 						android:id="@+id/rbTSSuperFourStage"

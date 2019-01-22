@@ -50,7 +50,7 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.Vi
         String playerNameText = holder.player.getName() + (holder.player.isWicketKeeper() ? " (w)" : "");
         holder.tvPlayerName.setText(playerNameText);
         holder.tvBatStyle.setText(holder.player.getBattingStyle().toString());
-		holder.tvBowlStyle.setText(holder.player.getBowlingStyle() != BowlingType.NONE ? holder.player.getBowlingStyle().toString() : "");
+		holder.tvBowlStyle.setText(holder.player.getBowlingStyle() != BowlingType.NONE ? holder.player.getBowlingStyle().toString() : "-");
 
 		if (selPlayerIDs.get(holder.player.getID())) {
 			holder.mView.setSelected(true);

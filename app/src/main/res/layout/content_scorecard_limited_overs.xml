@@ -75,6 +75,7 @@
 			android:layout_height="wrap_content"
 			android:gravity="center_horizontal"
 			android:id="@+id/rgPoM"
+			android:contentDescription="@string/playerOfMatch"
 			android:orientation="horizontal">
 
 			<TextView

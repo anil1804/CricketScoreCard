@@ -98,7 +98,7 @@
 					android:orientation="horizontal">
 
 					<Button
-						android:id="@+id/btnEffectedByText"
+						android:id="@+id/btnEffectedBy"
 						android:drawableStart="@drawable/ic_edit"
 						style="@style/ButtonStyle.Small"/>
 
@@ -120,7 +120,7 @@
 					android:visibility="gone">
 
 					<Button
-						android:id="@+id/btnBatsmanOutText"
+						android:id="@+id/btnBatsmanOut"
 						android:drawableStart="@drawable/ic_edit"
 						style="@style/ButtonStyle.Small"/>
 

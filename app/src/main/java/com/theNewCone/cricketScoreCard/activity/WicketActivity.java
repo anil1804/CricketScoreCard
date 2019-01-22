@@ -116,8 +116,8 @@ public class WicketActivity extends FragmentActivity
 		});
 
 
-		Button btnEffectedBy = findViewById(R.id.btnEffectedByText);
-		Button btnBatsmanOut = findViewById(R.id.btnBatsmanOutText);
+		Button btnEffectedBy = findViewById(R.id.btnEffectedBy);
+		Button btnBatsmanOut = findViewById(R.id.btnBatsmanOut);
 		Button btnOK = findViewById(R.id.btnWktOK);
 		Button btnCancel = findViewById(R.id.btnWktCancel);
 
@@ -183,12 +183,12 @@ public class WicketActivity extends FragmentActivity
 
 		switch (view.getId()) {
 			/*Capturing the details of the Batsman who it out*/
-			case R.id.btnBatsmanOutText:
+			case R.id.btnBatsmanOut:
                 displayBatsmen();
 				break;
 
 			/*Capturing the details of the Fielder who effected the dismissal*/
-			case R.id.btnEffectedByText:
+			case R.id.btnEffectedBy:
                 //displayFieldingTeam();
 				showFielderDialog();
 				break;

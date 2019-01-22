@@ -69,4 +69,63 @@ public enum Stage implements Serializable {
 
 		return value;
 	}
+
+	public String getTag() {
+		String tag = "None";
+		switch (this) {
+			case GROUP:
+				tag = "GS";
+				break;
+
+			case ROUND_ROBIN:
+				tag = "RR";
+				break;
+
+			case ROUND_1:
+				tag = "R1";
+				break;
+
+			case ROUND_2:
+				tag = "R2";
+				break;
+
+			case ROUND_3:
+				tag = "R3";
+				break;
+
+			case SUPER_FOUR:
+				tag = "S4";
+				break;
+
+			case SUPER_SIX:
+				tag = "S6";
+				break;
+
+			case QUALIFIER:
+				tag = "Q1";
+				break;
+
+			case ELIMINATOR_1:
+				tag = "E1";
+				break;
+
+			case ELIMINATOR_2:
+				tag = "E2";
+				break;
+
+			case QUARTER_FINAL:
+				tag = "QF";
+				break;
+
+			case SEMI_FINAL:
+				tag = "SF";
+				break;
+
+			case FINAL:
+				tag = "Final";
+				break;
+		}
+
+		return tag;
+	}
 }

@@ -11,8 +11,8 @@
         android:icon="@drawable/ic_stop"/>
 
 	<item
-		android:id="@+id/menu_trophy"
-		android:title="Show Trophy"
+		android:id="@+id/menu_load"
+		android:title="Load Data"
 		app:showAsAction="never" />
 
 </menu>

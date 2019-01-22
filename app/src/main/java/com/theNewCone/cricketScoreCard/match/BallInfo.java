@@ -11,14 +11,15 @@ public class BallInfo implements Serializable {
 	private int ballNumber, runsScored;
 	private Extra extra;
 	private WicketData wicketData;
-	private Player bowler;
+	private Player bowler, batsman;
 
-	BallInfo(int ballNumber, int runsScored, Extra extra, WicketData wicketData, Player bowler) {
+	BallInfo(int ballNumber, int runsScored, Extra extra, WicketData wicketData, Player bowler, Player batsman) {
 		this.ballNumber = ballNumber;
 		this.runsScored = runsScored;
 		this.extra = extra;
 		this.wicketData = wicketData;
 		this.bowler = bowler;
+		this.batsman = batsman;
 	}
 
 	public int getBallNumber() {
@@ -47,5 +48,9 @@ public class BallInfo implements Serializable {
 
 	public Player getBowler() {
 		return bowler;
+	}
+
+	public Player getBatsman() {
+		return batsman;
 	}
 }

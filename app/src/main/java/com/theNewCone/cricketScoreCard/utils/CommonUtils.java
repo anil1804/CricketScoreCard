@@ -4,6 +4,7 @@ package com.theNewCone.cricketScoreCard.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.util.DisplayMetrics;
 
 import com.google.gson.Gson;
@@ -479,13 +480,15 @@ public class CommonUtils {
 	}
 
 	public static int updateMaxPerBowler(int maxOvers, int numPlayers) {
-		int maxPerBowler = (maxOvers % 5 == 0) ? maxOvers / 5 : (maxOvers / 5 + 1);
-
-		if (maxPerBowler > 0 && numPlayers > 0) {
-			if (maxOvers / maxPerBowler > (numPlayers)) {
-				int oversPerBowler = maxOvers / numPlayers;
-				maxPerBowler = (maxOvers % numPlayers == 0) ? oversPerBowler : (oversPerBowler + 1);
-			}
+		int maxPerBowler = 0;
+		if (maxOvers > 0 && numPlayers > 0) {
+			/*
+			- Divide among 5 if bowlers if players more than 5
+			- If players less than or equal to 5, but more than 1, then bowlers = players-1
+			- If only one player, bowler = 1
+			*/
+			int numBowlers = (numPlayers > 5) ? 5 : (numPlayers > 1) ? (numPlayers - 1) : 1;
+			maxPerBowler = (maxOvers % numBowlers == 0) ? maxOvers / numBowlers : (maxOvers / numBowlers + 1);
 		}
 
 		return maxPerBowler;
@@ -554,5 +557,9 @@ public class CommonUtils {
 		}
 
 		return tournament;
+	}
+
+	public static void clearBackStackUntil(FragmentManager fragmentManager, String backStackEntry) {
+		fragmentManager.popBackStack(backStackEntry, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 	}
 }

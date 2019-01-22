@@ -21,7 +21,7 @@ public class Tournament implements Serializable {
 	private TournamentFormat format;
 	private TournamentStageType stageType;
 	private String createdDate;
-	private boolean isScheduled = false;
+	private boolean isScheduled = false, isComplete = false;
 	private Team tournamentWinner;
 
 	public Tournament(String name, Team[] teams, int maxOvers, int maxWickets, int players, int maxPerBowler,
@@ -176,6 +176,14 @@ public class Tournament implements Serializable {
 
 	public void setTournamentWinner(Team tournamentWinner) {
 		this.tournamentWinner = tournamentWinner;
+	}
+
+	public boolean isComplete() {
+		return isComplete;
+	}
+
+	public void setComplete(boolean complete) {
+		isComplete = complete;
 	}
 
 	public void checkScheduled() {

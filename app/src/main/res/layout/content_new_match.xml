@@ -33,7 +33,7 @@
 					style="@style/EditTextStyle"
 					android:id="@+id/etMatchName"
 					android:inputType="text"
-					android:maxLength="30"/>
+					android:maxLength="50" />
 
             </LinearLayout>
 
@@ -127,25 +127,20 @@
 			<GridLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:columnCount="6"
-				android:columnOrderPreserved="true">
+				android:id="@+id/glSingleMatch"
+				android:columnCount="4"
+				android:columnOrderPreserved="true"
+				android:contentDescription="@string/singleMatchView">
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
 					android:text="@string/maxOvers"
-					android:layout_columnWeight="3"
 					android:labelFor="@id/etMaxOvers" />
-
-				<TextView
-					android:id="@+id/tvMaxOvers"
-					style="@style/TextViewStyle.Bold"
-					android:layout_columnWeight="1"
-					android:visibility="gone" />
 
 				<EditText
                     android:id="@+id/etMaxOvers"
                     style="@style/EditTextStyle"
-                    android:layout_width="50dp"
+					android:layout_width="25sp"
                     android:gravity="center_horizontal"
                     android:inputType="number"
                     android:maxLength="2"
@@ -155,19 +150,12 @@
                 <TextView
                     style="@style/TextViewStyle.Bold.Medium.MorePadding"
                     android:text="@string/maxOversPerBowler"
-					android:layout_columnWeight="3"
 					android:labelFor="@id/etMaxPerBowler" />
-
-				<TextView
-					android:id="@+id/tvMaxPerBowler"
-					style="@style/TextViewStyle.Bold"
-					android:layout_columnWeight="1"
-					android:visibility="gone" />
 
 				<EditText
                     android:id="@+id/etMaxPerBowler"
                     style="@style/EditTextStyle"
-                    android:layout_width="50dp"
+					android:layout_width="25sp"
                     android:gravity="center_horizontal"
                     android:inputType="number"
 					android:layout_columnWeight="1"
@@ -176,19 +164,12 @@
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
 					android:text="@string/maxWickets"
-					android:layout_columnWeight="3"
 					android:labelFor="@id/etMaxWickets" />
-
-				<TextView
-					android:id="@+id/tvMaxWickets"
-					style="@style/TextViewStyle.Bold"
-					android:layout_columnWeight="1"
-					android:visibility="gone" />
 
 				<EditText
                     android:id="@+id/etMaxWickets"
                     style="@style/EditTextStyle"
-                    android:layout_width="50dp"
+					android:layout_width="25sp"
                     android:gravity="center_horizontal"
                     android:inputType="number"
                     android:maxLength="2"
@@ -198,23 +179,71 @@
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
 					android:text="@string/numPlayers"
-					android:layout_columnWeight="3"
 					android:labelFor="@id/etNumPlayers" />
+
+				<EditText
+                    android:id="@+id/etNumPlayers"
+                    style="@style/EditTextStyle"
+					android:layout_width="25sp"
+                    android:gravity="center_horizontal"
+                    android:inputType="number"
+					android:layout_columnWeight="1"
+					android:maxLength="2" />
+
+			</GridLayout>
+
+			<GridLayout
+				android:id="@+id/glTournamentMatch"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:columnCount="6"
+				android:columnOrderPreserved="true"
+				android:contentDescription="@string/tournamentMatchView"
+				android:visibility="gone">
+
+				<TextView
+					style="@style/TextViewStyle.Bold.Medium.MorePadding"
+					android:labelFor="@id/tvMaxOvers"
+					android:text="@string/maxOvers" />
+
+				<TextView
+					android:id="@+id/tvMaxOvers"
+					style="@style/TextViewStyle.Bold"
+					android:layout_columnWeight="1"
+					android:visibility="gone" />
+
+				<TextView
+					style="@style/TextViewStyle.Bold.Medium.MorePadding"
+					android:labelFor="@id/tvMaxPerBowler"
+					android:text="@string/maxOversPerBowler" />
+
+				<TextView
+					android:id="@+id/tvMaxPerBowler"
+					style="@style/TextViewStyle.Bold"
+					android:layout_columnWeight="1"
+					android:visibility="gone" />
+
+				<TextView
+					style="@style/TextViewStyle.Bold.Medium.MorePadding"
+					android:labelFor="@id/tvMaxWickets"
+					android:text="@string/maxWickets" />
+
+				<TextView
+					android:id="@+id/tvMaxWickets"
+					style="@style/TextViewStyle.Bold"
+					android:layout_columnWeight="1"
+					android:visibility="gone" />
+
+				<TextView
+					style="@style/TextViewStyle.Bold.Medium.MorePadding"
+					android:labelFor="@id/tvNumPlayers"
+					android:text="@string/numPlayers" />
 
 				<TextView
 					android:id="@+id/tvNumPlayers"
 					style="@style/TextViewStyle.Bold"
 					android:layout_columnWeight="1"
 					android:visibility="gone" />
-
-				<EditText
-                    android:id="@+id/etNumPlayers"
-                    style="@style/EditTextStyle"
-                    android:layout_width="50dp"
-                    android:gravity="center_horizontal"
-                    android:inputType="number"
-					android:layout_columnWeight="1"
-					android:maxLength="2" />
 
 			</GridLayout>
 
@@ -256,7 +285,7 @@
 
                 <TextView
                     style="@style/TextViewStyle"
-                    android:text="@string/tvTossWonBy"
+					android:text="@string/tossWonBy"
                     android:layout_width="100dp"/>
 
                 <RadioButton

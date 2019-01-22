@@ -39,7 +39,7 @@
 
         <TextView
             style="@style/TextViewStyle.Bold.Medium.MorePadding"
-            android:labelFor="@id/etPlayerAge"
+			android:labelFor="@id/tvPlayerBatStyle"
             android:text="@string/playerBattingStyle"/>
 
 		<LinearLayout>
@@ -58,7 +58,7 @@
 
 		<TextView
             style="@style/TextViewStyle.Bold.Medium.MorePadding"
-            android:labelFor="@id/etPlayerAge"
+			android:labelFor="@id/tvPlayerBowlStyle"
             android:text="@string/playerBowlingStyle"/>
 
 		<LinearLayout>
@@ -90,7 +90,7 @@
 		<TextView
 			style="@style/TextViewStyle.Bold.Medium.MorePadding"
 			android:labelFor="@id/tvTeams"
-			android:text="@string/teams" />
+			android:text="@string/teamCount" />
 
 		<LinearLayout>
 

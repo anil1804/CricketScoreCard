@@ -1,14 +1,13 @@
 package com.theNewCone.cricketScoreCard.activity;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,18 +41,6 @@ public class ScoreCardActivity extends AppCompatActivity {
 	private static BowlerStats bowler;
 	private static Team team1, team2;
 
-	/**
-	 * The {@link android.support.v4.view.PagerAdapter} that will provide
-	 * fragments for each of the sections. We use a
-	 * {@link FragmentPagerAdapter} derivative, which will keep every
-	 * loaded fragment in memory. If this becomes too memory intensive, it
-	 * may be best to switch to a
-	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-	 */
-	/**
-	 * The {@link ViewPager} that will host the section contents.
-	 */
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -78,12 +65,8 @@ public class ScoreCardActivity extends AppCompatActivity {
 				team2 = ccUtils.getTeam2();
 			}
 		}
-
-		// Create the adapter that will return a fragment for each of the three
-		// primary sections of the activity.
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-		// Set up the ViewPager with the sections adapter.
 		mViewPager = findViewById(R.id.viewPagerContainer);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 

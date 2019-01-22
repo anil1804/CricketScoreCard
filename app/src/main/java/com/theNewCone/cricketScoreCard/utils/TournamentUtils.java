@@ -587,6 +587,7 @@ public class TournamentUtils {
 
 	private void completeTournament(Tournament tournament, Team winner) {
 		tournament.setTournamentWinner(winner);
+		tournament.setComplete(true);
 		dbHandler.updateTournament(tournament);
 		dbHandler.completeTournament(tournament.getId());
 	}
