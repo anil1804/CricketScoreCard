@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.custom.ThemeColors;
+import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
 import com.theNewCone.cricketScoreCard.fragment.HomeFragment;
 import com.theNewCone.cricketScoreCard.fragment.LimitedOversFragment;
 import com.theNewCone.cricketScoreCard.fragment.MatchSummaryFragment;
@@ -34,9 +35,11 @@ import com.theNewCone.cricketScoreCard.intf.DialogItemClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.match.Match;
+import com.theNewCone.cricketScoreCard.tournament.Group;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +48,7 @@ public class HomeActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener, DrawerController, DialogItemClickListener {
 
 	public static final String ARG_TOURNAMENT = "Tournament";
+	public static final String ARG_GROUP = "Group";
 	public static final String ARG_MATCH_INFO = "MatchInfo";
 
 	private final String DIALOG_THEME_SELECT = "ThemeSelect";
@@ -71,13 +75,18 @@ public class HomeActivity extends AppCompatActivity
 
 		//new ThemeColors(this);
 		super.onCreate(savedInstanceState);
+
+		new ManageDBData(this).addTeamsAndPlayers(TeamEnum.ALL);
+
 		setContentView(R.layout.activity_home);
 		if (savedInstanceState == null) {
 			Tournament tournament = null;
+			Group group = null;
 			MatchInfo matchInfo = null;
 			if (getIntent() != null && getIntent().getExtras() != null) {
 				Bundle bundle = getIntent().getExtras();
 				tournament = (Tournament) bundle.getSerializable(ARG_TOURNAMENT);
+				group = (Group) bundle.getSerializable(ARG_GROUP);
 				matchInfo = (MatchInfo) bundle.getSerializable(ARG_MATCH_INFO);
 
 			}
@@ -85,7 +94,7 @@ public class HomeActivity extends AppCompatActivity
 			if (tournament != null && matchInfo != null) {
 				if (matchInfo.getMatchID() <= 0) {
 					getSupportFragmentManager().beginTransaction()
-							.replace(R.id.frame_container, NewMatchFragment.newInstance(tournament, matchInfo))
+							.replace(R.id.frame_container, NewMatchFragment.newInstance(tournament, group, matchInfo))
 							.commitNow();
 				} else {
 					if (matchInfo.isComplete()) {
