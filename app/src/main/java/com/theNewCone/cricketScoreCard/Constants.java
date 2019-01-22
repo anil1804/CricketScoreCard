@@ -11,4 +11,7 @@ public class Constants {
 	public static final String FRAGMENT = "Fragment";
 	public static final String FRAGMENT_TAG = "FragmentTag";
 	public static final String PREFS_APP_LAST_MODIFIED = "LastModifiedTS";
+
+	public static final boolean ALLOW_DUPLICATE_MATCH_NAME = true;
+	public static final boolean ALLOW_DUPLICATE_TOURNAMENT_NAME = true;
 }
