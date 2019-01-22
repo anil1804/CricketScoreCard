@@ -18,6 +18,7 @@ import android.widget.Button;
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.activity.TournamentHomeActivity;
 import com.theNewCone.cricketScoreCard.adapter.ScheduleSetupViewAdapter;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.intf.ConfirmationDialogClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.tournament.Group;
@@ -129,6 +130,9 @@ public class TournamentScheduleFragment extends Fragment
 
 		layoutView(false);
 
+		if (tournament.getFormat() == TournamentFormat.BILATERAL)
+			theView.findViewById(R.id.btnTournamentScheduleConfirm).performClick();
+
 		return theView;
 	}
 
@@ -150,12 +154,16 @@ public class TournamentScheduleFragment extends Fragment
 				break;
 
 			case R.id.btnTournamentScheduleConfirm:
-				saveMatchInfo();
-				saveGroupInfo();
-				savePointsDataInfo();
-				showTournamentHome();
+				confirmTournament();
 				break;
 		}
+	}
+
+	private void confirmTournament() {
+		saveMatchInfo();
+		saveGroupInfo();
+		savePointsDataInfo();
+		showTournamentHome();
 	}
 
 	@Override
@@ -237,7 +245,8 @@ public class TournamentScheduleFragment extends Fragment
 
 	private void showTournamentHome() {
 		Intent intent = new Intent(getContext(), TournamentHomeActivity.class);
-		intent.putExtra(TournamentHomeActivity.ARG_TOURNAMENT, tournament);
+		intent.putExtra(TournamentHomeActivity.ARG_TOURNAMENT_ID, tournament.getId());
+		intent.putExtra(TournamentHomeActivity.ARG_TOURNAMENT_FORMAT, tournament.getFormat());
 		startActivity(intent);
 	}
 

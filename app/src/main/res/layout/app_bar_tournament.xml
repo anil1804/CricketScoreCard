@@ -32,6 +32,12 @@
 			app:tabSelectedTextColor="@color/lime_A100">
 
 			<android.support.design.widget.TabItem
+				android:id="@+id/tabTournamentHome"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/tournamentHome" />
+
+			<android.support.design.widget.TabItem
 				android:id="@+id/tabTournamentSchedule"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -42,6 +48,12 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/tournamentPoints" />
+
+			<android.support.design.widget.TabItem
+				android:id="@+id/tabTournamentStats"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/tournamentStats" />
 
 		</android.support.design.widget.TabLayout>
 
