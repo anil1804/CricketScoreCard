@@ -104,7 +104,7 @@ public class PlayerSelectActivity extends Activity
 			case R.id.btnSelPlayerOK:
 				if(isMultiSelect && numPlayers > 0 && selPlayers.size() != numPlayers) {
 					Toast.makeText(this,
-							String.format(Locale.getDefault(), "%d players selected. Select exactly %d players to continue.", selPlayers.size(), numPlayers),
+							String.format(Locale.getDefault(), getString(R.string.Player_selectExactPlayers), selPlayers.size(), numPlayers),
 							Toast.LENGTH_LONG).show();
 				} else {
 					sendResponse(RESP_CODE_OK);

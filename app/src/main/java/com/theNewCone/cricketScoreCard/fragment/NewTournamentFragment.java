@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.activity.TeamSelectActivity;
+import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
 import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.enumeration.TournamentStageType;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
@@ -28,6 +29,7 @@ import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
 
 public class NewTournamentFragment extends Fragment
 		implements View.OnClickListener {
@@ -68,6 +70,7 @@ public class NewTournamentFragment extends Fragment
 		theView = inflater.inflate(R.layout.fragment_new_tournament, container, false);
 
 		initialize();
+		new ManageDBData(getContext()).addTeamsAndPlayers(TeamEnum.ALL);
 
 		if (getActivity() != null)
 			getActivity().setTitle(getString(R.string.title_fragment_new_tournament));
@@ -88,6 +91,8 @@ public class NewTournamentFragment extends Fragment
 					glOversAndPlayers.setVisibility(View.VISIBLE);
 					btnConfirm.setVisibility(View.VISIBLE);
 					lockTournamentInfo();
+					updateMaxPerBowler();
+					updateNumPlayers();
 				}
 				break;
 
@@ -107,6 +112,7 @@ public class NewTournamentFragment extends Fragment
 			case R.id.rbTTGroups:
 				clearOtherCheckedRadioButtons(rgTTGroup, view.getId());
 				type = TournamentFormat.GROUPS;
+				numGroups = 2;
 
 				setVisibility();
 				updateStageOptions();
@@ -161,21 +167,24 @@ public class NewTournamentFragment extends Fragment
 		switch (requestCode) {
 			case REQ_CODE_SELECT_TEAMS:
 				if (requestCode == TeamSelectActivity.RESP_CODE_OK) {
-					selTeams = CommonUtils.objectArrToTeamArr(
-							(Object[]) data.getSerializableExtra(TeamSelectActivity.ARG_RESP_TEAMS));
+					if (data.getExtras() != null
+							&& data.getSerializableExtra(TeamSelectActivity.ARG_RESP_TEAMS) != null) {
+						selTeams = CommonUtils.objectArrToTeamArr(
+								(Object[]) data.getSerializableExtra(TeamSelectActivity.ARG_RESP_TEAMS));
 
-					if (selTeams != null && selTeams.length > 0) {
-						llTournamentType.setVisibility(View.VISIBLE);
-						updateTypeOptions();
+						if (selTeams != null && selTeams.length > 0) {
+							llTournamentType.setVisibility(View.VISIBLE);
+							updateFormatOptions();
 
-						StringBuilder selTeamSB = new StringBuilder();
-						for (Team team : selTeams) {
-							selTeamSB.append(team.getName());
-							selTeamSB.append(",\t");
+							StringBuilder selTeamSB = new StringBuilder();
+							for (Team team : selTeams) {
+								selTeamSB.append(team.getName());
+								selTeamSB.append(",\t");
+							}
+							selTeamSB.delete(selTeamSB.length() - 2, selTeamSB.length());
+
+							tvSelectedTeams.setText(selTeamSB.toString());
 						}
-						selTeamSB.delete(selTeamSB.length() - 2, selTeamSB.length());
-
-						tvSelectedTeams.setText(selTeamSB.toString());
 					}
 				}
 				break;
@@ -283,7 +292,7 @@ public class NewTournamentFragment extends Fragment
 		llTournamentStage.setVisibility(stageVisibility);
 	}
 
-	private void updateTypeOptions() {
+	private void updateFormatOptions() {
 		type = null;
 		clearOtherCheckedRadioButtons(rgTTGroup, 0);
 		boolean knockOutOk = numTeams > 2 && CommonUtils.isPowerOf(numTeams, 2);
@@ -312,8 +321,9 @@ public class NewTournamentFragment extends Fragment
 				break;
 
 			case GROUPS:
-				if (numGroups > 1 && (numTeams % numGroups == 0)) {
+				if (numGroups > 1 && (numTeams % numGroups == 0) && (numTeams / numGroups > 2)) {
 					superFourOK = CommonUtils.isDivisibleBy(4, numGroups);
+					qualifierOk = superFourOK;
 					superSixOk = numTeams > 6 && CommonUtils.isDivisibleBy(6, numGroups);
 					knockOutOk = CommonUtils.isPowerOf(numGroups, 2)
 							|| CommonUtils.isPowerOf(numGroups * 2, 2)
@@ -392,14 +402,18 @@ public class NewTournamentFragment extends Fragment
 				if (editable != null && !editable.toString().equals("")) {
 					if (numTeams != Integer.parseInt(editable.toString())) {
 						numTeams = Integer.parseInt(editable.toString());
-						if (selTeams != null && selTeams.length != 0)
-							Toast.makeText(getContext(), "Number of teams changed. Please re-select teams.", Toast.LENGTH_SHORT).show();
+						if (selTeams != null && selTeams.length != 0) {
+							Toast.makeText(getContext(),
+									getResources().getString(R.string.teamCountChangedReselect), Toast.LENGTH_SHORT).show();
+
+							rgTSGroup.setVisibility(View.GONE);
+						}
 					}
 				} else {
 					numTeams = 0;
 				}
 
-				updateTypeOptions();
+				updateFormatOptions();
 				if (type != null)
 					updateStageOptions();
 			}
@@ -521,74 +535,98 @@ public class NewTournamentFragment extends Fragment
 	private boolean validate() {
 		StringBuilder messageSB = new StringBuilder();
 		int errorNumber = 1;
+		numGroups = etNumGroups.getText().toString().equals("") ? 0 : Integer.parseInt(etNumGroups.getText().toString());
+		numTeams = etTournamentTeamCount.getText().toString().equals("") ? 0 : Integer.parseInt(etTournamentTeamCount.getText().toString());
 
 		String tournamentName = etTournamentName.getText().toString();
 		if (tournamentName.length() < 10) {
 			messageSB.append(errorNumber++);
-			messageSB.append(". Tournament Name has to be at-least 10 characters in length");
+			messageSB.append(". ");
+			messageSB.append(getResources().getString(R.string.invalidTournamentName));
 		}
 
 		if (numTeams < 2) {
 			messageSB.append(errorNumber++);
-			messageSB.append(". Invalid Number of teams. Have to be at-least 2 teams");
+			messageSB.append(". ");
+			messageSB.append(getResources().getString(R.string.NT_needMinimumTwoTeams));
 		} else if (selTeams == null || selTeams.length == 0) {
 			messageSB.append(errorNumber++);
-			messageSB.append(". Teams not selected. Please select the teams");
+			messageSB.append(". ");
+			messageSB.append(getResources().getString(R.string.NT_selectTeams));
 		} else if (numTeams != selTeams.length) {
 			messageSB.append(errorNumber++);
-			messageSB.append(". Number of teams provided and number of teams selected do no match.");
+			messageSB.append(". ");
+			messageSB.append(getResources().getString(R.string.NT_teamCountMismatch));
 		}
 
 		if (type == null) {
 			messageSB.append(errorNumber++);
-			messageSB.append(". Tournament Type is not selected");
+			messageSB.append(". ");
+			messageSB.append(getResources().getString(R.string.NT_selectType));
 		} else {
+			if ((type == TournamentFormat.ROUND_ROBIN || type != TournamentFormat.GROUPS) && stageType == null) {
+				messageSB.append(errorNumber++);
+				messageSB.append(". ");
+				messageSB.append(getResources().getString(R.string.NT_selectStage));
+			}
 
 			String numberOfRounds = etNumRounds.getText().toString();
 			numRounds = numberOfRounds.equals("") ? 0 : Integer.parseInt(numberOfRounds);
 			if (numRounds < 0) {
 				messageSB.append(errorNumber++);
-				messageSB.append(". Number of Rounds should be at-least one.");
+				messageSB.append(". ");
+				messageSB.append(getResources().getString(R.string.NT_needMinimumOneRound));
 			}
 
 			if (type == TournamentFormat.KNOCK_OUT) {
 				if (!CommonUtils.isPowerOf(numTeams, 2)) {
 					messageSB.append(errorNumber++);
-					messageSB.append(". Number of teams have to be a power of 2 for Knock Out type of tournament.");
+					messageSB.append(". ");
+					messageSB.append(getResources().getString(R.string.NT_invalidKOTeamSize));
 				}
 			}
 
 			if (type == TournamentFormat.GROUPS) {
-				if (numTeams / numGroups <= 2) {
+				if (numGroups < 2) {
 					messageSB.append(errorNumber++);
-					messageSB.append(". A group should contain at-least 3 teams. Please choose a different format/decrease number of groups.");
+					messageSB.append(". ");
+					messageSB.append(getResources().getString(R.string.NT_minimumGroupsNotMet));
 				} else if (!CommonUtils.isDivisibleBy(numTeams, numGroups)) {
 					messageSB.append(errorNumber++);
-					messageSB.append(". Number of groups cannot equally accommodate the teams. Please change number of groups or teams");
+					messageSB.append(". ");
+					messageSB.append(getResources().getString(R.string.NT_invalidGroupDistribution));
+				} else if (numTeams / numGroups <= 2) {
+					messageSB.append(errorNumber++);
+					messageSB.append(". ");
+					messageSB.append(getResources().getString(R.string.NT_minimumTeamsPerGroupNotMet));
 				}
 
 				if (numRounds > 2) {
 					messageSB.append(errorNumber++);
-					messageSB.append(". Please limit the number of rounds to 2, for a Groups Type.");
+					messageSB.append(". ");
+					messageSB.append(getResources().getString(R.string.NT_limitRoundsForGroup));
 				}
 			}
 
 			if (type == TournamentFormat.ROUND_ROBIN) {
 				if (numTeams < 3) {
 					messageSB.append(errorNumber++);
-					messageSB.append(". At least 3 teams required for round-robin.");
+					messageSB.append(". ");
+					messageSB.append(getResources().getString(R.string.NT_minimumTeamForRR));
 				}
 
 				if (numRounds > 3) {
 					messageSB.append(errorNumber++);
-					messageSB.append(". Please limit the number of rounds to 3, for a Round-Robin Type");
+					messageSB.append(". ");
+					messageSB.append(getResources().getString(R.string.NT_limitRoundsForRR));
 				}
 			}
 
 			if (type == TournamentFormat.BILATERAL) {
 				if (numTeams != 2) {
 					messageSB.append(errorNumber++);
-					messageSB.append(". Only 2 teams allowed for a bilateral series.");
+					messageSB.append(". ");
+					messageSB.append(getResources().getString(R.string.NT_limitTeamsForBilateral));
 				}
 			}
 
@@ -602,20 +640,23 @@ public class NewTournamentFragment extends Fragment
 								|| CommonUtils.isPowerOf(numGroups * 2, 2)
 								|| (numTeams / numGroups >= 4 && CommonUtils.isPowerOf(numGroups * 4, 2)))) {
 							messageSB.append(errorNumber++);
-							messageSB.append(". Number of Groups not suitable for Knock-Out Stages.");
+							messageSB.append(". ");
+							messageSB.append(getResources().getString(R.string.NT_numGroupsUnsuitableForKnockOut));
 						}
 					} else if (stageType == TournamentStageType.SUPER_FOUR) {
 						if (!(CommonUtils.isDivisibleBy(numGroups, 4)
 								|| CommonUtils.isDivisibleBy(numGroups * 2, 4))) {
 							messageSB.append(errorNumber++);
-							messageSB.append(". Number of Groups not suitable for Super-Four Stage.");
+							messageSB.append(". ");
+							messageSB.append(getResources().getString(R.string.NT_numGroupsUnsuitableForSuper4));
 						}
 					} else if (stageType == TournamentStageType.SUPER_SIX) {
 						if (!(CommonUtils.isDivisibleBy(numGroups, 6)
 								|| CommonUtils.isDivisibleBy(numGroups * 2, 6)
 								|| CommonUtils.isDivisibleBy(numGroups * 3, 6))) {
 							messageSB.append(errorNumber++);
-							messageSB.append(". Number of Groups not suitable for Super-Six Stage.");
+							messageSB.append(". ");
+							messageSB.append(getResources().getString(R.string.NT_numGroupsUnsuitableForSuper6));
 						}
 					}
 				}
@@ -623,7 +664,7 @@ public class NewTournamentFragment extends Fragment
 		}
 
 		if (errorNumber > 1) {
-			showMessage("Tournament Info Validation", messageSB.toString());
+			showMessage(getResources().getString(R.string.NT_infoValidationTitle), messageSB.toString());
 			return false;
 		} else {
 			return true;
@@ -635,25 +676,29 @@ public class NewTournamentFragment extends Fragment
 		int errorNumber = 1;
 
 		if (maxOvers <= 0 || maxWickets <= 0 || maxPerBowler <= 0 || numPlayers <= 0) {
-			messageSB.append(errorNumber);
-			messageSB.append(") Players, Overs, Wickets cannot be zero or negative");
+			messageSB.append(errorNumber++);
+			messageSB.append(") ");
+			messageSB.append(getResources().getString(R.string.NM_invalidPlayersOversWickets));
 		} else {
 			if (maxWickets >= numPlayers) {
 				messageSB.append(errorNumber++);
-				messageSB.append(") Number of Players has to be greater than Maximum Wickets");
+				messageSB.append(") ");
+				messageSB.append(getResources().getString(R.string.NM_wicketsMoreThanPlayers));
 			}
 			if (maxPerBowler > maxOvers) {
 				messageSB.append(errorNumber++);
-				messageSB.append(") Max overs per bowler cannot be more than max overs");
+				messageSB.append(") ");
+				messageSB.append(getResources().getString(R.string.NM_bowlerOversMoreThanMaxOvers));
 			}
 			if (maxPerBowler < ((maxOvers % numPlayers == 0) ? maxOvers / numPlayers : (maxOvers / numPlayers + 1))) {
 				messageSB.append(errorNumber++);
-				messageSB.append(") Not enough Players/Max Overs per Bowler to complete full quota of Overs");
+				messageSB.append(") ");
+				messageSB.append(getResources().getString(R.string.NM_notEnoughBowlers));
 			}
 		}
 
 		if (errorNumber > 1) {
-			showMessage("Overs/Player Validation", messageSB.toString());
+			showMessage(getResources().getString(R.string.NM_oversPlayersValidationTitle), messageSB.toString());
 			return false;
 		} else {
 			return true;
@@ -691,10 +736,10 @@ public class NewTournamentFragment extends Fragment
 		int id = dbh.createNewTournament(tournament);
 
 		if (id == dbh.CODE_NEW_TOURNAMENT_DUP_RECORD) {
-			Toast.makeText(getContext(), "A tournament with the same name already exists. Try a different name", Toast.LENGTH_LONG).show();
+			Toast.makeText(getContext(), getResources().getString(R.string.NM_duplicateTournamentName), Toast.LENGTH_LONG).show();
 		} else {
 			tournament.setId(id);
-			Toast.makeText(getContext(), "Tournament created successfully", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getContext(), getResources().getString(R.string.NM_tournamentCreationSuccessful), Toast.LENGTH_SHORT).show();
 
 			if (type == TournamentFormat.GROUPS) {
 				showGroupConfirmation(tournament);

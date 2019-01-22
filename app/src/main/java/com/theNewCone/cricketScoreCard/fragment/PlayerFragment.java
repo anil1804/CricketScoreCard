@@ -42,7 +42,7 @@ public class PlayerFragment extends Fragment
     CheckBox cbIsWK;
     Player selPlayer;
 
-	Button btnSelectBatStyle, btnSelectBowlSytle, btnManageTeams;
+	Button btnSelectBatStyle, btnSelectBowlStyle, btnManageTeams;
     Button btnDelete;
     List<Integer> associatedToTeams;
     Team[] selTeams;
@@ -148,6 +148,7 @@ public class PlayerFragment extends Fragment
                 confirmDeletePlayer();
                 break;
 
+
 			case R.id.btnPlayerManageTeams:
 				showTeamsSelectDialog();
 				break;
@@ -171,13 +172,16 @@ public class PlayerFragment extends Fragment
 
 					if(teams !=  null) {
 						if (!Arrays.equals(selTeams, teams)) {
-							Toast.makeText(getContext(),
+							selTeams = teams;
+							if (selPlayer != null && selPlayer.getID() > 0) {
+								savePlayer();
+							}
+							/*Toast.makeText(getContext(),
 									"Team List has Changed. Please click on 'Save' for changes to be updated.",
-									Toast.LENGTH_LONG).show();
+									Toast.LENGTH_LONG).show();*/
 						}
 
 						List<Integer> teamIDList = new ArrayList<>();
-						selTeams = teams;
 
 						for (Team team : teams)
 							teamIDList.add(team.getId());
@@ -220,7 +224,7 @@ public class PlayerFragment extends Fragment
 		cbIsWK = theView.findViewById(R.id.cbIsPlayerWK);
 
 		btnSelectBatStyle = theView.findViewById(R.id.btnSelectPlayerBatStyle);
-		btnSelectBowlSytle = theView.findViewById(R.id.btnSelectPlayerBowlStyle);
+		btnSelectBowlStyle = theView.findViewById(R.id.btnSelectPlayerBowlStyle);
 		btnManageTeams = theView.findViewById(R.id.btnPlayerManageTeams);
 
 		btnDelete = theView.findViewById(R.id.btnPlayerDelete);
@@ -232,7 +236,7 @@ public class PlayerFragment extends Fragment
 		theView.findViewById(R.id.btnPlayerClear).setOnClickListener(this);
 
 		btnSelectBatStyle.setOnClickListener(this);
-		btnSelectBowlSytle.setOnClickListener(this);
+		btnSelectBowlStyle.setOnClickListener(this);
 		btnManageTeams.setOnClickListener(this);
 
 		btnDelete.setOnClickListener(this);
@@ -309,15 +313,15 @@ public class PlayerFragment extends Fragment
 	private void showTeamsSelectDialog() {
 		storePlayer();
 
-		Intent batsmanIntent = new Intent(getContext(), TeamSelectActivity.class);
+		Intent teamSelectIntent = new Intent(getContext(), TeamSelectActivity.class);
 
-		batsmanIntent.putExtra(TeamSelectActivity.ARG_IS_MULTI, true);
+		teamSelectIntent.putExtra(TeamSelectActivity.ARG_IS_MULTI, true);
 		associatedToTeams = selPlayer.getTeamsAssociatedTo();
 		if(associatedToTeams !=  null) {
-			batsmanIntent.putIntegerArrayListExtra(TeamSelectActivity.ARG_EXISTING_TEAMS, (ArrayList<Integer>) associatedToTeams);
+			teamSelectIntent.putIntegerArrayListExtra(TeamSelectActivity.ARG_EXISTING_TEAMS, (ArrayList<Integer>) associatedToTeams);
 		}
 
-		startActivityForResult(batsmanIntent, REQ_CODE_TEAM_SELECT);
+		startActivityForResult(teamSelectIntent, REQ_CODE_TEAM_SELECT);
     }
 
     private void storePlayer() {
@@ -343,29 +347,33 @@ public class PlayerFragment extends Fragment
 
         StringBuilder errorSB = new StringBuilder();
 
-        if(etName.getText().toString().trim().length() < 3)
-            errorSB.append("Enter valid name (at-least 3 characters)\n");
-        /*if(etAge.getText().toString().trim().length() < 1)
-            errorSB.append("Enter valid age\n");*/
-        if(tvBatStyle.getText().toString().equals(getString(R.string.selectBatStyle)))
-            errorSB.append("Select Batting Style\n");
-        if(tvBowlStyle.getText().toString().equals(getString(R.string.selectBowlStyle)))
-            errorSB.append("Select Bowling Style\n");
+		if (etName.getText().toString().trim().length() < 3) {
+			errorSB.append(getResources().getString(R.string.Player_enterValidPlayerName));
+		}
+        /*if(etAge.getText().toString().trim().length() < 1) {
+            errorSB.append(getResources().getString(R.string.enterValidPlayerAge))
+        }*/
+		if (tvBatStyle.getText().toString().equals(getString(R.string.selectBatStyle))) {
+			errorSB.append(getResources().getString(R.string.Player_selectValidBatStyle));
+		}
+		if (tvBowlStyle.getText().toString().equals(getString(R.string.selectBowlStyle))) {
+			errorSB.append(getResources().getString(R.string.Player_selectValidBowlStyle));
+		}
 
         if(errorSB.toString().trim().length() == 0) {
         	boolean isNew = selPlayer.getID() < 0;
-            int playerID = dbHandler.upsertPlayer(selPlayer);
+			int playerID = dbHandler.updatePlayer(selPlayer);
 
             if (playerID == dbHandler.CODE_INS_PLAYER_DUP_RECORD) {
                 Toast.makeText(getContext(),
-						"Player with same name exists.\nChange name or update/delete existing team.",
+						getResources().getString(R.string.Player_selectDifferentPlayerName),
 						Toast.LENGTH_LONG).show();
             } else {
 				selPlayer.setPlayerID(playerID);
 				dbHandler.updateTeamList(selPlayer,
 						getAddedTeams(selTeams, associatedToTeams), getRemovedTeams(selTeams, associatedToTeams));
 
-                Toast.makeText(getContext(), "Player Saved Successfully", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getContext(), getResources().getString(R.string.Player_saveSuccess), Toast.LENGTH_SHORT).show();
                 selPlayer = isNew ? null : selPlayer;
                 populateData();
             }
@@ -384,10 +392,10 @@ public class PlayerFragment extends Fragment
         boolean success = dbHandler.deletePlayer(selPlayer.getID());
 
         if(success) {
-            Toast.makeText(getContext(), "Record Deleted Successfully", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getContext(), getResources().getString(R.string.Player_deleteSuccess), Toast.LENGTH_SHORT).show();
             clearScreen();
         } else {
-            Toast.makeText(getContext(), "Problem deleting Data", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getContext(), getResources().getString(R.string.Player_deleteFailed), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -428,7 +436,9 @@ public class PlayerFragment extends Fragment
 
 	private void confirmDeletePlayer() {
     	if(getFragmentManager() != null) {
-			ConfirmationDialog dialog = ConfirmationDialog.newInstance(CONFIRMATION_DELETE_PLAYER, "Confirm Delete", "Are you sure you want to delete the player?");
+			ConfirmationDialog dialog = ConfirmationDialog.newInstance(CONFIRMATION_DELETE_PLAYER,
+					getResources().getString(R.string.Team_confirmDeleteTitle),
+					getResources().getString(R.string.Player_confirmDeletePlayerMessage));
 			dialog.setConfirmationClickListener(this);
 			dialog.show(getFragmentManager(), "ConfirmPlayerDeleteDialog");
 		}

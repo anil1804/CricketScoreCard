@@ -80,7 +80,7 @@ public class TeamFragment extends Fragment
 				if(selTeam != null && selTeam.getId() > 0)
 					showPlayerListDialog();
 				else
-					Toast.makeText(getContext(), "Select/Create a team to update player list", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getContext(), getResources().getString(R.string.Team_selectCreateTeam), Toast.LENGTH_SHORT).show();
 				break;
 		}
 
@@ -113,7 +113,7 @@ public class TeamFragment extends Fragment
 
 		btnSaveTeam = theView.findViewById(R.id.btnSaveTeam);
 		btnDeleteTeam = theView.findViewById(R.id.btnDeleteTeam);
-		btnReset = theView.findViewById(R.id.btnResetData);
+		btnReset = theView.findViewById(R.id.btnTeamClear);
 
 		btnManagePlayers = theView.findViewById(R.id.btnTeamManagePlayers);
 
@@ -135,7 +135,7 @@ public class TeamFragment extends Fragment
             	confirmDeleteTeam();
                 break;
 
-			case R.id.btnResetData:
+			case R.id.btnTeamClear:
 				selTeam = null;
 				populateData();
 				break;
@@ -144,7 +144,7 @@ public class TeamFragment extends Fragment
 				if (selTeam != null && selTeam.getId() > 0)
 					showPlayerListDialog();
 				else
-					Toast.makeText(getContext(), "Select/Create a team to update player list", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getContext(), getResources().getString(R.string.Team_selectCreateTeam), Toast.LENGTH_SHORT).show();
 				break;
         }
     }
@@ -176,12 +176,15 @@ public class TeamFragment extends Fragment
 					Player[] players = CommonUtils.objectArrToPlayerArr((Object[]) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYERS));
 
 					if (!Arrays.equals(players, selPlayers)) {
-						Toast.makeText(getContext(),
-								"Player List has Changed. Please click on 'Save' for changes to be updated.",
-								Toast.LENGTH_LONG).show();
+						selPlayers = players;
+						if (selTeam != null && selTeam.getId() > 0) {
+							saveTeam();
+						}
+						/*Toast.makeText(getContext(),
+								getResources().getString(R.string.saveTeamPlayerListUpdate),
+								Toast.LENGTH_LONG).show();*/
 					}
 
-					selPlayers = players;
 					tvPlayers.setText(String.valueOf(selPlayers != null && selPlayers.length > 0 ? selPlayers.length : getString(R.string.none)));
 				}
 		}
@@ -219,9 +222,9 @@ public class TeamFragment extends Fragment
 
 		String errorMessage = null;
 		if(teamName.length() < 5) {
-			errorMessage = "Enter valid team name (at-least 5 characters)";
+			errorMessage = getResources().getString(R.string.Team_enterValidTeamName);
 		} else if(shortName.length() < 2) {
-			errorMessage = "Enter valid team name (at-least 2 characters)";
+			errorMessage = getResources().getString(R.string.Team_enterValidTeamShortName);
 		}
 
 		if(errorMessage != null) {
@@ -234,10 +237,10 @@ public class TeamFragment extends Fragment
 
 			boolean isNew = teamID < 0;
 			DatabaseHandler dbHandler = new DatabaseHandler(getContext());
-			int rowID = dbHandler.upsertTeam(selTeam);
+			int rowID = dbHandler.updateTeam(selTeam);
 
 			if (rowID == dbHandler.CODE_NEW_TEAM_DUP_RECORD) {
-				Toast.makeText(getContext(), "Team with same name already exists. Choose a different name.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getContext(), getResources().getString(R.string.Team_selectDifferentTeamName), Toast.LENGTH_SHORT).show();
 			} else {
 
 				if (selPlayers != null && selPlayers.length > 0) {
@@ -249,7 +252,7 @@ public class TeamFragment extends Fragment
 					for (Player player : dbHandler.getTeamPlayers(selTeam.getId()))
 						associatedPlayers.add(player.getID());
 				}
-				Toast.makeText(getContext(), "Team saved successfully.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getContext(), getResources().getString(R.string.Team_saveSuccess), Toast.LENGTH_SHORT).show();
 				selTeam = isNew ? null : selTeam;
 				populateData();
 			}
@@ -261,11 +264,11 @@ public class TeamFragment extends Fragment
     	boolean success = dbHandler.deleteTeam(selTeam.getId());
 
     	if(success) {
-			Toast.makeText(getContext(), "Team deleted successfully", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getContext(), getResources().getString(R.string.Team_deleteSuccess), Toast.LENGTH_SHORT).show();
 			selTeam = null;
 			populateData();
 		} else {
-			Toast.makeText(getContext(), "Team deletion failed", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getContext(), getResources().getString(R.string.Team_deleteFailed), Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -335,7 +338,9 @@ public class TeamFragment extends Fragment
 
 	private void confirmDeleteTeam() {
 		if(getFragmentManager() != null) {
-			ConfirmationDialog dialog = ConfirmationDialog.newInstance(CONFIRMATION_DELETE_TEAM, "Confirm Delete", "Are you sure you want to delete the team?");
+			ConfirmationDialog dialog = ConfirmationDialog.newInstance(CONFIRMATION_DELETE_TEAM,
+					getResources().getString(R.string.Team_confirmDeleteTitle),
+					getResources().getString(R.string.Team_confirmDeleteTeamMessage));
 			dialog.setConfirmationClickListener(this);
 			dialog.show(getFragmentManager(), "ConfirmTeamDeleteDialog");
 		}
