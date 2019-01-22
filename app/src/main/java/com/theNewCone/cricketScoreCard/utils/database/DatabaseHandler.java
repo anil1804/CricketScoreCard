@@ -48,7 +48,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String SAVE_AUTO = "Auto";
 	public static final String SAVE_MANUAL = "Manual";
 
-    private final String TBL_STATE = "CricketMatch_State";
+	public final String TBL_STATE = "CricketMatch_State";
     private final String TBL_STATE_ID = "ID";
     private final String TBL_STATE_MATCH_JSON = "MatchData";
     private final String TBL_STATE_IS_AUTO = "AutoSave";
@@ -57,27 +57,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private final String TBL_STATE_ORDER = "SaveOrder";
     private final String TBL_STATE_MATCH_ID = "MatchID";
 
-    private final String TBL_PLAYER = "Player";
+	public final String TBL_PLAYER = "Player";
     private final String TBL_PLAYER_ID = "ID";
     private final String TBL_PLAYER_NAME = "Name";
     private final String TBL_PLAYER_AGE = "Age";
     private final String TBL_PLAYER_BAT_STYLE = "BattingStyle";
     private final String TBL_PLAYER_BOWL_STYLE = "BowlingStyle";
     private final String TBL_PLAYER_IS_WK = "IsWK";
-    private final String TBL_PLAYER_TEAM_ASSOCIATION = "TeamAssociation";
 	private final String TBL_PLAYER_ARCHIVED = "isArchived";
 
-    private final String TBL_TEAM = "Team";
+	public final String TBL_TEAM = "Team";
     private final String TBL_TEAM_ID = "ID";
     private final String TBL_TEAM_NAME = "Name";
     private final String TBL_TEAM_SHORT_NAME = "ShortName";
     private final String TBL_TEAM_ARCHIVED = "isArchived";
 
-    private final String TBL_TEAM_PLAYERS = "TeamPlayers";
+	public final String TBL_TEAM_PLAYERS = "TeamPlayers";
     private final String TBL_TEAM_PLAYERS_TEAM_ID = "TeamID";
     private final String TBL_TEAM_PLAYERS_PLAYER_ID = "PlayerID";
 
-    private final String TBL_MATCH = "Matches";
+	public final String TBL_MATCH = "Matches";
     private final String TBL_MATCH_ID = "ID";
     private final String TBL_MATCH_NAME = "Name";
     private final String TBL_MATCH_TEAM1 = "Team1";
@@ -259,7 +258,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     private void createPlayerTable(SQLiteDatabase db) {
-        String createTableSQL =
+		String TBL_PLAYER_TEAM_ASSOCIATION = "TeamAssociation";
+		String createTableSQL =
                 "CREATE TABLE " + TBL_PLAYER + "("
                         + TBL_PLAYER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                         + TBL_PLAYER_NAME + " TEXT, "
@@ -425,7 +425,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int saveOrder = 0;
 		switch (isAuto){
 			case 0:
-				int count = getSavedMatchesWithSameName(matchName, 0);
+				int count = getSavedMatchesWithSameName(matchName);
 				saveName = (count > 0) ? saveName + "(" + count + ")" : saveName;
 				break;
 
@@ -480,12 +480,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	return saveOrder;
 	}
 
-	private int getSavedMatchesWithSameName(String matchName, int isAuto) {
+	private int getSavedMatchesWithSameName(String matchName) {
     	int count = 0;
     	final String countString = "ROW_COUNT";
 
     	String selectQuery = String.format(Locale.getDefault(), "SELECT COUNT(%s) AS %s FROM %s WHERE %s = '%s' AND %s = %d"
-				, TBL_STATE_ID, countString, TBL_STATE, TBL_STATE_NAME, matchName, TBL_STATE_IS_AUTO, isAuto);
+				, TBL_STATE_ID, countString, TBL_STATE, TBL_STATE_NAME, matchName, TBL_STATE_IS_AUTO, 1);
 
     	SQLiteDatabase db = this.getReadableDatabase();
     	Cursor cursor = db.rawQuery(selectQuery, null);
@@ -788,29 +788,35 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
 	public Player getPlayer(int playerID) {
+		return getPlayer(playerID, false);
+	}
 
-        String selectQuery = String.format(Locale.getDefault(),
-				"SELECT * FROM %s WHERE %s = %d AND %s <> 1"
-				, TBL_PLAYER, TBL_PLAYER_ID, playerID, TBL_PLAYER_ARCHIVED);
+	public Player getPlayer(int playerID, boolean includeArchived) {
+		int archivedValue = includeArchived ? -1 : 1;
+		String selectQuery = String.format(Locale.getDefault(),
+				"SELECT * FROM %s WHERE %s = %d AND %s <> %d"
+				, TBL_PLAYER, TBL_PLAYER_ID, playerID, TBL_PLAYER_ARCHIVED, archivedValue);
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		Player player = null;
 		List<Player> playerList = getPlayersFromCursor(cursor);
 		if(playerList.size() > 0)
 			player = playerList.get(0);
 
-        cursor.close();
-        db.close();
+		cursor.close();
+		db.close();
 
-        return player;
-    }
+		return player;
+	}
 
     private List<Player> getMatchingPlayers(String playerName) {
+		int archivedValue = 1;
+
         String selectQuery = String.format(Locale.getDefault(),
-				"SELECT * FROM %s WHERE %s = '%s' AND %s <> 1"
-				, TBL_PLAYER, TBL_PLAYER_NAME, playerName, TBL_PLAYER_ARCHIVED);
+				"SELECT * FROM %s WHERE %s = '%s' AND %s <> %d"
+				, TBL_PLAYER, TBL_PLAYER_NAME, playerName, TBL_PLAYER_ARCHIVED, archivedValue);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -823,7 +829,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return playerList;
     }
 
-    public List<Player> getPlayers(List<Integer> playerIDList) {
+	public List<Player> getPlayers(List<Integer> playerIDList) {
+		int archivedValue = 1;
+
 		List<Player> playerList = new ArrayList<>();
 
 		if(playerIDList != null && playerIDList.size() > 0) {
@@ -836,7 +844,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			whereClauseSB.delete(whereClauseSB.length() - 2, whereClauseSB.length());
 			whereClauseSB.append(")");
 
-			String selectQuery = "SELECT * FROM " + TBL_PLAYER + whereClauseSB.toString() + " AND " + TBL_PLAYER_ARCHIVED + " <> 1";
+			String selectQuery = "SELECT * FROM " + TBL_PLAYER + whereClauseSB.toString() + " AND " + TBL_PLAYER_ARCHIVED + " <> " + archivedValue;
 
 			SQLiteDatabase db = this.getReadableDatabase();
 			Cursor cursor = db.rawQuery(selectQuery, null);
@@ -850,8 +858,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return playerList;
 	}
 
-    public List<Player> getAllPlayers() {
-        String selectQuery = "SELECT * FROM " + TBL_PLAYER + " WHERE " + TBL_PLAYER_ARCHIVED + " <> 1";
+	public List<Player> getAllPlayers() {
+		int archivedValue = 1;
+		String selectQuery = "SELECT * FROM " + TBL_PLAYER + " WHERE " + TBL_PLAYER_ARCHIVED + " <> " + archivedValue;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -864,27 +873,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return playerList;
     }
 
-    public int upsertPlayer(Player player) {
+	public int updatePlayer(Player player) {
+		return updatePlayer(player, false);
+	}
+
+	int updatePlayer(Player player, boolean getIdIfExisting) {
 
         ContentValues values = new ContentValues();
 
-        if(player.getID() < 0) {
-            if(getMatchingPlayers(player.getName()).size() > 0) {
-                return CODE_INS_PLAYER_DUP_RECORD;
+		if (player.getID() <= 0) {
+			List<Player> playerList = getMatchingPlayers(player.getName());
+			if (playerList.size() > 0) {
+				if (getIdIfExisting)
+					return playerList.get(0).getID();
+				else
+					return CODE_INS_PLAYER_DUP_RECORD;
             }
         }
 
         values.put(TBL_PLAYER_NAME, player.getName());
-        values.put(TBL_PLAYER_AGE, player.getAge());
         values.put(TBL_PLAYER_BAT_STYLE, player.getBattingStyle().toString());
         values.put(TBL_PLAYER_BOWL_STYLE, player.getBowlingStyle().toString());
         values.put(TBL_PLAYER_IS_WK, player.isWicketKeeper() ? 1 : 0);
-        //values.put(TBL_PLAYER_TEAM_ASSOCIATION, player.getTeamsAssociatedToJSON());
 
         SQLiteDatabase db = this.getWritableDatabase();
 
 		long rowID;
-		if(player.getID() == -1)
+		if (player.getID() < 1)
 			rowID = db.insert(TBL_PLAYER, null, values);
 		else
 			rowID = player.getID();
@@ -933,20 +948,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return success;
     }
 
-	/*void deleteAllPlayers() {
-		SQLiteDatabase db = this.getWritableDatabase();
+	public int updateTeam(Team team) {
+		return updateTeam(team, false);
+	}
+
+	int updateTeam(Team team, boolean getIdIfExisting) {
 		ContentValues values = new ContentValues();
-		values.put(TBL_PLAYER_ARCHIVED, 1);
-		db.update(TBL_PLAYER, values, null, null);
-		db.close();
-    }*/
 
-    public int upsertTeam(Team team) {
-        ContentValues values = new ContentValues();
-
-        if(team.getId() == -1) {
-			if (getTeams(team.getName(), -1).size() > 0) {
-				return CODE_NEW_TEAM_DUP_RECORD;
+		if (team.getId() <= 0) {
+			List<Team> teamList = getTeams(team.getName(), -1);
+			if (teamList.size() > 0) {
+				if (getIdIfExisting)
+					return teamList.get(0).getId();
+				else
+					return CODE_NEW_TEAM_DUP_RECORD;
 			}
 		}
 
@@ -956,7 +971,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		long rowID;
-		if(team.getId() == -1)
+		if (team.getId() < 1)
 			rowID = db.insert(TBL_TEAM, null, values);
 		else
 			rowID = team.getId();
@@ -966,15 +981,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return (int) rowID;
     }
-
-    /*void deleteAllTeams() {
-		SQLiteDatabase db = this.getWritableDatabase();
-
-		ContentValues values = new ContentValues();
-		values.put(TBL_TEAM_ARCHIVED, 1);
-		db.update(TBL_TEAM, values, null, null);
-		db.close();
-	}*/
 
     public boolean deleteTeam(int teamID) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -989,10 +995,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return success;
     }
 
-    public List<Team> getTeams(String teamNamePattern, int teamID) {
-        StringBuilder whereClauseSB = new StringBuilder(" WHERE ");
+	public List<Team> getTeams(String teamNamePattern, int teamID) {
+		return getTeams(teamNamePattern, teamID, false);
+	}
+
+	public List<Team> getTeams(String teamNamePattern, int teamID, boolean includeArchived) {
+		int archivedValue = includeArchived ? -1 : 1;
+
+		StringBuilder whereClauseSB = new StringBuilder(" WHERE ");
         whereClauseSB.append(TBL_TEAM_ARCHIVED);
-        whereClauseSB.append(" <> 1");
+		whereClauseSB.append(" <> ");
+		whereClauseSB.append(archivedValue);
 
         if(teamID > 0) {
             whereClauseSB.append(String.format(" AND %s = %s ", TBL_TEAM_ID, teamID));
@@ -1018,11 +1031,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 	public List<Team> getTeams(List<Integer> teamIDList) {
+		return getTeams(teamIDList, false);
+	}
+
+	public List<Team> getTeams(List<Integer> teamIDList, boolean includeArchived) {
+		int archivedValue = includeArchived ? -1 : 1;
+
+		StringBuilder whereClauseSB = new StringBuilder(" WHERE ");
+		whereClauseSB.append(TBL_TEAM_ARCHIVED);
+		whereClauseSB.append(" <> ");
+		whereClauseSB.append(archivedValue);
+
 		SQLiteDatabase db = this.getReadableDatabase();
-		return getTeams(teamIDList, db);
+		return getTeams(teamIDList, db, includeArchived);
 	}
 
 	public List<Team> getTeams(List<Integer> teamIDList, SQLiteDatabase db) {
+		return getTeams(teamIDList, db, false);
+	}
+
+	public List<Team> getTeams(List<Integer> teamIDList, SQLiteDatabase db, boolean includeArchived) {
 		List<Team> teamList = new ArrayList<>();
 
 		if(teamIDList != null && teamIDList.size() > 0) {
@@ -1036,9 +1064,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			whereClauseSB.delete(whereClauseSB.length() - 2, whereClauseSB.length());
 			whereClauseSB.append(")");
 
+			int archivedValue = includeArchived ? -1 : 1;
 			whereClauseSB.append(" AND ");
 			whereClauseSB.append(TBL_TEAM_ARCHIVED);
-			whereClauseSB.append(" <> 1");
+			whereClauseSB.append(" <> ");
+			whereClauseSB.append(archivedValue);
 
 			String selectQuery = "SELECT * FROM " + TBL_TEAM + whereClauseSB.toString();
 
@@ -1081,7 +1111,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	List<Integer> playerIDList = new ArrayList<>();
 
     	String selectQuery = String.format(Locale.getDefault(),
-				"SELECT %s FROM %s WHERE %s = %d AND %s NOT IN " +
+				"SELECT DISTINCT %s FROM %s WHERE %s = %d AND %s NOT IN " +
 						"(SELECT %s FROM %s WHERE %s = 1)"
 				,TBL_TEAM_PLAYERS_PLAYER_ID, TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_TEAM_ID, teamID, TBL_TEAM_PLAYERS_PLAYER_ID
 				, TBL_PLAYER_ID, TBL_PLAYER, TBL_PLAYER_ARCHIVED);
@@ -1105,7 +1135,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	List<Integer> teamIDList = new ArrayList<>();
 
     	String selectQuery = String.format(Locale.getDefault(),
-				"SELECT %s FROM %s WHERE %s = %d AND %s NOT IN " +
+				"SELECT DISTINCT %s FROM %s WHERE %s = %d AND %s NOT IN " +
 						"(SELECT %s FROM %s WHERE %s = 1)"
 				, TBL_TEAM_PLAYERS_TEAM_ID, TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_PLAYER_ID, playerID, TBL_TEAM_PLAYERS_TEAM_ID
 				, TBL_TEAM_ID, TBL_TEAM, TBL_TEAM_ARCHIVED);
@@ -1126,9 +1156,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
 	public List<Player> getTeamPlayers(int teamID) {
-    	String selectQuery = String.format("SELECT * FROM %s WHERE %s IN (SELECT %s FROM %s WHERE %s = %s) AND %s <> 1",
+		int archivedValue = 1;
+		String selectQuery = String.format(Locale.getDefault(),
+				"SELECT * FROM %s WHERE %s IN (SELECT %s FROM %s WHERE %s = %s) AND %s <> %d",
 								TBL_PLAYER, TBL_PLAYER_ID, TBL_TEAM_PLAYERS_PLAYER_ID,
-								TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_TEAM_ID, teamID, TBL_PLAYER_ARCHIVED);
+				TBL_TEAM_PLAYERS, TBL_TEAM_PLAYERS_TEAM_ID, teamID, TBL_PLAYER_ARCHIVED, archivedValue);
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
@@ -1154,13 +1186,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				db.insert(TBL_TEAM_PLAYERS, null, values);
 
 				Player player = getPlayer(playerID);
-				List<Integer> teamsAssociatedTo = player.getTeamsAssociatedTo();
-				if(teamsAssociatedTo == null)
-					teamsAssociatedTo = new ArrayList<>();
-				if (!teamsAssociatedTo.contains(team.getId())) {
-					teamsAssociatedTo.add(team.getId());
-					player.setTeamsAssociatedTo(teamsAssociatedTo);
-					upsertPlayer(player);
+				if (player != null) {
+					List<Integer> teamsAssociatedTo = player.getTeamsAssociatedTo();
+					if (teamsAssociatedTo == null)
+						teamsAssociatedTo = new ArrayList<>();
+					if (!teamsAssociatedTo.contains(team.getId())) {
+						teamsAssociatedTo.add(team.getId());
+						player.setTeamsAssociatedTo(teamsAssociatedTo);
+						updatePlayer(player);
+					}
 				}
 				db.close();
 			}
@@ -1173,14 +1207,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 						new String[]{String.valueOf(playerID), String.valueOf(team.getId())});
 
 				Player player = getPlayer(playerID);
-				List<Integer> teamsAssociatedTo = player.getTeamsAssociatedTo();
-				if (teamsAssociatedTo != null && teamsAssociatedTo.contains(team.getId())) {
-					for (int i = 0; i < teamsAssociatedTo.size(); i++) {
-						if (teamsAssociatedTo.get(i) == team.getId()) {
-							teamsAssociatedTo.remove(i);
-							player.setTeamsAssociatedTo(teamsAssociatedTo);
-							upsertPlayer(player);
-							break;
+				if (player != null) {
+					List<Integer> teamsAssociatedTo = player.getTeamsAssociatedTo();
+					if (teamsAssociatedTo != null && teamsAssociatedTo.contains(team.getId())) {
+						for (int i = 0; i < teamsAssociatedTo.size(); i++) {
+							if (teamsAssociatedTo.get(i) == team.getId()) {
+								teamsAssociatedTo.remove(i);
+								player.setTeamsAssociatedTo(teamsAssociatedTo);
+								updatePlayer(player);
+								break;
+							}
 						}
 					}
 				}
@@ -1239,9 +1275,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         long rowID = CODE_NEW_MATCH_DUP_RECORD;
 
-        boolean isDuplicate = getSavedMatchesWithSameName(match.getName(), 0) > 0;
+		boolean createRecord = Constants.ALLOW_DUPLICATE_MATCH_NAME;
+		if (!createRecord)
+			createRecord = getSavedMatchesWithSameName(match.getName()) == 0;
 
-        if(!isDuplicate) {
+		if (createRecord) {
 			SQLiteDatabase db = this.getWritableDatabase();
 			rowID = db.insert(TBL_MATCH, null, values);
 			db.close();
@@ -1318,7 +1356,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		List<Integer> teamIDList = new ArrayList<>();
 		teamIDList.add(team1ID);
 		teamIDList.add(team2ID);
-		List<Team> teams = getTeams(teamIDList, db);
+		List<Team> teams = getTeams(teamIDList, db, true);
 
 		Team team1 = null, team2 = null;
 		for (Team team : teams) {
@@ -1498,20 +1536,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			SQLiteDatabase db = this.getWritableDatabase();
 
 			boolean alreadyExists = false;
-			String selectQuery = String.format(Locale.getDefault(),
-					"SELECT %s FROM %s WHERE %s = '%s'",
-					TBL_TOURNAMENT_ID, TBL_TOURNAMENT, TBL_TOURNAMENT_NAME, tournament.getName());
-			Cursor cursor = db.rawQuery(selectQuery, null);
+			if (!Constants.ALLOW_DUPLICATE_TOURNAMENT_NAME) {
+				String selectQuery = String.format(Locale.getDefault(),
+						"SELECT %s FROM %s WHERE %s = '%s'",
+						TBL_TOURNAMENT_ID, TBL_TOURNAMENT, TBL_TOURNAMENT_NAME, tournament.getName());
+				Cursor cursor = db.rawQuery(selectQuery, null);
 
-			if (cursor != null && cursor.moveToFirst()) {
-				alreadyExists = true;
-				cursor.close();
+				if (cursor != null && cursor.moveToFirst()) {
+					alreadyExists = true;
+					cursor.close();
+				}
 			}
 
 			rowID = CODE_NEW_TOURNAMENT_DUP_RECORD;
 
-			if (!alreadyExists)
+			if (!alreadyExists) {
 				rowID = (int) db.insert(TBL_TOURNAMENT, null, values);
+			}
 
 			db.close();
 		}
@@ -1596,6 +1637,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return tournament;
 	}
 
+	public void deleteTournament(String tournamentName) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TBL_TOURNAMENT, TBL_TOURNAMENT_NAME + " = ?", new String[]{tournamentName});
+	}
+
 	public int updateGroup(int tournamentID, Group group) {
 		int rowID = 0;
 		if (group != null) {
@@ -1650,7 +1696,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 					boolean isScheduled = cursor.getInt(cursor.getColumnIndex(TBL_GROUP_IS_SCHEDULED)) == 1;
 
 					List<Integer> teamIDs = CommonUtils.jsonToIntList(cursor.getString(cursor.getColumnIndex(TBL_GROUP_TEAMS)));
-					List<Team> teamList = getTeams(teamIDs, db);
+					List<Team> teamList = getTeams(teamIDs, db, true);
 
 					Group group = new Group(number, teamList.size(), name,
 							CommonUtils.objectArrToTeamArr(teamList.toArray()),
@@ -1783,7 +1829,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		teamIDs.add(team1ID);
 		teamIDs.add(team2ID);
 
-		List<Team> teamList = getTeams(teamIDs, db);
+		List<Team> teamList = getTeams(teamIDs, db, true);
 
 		Team team1 = null, team2 = null, winningTeam = null;
 		for (Team team : teamList) {
@@ -1944,7 +1990,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				double oversPlayed = Double.parseDouble(cursor.getString(cursor.getColumnIndex(TBL_POINTS_DATA_OVERS_PLAYED)));
 				double oversBowled = Double.parseDouble(cursor.getString(cursor.getColumnIndex(TBL_POINTS_DATA_OVERS_BOWLED)));
 
-				Team team = getTeams(null, teamID).get(0);
+				Team team = getTeams(null, teamID, true).get(0);
 
 				PointsData pointsData = new PointsData(id, team, maxOvers, maxWickets,
 						played, won, lost, tied, noResult, runRate,
@@ -2029,5 +2075,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		}
 
 		return isComplete;
+	}
+
+	public void deleteAllRecords(String tableName) {
+		SQLiteDatabase db = getWritableDatabase();
+		ContentValues values = new ContentValues();
+		switch (tableName) {
+			case TBL_TEAM:
+				values.put(TBL_TEAM_ARCHIVED, 1);
+				db.update(TBL_TEAM, values, null, null);
+				break;
+
+			case TBL_PLAYER:
+				values.put(TBL_PLAYER_ARCHIVED, 1);
+				db.update(TBL_PLAYER, values, null, null);
+				break;
+
+			case TBL_MATCH:
+				/*values.put(TBL_MATCH_IS_ARCHIVED, 1);
+				db.update(TBL_MATCH, values, null, null);*/
+				break;
+
+			case TBL_STATE:
+				db.delete(TBL_STATE, null, null);
+				break;
+		}
 	}
 }
