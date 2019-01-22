@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
+import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
 import java.util.Locale;
@@ -25,6 +26,8 @@ public class ExtrasActivity extends Activity
 	public final static String ARG_NB_EXTRA = "NB_Extra";
 	public final static String ARG_EXTRA_RUNS = "Extra_Runs";
 	public final static String ARG_TEAM = "Team";
+	public final static String ARG_BATTING_TEAM = "BattingTeam";
+	public final static String ARG_BOWLING_TEAM = "BowlingTeam";
 
 	public final static int RESULT_CODE_OK = 1;
 	public final static int RESULT_CODE_CANCEL = -1;
@@ -33,6 +36,7 @@ public class ExtrasActivity extends Activity
 
 	ExtraType extraType;
 	Intent incomingIntent;
+	Team battingTeam, bowlingTeam;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,6 +98,10 @@ public class ExtrasActivity extends Activity
 		incomingIntent = getIntent();
 		if(incomingIntent != null) {
 			extraType = (ExtraType) incomingIntent.getSerializableExtra(Constants.ARG_EXTRA_TYPE);
+			battingTeam = incomingIntent.getSerializableExtra(ARG_BATTING_TEAM) != null
+					? (Team) incomingIntent.getSerializableExtra(ARG_BATTING_TEAM) : null;
+			bowlingTeam = incomingIntent.getSerializableExtra(ARG_BOWLING_TEAM) != null
+					? (Team) incomingIntent.getSerializableExtra(ARG_BOWLING_TEAM) : null;
 		}
 
 		tvExtra.setText(getExtraText());
@@ -128,6 +136,10 @@ public class ExtrasActivity extends Activity
 		rgExtraRuns.removeAllViews();
 
 		String[] extraDataArray = CommonUtils.getExtraDetailsArray(extraType, extraSubType);
+
+		if (extraType == ExtraType.PENALTY && battingTeam != null && bowlingTeam != null) {
+			extraDataArray = new String[]{battingTeam.getName(), bowlingTeam.getName()};
+		}
 
 		for(String extraData : extraDataArray) {
 			RadioButton radioButton = new RadioButton(this);
@@ -180,6 +192,13 @@ public class ExtrasActivity extends Activity
 			switch (extraType) {
 				case PENALTY:
 					team = ((RadioButton) findViewById(rgExtraRunsSelId)).getText().toString();
+					if (battingTeam != null && bowlingTeam != null) {
+						if (team.equalsIgnoreCase(battingTeam.getName()))
+							team = Constants.BATTING_TEAM;
+						else if (team.equalsIgnoreCase(bowlingTeam.getName())) {
+							team = Constants.BOWLING_TEAM;
+						}
+					}
 					numRuns = 5;
 					break;
 
