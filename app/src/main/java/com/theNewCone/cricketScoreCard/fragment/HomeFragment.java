@@ -17,9 +17,9 @@ import android.widget.Toast;
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.activity.CompletedMatchSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.MatchStateSelectActivity;
-import com.theNewCone.cricketScoreCard.activity.TournamentCompleteActivity;
 import com.theNewCone.cricketScoreCard.activity.TournamentHomeActivity;
 import com.theNewCone.cricketScoreCard.activity.TournamentSelectActivity;
+import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
 import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.intf.ConfirmationDialogClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
@@ -31,6 +31,7 @@ import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
 
 import java.util.List;
 import java.util.Locale;
@@ -117,8 +118,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 				displayFinishedMatches(true, REQ_CODE_MATCH_LIST_FINISHED_DELETE);
 				break;
 
-			case R.id.menu_trophy:
-				startActivity(new Intent(getContext(), TournamentCompleteActivity.class));
+			case R.id.menu_load:
+				ManageDBData mdbData = new ManageDBData(getContext());
+				mdbData.addTeamsAndPlayers(TeamEnum.ALL);
 				break;
 
 		}
@@ -263,6 +265,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 						}
 					}
 				}
+				break;
+
+			case REQ_CODE_TOURNAMENT_LOAD_FINISHED:
+				if (resultCode == TournamentSelectActivity.RESP_CODE_OK) {
+					Tournament tempTournament = (Tournament) data.getSerializableExtra(TournamentSelectActivity.ARG_RESP_SEL_TOURNAMENT);
+					Tournament tournament = dbHandler.getTournamentContent(tempTournament.getId());
+					showTournamentHome(tournament);
+				}
+				break;
 		}
 	}
 
@@ -352,9 +363,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	private void startNewTournament(FragmentManager fragMgr) {
 		String fragmentTag;
 		if (dbHandler.getTeams(null, 0).size() < 2) {
-			String title = "Not enough Teams";
-			String message = "Need at-least 2 teams to start a tournament.\n" +
-					"Use 'Manage Teams' to create teams before starting a new tournament.";
+			String title = getResources().getString(R.string.notEnoughTeams);
+			String message = getResources().getString(R.string.tournamentNotEnoughTeamsMessage);
 			if (getFragmentManager() != null) {
 				InformationDialog infoDialog = InformationDialog.newInstance(title, message);
 				infoDialog.show(getFragmentManager(), "NotEnoughTeams");
@@ -409,7 +419,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 
 	private void showTournamentHome(Tournament tournament) {
 		Intent intent = new Intent(getContext(), TournamentHomeActivity.class);
-		intent.putExtra(TournamentHomeActivity.ARG_TOURNAMENT, tournament);
+		intent.putExtra(TournamentHomeActivity.ARG_TOURNAMENT_ID, tournament.getId());
+		intent.putExtra(TournamentHomeActivity.ARG_TOURNAMENT_FORMAT, tournament.getFormat());
 		startActivity(intent);
 	}
 }
