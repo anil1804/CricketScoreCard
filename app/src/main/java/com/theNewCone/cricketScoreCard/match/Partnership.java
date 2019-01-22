@@ -76,11 +76,12 @@ public class Partnership implements Serializable {
 	}
 
 	void updatePlayerStats(Player player, int ballsPlayed, int runsScored, boolean isOut, int currScore, String overForWicket, Extra extra) {
+		boolean isCancel = extra != null && extra.getType() == ExtraType.CANCEL;
 		if(player.getID() == player1.getID()) {
-			p1RunsScored += runsScored;
+			p1RunsScored += isCancel ? (runsScored * -1) : runsScored;
 			p1BallsPlayed += ballsPlayed;
 		} else if(player.getID() == player2.getID()) {
-			p2RunsScored += runsScored;
+			p2RunsScored += isCancel ? (runsScored * -1) : runsScored;
 			p2BallsPlayed += ballsPlayed;
 		}
 
@@ -88,7 +89,7 @@ public class Partnership implements Serializable {
 		this.currScore = currScore;
 
 		if(extra != null) {
-			extras += extra.getRuns();
+			extras += isCancel ? (extra.getSubType() != ExtraType.NONE ? extra.getRuns() * -1 : 0) : runsScored;
 			if (extra.getType() == ExtraType.NO_BALL || extra.getType() == ExtraType.WIDE)
 				extras++;
 		}

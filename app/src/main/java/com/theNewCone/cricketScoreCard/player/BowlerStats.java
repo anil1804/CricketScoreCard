@@ -31,8 +31,8 @@ public class BowlerStats implements Serializable {
 		return runsGiven;
 	}
 
-	public void incRunsGiven(int runsGiven) {
-		this.runsGiven += runsGiven;
+	public void incRunsGiven(int runsGiven, boolean isCancel) {
+		this.runsGiven += isCancel ? (runsGiven * -1) : runsGiven;
 	}
 
 	public int getMaidens() {

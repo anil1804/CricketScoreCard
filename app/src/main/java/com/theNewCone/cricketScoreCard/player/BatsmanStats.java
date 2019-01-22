@@ -93,43 +93,48 @@ public class BatsmanStats implements Serializable {
 		this.position = position;
 		this.strikeRate = CommonUtils.getStrikeRate(runsScored, ballsPlayed);
 	}
+
 	public void addDot() {
-		++dots;
+		dots++;
 	}
 
-	public void addSingle() {
-		++singles;
-		runsScored += 1;
+	public void addSingle(boolean isCancel) {
+		singles += isCancel ? -1 : 1;
+		runsScored += isCancel ? -1 : 1;
 	}
 
-	public void addTwos() {
-		++twos;
-		runsScored += 2;
+	public void addTwos(boolean isCancel) {
+		twos += isCancel ? -1 : 1;
+		runsScored += isCancel ? -2 : 2;
 	}
 
-	public void addThrees() {
-		++threes;
-		runsScored += 3;
+	public void addThrees(boolean isCancel) {
+		threes += isCancel ? -1 : 1;
+		runsScored += isCancel ? -3 : 3;
 	}
 
-	public void addFours() {
-		++num4s;
-		runsScored += 4;
+	public void addFours(boolean isCancel) {
+		num4s += isCancel ? -1 : 1;
+		runsScored += isCancel ? -4 : 4;
 	}
 
-	public void addSixes() {
-		++num6s;
-		runsScored += 6;
+	public void addSixes(boolean isCancel) {
+		num6s += isCancel ? -1 : 1;
+		runsScored += isCancel ? -6 : 6;
 	}
 
-	public void addFives() {
-		++fives;
-		runsScored += 5;
+	public void addFives(boolean isCancel) {
+		fives += isCancel ? -1 : 1;
+		runsScored += isCancel ? -5 : 5;
 	}
 
-	public void addSevens() {
-		++sevens;
-		runsScored += 7;
+	public void addSevens(boolean isCancel) {
+		sevens += isCancel ? -1 : 1;
+		runsScored += isCancel ? -7 : 7;
+	}
+
+	public void addOthers(int runs, boolean isCancel) {
+		runsScored += isCancel ? (runs * -1) : runs;
 	}
 
 	public void evaluateStrikeRate() {

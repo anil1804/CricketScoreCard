@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CricketCardUtils implements Cloneable {
-    private int numConsecutiveDots = 0, tossWonByTeamID, maxWickets;
+	private int numConsecutiveDots = 0, tossWonByTeamID, maxWickets, prevBallFacingBatsmanID;
 	private boolean newOver, matchTied = false, isAbandoned = false;
 	private boolean isTournament = false;
 
@@ -222,10 +222,12 @@ public class CricketCardUtils implements Cloneable {
 		newOver = isAutomatic;
     }
 
-	private void updateBowlerFigures(double ballsBowled, int runsGiven, WicketData wicketData, Extra extra) {
+	private void updateBowlerFigures(double ballsBowled, int runsGiven, WicketData wicketData, Extra extra, BatsmanStats runsScoredBy) {
 		if(bowler != null) {
+			boolean isCancel = extra != null && extra.getType() == ExtraType.CANCEL;
+
 			if (runsGiven > 0) {
-				bowler.incRunsGiven(runsGiven);
+				bowler.incRunsGiven(runsGiven, isCancel);
 				numConsecutiveDots = 0;
 			} else {
 				numConsecutiveDots++;
@@ -243,15 +245,15 @@ public class CricketCardUtils implements Cloneable {
 				bowler.setOversBowled(oversBowled);
 			}
 
-			if (wicketData != null) {
-				if (WicketData.isBowlersWicket(wicketData.getDismissalType()))
-					bowler.incWickets();
+			if (!isCancel) {
+				if (wicketData != null) {
+					if (WicketData.isBowlersWicket(wicketData.getDismissalType()))
+						bowler.incWickets();
+				}
 			}
 
 			bowler.evaluateEconomy();
-
-			card.addNewBall(runsGiven, bowler, extra, wicketData);
-
+			card.addNewBall(runsGiven, bowler, extra, wicketData, runsScoredBy);
 			card.updateBowlerInBowlerMap(bowler);
 		}
 	}
@@ -262,67 +264,81 @@ public class CricketCardUtils implements Cloneable {
 			batsman.incBallsPlayed(balls);
 		}
 
-		if(balls > 0) {
+		boolean isCancel = extra != null && extra.getType() == ExtraType.CANCEL;
+		if (isCancel) {
+			batsman = (currentFacing.getPlayer().getID() == prevBallFacingBatsmanID)
+					? currentFacing
+					: otherBatsman;
+		}
+
+		if (balls > 0 || isCancel) {
 			switch (runs) {
 				case 0:
 					batsman.addDot();
 					break;
 				case 1:
-					batsman.addSingle();
+					batsman.addSingle(isCancel);
 					break;
 				case 2:
-					batsman.addTwos();
+					batsman.addTwos(isCancel);
 					break;
 				case 3:
-					batsman.addThrees();
+					batsman.addThrees(isCancel);
 					break;
 				case 4:
-					batsman.addFours();
+					batsman.addFours(isCancel);
 					break;
 				case 6:
-					batsman.addSixes();
+					batsman.addSixes(isCancel);
 					break;
 				case 5:
-					batsman.addFives();
+					batsman.addFives(isCancel);
 					break;
 				case 7:
-					batsman.addSevens();
+					batsman.addSevens(isCancel);
+					break;
+				default:
+					batsman.addOthers(runs, isCancel);
 					break;
 			}
 		}
 
 		boolean isOut = false;
-		if(wicketData != null) {
-			isOut = true;
-			Player effectedBy = (wicketData.getDismissalType() == DismissalType.STUMPED)
-					? card.getBowlingTeam().getWicketKeeper() : wicketData.getEffectedBy();
+		if (!isCancel) {
+			if (wicketData != null) {
+				isOut = true;
+				Player effectedBy = (wicketData.getDismissalType() == DismissalType.STUMPED)
+						? card.getBowlingTeam().getWicketKeeper() : wicketData.getEffectedBy();
 
-            if(currentFacing.getPosition() == wicketData.getBatsman().getPosition()) {
-                currentFacing.setNotOut(false);
-                currentFacing.setWicketEffectedBy(effectedBy);
-                currentFacing.setWicketTakenBy(wicketData.getBowler());
-                currentFacing.setDismissalType(wicketData.getDismissalType());
-                currentFacing.evaluateStrikeRate();
-                card.updateBatsmenData(currentFacing);
-                currentFacing = null;
-            } else {
-                otherBatsman.setNotOut(false);
-                otherBatsman.setWicketEffectedBy(effectedBy);
-                otherBatsman.setWicketTakenBy(wicketData.getBowler());
-				otherBatsman.setDismissalType(wicketData.getDismissalType());
-                otherBatsman.evaluateStrikeRate();
-                card.updateBatsmenData(otherBatsman);
-                otherBatsman = null;
-            }
-		} else {
-            batsman.evaluateStrikeRate();
-        }
+				if (currentFacing.getPosition() == wicketData.getBatsman().getPosition()) {
+					currentFacing.setNotOut(false);
+					currentFacing.setWicketEffectedBy(effectedBy);
+					currentFacing.setWicketTakenBy(wicketData.getBowler());
+					currentFacing.setDismissalType(wicketData.getDismissalType());
+					currentFacing.evaluateStrikeRate();
+					card.updateBatsmenData(currentFacing);
+					currentFacing = null;
+				} else {
+					otherBatsman.setNotOut(false);
+					otherBatsman.setWicketEffectedBy(effectedBy);
+					otherBatsman.setWicketTakenBy(wicketData.getBowler());
+					otherBatsman.setDismissalType(wicketData.getDismissalType());
+					otherBatsman.evaluateStrikeRate();
+					card.updateBatsmenData(otherBatsman);
+					otherBatsman = null;
+				}
+			} else {
+				batsman.evaluateStrikeRate();
+			}
+
+			checkNextBatsmanFacingBall(runs, extra);
+		}
 
 		card.updatePartnership(batsman, balls, runs, isOut, extra);
-		checkNextBatsmanFacingBall(runs, extra);
 	}
 
 	private void checkNextBatsmanFacingBall(int runs, Extra extra) {
+		prevBallFacingBatsmanID = (currentFacing != null) ? currentFacing.getPlayer().getID() : 0;
     	if(extra != null) {
 			if (extra.getType() == ExtraType.BYE
 					|| extra.getType() == ExtraType.LEG_BYE
@@ -345,18 +361,19 @@ public class CricketCardUtils implements Cloneable {
 	public void processBallActivity(@Nullable Extra extra, int runs, @Nullable WicketData wicketData, boolean bowlerChanged) {
 		int batsmanRuns = runs, batsmanBalls = 1;
 		int bowlerRuns = runs, bowlerBalls = 1;
+		boolean isCancel = false;
 		if(extra != null) {
 			switch (extra.getType()) {
 				case BYE:
 					batsmanRuns = 0;
 					bowlerRuns = 0;
-					card.addByes(extra.getRuns());
+					card.addByes(extra.getRuns(), false);
 					break;
 
 				case LEG_BYE:
 					batsmanRuns = 0;
 					bowlerRuns = 0;
-					card.addLegByes(extra.getRuns());
+					card.addLegByes(extra.getRuns(), false);
 					break;
 
 				case WIDE:
@@ -364,7 +381,7 @@ public class CricketCardUtils implements Cloneable {
 					batsmanBalls = 0;
 					bowlerRuns = 1 + extra.getRuns();
 					bowlerBalls = 0;
-					card.addWides(extra.getRuns() + 1);
+					card.addWides(extra.getRuns() + 1, false);
 					break;
 
 				case NO_BALL:
@@ -377,12 +394,12 @@ public class CricketCardUtils implements Cloneable {
 							case BYE:
 								bowlerRuns = 1;
 								batsmanRuns = 0;
-								card.addByes(extra.getRuns());
+								card.addByes(extra.getRuns(), false);
 								break;
 							case LEG_BYE:
 								bowlerRuns = 1;
 								batsmanRuns = 0;
-								card.addLegByes(extra.getRuns());
+								card.addLegByes(extra.getRuns(), false);
 								break;
 						}
 					} else {
@@ -396,6 +413,33 @@ public class CricketCardUtils implements Cloneable {
 					batsmanRuns = 0;
 					bowlerBalls = 0;
 					bowlerRuns = 0;
+					break;
+
+				case CANCEL:
+					isCancel = true;
+					batsmanBalls = 0;
+					batsmanRuns = 0;
+					bowlerBalls = 0;
+					bowlerRuns = 0;
+					switch (extra.getSubType()) {
+						case BYE:
+							card.addByes(extra.getRuns(), true);
+							break;
+
+						case LEG_BYE:
+							card.addLegByes(extra.getRuns(), true);
+							break;
+
+						case WIDE:
+							card.addWides(extra.getRuns(), true);
+							bowlerRuns = runs > 0 ? runs * -1 : 0;
+							break;
+
+						case NONE:
+							batsmanRuns = runs;
+							bowlerRuns = runs;
+							break;
+					}
 					break;
 			}
 		}
@@ -426,9 +470,12 @@ public class CricketCardUtils implements Cloneable {
 		card.updateScore(runs, extra);
 		card.updateRunRate();
 
+		BatsmanStats runsScoredBy = currentFacing;
 		updateBatsmanScore(batsmanRuns, batsmanBalls, wicketData, extra);
-		updateBowlerFigures((double) bowlerBalls, bowlerRuns, wicketData, extra);
-		updateLast12Balls(extra, runs, wicketData);
+		updateBowlerFigures((double) bowlerBalls, bowlerRuns, wicketData, extra, runsScoredBy);
+
+		if (runs >= 0 & !isCancel)
+			updateLast12Balls(extra, runs, wicketData);
 
 		card.inningsCheck();
 	}

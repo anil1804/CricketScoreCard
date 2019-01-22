@@ -189,20 +189,20 @@ public class CricketCard implements Serializable {
 		inningsComplete = false;
 	}
 
-	void addWides(int wides) {
-		this.wides += wides;
+	void addWides(int wides, boolean isCancel) {
+		this.wides += isCancel ? (wides * -1) : wides;
 	}
 
 	void incNoBalls() {
 		this.noBalls++;
 	}
 
-	void addByes(int byes) {
-		this.byes += byes;
+	void addByes(int byes, boolean isCancel) {
+		this.byes += isCancel ? (byes * -1) : byes;
 	}
 
-	void addLegByes(int legByes) {
-		this.legByes += legByes;
+	void addLegByes(int legByes, boolean isCancel) {
+		this.legByes += isCancel ? (legByes * -1) : legByes;
 	}
 
 	void addPenalty(int runs) {
@@ -241,7 +241,13 @@ public class CricketCard implements Serializable {
 	void updateScore(int runsScored, @Nullable Extra extra) {
 		int runs = runsScored;
 		if(extra != null) {
-			runs += extra.getRuns();
+			boolean isCancel = extra.getType() == ExtraType.CANCEL;
+
+			if (isCancel)
+				runs = runs * -1;
+
+			runs += isCancel ? (extra.getRuns() * -1) : extra.getRuns();
+
 			if (extra.getType() == ExtraType.WIDE || extra.getType() == ExtraType.NO_BALL)
 				runs++;
 		}
@@ -292,11 +298,11 @@ public class CricketCard implements Serializable {
 		}
 	}
 
-	void addNewBall(int runsScored, BowlerStats bowler, Extra extra, WicketData wicketData) {
+	void addNewBall(int runsScored, BowlerStats bowler, Extra extra, WicketData wicketData, BatsmanStats batsman) {
 		currBallNum = incrementNextBallNumber ? currBallNum + 1 : currBallNum;
 		incrementNextBallNumber = (extra == null || (extra.getType() != ExtraType.NO_BALL && extra.getType() != ExtraType.WIDE));
 
-		BallInfo ballInfo = new BallInfo(currBallNum, runsScored, extra, wicketData, bowler.getPlayer());
+		BallInfo ballInfo = new BallInfo(currBallNum, runsScored, extra, wicketData, bowler.getPlayer(), batsman.getPlayer());
 		currOver.newBallBowled(ballInfo);
 	}
 }
