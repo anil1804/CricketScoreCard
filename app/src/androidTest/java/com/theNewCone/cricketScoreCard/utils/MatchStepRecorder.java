@@ -21,33 +21,6 @@ class MatchStepRecorder {
 		this.context = context;
 	}
 
-	List<MatchStep> recordMatchSteps(String inningsDataFile) {
-		List<MatchStep> matchStepList = new ArrayList<>();
-
-		if (inningsDataFile != null) {
-			try {
-				BufferedReader br = new BufferedReader(
-						new InputStreamReader(context.getAssets().open(inningsDataFile)));
-				String line;
-
-				int lineNum = 1;
-				while ((line = br.readLine()) != null) {
-					if (lineNum == 1) {
-						lineNum++;
-						continue;
-					}
-
-					matchStepList.add(recordMatchStep(line, lineNum));
-				}
-				br.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return matchStepList;
-	}
-
 	private MatchStep recordMatchStep(String line, int lineNum) {
 
 		String[] matchStepDetails = line.split(",");
@@ -75,7 +48,10 @@ class MatchStepRecorder {
 				break;
 
 			case BOWLER:
-				String bowler = stepData[10];
+				String bowler = null;
+				if (stepData.length > 10) {
+					bowler = stepData[10];
+				}
 				matchStep.selectBowler(bowler);
 				break;
 

@@ -19,9 +19,7 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 
 import com.theNewCone.cricketScoreCard.R;
-import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
-import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -139,21 +137,15 @@ public class CommonTestUtils {
 				.check(matches(isDisplayed()));
 	}
 
-	public static void sleepABit(int mills) {
+/*
+	private static void sleepABit(int mills) {
 		try {
 			Thread.sleep(mills);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
-
-	public static void sleepForDBUpdate() {
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+*/
 
 	private static void openNavigationDrawer() {
 		ViewInteraction appCompatImageButton = onView(
@@ -165,7 +157,6 @@ public class CommonTestUtils {
 
 	public static void clickNavigationMenuItem(int position) {
 		openNavigationDrawer();
-		sleepABit(200);
 		onView(allOf(childAtPosition(allOf(withId(R.id.design_navigation_view),
 				childAtPosition(withId(R.id.nav_view), 0)),
 				position),
@@ -191,10 +182,11 @@ public class CommonTestUtils {
 		};
 	}
 
+
 	private static int getChildCount(@IdRes int viewId) {
 		final int[] COUNT = {0};
 
-		Matcher matcher = new TypeSafeMatcher<View>() {
+		Matcher<View> matcher = new TypeSafeMatcher<View>() {
 			@Override
 			protected boolean matchesSafely(View item) {
 				RecyclerView.Adapter adapter = ((RecyclerView) item).getAdapter();
@@ -213,15 +205,7 @@ public class CommonTestUtils {
 		return COUNT[0];
 	}
 
-	public static void setupTeams(Context context) {
-		setupTeams(context, TeamEnum.ALL);
-	}
-
-	public static void setupTeams(Context context, TeamEnum teamValue) {
-		new ManageDBData(context).addTeamsAndPlayers(teamValue);
-	}
-
-	public static void selectTeamByPlayerCount(Activity activity, int buttonId, String[] players) {
+	public static void selectTeamPlayers(Activity activity, int buttonId, String[] players) {
 		EditText etNumPlayers = activity.findViewById(R.id.etNumPlayers);
 		int numPlayers = 11;
 		if (!etNumPlayers.getText().toString().equals("")) {
@@ -238,7 +222,11 @@ public class CommonTestUtils {
 			for (String playerName : players) {
 				if (i >= numPlayers)
 					break;
-				goToViewStarting(playerName).perform(click());
+				try {
+					goToViewStarting(playerName).perform(click());
+				} catch (NoMatchingViewException ex) {
+					getChild(withId(R.id.rcvPlayerList), withText(startsWith(playerName))).perform(click());
+				}
 				i++;
 			}
 		}
@@ -252,21 +240,6 @@ public class CommonTestUtils {
 		}
 		getDisplayedView("OK").perform(click());
 	}
-
-/*
-	public static void clearTeams(Context context) {
-		DatabaseHandler dbh = new DatabaseHandler(context);
-		dbh.deleteAllRecords(dbh.TBL_TEAM);
-		dbh.deleteAllRecords(dbh.TBL_PLAYER);
-		dbh.deleteAllRecords(dbh.TBL_TEAM_PLAYERS);
-	}
-
-	public static void clearMatches(Context context) {
-		DatabaseHandler dbh = new DatabaseHandler(context);
-		dbh.deleteAllRecords(dbh.TBL_MATCH);
-		dbh.deleteAllRecords(dbh.TBL_STATE);
-	}
-*/
 
 	private static Matcher<View> childWithParent(final Matcher<View> parentMatcher, final Matcher<View> childMatcher) {
 		return new TypeSafeMatcher<View>() {
@@ -296,7 +269,7 @@ public class CommonTestUtils {
 				withText(resources.getString(childTextStringId)));
 	}
 
-	public static ViewAction setProgress(final int progress) {
+	static ViewAction setProgress(final int progress) {
 		return new ViewAction() {
 			@Override
 			public Matcher<View> getConstraints() {

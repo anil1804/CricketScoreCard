@@ -42,7 +42,7 @@ public class MatchSimulator {
 	private void simulateSteps(List<MatchStep> matchStepList) {
 		int stepNum = 1;
 		List<Integer> breakSteps = new ArrayList<>();
-		breakSteps.add(170);
+		breakSteps.add(315);
 
 		Collections.sort(breakSteps);
 
@@ -110,7 +110,8 @@ public class MatchSimulator {
 
 	private void selectBowler(MatchStep matchStep) {
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.selBowler)).perform(click());
-		CommonTestUtils.goToViewStarting(matchStep.getBowler()).perform(click());
+		if (matchStep.getBowler() != null)
+			CommonTestUtils.goToViewStarting(matchStep.getBowler()).perform(click());
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
 	}
 
@@ -263,10 +264,15 @@ public class MatchSimulator {
 		}
 
 		CommonTestUtils.getChild(withContentDescription(R.string.scoringButtons), withText(extraType)).perform(click());
+
 		if (extraSubType != null) {
 			CommonTestUtils.getDisplayedView(extraSubType).perform(click());
 		}
-		CommonTestUtils.getDisplayedView(String.valueOf(matchStep.getExtraRuns())).perform(click());
+		String runs = matchStep.getExtraRuns() > 0
+				? String.valueOf(matchStep.getExtraRuns())
+				: String.valueOf(matchStep.getRuns());
+		CommonTestUtils.getDisplayedView(runs).perform(click());
+
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
 	}
 
