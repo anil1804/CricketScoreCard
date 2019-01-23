@@ -5,9 +5,10 @@ import java.io.Serializable;
 public enum TeamEnum implements Serializable {
 	AUS,
 	IND,
-	PAK,
 	INDW,
+	PAK,
 	PAKW,
+	SA,
 	WI,
 	TX,
 	TY,
