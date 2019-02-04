@@ -99,7 +99,7 @@ public class ManageDBData {
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Kamran Akmal", BattingType.RHB, BowlingType.NONE, true), true);
 			playerIDList.add(playerID);
-			playerID = dbh.updatePlayer(new Player("Younis Khan", BattingType.RHB, BowlingType.RM, false), true);
+			playerID = dbh.updatePlayer(new Player("AYounis Khan", BattingType.RHB, BowlingType.RM, false), true);
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Shoaib Malik", BattingType.RHB, BowlingType.RM, false), true);
 			playerIDList.add(playerID);
@@ -107,7 +107,7 @@ public class ManageDBData {
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Shahid Afridi", BattingType.RHB, BowlingType.LB, true), true);
 			playerIDList.add(playerID);
-			playerID = dbh.updatePlayer(new Player("Yasir Arafat", BattingType.RHB, BowlingType.RM, false), true);
+			playerID = dbh.updatePlayer(new Player("AYasir Arafat", BattingType.RHB, BowlingType.RM, false), true);
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Sohail Tanvir", BattingType.LHB, BowlingType.LFM, false), true);
 			playerIDList.add(playerID);
@@ -197,11 +197,11 @@ public class ManageDBData {
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Gautam Gambhir", BattingType.LHB, BowlingType.LB, false), true);
 			playerIDList.add(playerID);
-			playerID = dbh.updatePlayer(new Player("Yusuf Pathan", BattingType.RHB, BowlingType.OB, false), true);
+			playerID = dbh.updatePlayer(new Player("AYusuf Pathan", BattingType.RHB, BowlingType.OB, false), true);
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Robin Uthappa", BattingType.RHB, BowlingType.RM, true), true);
 			playerIDList.add(playerID);
-			playerID = dbh.updatePlayer(new Player("Yuvraj Singh", BattingType.LHB, BowlingType.SLA, false), true);
+			playerID = dbh.updatePlayer(new Player("AYuvraj Singh", BattingType.LHB, BowlingType.SLA, false), true);
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Irfan Pathan", BattingType.LHB, BowlingType.LFM, false), true);
 			playerIDList.add(playerID);
@@ -266,7 +266,7 @@ public class ManageDBData {
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Devon Smith", BattingType.LHB, BowlingType.OB, false), true);
 			playerIDList.add(playerID);
-			playerID = dbh.updatePlayer(new Player("Shivnarine Chanderpaul", BattingType.LHB, BowlingType.LB, false), true);
+			playerID = dbh.updatePlayer(new Player("AShivnarine Chanderpaul", BattingType.LHB, BowlingType.LB, false), true);
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Dwayne Smith", BattingType.RHB, BowlingType.RM, false), true);
 			playerIDList.add(playerID);

@@ -143,7 +143,7 @@ public class LimitedOversTest {
 				"Chris Gayle",
 				"Devon Smith",
 				"Marlon Samuels",
-				"Kieron Powell",
+				"AShivnarine Chanderpaul",
 				"Dwayne Smith",
 				"Ramnaresh Sarwan",
 				"Denesh Ramdin",
@@ -191,9 +191,9 @@ public class LimitedOversTest {
 
 		final String[] IND_PLAYERS = {
 				"Gautam Gambhir",
-				"Yusuf Pathan",
+				"AYusuf Pathan",
 				"Robin Uthappa",
-				"Yuvraj Singh",
+				"AYuvraj Singh",
 				"MS Dhoni",
 				"Rohit Sharma",
 				"Irfan Pathan",
@@ -207,19 +207,19 @@ public class LimitedOversTest {
 				"Mohammad Hafeez",
 				"Imran Nazir",
 				"Kamran Akmal",
-				"Younis Khan",
+				"AYounis Khan",
 				"Shoaib Malik",
 				"Misbah-ul-Haq",
 				"Shahid Afridi",
-				"Yasir Arafat",
+				"AYasir Arafat",
 				"Sohail Tanvir",
 				"Umar Gul",
 				"Mohammad Asif"
 		};
 
-		matchName = "WI v SA 2007 WT20 GrpA-1";
-		team1Players = PAK_PLAYERS;
-		team2Players = IND_PLAYERS;
+		matchName = "Ind v Pak 2007 WT20 Final";
+		team1Players = IND_PLAYERS;
+		team2Players = PAK_PLAYERS;
 		team1Capt = IND_PLAYERS[4];
 		team1WK = IND_PLAYERS[4];
 		team2Capt = PAK_PLAYERS[2];
@@ -230,7 +230,7 @@ public class LimitedOversTest {
 		team1ShortName = "IND";
 		team2ShortName = "PAK";
 		tossWonBy = "IND";
-		choseTo = R.string.bowling;
+		choseTo = R.string.batting;
 
 		simulateCSV("csv/templates/4.csv", 20, 10, 11);
 	}
