@@ -250,7 +250,7 @@ public class ManageDBData {
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Chandrapaul Hemraj", BattingType.LHB, BowlingType.SLA, false), true);
 			playerIDList.add(playerID);
-			playerID = dbh.updatePlayer(new Player("Shai Hope", BattingType.RHB, BowlingType.NONE, true), true);
+			playerID = dbh.updatePlayer(new Player("AShai Hope", BattingType.RHB, BowlingType.NONE, true), true);
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Marlon Samuels", BattingType.RHB, BowlingType.OB, false), true);
 			playerIDList.add(playerID);

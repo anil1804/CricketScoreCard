@@ -15,6 +15,8 @@ import java.util.List;
 
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.replaceText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
@@ -29,8 +31,70 @@ public class MatchSimulator {
 		this.activity = activity;
 	}
 
-	public void startSimulation(String templateFile, String team1ShortName, String team2ShortName,
-								String[] team1Players, String[] team2Players) {
+
+	/*
+	 * T20 Matches
+	 * -----------
+	 * CSV - 1 : India vs West Indies Nov-04, 2018 T20
+	 * CSV - 2 : India Women vs Pakistan Women, World Cup T20, 2018, Group-B, Match-5
+	 * CSV - 3 : South Africa vs West Indies, World Cup T20, 2007, Group-A, Match-1
+	 * CSV - 4 : India vs Pakistan, World Cup T20, 2007, Final
+	 * CSV - 5 : Australia vs Pakistan, World Cup T20, 2010, Semi-Final
+	 */
+
+	public void simulateCSV(String templateFile, MatchRunInfo info) {
+		Resources resources = activity.getResources();
+
+		int maxOvers = info.getMaxOvers() == 0 ? 20 : info.getMaxOvers();
+		int maxWickets = info.getMaxWickets() == 0 ? 10 : info.getMaxWickets();
+		int numPlayers = info.getNumPlayers() == 0 ? 11 : info.getNumPlayers();
+
+		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
+
+		CommonTestUtils.getDisplayedView(R.id.etMaxOvers).perform(replaceText(String.valueOf(maxOvers)));
+		CommonTestUtils.getDisplayedView(R.id.etMaxWickets).perform(replaceText(String.valueOf(maxWickets)));
+		CommonTestUtils.getDisplayedView(R.id.etNumPlayers).perform(replaceText(String.valueOf(numPlayers)));
+		CommonTestUtils.getDisplayedView(R.id.etMatchName).perform(replaceText(info.getMatchName()));
+
+		CommonTestUtils.getDisplayedView(R.id.tvTeam1).perform(click());
+		CommonTestUtils.getDisplayedView(info.getTeam1Name()).perform(click());
+		CommonTestUtils.selectTeamPlayers(activity, R.id.btnNMSelectTeam1, info.getTeam1Players());
+		CommonTestUtils.getDisplayedView(R.id.tvTeam1Captain).perform(click());
+		CommonTestUtils.goToViewStarting(info.getTeam1Capt()).perform(click());
+		CommonTestUtils.getDisplayedView(R.id.tvTeam1WK).perform(click());
+		CommonTestUtils.goToViewStarting(info.getTeam1WK()).perform(click());
+
+		CommonTestUtils.getDisplayedView(R.id.tvTeam2).perform(click());
+		CommonTestUtils.getDisplayedView(info.getTeam2Name()).perform(click());
+		CommonTestUtils.selectTeamPlayers(activity, R.id.btnNMSelectTeam2, info.getTeam2Players());
+		CommonTestUtils.getDisplayedView(R.id.tvTeam2Captain).perform(click());
+		CommonTestUtils.goToViewStarting(info.getTeam2Capt()).perform(click());
+		CommonTestUtils.getDisplayedView(R.id.tvTeam2WK).perform(click());
+		CommonTestUtils.goToViewStarting(info.getTeam2WK()).perform(click());
+
+		CommonTestUtils.goToView(resources.getString(R.string.toss)).perform(click());
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.tossWonBy)).check(matches(isDisplayed()));
+		CommonTestUtils.goToView(info.getTossWonBy()).perform(click());
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.choose)).check(matches(isDisplayed()));
+		CommonTestUtils.getDisplayedView(resources.getString(info.getChoseTo())).perform(click());
+		CommonTestUtils.goToView(resources.getString(R.string.startMatch)).perform(click());
+
+		String team1Name = info.getTeam1ShortName(), team2Name = info.getTeam2ShortName();
+		String[] team1PlayerList = info.getTeam1Players(), team2PlayerList = info.getTeam2Players();
+		if ((team1Name.equals(info.getTossWonBy()) && info.getChoseTo() == R.string.bowling)
+				|| (team2Name.equals(info.getTossWonBy()) && info.getChoseTo()== R.string.batting)) {
+			team1Name = info.getTeam2ShortName();
+			team2Name = info.getTeam1ShortName();
+			team1PlayerList = info.getTeam2Players();
+			team2PlayerList = info.getTeam1Players();
+		}
+
+		startSimulation(templateFile, team1Name, team2Name, team1PlayerList, team2PlayerList);
+	}
+
+
+	private void startSimulation(String templateFile, String team1ShortName, String team2ShortName,
+								 String[] team1Players, String[] team2Players) {
 		MatchStepRecorder stepRecorder = new MatchStepRecorder(activity.getApplicationContext());
 
 		List<MatchStep> matchStepList = stepRecorder.recordMatchSteps(templateFile, team1ShortName, team2ShortName,
@@ -343,6 +407,7 @@ public class MatchSimulator {
 
 	private void addPenalty(MatchStep matchStep) {
 		Espresso.openActionBarOverflowOrOptionsMenu(activity.getApplicationContext());
+		CommonTestUtils.goToView(resources.getString(R.string.runs)).perform(click());
 		CommonTestUtils.goToView(resources.getString(R.string.addPenalty)).perform(click());
 		CommonTestUtils.getDisplayedView(matchStep.getPenaltyAwardedTo()).perform(click());
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
@@ -350,6 +415,7 @@ public class MatchSimulator {
 
 	private void cancelRuns(MatchStep matchStep) {
 		Espresso.openActionBarOverflowOrOptionsMenu(activity.getApplicationContext());
+		CommonTestUtils.goToView(resources.getString(R.string.runs)).perform(click());
 		CommonTestUtils.goToView(resources.getString(R.string.cancelRuns)).perform(click());
 		CommonTestUtils.getDisplayedView(R.id.sbInput).perform(CommonTestUtils.setProgress(matchStep.getRuns()));
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
