@@ -354,4 +354,6 @@
 	<string name="addPenalty">Add Penalty</string>
 	<string name="singleMatchView">Single Match View</string>
 	<string name="tournamentMatchView">Tournament Match View</string>
+    <string name="gamePlay">Game</string>
+    <string name="runs">Runs</string>
 </resources>
