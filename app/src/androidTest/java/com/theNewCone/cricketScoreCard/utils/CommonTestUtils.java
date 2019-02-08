@@ -15,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.EditText;
 import android.widget.SeekBar;
 
 import com.theNewCone.cricketScoreCard.R;
@@ -111,13 +110,13 @@ public class CommonTestUtils {
 		return onView(childAtPosition(parentMatcher, position)).perform(scrollTo());
 	}
 
-	static ViewInteraction getChild(Matcher<View> parentMatcher, Matcher<View> childMatcher) {
+	public static ViewInteraction getChild(Matcher<View> parentMatcher, Matcher<View> childMatcher) {
 		return onView(childWithParent(parentMatcher, childMatcher));
 	}
 
 	public static boolean checkViewExists(Matcher<View> matcher) {
 		try {
-			onView(matcher);
+			onView(matcher).check(matches(matcher));
 			return true;
 		} catch (IdlingResourceTimeoutException | NoMatchingViewException | NoMatchingRootException ex) {
 			return false;
@@ -136,16 +135,6 @@ public class CommonTestUtils {
 				.inRoot(new ToastMatcher())
 				.check(matches(isDisplayed()));
 	}
-
-/*
-	private static void sleepABit(int mills) {
-		try {
-			Thread.sleep(mills);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-*/
 
 	private static void openNavigationDrawer() {
 		ViewInteraction appCompatImageButton = onView(
@@ -205,12 +194,8 @@ public class CommonTestUtils {
 		return COUNT[0];
 	}
 
-	public static void selectTeamPlayers(Activity activity, int buttonId, String[] players) {
-		EditText etNumPlayers = activity.findViewById(R.id.etNumPlayers);
-		int numPlayers = 11;
-		if (!etNumPlayers.getText().toString().equals("")) {
-			numPlayers = Integer.parseInt(etNumPlayers.getText().toString());
-		}
+	public static void selectTeamPlayers(int buttonId, String[] players) {
+		int numPlayers = players.length;
 
 		goToView(buttonId).perform(click());
 		if (getChildCount(R.id.rcvPlayerList) > numPlayers) {

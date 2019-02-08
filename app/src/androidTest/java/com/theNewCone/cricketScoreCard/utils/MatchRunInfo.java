@@ -1,12 +1,26 @@
 package com.theNewCone.cricketScoreCard.utils;
 
+import com.theNewCone.cricketScoreCard.match.Team;
+
 public class MatchRunInfo {
-	private String matchName, team1Capt, team1WK, team2Capt, team2WK;
-	private String team1Name, team2Name, team1ShortName, team2ShortName, tossWonBy;
+	private final boolean isTournament;
+	private final String matchName;
+	private String team1Capt, team1WK, team2Capt, team2WK, tossWonBy;
 	private String[] team1Players, team2Players;
-	private int choseTo, maxOvers, maxWickets, numPlayers;
+	private Team team1, team2;
+	private int choseTo;
+	private final int maxOvers, maxWickets, numPlayers;
+
+	public MatchRunInfo(boolean isTournament) {
+		this.isTournament = isTournament;
+		this.matchName = null;
+		this.maxOvers = 0;
+		this.maxWickets = 0;
+		this.numPlayers = 0;
+	}
 
 	public MatchRunInfo(String matchName, int maxOvers, int maxWickets, int numPlayers) {
+		this.isTournament = false;
 		this.matchName = matchName;
 		this.maxOvers = maxOvers;
 		this.maxWickets = maxWickets;
@@ -14,16 +28,14 @@ public class MatchRunInfo {
 	}
 
 	public void setTeam1(String name, String shortName, String[] players, String captain, String wicketKeeper) {
-		this.team1Name = name;
-		this.team1ShortName = shortName;
+		this.team1 = new Team(name, shortName);
 		this.team1Players = players;
 		this.team1Capt = captain;
 		this.team1WK = wicketKeeper;
 	}
 
 	public void setTeam2(String name, String shortName, String[] players, String captain, String wicketKeeper) {
-		this.team2Name = name;
-		this.team2ShortName = shortName;
+		this.team2 = new Team(name, shortName);
 		this.team2Players = players;
 		this.team2Capt = captain;
 		this.team2WK = wicketKeeper;
@@ -32,6 +44,10 @@ public class MatchRunInfo {
 	public void updateTossDetails(String tossWonBy, int choseTo) {
 		this.tossWonBy = tossWonBy;
 		this.choseTo = choseTo;
+	}
+
+	boolean isTournament() {
+		return isTournament;
 	}
 
 	String getMatchName() {
@@ -54,20 +70,12 @@ public class MatchRunInfo {
 		return team2WK;
 	}
 
-	String getTeam1Name() {
-		return team1Name;
+	Team getTeam1() {
+		return team1;
 	}
 
-	String getTeam2Name() {
-		return team2Name;
-	}
-
-	String getTeam1ShortName() {
-		return team1ShortName;
-	}
-
-	String getTeam2ShortName() {
-		return team2ShortName;
+	Team getTeam2() {
+		return team2;
 	}
 
 	String getTossWonBy() {
