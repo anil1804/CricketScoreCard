@@ -312,5 +312,5 @@ BALL,4,,,,,,,,,,,,,
 BALL,0,,,,,,,,,,,,,
 BALL,,,,,,TRUE,WIDE,,,,,,,
 BALL,4,,,,,,,,,,,,,
-PLAYER_OF_MATCH,,,,,,,,,,,,,Team1,Team1Player1
+PLAYER_OF_MATCH,,,,,,,,,,,,,Team1SName,Team1Player1
 COMPLETE_MATCH,,,,,,,,,,,,,,
