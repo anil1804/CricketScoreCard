@@ -115,14 +115,14 @@ public class LimitedOversTest {
 		final String[] WI_PLAYERS = {
 				"Chris Gayle",
 				"Devon Smith",
-				"Marlon Samuels",
+				"AMarlon Samuels",
 				"AShivnarine Chanderpaul",
 				"Dwayne Smith",
-				"Ramnaresh Sarwan",
+				"ARamnaresh Sarwan",
 				"Denesh Ramdin",
 				"Dwayne Bravo",
 				"Daren Powell",
-				"Ravi Rampaul",
+				"ARavi Rampaul",
 				"Fidel Edwards"
 		};
 
@@ -176,7 +176,7 @@ public class LimitedOversTest {
 				"Shahid Afridi",
 				"AYasir Arafat",
 				"Sohail Tanvir",
-				"Umar Gul",
+				"AUmar Gul",
 				"Mohammad Asif"
 		};
 
@@ -186,6 +186,46 @@ public class LimitedOversTest {
 		info.updateTossDetails("IND", R.string.batting);
 
 		simulateMatch("csv/templates/4.csv", info);
+	}
+
+	@Test
+	public void simulateNZvsSL() {
+		closeLoadMatchPopup();
+
+		final String[] NZ_PLAYERS = {
+				"Rob Nicol",
+				"Martin Guptill",
+				"Brendon McCullum",
+				"Ross Taylor",
+				"Jacob Oram",
+				"Nathan McCullum",
+				"James Franklin",
+				"Kane Williamson",
+				"Daniel Vettori",
+				"Tim Southee",
+				"Kyle Mills"
+		};
+
+		final String[] SL_PLAYERS = {
+				"Mahela Jayawardene",
+				"Tillakaratne Dilshan",
+				"Kumar Sangakkara",
+				"Jeevan Mendis",
+				"Angelo Mathews",
+				"Thisara Perera",
+				"Lahiru Thirimanne",
+				"Nuwan Kulasekara",
+				"Lasith Malinga",
+				"Ajantha Mendis",
+				"Akila Dananjaya"
+		};
+
+		MatchRunInfo info = new MatchRunInfo("NZ v SL 2012 WT20 Group1-13", 20, 10, 11);
+		info.setTeam1("New Zealand", "NZ", NZ_PLAYERS, NZ_PLAYERS[3], NZ_PLAYERS[2]);
+		info.setTeam2("Sri Lanka", "SL", SL_PLAYERS, SL_PLAYERS[0], SL_PLAYERS[2]);
+		info.updateTossDetails("NZ", R.string.batting);
+
+		simulateMatch("csv/templates/5.csv", info);
 	}
 
 	private void simulateMatch(String templateFile, MatchRunInfo info) {
