@@ -48,7 +48,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String SAVE_AUTO = "Auto";
 	public static final String SAVE_MANUAL = "Manual";
 
-	public final String TBL_STATE = "CricketMatch_State";
+	private final String TBL_STATE = "CricketMatch_State";
     private final String TBL_STATE_ID = "ID";
     private final String TBL_STATE_MATCH_JSON = "MatchData";
     private final String TBL_STATE_IS_AUTO = "AutoSave";
@@ -72,11 +72,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private final String TBL_TEAM_SHORT_NAME = "ShortName";
     private final String TBL_TEAM_ARCHIVED = "isArchived";
 
-	public final String TBL_TEAM_PLAYERS = "TeamPlayers";
+	private final String TBL_TEAM_PLAYERS = "TeamPlayers";
     private final String TBL_TEAM_PLAYERS_TEAM_ID = "TeamID";
     private final String TBL_TEAM_PLAYERS_PLAYER_ID = "PlayerID";
 
-	public final String TBL_MATCH = "Matches";
+	private final String TBL_MATCH = "Matches";
     private final String TBL_MATCH_ID = "ID";
     private final String TBL_MATCH_NAME = "Name";
     private final String TBL_MATCH_TEAM1 = "Team1";
@@ -2062,9 +2062,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		if (matchID > 0) {
 			SQLiteDatabase db = this.getReadableDatabase();
-			Cursor cursor = db.query(TBL_MATCH, new String[]{TBL_MATCH_IS_COMPLETE},
-					TBL_MATCH_ID, new String[]{String.valueOf(matchID)},
-					null, null, null);
+			String sqlQuery = String.format(Locale.getDefault(),
+					"SELECT %s FROM %s WHERE %s = %d",
+					TBL_MATCH_IS_COMPLETE, TBL_MATCH, TBL_MATCH_ID, matchID);
+			Cursor cursor = db.rawQuery(sqlQuery, null, null);
 
 			if (cursor != null && cursor.moveToFirst()) {
 				isComplete = cursor.getInt(cursor.getColumnIndex(TBL_MATCH_IS_COMPLETE)) == 1;

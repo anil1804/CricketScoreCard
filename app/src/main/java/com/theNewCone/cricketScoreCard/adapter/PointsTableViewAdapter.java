@@ -71,7 +71,7 @@ public class PointsTableViewAdapter extends RecyclerView.Adapter<PointsTableView
 			mView = view;
 
 			tvGroupName = view.findViewById(R.id.tvGroupName);
-			rcvGroupTeamList = view.findViewById(R.id.rcvGroupList);
+			rcvGroupTeamList = view.findViewById(R.id.rcvGroupTeamList);
 		}
 	}
 }

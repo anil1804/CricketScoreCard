@@ -27,7 +27,6 @@ import com.theNewCone.cricketScoreCard.activity.GraphsActivity;
 import com.theNewCone.cricketScoreCard.activity.InputActivity;
 import com.theNewCone.cricketScoreCard.activity.MatchStateSelectActivity;
 import com.theNewCone.cricketScoreCard.activity.ScoreCardActivity;
-import com.theNewCone.cricketScoreCard.activity.TournamentHomeActivity;
 import com.theNewCone.cricketScoreCard.activity.WicketActivity;
 import com.theNewCone.cricketScoreCard.async.LoadCCUtils;
 import com.theNewCone.cricketScoreCard.async.StoreCCUtils;
@@ -80,8 +79,8 @@ public class LimitedOversFragment extends Fragment
 	private static final int REQ_CODE_GET_CANCELLED_RUNS = 10;
 
     private static final int CONFIRMATION_CODE_SAVE_MATCH = 1;
-	private static final int CONFIRMATION_CODE_EXIT_MATCH = 2;
-	private static final int CONFIRMATION_CODE_CLOSE_MATCH = 3;
+	private static final int CONFIRMATION_CODE_QUIT_MATCH = 2;
+	private static final int CONFIRMATION_CODE_COMPLETE_MATCH = 3;
 
 	private static final String DIALOG_CODE_GET_MOM_TEAM1 = "1";
 	private static final String DIALOG_CODE_GET_MOM_TEAM2 = "2";
@@ -622,47 +621,15 @@ public class LimitedOversFragment extends Fragment
 					showInputActivity(inputText, REQ_CODE_GET_SAVE_MATCH_NAME);
 				}				break;
 
-			case CONFIRMATION_CODE_EXIT_MATCH:
+			case CONFIRMATION_CODE_QUIT_MATCH:
 				if(accepted && getActivity() != null) {
-					dbHandler.clearMatchStateHistory(0, matchID, -1);
-					if (getActivity() != null && getFragmentManager() != null) {
-
-						if (isTournament) {
-							CommonUtils.clearBackStackUntil(getFragmentManager(),
-									TournamentHomeActivity.class.getSimpleName());
-							//goTournamentHome();
-							getActivity().onBackPressed();
-						} else {
-							CommonUtils.clearBackStackUntil(getFragmentManager(),
-									HomeFragment.class.getSimpleName());
-							//goHome();
-							getActivity().onBackPressed();
-						}
-					}
+					quitMatch();
 				}
 				break;
 
-			case CONFIRMATION_CODE_CLOSE_MATCH:
+			case CONFIRMATION_CODE_COMPLETE_MATCH:
 				if(accepted) {
-					dbHandler.completeMatch(matchID, CommonUtils.convertToJSON(ccUtils));
-
-					dbHandler.clearAllMatchHistory(matchID);
-
-					if (getActivity() != null && getFragmentManager() != null) {
-						if (isTournament) {
-							CommonUtils.clearBackStackUntil(getFragmentManager(),
-									TournamentHomeActivity.class.getSimpleName());
-//							goTournamentHome();
-							TournamentUtils tournamentUtils = new TournamentUtils(getContext());
-							tournamentUtils.closeTournamentMatch(ccUtils);
-							getActivity().onBackPressed();
-						} else {
-							CommonUtils.clearBackStackUntil(getFragmentManager(),
-									HomeFragment.class.getSimpleName());
-//							goHome();
-							getActivity().onBackPressed();
-						}
-					}
+					completeMatch();
 				}
 				break;
 		}
@@ -1276,7 +1243,7 @@ public class LimitedOversFragment extends Fragment
 
     private void confirmExitMatch() {
 		if(getFragmentManager() != null) {
-			ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance(CONFIRMATION_CODE_EXIT_MATCH,
+			ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance(CONFIRMATION_CODE_QUIT_MATCH,
 					"Exit Match", "Do you want to exit the match? Consider saving the match, if not done, for loading it later.");
 			confirmationDialog.setConfirmationClickListener(this);
 			confirmationDialog.show(getFragmentManager(), "ExitMatchDialog");
@@ -1285,7 +1252,7 @@ public class LimitedOversFragment extends Fragment
 
     private void confirmCloseMatch() {
 		if(getFragmentManager() != null) {
-			ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance(CONFIRMATION_CODE_CLOSE_MATCH,
+			ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance(CONFIRMATION_CODE_COMPLETE_MATCH,
 					"Close Match", "Do you want to complete the match? You will not be able to make any further changes to the match.");
 			confirmationDialog.setConfirmationClickListener(this);
 			confirmationDialog.show(getFragmentManager(), "CloseMatchDialog");
@@ -1471,6 +1438,42 @@ public class LimitedOversFragment extends Fragment
 				intent.putExtra(InputActivity.ARG_TITLE, "Select Runs to be cancelled");
 				intent.putExtra(InputActivity.ARG_SB_MAX, maxRunsToCancel);
 				startActivityForResult(intent, REQ_CODE_GET_CANCELLED_RUNS);
+			}
+		}
+	}
+
+	private void completeMatch() {
+		dbHandler.completeMatch(matchID, CommonUtils.convertToJSON(ccUtils));
+
+		dbHandler.clearAllMatchHistory(matchID);
+
+		if (getActivity() != null && getFragmentManager() != null) {
+			if (isTournament) {
+				CommonUtils.clearBackStackUntil(getFragmentManager(),
+						NewMatchFragment.class.getSimpleName());
+				TournamentUtils tournamentUtils = new TournamentUtils(getContext());
+				tournamentUtils.closeTournamentMatch(ccUtils);
+				getActivity().onBackPressed();
+			} else {
+				CommonUtils.clearBackStackUntil(getFragmentManager(),
+						NewMatchFragment.class.getSimpleName());
+				getActivity().onBackPressed();
+			}
+		}
+	}
+
+	private void quitMatch() {
+		dbHandler.clearMatchStateHistory(0, matchID, -1);
+		if (getActivity() != null && getFragmentManager() != null) {
+
+			if (isTournament) {
+				CommonUtils.clearBackStackUntil(getFragmentManager(),
+						NewMatchFragment.class.getSimpleName());
+				getActivity().onBackPressed();
+			} else {
+				CommonUtils.clearBackStackUntil(getFragmentManager(),
+						NewMatchFragment.class.getSimpleName());
+				getActivity().onBackPressed();
 			}
 		}
 	}

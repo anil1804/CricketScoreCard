@@ -69,7 +69,7 @@ public class GroupViewAdapter extends RecyclerView.Adapter<GroupViewAdapter.View
 			super(view);
 			mView = view;
 			tvGroupName = view.findViewById(R.id.tvGroupName);
-			rcvGroupTeamList = view.findViewById(R.id.rcvGroupList);
+			rcvGroupTeamList = view.findViewById(R.id.rcvGroupTeamList);
 		}
 	}
 

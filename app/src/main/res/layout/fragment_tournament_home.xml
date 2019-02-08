@@ -41,6 +41,17 @@
 			android:id="@+id/tvTHTeams"
 			style="@style/TextViewStyle.Big" />
 
+        <TextView
+            style="@style/TextViewStyle.Big.Bold"
+            android:id="@+id/tvTHSummary"
+            android:text="@string/summary"
+            android:visibility="gone"/>
+
+        <TextView
+            style="@style/TextViewStyle.Big"
+            android:id="@+id/tvTHSummaryText"
+            android:visibility="gone"/>
+
 	</GridLayout>
 
 	<LinearLayout

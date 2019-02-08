@@ -59,6 +59,14 @@ public class ManageDBData {
 			teamList.add(addTeam(new Team("South Africa", "SA")));
 		}
 
+		if (teamValue == TeamEnum.NZ || teamValue == TeamEnum.ALL) {
+			teamList.add(addTeam(new Team("New Zealand", "NZ")));
+		}
+
+		if (teamValue == TeamEnum.SL || teamValue == TeamEnum.ALL) {
+			teamList.add(addTeam(new Team("Sri Lanka", "SL")));
+		}
+
 		return teamList;
 	}
 
@@ -111,7 +119,7 @@ public class ManageDBData {
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Sohail Tanvir", BattingType.LHB, BowlingType.LFM, false), true);
 			playerIDList.add(playerID);
-			playerID = dbh.updatePlayer(new Player("Umar Gul", BattingType.RHB, BowlingType.RFM, false), true);
+			playerID = dbh.updatePlayer(new Player("AUmar Gul", BattingType.RHB, BowlingType.RFM, false), true);
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Mohammad Asif", BattingType.LHB, BowlingType.RFM, false), true);
 			playerIDList.add(playerID);
@@ -185,7 +193,7 @@ public class ManageDBData {
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Shahbaz Nadeem", BattingType.RHB, BowlingType.SLA, false), true);
 			playerIDList.add(playerID);
-			playerID = dbh.updatePlayer(new Player("Virat Kohli", BattingType.RHB, BowlingType.RM, false), true);
+			playerID = dbh.updatePlayer(new Player("AVirat Kohli", BattingType.RHB, BowlingType.RM, false), true);
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("MS Dhoni", BattingType.RHB, BowlingType.RM, true), true);
 			playerIDList.add(playerID);
@@ -252,7 +260,7 @@ public class ManageDBData {
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("AShai Hope", BattingType.RHB, BowlingType.NONE, true), true);
 			playerIDList.add(playerID);
-			playerID = dbh.updatePlayer(new Player("Marlon Samuels", BattingType.RHB, BowlingType.OB, false), true);
+			playerID = dbh.updatePlayer(new Player("AMarlon Samuels", BattingType.RHB, BowlingType.OB, false), true);
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Jason Holder", BattingType.RHB, BowlingType.RFM, false), true);
 			playerIDList.add(playerID);
@@ -272,11 +280,11 @@ public class ManageDBData {
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Dwayne Bravo", BattingType.RHB, BowlingType.RFM, false), true);
 			playerIDList.add(playerID);
-			playerID = dbh.updatePlayer(new Player("Ramnaresh Sarwan", BattingType.RHB, BowlingType.LB, false), true);
+			playerID = dbh.updatePlayer(new Player("ARamnaresh Sarwan", BattingType.RHB, BowlingType.LB, false), true);
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Daren Powell", BattingType.RHB, BowlingType.RFM, false), true);
 			playerIDList.add(playerID);
-			playerID = dbh.updatePlayer(new Player("Ravi Rampaul", BattingType.LHB, BowlingType.RFM, false), true);
+			playerID = dbh.updatePlayer(new Player("ARavi Rampaul", BattingType.LHB, BowlingType.RFM, false), true);
 			playerIDList.add(playerID);
 			playerID = dbh.updatePlayer(new Player("Fidel Edwards", BattingType.RHB, BowlingType.RF, false), true);
 			playerIDList.add(playerID);
@@ -370,6 +378,66 @@ public class ManageDBData {
 
 			countryPlayerIDMap.put(TeamEnum.SA, playerIDList);
 		}
+
+
+		if (teamEnum == TeamEnum.NZ || teamEnum == TeamEnum.ALL) {
+			List<Integer> playerIDList = new ArrayList<>();
+
+			int playerID = dbh.updatePlayer(new Player("Rob Nicol", BattingType.RHB, BowlingType.RM, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Martin Guptill", BattingType.RHB, BowlingType.OB, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Brendon McCullum", BattingType.RHB, BowlingType.NONE, true), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Ross Taylor", BattingType.RHB, BowlingType.OB, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Jacob Oram", BattingType.LHB, BowlingType.RFM, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Nathan McCullum", BattingType.RHB, BowlingType.OB, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("James Franklin", BattingType.LHB, BowlingType.LM, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Kane Williamson", BattingType.RHB, BowlingType.OB, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Daniel Vettori", BattingType.LHB, BowlingType.SLA, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Tim Southee", BattingType.RHB, BowlingType.RFM, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Kyle Mills", BattingType.RHB, BowlingType.RFM, false), true);
+			playerIDList.add(playerID);
+
+			countryPlayerIDMap.put(TeamEnum.NZ, playerIDList);
+		}
+
+		if (teamEnum == TeamEnum.SL || teamEnum == TeamEnum.ALL) {
+			List<Integer> playerIDList = new ArrayList<>();
+
+			int playerID = dbh.updatePlayer(new Player("Mahela Jayawardene", BattingType.RHB, BowlingType.RM, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Tillakaratne Dilshan", BattingType.RHB, BowlingType.OB, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Kumar Sangakkara", BattingType.RHB, BowlingType.OB, true), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Jeevan Mendis", BattingType.LHB, BowlingType.LB, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Angelo Mathews", BattingType.RHB, BowlingType.RFM, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Thisara Perera", BattingType.LHB, BowlingType.RFM, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Lahiru Thirimanne", BattingType.LHB, BowlingType.RM, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Nuwan Kulasekara", BattingType.RHB, BowlingType.RFM, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Lasith Malinga", BattingType.RHB, BowlingType.RF, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Ajantha Mendis", BattingType.RHB, BowlingType.OB, false), true);
+			playerIDList.add(playerID);
+			playerID = dbh.updatePlayer(new Player("Akila Dananjaya", BattingType.LHB, BowlingType.OB, false), true);
+			playerIDList.add(playerID);
+
+			countryPlayerIDMap.put(TeamEnum.SL, playerIDList);
+		}
+
 
 		return countryPlayerIDMap;
 	}

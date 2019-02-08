@@ -356,4 +356,7 @@
 	<string name="tournamentMatchView">Tournament Match View</string>
     <string name="gamePlay">Game</string>
     <string name="runs">Runs</string>
+    <string name="summary">Summary</string>
+    <string name="matches">Matches</string>
+    <string name="matchPrefix">Match-</string>
 </resources>

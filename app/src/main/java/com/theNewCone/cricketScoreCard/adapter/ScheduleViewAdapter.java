@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.R;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.intf.ListInteractionListener;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
@@ -22,11 +23,13 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
 	private final List<MatchInfo> matchInfoList;
 	private final Context context;
 	private final ListInteractionListener listener;
+	private final TournamentFormat format;
 
-	ScheduleViewAdapter(Context context, List<MatchInfo> matchInfoList, ListInteractionListener listener) {
+	ScheduleViewAdapter(Context context, TournamentFormat format, List<MatchInfo> matchInfoList, ListInteractionListener listener) {
 		this.context = context;
 		this.matchInfoList = matchInfoList;
 		this.listener = listener;
+		this.format = format;
 	}
 
 	@Override
@@ -48,7 +51,11 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
 		holder.tvVersus.setText(versusText);
 
 		int resultColor;
-		holder.tvGroupName.setText(holder.matchInfo.getGroupName());
+		String groupName = holder.matchInfo.getGroupName();
+		if(format == TournamentFormat.BILATERAL) {
+			groupName = context.getResources().getString(R.string.matchPrefix) + (holder.matchInfo.getMatchNumber()+1);
+		}
+		holder.tvGroupName.setText(groupName);
 
 		final String matchResult;
 

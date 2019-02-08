@@ -31,7 +31,6 @@ public class TournamentHomeScheduleFragment extends Fragment
 	private static final String ARG_TOURNAMENT = "Tournament";
 
 	Tournament tournament = null;
-	List<MatchInfo> matchInfoList = null;
 
 	public TournamentHomeScheduleFragment() {
 	}
@@ -47,7 +46,7 @@ public class TournamentHomeScheduleFragment extends Fragment
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_tournament_tab_schedule, container, false);
+		View rootView = inflater.inflate(R.layout.fragment_tournament_schedule, container, false);
 
 		if (getArguments() != null) {
 			tournament = (Tournament) getArguments().getSerializable(ARG_TOURNAMENT);
@@ -89,7 +88,8 @@ public class TournamentHomeScheduleFragment extends Fragment
 				rcvScheduleList.setLayoutManager(new LinearLayoutManager(getContext()));
 				rcvScheduleList.setHasFixedSize(false);
 
-				TournamentGroupScheduleAdapter adapter = new TournamentGroupScheduleAdapter(groupListForSchedule, getContext(), this);
+				TournamentGroupScheduleAdapter adapter =
+						new TournamentGroupScheduleAdapter(tournament.getFormat(), groupListForSchedule, getContext(), this);
 				rcvScheduleList.setAdapter(adapter);
 
 				LinearLayoutManager llm = new LinearLayoutManager(getContext());

@@ -121,9 +121,7 @@ public class TournamentHomeActivity extends AppCompatActivity
 		if (drawer.isDrawerOpen(GravityCompat.START)) {
 			drawer.closeDrawer(GravityCompat.START);
 		} else {
-			CommonUtils.clearBackStackUntil(getSupportFragmentManager(),
-					HomeFragment.class.getSimpleName());
-//			goHome();
+			goHome();
 		}
 	}
 
@@ -195,7 +193,9 @@ public class TournamentHomeActivity extends AppCompatActivity
 	}
 
 	private void goHome() {
-		startActivity(new Intent(this, HomeActivity.class));
+		Intent intent = new Intent(this, HomeActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent);
 	}
 
 	private void showHelp() {

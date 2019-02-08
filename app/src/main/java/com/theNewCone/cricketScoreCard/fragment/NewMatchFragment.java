@@ -642,14 +642,17 @@ public class NewMatchFragment extends Fragment
 	}
 
 	private void validateInput() {
-		maxOvers = etMaxOvers.getText().toString().equals("")
-				? 0 : Integer.parseInt(etMaxOvers.getText().toString());
-		maxWickets = etMaxWickets.getText().toString().equals("")
-				? 0 : Integer.parseInt(etMaxWickets.getText().toString());
-		maxPerBowler = etMaxPerBowler.getText().toString().equals("")
-				? 0 : Integer.parseInt(etMaxPerBowler.getText().toString());
-		numPlayers = etNumPlayers.getText().toString().equals("")
-				? 0 : Integer.parseInt(etNumPlayers.getText().toString());
+    	if(!isTournament) {
+			maxOvers = etMaxOvers.getText().toString().equals("")
+					? 0 : Integer.parseInt(etMaxOvers.getText().toString());
+			maxWickets = etMaxWickets.getText().toString().equals("")
+					? 0 : Integer.parseInt(etMaxWickets.getText().toString());
+			maxPerBowler = etMaxPerBowler.getText().toString().equals("")
+					? 0 : Integer.parseInt(etMaxPerBowler.getText().toString());
+			numPlayers = etNumPlayers.getText().toString().equals("")
+					? 0 : Integer.parseInt(etNumPlayers.getText().toString());
+		}
+
 		String deficientTeam = getTeamHavingInsufficientPlayers(numPlayers);
 
 		String errorMessage = null;
@@ -793,7 +796,6 @@ public class NewMatchFragment extends Fragment
 
 				fragMgr.beginTransaction()
 						.replace(R.id.frame_container, fragment, fragmentTag)
-						.addToBackStack(fragmentTag)
 						.commit();
 			}
 		}

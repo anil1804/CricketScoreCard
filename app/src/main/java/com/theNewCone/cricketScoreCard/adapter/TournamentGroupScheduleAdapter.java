@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.R;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.intf.ListInteractionListener;
 import com.theNewCone.cricketScoreCard.tournament.Group;
 
@@ -22,9 +23,11 @@ public class TournamentGroupScheduleAdapter extends RecyclerView.Adapter<Tournam
 	private final List<Group> groupList;
 	private final Context context;
 	private final ListInteractionListener listener;
+	private final TournamentFormat tournamentFormat;
 
-	public TournamentGroupScheduleAdapter(@NonNull List<Group> groupList, @NonNull Context context,
+	public TournamentGroupScheduleAdapter(@NonNull TournamentFormat format, @NonNull List<Group> groupList, @NonNull Context context,
 										  ListInteractionListener listener) {
+		this.tournamentFormat = format;
 		this.groupList = groupList;
 		this.context = context;
 		this.listener = listener;
@@ -43,12 +46,13 @@ public class TournamentGroupScheduleAdapter extends RecyclerView.Adapter<Tournam
 		final int adapterPosition = holder.getAdapterPosition();
 		holder.group = groupList.get(adapterPosition);
 
-		holder.tvGroupName.setText(holder.group.getName());
+		String groupName = tournamentFormat == TournamentFormat.BILATERAL ? context.getResources().getString(R.string.matches) : holder.group.getName();
+		holder.tvGroupName.setText(groupName);
 
 		holder.rcvGroupTeamList.setHasFixedSize(false);
 
 		holder.rcvGroupTeamList.setLayoutManager(new LinearLayoutManager(context));
-		ScheduleViewAdapter adapter = new ScheduleViewAdapter(context, holder.group.getMatchInfoList(), this);
+		ScheduleViewAdapter adapter = new ScheduleViewAdapter(context, tournamentFormat, holder.group.getMatchInfoList(), this);
 		holder.rcvGroupTeamList.setAdapter(adapter);
 
 		LinearLayoutManager llm = new LinearLayoutManager(context);
@@ -83,7 +87,7 @@ public class TournamentGroupScheduleAdapter extends RecyclerView.Adapter<Tournam
 			super(view);
 			mView = view;
 			tvGroupName = view.findViewById(R.id.tvGroupName);
-			rcvGroupTeamList = view.findViewById(R.id.rcvGroupList);
+			rcvGroupTeamList = view.findViewById(R.id.rcvGroupTeamList);
 		}
 	}
 

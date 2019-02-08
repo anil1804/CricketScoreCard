@@ -16,7 +16,7 @@
 	<View style="@style/LineSeparator.Dark" />
 
 	<android.support.v7.widget.RecyclerView
-		android:id="@+id/rcvGroupList"
+		android:id="@+id/rcvGroupTeamList"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content" />
 </LinearLayout>

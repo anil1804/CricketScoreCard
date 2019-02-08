@@ -10,6 +10,8 @@ public enum TeamEnum implements Serializable {
 	PAKW,
 	SA,
 	WI,
+	SL,
+	NZ,
 	TX,
 	TY,
 	TEST,

@@ -148,7 +148,6 @@ public class TournamentGroupsFragment extends Fragment
 
 			fragMgr.beginTransaction()
 					.replace(R.id.frame_container, TournamentScheduleFragment.newInstance(tournament, 0), fragmentTag)
-					.addToBackStack(fragmentTag)
 					.commit();
 		}
 	}

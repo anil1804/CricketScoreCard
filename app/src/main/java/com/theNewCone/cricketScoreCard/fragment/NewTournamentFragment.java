@@ -757,7 +757,6 @@ public class NewTournamentFragment extends Fragment
 			String fragmentTag = TournamentGroupsFragment.class.getSimpleName();
 			fragMgr.beginTransaction()
 					.replace(R.id.frame_container, TournamentGroupsFragment.newInstance(tournament), fragmentTag)
-					.addToBackStack(fragmentTag)
 					.commit();
 		}
 	}
@@ -768,7 +767,6 @@ public class NewTournamentFragment extends Fragment
 			String fragmentTag = TournamentScheduleFragment.class.getSimpleName();
 			fragMgr.beginTransaction()
 					.replace(R.id.frame_container, TournamentScheduleFragment.newInstance(tournament, 0), fragmentTag)
-					.addToBackStack(fragmentTag)
 					.commit();
 		}
 	}

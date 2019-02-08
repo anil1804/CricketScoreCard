@@ -196,7 +196,7 @@
 				android:id="@+id/glTournamentMatch"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:columnCount="6"
+				android:columnCount="4"
 				android:columnOrderPreserved="true"
 				android:contentDescription="@string/tournamentMatchView"
 				android:visibility="gone">
@@ -209,8 +209,7 @@
 				<TextView
 					android:id="@+id/tvMaxOvers"
 					style="@style/TextViewStyle.Bold"
-					android:layout_columnWeight="1"
-					android:visibility="gone" />
+					android:layout_columnWeight="1"/>
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
@@ -220,8 +219,7 @@
 				<TextView
 					android:id="@+id/tvMaxPerBowler"
 					style="@style/TextViewStyle.Bold"
-					android:layout_columnWeight="1"
-					android:visibility="gone" />
+					android:layout_columnWeight="1"/>
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
@@ -231,8 +229,7 @@
 				<TextView
 					android:id="@+id/tvMaxWickets"
 					style="@style/TextViewStyle.Bold"
-					android:layout_columnWeight="1"
-					android:visibility="gone" />
+					android:layout_columnWeight="1"/>
 
 				<TextView
 					style="@style/TextViewStyle.Bold.Medium.MorePadding"
@@ -242,8 +239,7 @@
 				<TextView
 					android:id="@+id/tvNumPlayers"
 					style="@style/TextViewStyle.Bold"
-					android:layout_columnWeight="1"
-					android:visibility="gone" />
+					android:layout_columnWeight="1"/>
 
 			</GridLayout>
 

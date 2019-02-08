@@ -55,7 +55,7 @@ public class TournamentScheduleFragment extends Fragment
 							 Bundle savedInstanceState) {
 		dbHandler = new DatabaseHandler(getContext());
 
-		View theView = inflater.inflate(R.layout.fragment_tournament_schedule, container, false);
+		View theView = inflater.inflate(R.layout.fragment_tournament_set_schedule, container, false);
 
 		//Back pressed Logic for fragment
 		theView.setFocusableInTouchMode(true);
