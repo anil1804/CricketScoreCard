@@ -16,8 +16,8 @@ import java.util.Collection;
 
 public class StatisticsDatabaseHandler extends SQLiteOpenHelper {
 
-	private static final int DB_VERSION = 21;
-	private static final String DB_NAME = "CricketScoreCard";
+	private static final int DB_VERSION = 1;
+	private static final String DB_NAME = "Statistics";
 
 	private static final String TBL_PLAYER_STATS = "PlayerStatistics";
 	private static final String TBL_PLAYER_STATS_ID = "ID";

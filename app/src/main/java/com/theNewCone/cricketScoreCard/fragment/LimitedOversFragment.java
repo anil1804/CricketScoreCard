@@ -173,6 +173,7 @@ public class LimitedOversFragment extends Fragment
 		setHasOptionsMenu(true);
 
 		dbHandler = new DatabaseHandler(getContext());
+		this.tournamentID = dbHandler.getTournamentIDUsingMatchID(matchID);
 
 		if (isLoad) {
 			if (matchStateID > 0) {
@@ -685,7 +686,6 @@ public class LimitedOversFragment extends Fragment
 	private void initCricketCard(int matchID, String matchName, Team battingTeam, Team bowlingTeam, Team tossWonBy,
 								 int maxOvers, int maxWickets, int maxPerBowler) {
 		this.matchID = matchID;
-		this.tournamentID = dbHandler.getTournamentIDUsingMatchID(matchID);
 
 		CricketCard card =
 				new CricketCard(battingTeam, bowlingTeam,

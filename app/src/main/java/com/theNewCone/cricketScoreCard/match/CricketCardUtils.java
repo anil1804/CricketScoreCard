@@ -361,28 +361,30 @@ public class CricketCardUtils implements Cloneable {
         }
 	}
 
-	private void updateFielderStats(WicketData wicketData) {
+	private void updateFielderStats(@NonNull WicketData wicketData) {
 		FielderStats fielderStats = null;
 
-    	if(card.getFielderMap() != null && card.getFielderMap().containsKey(wicketData.getEffectedBy().getID())) {
-    		fielderStats = card.getFielderMap().get(wicketData.getEffectedBy().getID());
-		}
+		if(wicketData.getEffectedBy() != null) {
+			if (card.getFielderMap() != null && card.getFielderMap().containsKey(wicketData.getEffectedBy().getID())) {
+				fielderStats = card.getFielderMap().get(wicketData.getEffectedBy().getID());
+			}
 
-		if(fielderStats == null)
-			fielderStats = new FielderStats(wicketData.getEffectedBy());
+			if (fielderStats == null)
+				fielderStats = new FielderStats(wicketData.getEffectedBy());
 
-		switch (wicketData.getDismissalType()) {
-			case STUMPED:
-				fielderStats.incrementStumpOuts();
-				break;
+			switch (wicketData.getDismissalType()) {
+				case STUMPED:
+					fielderStats.incrementStumpOuts();
+					break;
 
-			case RUN_OUT:
-				fielderStats.incrementRunOuts();
-				break;
+				case RUN_OUT:
+					fielderStats.incrementRunOuts();
+					break;
 
-			case CAUGHT:
-				fielderStats.incrementCatches();
-				break;
+				case CAUGHT:
+					fielderStats.incrementCatches();
+					break;
+			}
 		}
 	}
 

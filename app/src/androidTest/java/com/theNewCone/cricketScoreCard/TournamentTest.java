@@ -55,7 +55,6 @@ public class TournamentTest {
 
 		if(CommonTestUtils.checkViewExists(withText(tournamentName))) {
 			Espresso.pressBack();
-			openTournamentScheduleScreen();
 		} else {
 			if(CommonTestUtils.checkViewExists(withId(R.id.rcvTournamentList))) {
 				Espresso.pressBack();
