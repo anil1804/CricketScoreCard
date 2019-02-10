@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
 import com.theNewCone.cricketScoreCard.player.BatsmanStats;
 import com.theNewCone.cricketScoreCard.player.BowlerStats;
+import com.theNewCone.cricketScoreCard.player.FielderStats;
 import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.scorecard.Extra;
 import com.theNewCone.cricketScoreCard.scorecard.WicketData;
@@ -38,6 +39,7 @@ public class CricketCard implements Serializable {
 
 	private HashMap<String, BowlerStats> bowlerMap = new HashMap<>();
 	private HashMap<Integer, BatsmanStats> batsmen = new HashMap<>();
+	private HashMap<Integer, FielderStats> fielderMap = new HashMap<>();
 
 	private List<Partnership> partnershipData = new ArrayList<>();
 	private List<OverInfo> overInfoData = new ArrayList<>();
@@ -157,6 +159,15 @@ public class CricketCard implements Serializable {
 	    this.batsmen.remove(batsmanStats.getPosition());
 	    appendToBatsmen(batsmanStats);
     }
+
+	public HashMap<Integer, FielderStats> getFielderMap() {
+		return fielderMap;
+	}
+
+	void updateFielderInMap(@NonNull FielderStats fielderStats) {
+		this.fielderMap.remove(fielderStats.getPlayer().getID());
+		this.fielderMap.put(fielderStats.getPlayer().getID(), fielderStats);
+	}
 
     int getFuturePenalty() {
 		return futurePenalty;

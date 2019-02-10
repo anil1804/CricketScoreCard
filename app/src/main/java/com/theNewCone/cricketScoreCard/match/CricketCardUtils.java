@@ -8,6 +8,7 @@ import com.theNewCone.cricketScoreCard.enumeration.DismissalType;
 import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
 import com.theNewCone.cricketScoreCard.player.BatsmanStats;
 import com.theNewCone.cricketScoreCard.player.BowlerStats;
+import com.theNewCone.cricketScoreCard.player.FielderStats;
 import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.scorecard.Extra;
 import com.theNewCone.cricketScoreCard.scorecard.WicketData;
@@ -247,8 +248,10 @@ public class CricketCardUtils implements Cloneable {
 
 			if (!isCancel) {
 				if (wicketData != null) {
-					if (WicketData.isBowlersWicket(wicketData.getDismissalType()))
-						bowler.incWickets();
+					if (WicketData.isBowlersWicket(wicketData.getDismissalType())) {
+						bowler.incWickets(wicketData.getDismissalType());
+					}
+					updateFielderStats(wicketData);
 				}
 			}
 
@@ -356,6 +359,31 @@ public class CricketCardUtils implements Cloneable {
             otherBatsman = currentFacing;
             currentFacing = tempBatsman;
         }
+	}
+
+	private void updateFielderStats(WicketData wicketData) {
+		FielderStats fielderStats = null;
+
+    	if(card.getFielderMap() != null && card.getFielderMap().containsKey(wicketData.getEffectedBy().getID())) {
+    		fielderStats = card.getFielderMap().get(wicketData.getEffectedBy().getID());
+		}
+
+		if(fielderStats == null)
+			fielderStats = new FielderStats(wicketData.getEffectedBy());
+
+		switch (wicketData.getDismissalType()) {
+			case STUMPED:
+				fielderStats.incrementStumpOuts();
+				break;
+
+			case RUN_OUT:
+				fielderStats.incrementRunOuts();
+				break;
+
+			case CAUGHT:
+				fielderStats.incrementCatches();
+				break;
+		}
 	}
 
 	public void processBallActivity(@Nullable Extra extra, int runs, @Nullable WicketData wicketData, boolean bowlerChanged) {

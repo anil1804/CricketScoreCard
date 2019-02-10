@@ -47,6 +47,7 @@ import com.theNewCone.cricketScoreCard.player.BowlerStats;
 import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.scorecard.Extra;
 import com.theNewCone.cricketScoreCard.scorecard.WicketData;
+import com.theNewCone.cricketScoreCard.service.StatisticsIntentService;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
@@ -122,7 +123,7 @@ public class LimitedOversFragment extends Fragment
 	MatchInfo matchInfo;
 
 	private int matchStateID = -1;
-	private int matchID, currentUndoCount;
+	private int matchID, currentUndoCount, tournamentID;
 	private boolean startInnings = true, isLoad = false, isUndo = false;
 	private String saveMatchName;
 	String[] poMPlayers;
@@ -684,6 +685,7 @@ public class LimitedOversFragment extends Fragment
 	private void initCricketCard(int matchID, String matchName, Team battingTeam, Team bowlingTeam, Team tossWonBy,
 								 int maxOvers, int maxWickets, int maxPerBowler) {
 		this.matchID = matchID;
+		this.tournamentID = dbHandler.getTournamentIDUsingMatchID(matchID);
 
 		CricketCard card =
 				new CricketCard(battingTeam, bowlingTeam,
@@ -1460,10 +1462,13 @@ public class LimitedOversFragment extends Fragment
 				getActivity().onBackPressed();
 			}
 		}
+
+		StatisticsIntentService service = new StatisticsIntentService();
+		service.startActionStoreMatchStatistics(getContext(), ccUtils, isTournament, tournamentID);
 	}
 
 	private void quitMatch() {
-		dbHandler.clearMatchStateHistory(0, matchID, -1);
+		/*dbHandler.clearMatchStateHistory(0, matchID, -1);
 		if (getActivity() != null && getFragmentManager() != null) {
 
 			if (isTournament) {
@@ -1475,6 +1480,7 @@ public class LimitedOversFragment extends Fragment
 						NewMatchFragment.class.getSimpleName());
 				getActivity().onBackPressed();
 			}
-		}
+		}*/
+		completeMatch();
 	}
 }

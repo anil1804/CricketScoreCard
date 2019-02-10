@@ -48,6 +48,30 @@ public class BatsmanStats implements Serializable {
 		return num6s;
 	}
 
+	public int getDots() {
+		return dots;
+	}
+
+	public int getSingles() {
+		return singles;
+	}
+
+	public int getTwos() {
+		return twos;
+	}
+
+	public int getThrees() {
+		return threes;
+	}
+
+	public int getFives() {
+		return fives;
+	}
+
+	public int getSevens() {
+		return sevens;
+	}
+
 	public double getStrikeRate() {
 		return strikeRate;
 	}

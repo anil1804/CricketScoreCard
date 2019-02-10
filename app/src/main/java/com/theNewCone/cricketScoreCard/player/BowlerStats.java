@@ -1,5 +1,6 @@
 package com.theNewCone.cricketScoreCard.player;
 
+import com.theNewCone.cricketScoreCard.enumeration.DismissalType;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
 import java.io.Serializable;
@@ -8,6 +9,7 @@ public class BowlerStats implements Serializable {
 	private String oversBowled;
 	private double economy;
 	private int runsGiven, maidens, wickets;
+	private int bowled, caught, hitWicket, lbw, stumped;
 
     private Player player;
 
@@ -47,8 +49,29 @@ public class BowlerStats implements Serializable {
 		return wickets;
 	}
 
-	public void incWickets() {
+	public void incWickets(DismissalType dismissalType) {
 		this.wickets++;
+		switch (dismissalType) {
+			case BOWLED:
+				bowled++;
+				break;
+
+			case CAUGHT:
+				caught++;
+				break;
+
+			case HIT_WICKET:
+				hitWicket++;
+				break;
+
+			case LBW:
+				lbw++;
+				break;
+
+			case STUMPED:
+				stumped++;
+				break;
+		}
 	}
 
     public Player getPlayer() {
@@ -63,5 +86,25 @@ public class BowlerStats implements Serializable {
 
 	public void evaluateEconomy() {
 		this.economy = CommonUtils.calcRunRate(runsGiven, Double.parseDouble(oversBowled));
+	}
+
+	public int getBowled() {
+		return bowled;
+	}
+
+	public int getCaught() {
+		return caught;
+	}
+
+	public int getHitWicket() {
+		return hitWicket;
+	}
+
+	public int getLbw() {
+		return lbw;
+	}
+
+	public int getStumped() {
+		return stumped;
 	}
 }

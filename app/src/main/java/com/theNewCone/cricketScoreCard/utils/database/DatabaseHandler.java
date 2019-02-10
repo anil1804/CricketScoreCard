@@ -2102,4 +2102,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				break;
 		}
 	}
+
+	public int getTournamentIDUsingMatchID(int matchID) {
+		SQLiteDatabase db = getWritableDatabase();
+
+		String sqlQuery = String.format(Locale.getDefault(),
+				"SELECT %s FROM %s WHERE %s = " +
+						"(SELECT %s FROM %s WHERE %s = %d))",
+				TBL_GROUP_TOURNAMENT_ID, TBL_GROUP, TBL_GROUP_ID,
+				TBL_MATCH_INFO_GROUP_ID, TBL_MATCH_INFO, TBL_MATCH_INFO_MATCH_ID, matchID);
+		Cursor cursor = db.rawQuery(sqlQuery, null);
+
+		int tournamentID = 0;
+		if(cursor != null && cursor.moveToFirst()) {
+			tournamentID = cursor.getInt(0);
+			cursor.close();
+		}
+
+		return tournamentID;
+	}
 }
