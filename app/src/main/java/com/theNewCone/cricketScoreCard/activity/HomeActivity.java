@@ -21,14 +21,12 @@ import android.view.MenuItem;
 
 import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
-import com.theNewCone.cricketScoreCard.custom.ThemeColors;
 import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
 import com.theNewCone.cricketScoreCard.fragment.HomeFragment;
 import com.theNewCone.cricketScoreCard.fragment.LimitedOversFragment;
 import com.theNewCone.cricketScoreCard.fragment.MatchSummaryFragment;
 import com.theNewCone.cricketScoreCard.fragment.NewMatchFragment;
 import com.theNewCone.cricketScoreCard.fragment.PlayerFragment;
-import com.theNewCone.cricketScoreCard.fragment.StringDialog;
 import com.theNewCone.cricketScoreCard.fragment.TeamFragment;
 import com.theNewCone.cricketScoreCard.help.HelpContentData;
 import com.theNewCone.cricketScoreCard.intf.DialogItemClickListener;
@@ -50,17 +48,6 @@ public class HomeActivity extends AppCompatActivity
 	public static final String ARG_TOURNAMENT = "Tournament";
 	public static final String ARG_GROUP = "Group";
 	public static final String ARG_MATCH_INFO = "MatchInfo";
-
-	private final String DIALOG_THEME_SELECT = "ThemeSelect";
-
-	private final String THEME_DEFAULT = "Default";
-	private final String THEME_BLUE = "Blue";
-	private final String THEME_BROWN = "Brown";
-	private final String THEME_GREEN = "Green";
-	private final String THEME_LIME = "Lime";
-	private final String THEME_RED = "Red";
-
-	String[] themeValues = {THEME_DEFAULT, THEME_BLUE, THEME_BROWN, THEME_GREEN, THEME_LIME, THEME_RED};
 
 	DrawerLayout drawer;
 	ActionBarDrawerToggle toggle;
@@ -210,11 +197,6 @@ public class HomeActivity extends AppCompatActivity
 
 	@Override
 	public void onItemSelect(String type, String value, int position) {
-		switch (type) {
-			case DIALOG_THEME_SELECT:
-				applyTheme(value);
-				break;
-		}
 	}
 
 	private void replaceFragment(HashMap<String, Object> fragDtlMap) {
@@ -337,41 +319,5 @@ public class HomeActivity extends AppCompatActivity
 		}
 
 		return isAppUpdated;
-	}
-
-	private void showThemeDialog() {
-		StringDialog dialog = StringDialog.newInstance("Select Theme", themeValues, DIALOG_THEME_SELECT);
-		dialog.setDialogItemClickListener(this);
-		dialog.show(this.getSupportFragmentManager(), DIALOG_THEME_SELECT);
-	}
-
-	private void applyTheme(String value) {
-		int theme;
-		switch (value) {
-			case THEME_BLUE:
-				theme = R.style.AppTheme_NoActionBar_Blue;
-				break;
-
-			case THEME_BROWN:
-				theme = R.style.AppTheme_NoActionBar_Brown;
-				break;
-
-			case THEME_GREEN:
-				theme = R.style.AppTheme_NoActionBar_Green;
-				break;
-
-			case THEME_LIME:
-				theme = R.style.AppTheme_NoActionBar_Lime;
-				break;
-
-			case THEME_RED:
-				theme = R.style.AppTheme_NoActionBar_Red;
-				break;
-
-			default:
-				theme = R.style.AppTheme_NoActionBar;
-				break;
-		}
-		ThemeColors.applyTheme(this, theme);
 	}
 }
