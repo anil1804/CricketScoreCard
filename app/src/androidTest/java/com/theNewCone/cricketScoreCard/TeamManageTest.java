@@ -158,8 +158,8 @@ public class TeamManageTest {
 
 		/*Player Assignment*/
 		String[] players = {
-				"Ambati Rayudu",
-				"Bhuvneshwar Kumar"
+				"Aaron Finch",
+				"AB de Villiers"
 		};
 		//Get Current number of teams assigned to
 		CommonTestUtils.clickNavigationMenuItem(2);

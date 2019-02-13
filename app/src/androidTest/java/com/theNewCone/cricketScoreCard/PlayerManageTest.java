@@ -37,11 +37,11 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 @RunWith(AndroidJUnit4.class)
 public class PlayerManageTest {
 
-	private final String nameFirst = "Anil";
+	private final String nameFirst = "Aaron";
 	private final String batStyleFirst = "LHB";
 	private final String bowlStyleFirst = "SLA";
 	private final boolean isWKFirst = false;
-	private final String nameSecond = "Ankit";
+	private final String nameSecond = "Abbas";
 	private final String batStyleSecond = "RHB";
 	private final String bowlStyleSecond = "NONE";
 	private final boolean isWKSecond = true;

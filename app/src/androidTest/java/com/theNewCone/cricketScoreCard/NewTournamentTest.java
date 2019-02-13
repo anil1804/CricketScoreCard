@@ -24,7 +24,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.Visibility.VISI
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -631,11 +630,20 @@ public class NewTournamentTest {
 		CommonTestUtils.getDisplayedView(R.id.etTournamentTeamCount).perform(replaceText("6"));
 		CommonTestUtils.getDisplayedView(R.id.btnSelectTournamentTeams).perform(click());
 
-		for (int i = 0; i < 6; i++)
-			CommonTestUtils.goToChildAtPosition(withId(R.id.rcvTeamList), i).perform(click());
-		CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
+		String[] teamsToSelect = {"Australia", "India", "Pakistan", "Team-X", "Team-Y", "West Indies"};
 
-		String teams = "Australia,\tIndia,\tPakistan,\tTeam-X,\tTeam-Y,\tWest Indies";
+		String teams = "";
+
+		for (int i = 0; i < teamsToSelect.length; i++) {
+			String team = teamsToSelect[i];
+			CommonTestUtils.goToView(team).perform(click());
+
+			teams += team;
+			if (i < teamsToSelect.length - 1) {
+				teams += ",\t";
+			}
+		}
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
 		CommonTestUtils.getDisplayedView(R.id.tvSelectedTeams).check(matches(withText(teams)));
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentFormat)).check(matches(isDisplayed()));
 
@@ -693,13 +701,20 @@ public class NewTournamentTest {
 		CommonTestUtils.getDisplayedView(R.id.etTournamentTeamCount).perform(replaceText("4"));
 		CommonTestUtils.getDisplayedView(R.id.btnSelectTournamentTeams).perform(click());
 
-		CommonTestUtils.getDisplayedView("Australia").perform(click());
-		CommonTestUtils.getDisplayedView("India").perform(click());
-		CommonTestUtils.getDisplayedView("Pakistan").perform(click());
-		CommonTestUtils.getDisplayedView("West Indies").perform(click());
-		CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
 
-		String teams = "Australia,\tIndia,\tPakistan,\tWest Indies";
+		String[] teamsToSelect = {"Australia", "India", "Pakistan", "West Indies"};
+		String teams = "";
+
+		for (int i = 0; i < teamsToSelect.length; i++) {
+			String team = teamsToSelect[i];
+			CommonTestUtils.goToView(team).perform(click());
+
+			teams += team;
+			if (i < teamsToSelect.length - 1) {
+				teams += ",\t";
+			}
+		}
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
 		CommonTestUtils.getDisplayedView(R.id.tvSelectedTeams).check(matches(withText(teams)));
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentFormat)).check(matches(isDisplayed()));
 
