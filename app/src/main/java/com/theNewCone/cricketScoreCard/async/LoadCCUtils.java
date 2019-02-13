@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.MatchStateDBHandler;
 
 public class LoadCCUtils extends AsyncTask<Object, Void, CricketCardUtils> {
 	@Override
@@ -12,17 +13,17 @@ public class LoadCCUtils extends AsyncTask<Object, Void, CricketCardUtils> {
 		CricketCardUtils ccUtils = null;
 		{
 			if(asyncTaskObjects.length >= 2) {
-				DatabaseHandler dbHandler = null;
+				MatchStateDBHandler matchStateDBHandler = null;
 				int matchStateID = 0;
 				if(asyncTaskObjects[0] instanceof DatabaseHandler) {
-					dbHandler = (DatabaseHandler) asyncTaskObjects[0];
+					matchStateDBHandler = (MatchStateDBHandler) asyncTaskObjects[0];
 				}
 				if(asyncTaskObjects[1] instanceof Integer) {
 					matchStateID = (int) asyncTaskObjects[1];
 				}
 
-				if (matchStateID > 0 && dbHandler != null) {
-					String matchData = dbHandler.retrieveMatchData(matchStateID);
+				if (matchStateID > 0 && matchStateDBHandler != null) {
+					String matchData = matchStateDBHandler.retrieveMatchData(matchStateID);
 					if (matchData != null) {
 						ccUtils = CommonUtils.convertToCCUtils(matchData);
 					}

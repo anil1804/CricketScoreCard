@@ -3,16 +3,16 @@ package com.theNewCone.cricketScoreCard.help;
 import android.content.Context;
 
 import com.theNewCone.cricketScoreCard.R;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.HelpContentDBHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HelpContentData {
-	private DatabaseHandler dbh;
+	private HelpContentDBHandler dbh;
 
 	public HelpContentData(Context context) {
-		dbh = new DatabaseHandler(context);
+		dbh = new HelpContentDBHandler(context);
 	}
 
 	public void loadHelpContent() {

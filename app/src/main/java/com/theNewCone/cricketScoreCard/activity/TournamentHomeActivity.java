@@ -19,15 +19,13 @@ import android.view.MenuItem;
 
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
-import com.theNewCone.cricketScoreCard.fragment.HomeFragment;
 import com.theNewCone.cricketScoreCard.fragment.TournamentHomeFragment;
 import com.theNewCone.cricketScoreCard.fragment.TournamentHomePointsTableFragment;
 import com.theNewCone.cricketScoreCard.fragment.TournamentHomeScheduleFragment;
 import com.theNewCone.cricketScoreCard.fragment.TournamentStatsFragment;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
-import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +98,7 @@ public class TournamentHomeActivity extends AppCompatActivity
 	@Override
 	protected void onStart() {
 		if (tournamentID > 0) {
-			tournament = new DatabaseHandler(this).getTournamentContent(tournamentID);
+			tournament = new TournamentDBHandler(this).getTournamentContent(tournamentID);
 
 			TournamentUtils utils = new TournamentUtils(this);
 			utils.checkTournamentStageComplete(tournament);

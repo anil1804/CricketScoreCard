@@ -16,7 +16,11 @@ import com.theNewCone.cricketScoreCard.tournament.Group;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 import com.theNewCone.cricketScoreCard.tournament.PointsData;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.GroupsDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.MatchDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.MatchInfoDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.PointsDataDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,10 +30,10 @@ import java.util.Random;
 
 public class TournamentUtils {
 	private List<Team> unselectedTeams = new ArrayList<>();
-	private DatabaseHandler dbHandler;
+	private final Context context;
 
 	public TournamentUtils(Context context) {
-		this.dbHandler = new DatabaseHandler(context);
+		this.context = context;
 	}
 
 	public Group createSchedule(@NonNull Group group, TournamentFormat format, Stage stage) {
@@ -326,14 +330,17 @@ public class TournamentUtils {
 	}
 
 	private Group saveNewGroup(Tournament tournament, Group group) {
-		int groupID = dbHandler.updateGroup(tournament.getId(), group);
+		GroupsDBHandler groupsDBHandler = new GroupsDBHandler(context);
+
+		int groupID = groupsDBHandler.updateGroup(tournament.getId(), group);
 		group.setId(groupID);
 
 		List<MatchInfo> matchInfoList = group.getMatchInfoList();
 		if (matchInfoList != null) {
+			MatchInfoDBHandler matchInfoDBHandler = new MatchInfoDBHandler(context);
 			for (int i = 0; i < matchInfoList.size(); i++) {
 				MatchInfo matchInfo = matchInfoList.get(i);
-				dbHandler.addNewMatchInfo(groupID, matchInfo);
+				matchInfoDBHandler.addNewMatchInfo(groupID, matchInfo);
 			}
 
 			group.setMatchInfoList(matchInfoList);
@@ -341,9 +348,10 @@ public class TournamentUtils {
 
 		List<PointsData> pointsDataList = group.getPointsData();
 		if (pointsDataList != null) {
+			PointsDataDBHandler pointsDataDBHandler = new PointsDataDBHandler(context);
 			for (int i = 0; i < pointsDataList.size(); i++) {
 				PointsData pointsData = pointsDataList.get(i);
-				dbHandler.addNewPointsDataRecord(pointsData, groupID, tournament.getMaxOvers(), tournament.getMaxWickets());
+				pointsDataDBHandler.addNewPointsDataRecord(pointsData, groupID, tournament.getMaxOvers(), tournament.getMaxWickets());
 			}
 
 			group.updatePointsTable(pointsDataList);
@@ -562,8 +570,9 @@ public class TournamentUtils {
 				if (group.getMatchInfoList() != null) {
 					for (MatchInfo matchInfo : group.getMatchInfoList()) {
 						if (!matchInfo.isComplete()) {
+							MatchDBHandler matchDBHandler = new MatchDBHandler(context);
 							int matchID = matchInfo.getMatchID();
-							boolean isMatchComplete = matchID > 0 && dbHandler.checkIfMatchComplete(matchID);
+							boolean isMatchComplete = matchID > 0 && matchDBHandler.checkIfMatchComplete(matchID);
 							if (isMatchComplete) {
 								closeTournamentMatch(matchID);
 							} else {
@@ -581,25 +590,28 @@ public class TournamentUtils {
 	}
 
 	private void checkTournamentStageComplete(int matchInfoID) {
-		Tournament tournament = dbHandler.getTournamentByMatchInfoID(matchInfoID);
+		MatchInfoDBHandler matchInfoDBHandler = new MatchInfoDBHandler(context);
+		Tournament tournament = matchInfoDBHandler.getTournamentByMatchInfoID(matchInfoID);
 		checkTournamentStageComplete(tournament);
 	}
 
 	private void completeTournament(Tournament tournament, Team winner) {
+		TournamentDBHandler tournamentDBHandler = new TournamentDBHandler(context);
 		tournament.setTournamentWinner(winner);
 		tournament.setComplete(true);
-		dbHandler.updateTournament(tournament);
-		dbHandler.completeTournament(tournament.getId());
+		tournamentDBHandler.updateTournament(tournament);
+		tournamentDBHandler.completeTournament(tournament.getId());
 	}
 
 	public Tournament storePointsData(Tournament tournament) {
+		PointsDataDBHandler pointsDataDBHandler = new PointsDataDBHandler(context);
 		List<Group> groupList = tournament.getGroupList();
 		if (groupList != null) {
 			for (Group group : groupList) {
 				List<PointsData> pointsTable = group.getPointsData();
 				if (pointsTable != null) {
 					for (PointsData pointsData : pointsTable) {
-						int id = dbHandler.addNewPointsDataRecord(pointsData, group.getId(), tournament.getMaxOvers(), tournament.getMaxWickets());
+						int id = pointsDataDBHandler.addNewPointsDataRecord(pointsData, group.getId(), tournament.getMaxOvers(), tournament.getMaxWickets());
 						pointsData.setId(id);
 					}
 				}
@@ -609,24 +621,30 @@ public class TournamentUtils {
 	}
 
 	private void closeTournamentMatch(int matchID) {
-		CricketCardUtils ccUtils = dbHandler.getCompletedMatchData(matchID);
+		MatchDBHandler matchDBHandler = new MatchDBHandler(context);
+		CricketCardUtils ccUtils = matchDBHandler.getCompletedMatchData(matchID);
 		closeTournamentMatch(ccUtils);
 	}
 
 	public void closeTournamentMatch(CricketCardUtils ccUtils) {
+		MatchInfoDBHandler matchInfoDBHandler = new MatchInfoDBHandler(context);
+
 		if (ccUtils != null) {
 			int winningTeamID = ccUtils.getWinningTeam() != null ? ccUtils.getWinningTeam().getId() : 0;
-			dbHandler.completeTournamentMatch(ccUtils.getMatchInfo().getId(), ccUtils.getMatchInfo().getMatchID(), winningTeamID);
+			matchInfoDBHandler.completeTournamentMatch(ccUtils.getMatchInfo().getId(), ccUtils.getMatchInfo().getMatchID(), winningTeamID);
 			checkTournamentStageComplete(ccUtils.getMatchInfo().getId());
 			updatePointsData(ccUtils);
 		}
 	}
 
 	private void updatePointsData(CricketCardUtils ccUtils) {
+		MatchInfoDBHandler matchInfoDBHandler = new MatchInfoDBHandler(context);
+		PointsDataDBHandler pointsDataDBHandler = new PointsDataDBHandler(context);
+
 		CricketCard firstInningsCard = ccUtils.getPrevInningsCard(), secondInningsCard = ccUtils.getCard();
 		MatchInfo matchInfo = ccUtils.getMatchInfo();
 		if (matchInfo.getMatchID() == 0 || matchInfo.getGroupID() == 0) {
-			matchInfo = dbHandler.getMatchInfo(matchInfo.getId());
+			matchInfo = matchInfoDBHandler.getMatchInfo(matchInfo.getId());
 		}
 		if (ccUtils.isAbandoned()) {
 			if (ccUtils.getCard().getInnings() == 1) {
@@ -639,8 +657,8 @@ public class TournamentUtils {
 		}
 
 		int groupID = matchInfo.getGroupID();
-		PointsData pointsDataTeam1 = dbHandler.getTeamPointsData(groupID, ccUtils.getTeam1().getId());
-		PointsData pointsDataTeam2 = dbHandler.getTeamPointsData(groupID, ccUtils.getTeam2().getId());
+		PointsData pointsDataTeam1 = pointsDataDBHandler.getTeamPointsData(groupID, ccUtils.getTeam1().getId());
+		PointsData pointsDataTeam2 = pointsDataDBHandler.getTeamPointsData(groupID, ccUtils.getTeam2().getId());
 
 		MatchResult team1Result = MatchResult.NO_RESULT, team2Result = MatchResult.NO_RESULT;
 		if (ccUtils.isMatchTied()) {
@@ -668,7 +686,7 @@ public class TournamentUtils {
 		pointsDataTeam2.addPlayedMatchData(team2Result, team2Score, team2Overs, team2Wickets,
 				team1Score, team1Overs, team1Wickets);
 
-		dbHandler.updatePointsDataRecord(pointsDataTeam1);
-		dbHandler.updatePointsDataRecord(pointsDataTeam2);
+		pointsDataDBHandler.updatePointsDataRecord(pointsDataTeam1);
+		pointsDataDBHandler.updatePointsDataRecord(pointsDataTeam2);
 	}
 }

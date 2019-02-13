@@ -26,7 +26,8 @@ import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.PlayerDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.TeamDBHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -156,7 +157,7 @@ public class TeamFragment extends Fragment
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+		TeamDBHandler dbHandler = new TeamDBHandler(getContext());
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (requestCode) {
@@ -236,7 +237,7 @@ public class TeamFragment extends Fragment
 				selTeam.setId(teamID);
 
 			boolean isNew = teamID < 0;
-			DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+			TeamDBHandler dbHandler = new TeamDBHandler(getContext());
 			int rowID = dbHandler.updateTeam(selTeam);
 
 			if (rowID == dbHandler.CODE_NEW_TEAM_DUP_RECORD) {
@@ -249,7 +250,7 @@ public class TeamFragment extends Fragment
 
 					dbHandler.updateTeamList(selTeam, addedPlayers, removedPlayers);
 					associatedPlayers.clear();
-					for (Player player : dbHandler.getTeamPlayers(selTeam.getId()))
+					for (Player player : new PlayerDBHandler(getContext()).getTeamPlayers(selTeam.getId()))
 						associatedPlayers.add(player.getID());
 				}
 				Toast.makeText(getContext(), getResources().getString(R.string.Team_saveSuccess), Toast.LENGTH_SHORT).show();
@@ -260,7 +261,7 @@ public class TeamFragment extends Fragment
 	}
 
 	private void deleteTeam() {
-		DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+		TeamDBHandler dbHandler = new TeamDBHandler(getContext());
     	boolean success = dbHandler.deleteTeam(selTeam.getId());
 
     	if(success) {
@@ -281,7 +282,7 @@ public class TeamFragment extends Fragment
 	}
 
 	private void showPlayerListDialog() {
-		DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+		PlayerDBHandler dbHandler = new PlayerDBHandler(getContext());
 
 		List<Integer> currAssociation = new ArrayList<>();
 		if(selPlayers != null && selPlayers.length > 0) {

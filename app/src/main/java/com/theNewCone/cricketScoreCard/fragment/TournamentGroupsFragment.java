@@ -19,7 +19,8 @@ import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.tournament.Group;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.GroupsDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 import java.util.List;
 
@@ -29,7 +30,6 @@ public class TournamentGroupsFragment extends Fragment
 	private static final int CONFIRMATION_CODE_EXIT = 1;
 	View theView;
 	RecyclerView rcvGroupsList;
-	DatabaseHandler dbHandler;
 	private Tournament tournament;
 
 	public TournamentGroupsFragment() {
@@ -46,7 +46,6 @@ public class TournamentGroupsFragment extends Fragment
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-		dbHandler = new DatabaseHandler(getContext());
 		theView = inflater.inflate(R.layout.fragment_tournament_groups, container, false);
 
 		//Back pressed Logic for fragment
@@ -98,7 +97,7 @@ public class TournamentGroupsFragment extends Fragment
 				break;
 
 			case R.id.btnTournamentGroupsOK:
-				dbHandler.updateTournament(tournament);
+				new TournamentDBHandler(getContext()).updateTournament(tournament);
 				saveTournamentGroups();
 				showScheduleView();
 				break;
@@ -170,7 +169,7 @@ public class TournamentGroupsFragment extends Fragment
 		List<Group> groupList = tournament.getGroupList();
 		for (int i = 0; i < groupList.size(); i++) {
 			Group group = groupList.get(i);
-			int groupId = dbHandler.updateGroup(tournament.getId(), group);
+			int groupId = new GroupsDBHandler(getContext()).updateGroup(tournament.getId(), group);
 			group.setId(groupId);
 			tournament.updateGroup(group);
 		}

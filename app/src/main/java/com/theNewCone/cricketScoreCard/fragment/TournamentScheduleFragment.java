@@ -25,7 +25,9 @@ import com.theNewCone.cricketScoreCard.tournament.Group;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.GroupsDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.MatchInfoDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 import java.util.List;
 
@@ -34,7 +36,6 @@ public class TournamentScheduleFragment extends Fragment
 
 	private static final int CONFIRMATION_CODE_EXIT = 1;
 	RecyclerView rcvScheduleList;
-	DatabaseHandler dbHandler;
 	private Tournament tournament;
 	private Group currentGroup;
 	private int currentGroupIndex;
@@ -53,7 +54,6 @@ public class TournamentScheduleFragment extends Fragment
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-		dbHandler = new DatabaseHandler(getContext());
 
 		View theView = inflater.inflate(R.layout.fragment_tournament_set_schedule, container, false);
 
@@ -182,7 +182,7 @@ public class TournamentScheduleFragment extends Fragment
 
 		tournament.updateGroup(currentGroup);
 		tournament.checkScheduled();
-		dbHandler.updateTournament(tournament);
+		new TournamentDBHandler(getContext()).updateTournament(tournament);
 	}
 
 	private void layoutView(boolean isRegenerate) {
@@ -253,13 +253,13 @@ public class TournamentScheduleFragment extends Fragment
 	private void saveMatchInfo() {
 		List<MatchInfo> matchInfoList = currentGroup.getMatchInfoList();
 		if (currentGroup.getId() == 0) {
-			int groupID = dbHandler.updateGroup(tournament.getId(), currentGroup);
+			int groupID = new GroupsDBHandler(getContext()).updateGroup(tournament.getId(), currentGroup);
 			currentGroup.setId(groupID);
 		}
 
 		for (int i = 0; i < matchInfoList.size(); i++) {
 			MatchInfo matchInfo = matchInfoList.get(i);
-			int rowID = dbHandler.addNewMatchInfo(currentGroup.getId(), matchInfo);
+			int rowID = new MatchInfoDBHandler(getContext()).addNewMatchInfo(currentGroup.getId(), matchInfo);
 			matchInfo.setId(rowID);
 			currentGroup.updateMatchInfo(matchInfo);
 		}

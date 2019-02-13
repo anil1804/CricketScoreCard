@@ -16,7 +16,7 @@ import com.theNewCone.cricketScoreCard.comparator.PlayerComparator;
 import com.theNewCone.cricketScoreCard.intf.ListInteractionListener;
 import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.PlayerDBHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +59,7 @@ public class PlayerSelectActivity extends Activity
 			isMultiSelect = extras.getBoolean(ARG_IS_MULTI_SELECT, false);
 			associatedPlayers = extras.getIntegerArrayList(ARG_ASSOCIATED_PLAYERS);
 			if(associatedPlayers != null) {
-				selPlayers.addAll(new DatabaseHandler(this).getPlayers(associatedPlayers));
+				selPlayers.addAll(new PlayerDBHandler(this).getPlayers(associatedPlayers));
 			}
 			numPlayers = extras.getInt(ARG_NUM_PLAYERS, 0);
 		}

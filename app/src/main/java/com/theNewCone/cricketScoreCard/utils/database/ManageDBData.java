@@ -14,10 +14,9 @@ import java.util.List;
 
 public class ManageDBData {
 
-	private DatabaseHandler dbh;
-
+	private final Context context;
 	public ManageDBData(Context context) {
-		dbh = new DatabaseHandler(context);
+		this.context = context;
 	}
 
 	private List<Team> addTeams(TeamEnum teamValue) {
@@ -71,12 +70,15 @@ public class ManageDBData {
 	}
 
 	private Team addTeam(Team team) {
+		TeamDBHandler dbh = new TeamDBHandler(context);
 		int teamID = dbh.updateTeam(team, true);
 		team.setId(teamID);
 		return team;
 	}
 
 	private HashMap<TeamEnum, List<Integer>> addPlayers(TeamEnum teamEnum) {
+		PlayerDBHandler dbh = new PlayerDBHandler(context);
+
 		HashMap<TeamEnum, List<Integer>> countryPlayerIDMap = new HashMap<>();
 		if (teamEnum == TeamEnum.PAK || teamEnum == TeamEnum.ALL) {
 			List<Integer> playerIDList = new ArrayList<>();
@@ -443,6 +445,8 @@ public class ManageDBData {
 	}
 
 	public void addTeamsAndPlayers(TeamEnum teamValue) {
+		TeamDBHandler dbh = new TeamDBHandler(context);
+
 		List<Team> teamList = addTeams(teamValue);
 		for (Team team : teamList) {
 			TeamEnum teamEnum = TeamEnum.valueOf(team.getShortName());

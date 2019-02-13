@@ -18,7 +18,7 @@ import android.view.ViewParent;
 import android.widget.SeekBar;
 
 import com.theNewCone.cricketScoreCard.R;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -73,7 +73,7 @@ public class CommonTestUtils {
 			"Carlos Brathwaite",
 			"Fabian Allen",
 			"Oshane Thomas",
-			"Shai Hope",
+			"AShai Hope",
 			"Keemo Paul",
 			"Khary Pierre"
 	};
@@ -106,7 +106,7 @@ public class CommonTestUtils {
 		return onView(withText(startsWith(text))).perform(scrollTo());
 	}
 
-	public static ViewInteraction goToChildAtPosition(Matcher<View> parentMatcher, int position) {
+	private static ViewInteraction goToChildAtPosition(Matcher<View> parentMatcher, int position) {
 		return onView(childAtPosition(parentMatcher, position)).perform(scrollTo());
 	}
 
@@ -244,7 +244,7 @@ public class CommonTestUtils {
 	}
 
 	public static void deleteTournament(Context context, String tournamentName) {
-		new DatabaseHandler(context).deleteTournament(tournamentName);
+		new TournamentDBHandler(context).deleteTournament(tournamentName);
 	}
 
 	public static ViewInteraction getView(int parentContentDescriptionStringId, int childTextStringId, Activity activity) {

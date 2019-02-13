@@ -14,7 +14,7 @@ import com.theNewCone.cricketScoreCard.adapter.TeamViewAdapter;
 import com.theNewCone.cricketScoreCard.comparator.TeamComparator;
 import com.theNewCone.cricketScoreCard.intf.ListInteractionListener;
 import com.theNewCone.cricketScoreCard.match.Team;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.TeamDBHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,7 +55,7 @@ public class TeamSelectActivity extends Activity
 			isMultiSelect = extras.getBoolean(ARG_IS_MULTI, false);
 			currentlyAssociatedTeams = extras.getIntegerArrayList(ARG_EXISTING_TEAMS);
 			if(currentlyAssociatedTeams != null) {
-				selTeams.addAll(new DatabaseHandler(this).getTeams(currentlyAssociatedTeams));
+				selTeams.addAll(new TeamDBHandler(this).getTeams(currentlyAssociatedTeams));
 			}
 			selectionCount = extras.getInt(ARG_SELECT_COUNT, -1);
 		}
@@ -87,8 +87,7 @@ public class TeamSelectActivity extends Activity
 	}
 
 	private List<Team> getTeamList() {
-		DatabaseHandler dbHandler = new DatabaseHandler(this);
-		return dbHandler.getTeams(null, -1);
+		return new TeamDBHandler(this).getTeams(null, -1);
 	}
 
 	@Override

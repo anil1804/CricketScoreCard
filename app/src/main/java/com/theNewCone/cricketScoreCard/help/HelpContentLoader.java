@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.SparseArray;
 
 import com.theNewCone.cricketScoreCard.comparator.HelpContentComparator;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.HelpContentDBHandler;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +14,7 @@ public class HelpContentLoader {
 
 	public HelpContentLoader(Context context) {
 		if(helpContentItems != null && helpContentItems.size() == 0) {
-			List<HelpContent> helpContentList = new DatabaseHandler(context).getAllHelpContent();
+			List<HelpContent> helpContentList = new HelpContentDBHandler(context).getAllHelpContent();
 			if (helpContentList != null) {
 				Collections.sort(helpContentList, new HelpContentComparator());
 

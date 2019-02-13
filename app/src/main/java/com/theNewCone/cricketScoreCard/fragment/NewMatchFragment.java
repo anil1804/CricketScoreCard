@@ -31,7 +31,9 @@ import com.theNewCone.cricketScoreCard.tournament.Group;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.MatchDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.PlayerDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.TeamDBHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -538,7 +540,7 @@ public class NewMatchFragment extends Fragment
 	}
 
 	public void getTeams() {
-		DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+		TeamDBHandler dbHandler = new TeamDBHandler(getContext());
 		teams = dbHandler.getTeams(null, -1);
 		Collections.sort(teams, new TeamComparator(null));
 	}
@@ -604,10 +606,10 @@ public class NewMatchFragment extends Fragment
 	}
 
 	private void displayPlayerSelect(Team team, int reqCode) {
-		List<Player> displayPlayerList = new DatabaseHandler(getContext()).getTeamPlayers(team.getId());
+		List<Player> displayPlayerList = new PlayerDBHandler(getContext()).getTeamPlayers(team.getId());
 		if(displayPlayerList != null && displayPlayerList.size() > 0) {
 			if(displayPlayerList.size() >= numPlayers) {
-				List<Integer> associatedPlayers = new ArrayList<>();
+				ArrayList<Integer> associatedPlayers = new ArrayList<>();
 
 				List<Player> teamPlayers = team.getMatchPlayers();
 
@@ -623,7 +625,7 @@ public class NewMatchFragment extends Fragment
 				playerDisplayIntent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, displayPlayerList.toArray());
 				playerDisplayIntent.putExtra(PlayerSelectActivity.ARG_IS_MULTI_SELECT, true);
 				playerDisplayIntent.putIntegerArrayListExtra(
-						PlayerSelectActivity.ARG_ASSOCIATED_PLAYERS, (ArrayList<Integer>) associatedPlayers);
+						PlayerSelectActivity.ARG_ASSOCIATED_PLAYERS, associatedPlayers);
 				playerDisplayIntent.putExtra(PlayerSelectActivity.ARG_NUM_PLAYERS, numPlayers);
 
 				startActivityForResult(playerDisplayIntent, reqCode);
@@ -723,7 +725,7 @@ public class NewMatchFragment extends Fragment
 	}
 
 	private String getTeamHavingInsufficientPlayers(int numPlayers) {
-		DatabaseHandler dbh = new DatabaseHandler(getContext());
+		TeamDBHandler dbh = new TeamDBHandler(getContext());
 
 		if(team1 != null && team2 != null) {
 			if (dbh.getAssociatedPlayers(team1.getId()).size() < numPlayers)
@@ -738,7 +740,7 @@ public class NewMatchFragment extends Fragment
 	private void displayCaptainWKSelect(Team team, int reqCode, Player selected) {
 		if(team != null && team.getMatchPlayers() != null) {
 			List<Player> displayPlayerList = team.getMatchPlayers();
-			List<Integer> associatedPlayers = new ArrayList<>();
+			ArrayList<Integer> associatedPlayers = new ArrayList<>();
 
 			if (selected != null)
 				associatedPlayers.add(selected.getID());
@@ -747,7 +749,7 @@ public class NewMatchFragment extends Fragment
 			playerDisplayIntent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, displayPlayerList.toArray());
 			playerDisplayIntent.putExtra(PlayerSelectActivity.ARG_IS_MULTI_SELECT, false);
 			playerDisplayIntent.putIntegerArrayListExtra(
-					PlayerSelectActivity.ARG_ASSOCIATED_PLAYERS, (ArrayList<Integer>) associatedPlayers);
+					PlayerSelectActivity.ARG_ASSOCIATED_PLAYERS, associatedPlayers);
 
 			startActivityForResult(playerDisplayIntent, reqCode);
 		} else {
@@ -778,7 +780,7 @@ public class NewMatchFragment extends Fragment
 	}
 
 	private void startNewMatch() {
-		DatabaseHandler dbh = new DatabaseHandler(getContext());
+		MatchDBHandler dbh = new MatchDBHandler(getContext());
 		int matchID = dbh.addNewMatch(new Match(etMatchName.getText().toString(), battingTeam, bowlingTeam));
 
 		if (matchID == dbh.CODE_NEW_MATCH_DUP_RECORD) {

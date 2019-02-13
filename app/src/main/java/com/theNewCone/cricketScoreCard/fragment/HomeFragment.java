@@ -32,6 +32,11 @@ import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
+import com.theNewCone.cricketScoreCard.utils.database.MatchDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.MatchInfoDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.MatchStateDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.TeamDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 import java.util.List;
 import java.util.Locale;
@@ -48,8 +53,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	private static final int CONFIRMATION_CODE_DELETE_SAVED_MATCHES = 1;
 	private static final int CONFIRMATION_CODE_LOAD_LAST_MATCH = 2;
 	private static final int CONFIRMATION_CODE_DELETE_FINISHED_MATCHES = 3;
-
-	DatabaseHandler dbHandler;
 
 	MatchState[] matchStatesToDelete;
 	int matchStateID = -1;
@@ -82,8 +85,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 		theView.findViewById(R.id.btnNewTournament).setOnClickListener(this);
 		theView.findViewById(R.id.btnLoadTournament).setOnClickListener(this);
 		theView.findViewById(R.id.btnFinishedTournaments).setOnClickListener(this);
-
-		dbHandler = new DatabaseHandler(getContext());
 
 		if(getActivity() != null) {
 			DrawerController drawerController = (DrawerController) getActivity();
@@ -189,6 +190,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+		MatchDBHandler matchDBHandler = new MatchDBHandler(getContext());
+		TournamentDBHandler tournamentDBHandler = new TournamentDBHandler(getContext());
 
 		switch (requestCode) {
 			case REQ_CODE_MATCH_LIST_LOAD:
@@ -230,7 +233,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 				if(resultCode == CompletedMatchSelectActivity.RESP_CODE_OK) {
 					Match selMatch = (Match) data.getSerializableExtra(CompletedMatchSelectActivity.ARG_RESP_SEL_MATCH);
 					if(getActivity() != null) {
-						CricketCardUtils ccUtils = dbHandler.getCompletedMatchData(selMatch.getId());
+						CricketCardUtils ccUtils = matchDBHandler.getCompletedMatchData(selMatch.getId());
 						FragmentManager fragMgr = getActivity().getSupportFragmentManager();
 						String fragmentTag = MatchSummaryFragment.class.getSimpleName();
 						fragMgr.beginTransaction()
@@ -244,7 +247,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 			case REQ_CODE_TOURNAMENT_LOAD_RUNNING:
 				if (resultCode == TournamentSelectActivity.RESP_CODE_OK) {
 					Tournament tempTournament = (Tournament) data.getSerializableExtra(TournamentSelectActivity.ARG_RESP_SEL_TOURNAMENT);
-					Tournament tournament = dbHandler.getTournamentContent(tempTournament.getId());
+					Tournament tournament = tournamentDBHandler.getTournamentContent(tempTournament.getId());
 					if (tournament.getFormat() == TournamentFormat.GROUPS) {
 						if (tournament.getGroupList() == null || tournament.getGroupList().size() == 0) {
 							showGroupConfirmation(tournament);
@@ -270,7 +273,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 			case REQ_CODE_TOURNAMENT_LOAD_FINISHED:
 				if (resultCode == TournamentSelectActivity.RESP_CODE_OK) {
 					Tournament tempTournament = (Tournament) data.getSerializableExtra(TournamentSelectActivity.ARG_RESP_SEL_TOURNAMENT);
-					Tournament tournament = dbHandler.getTournamentContent(tempTournament.getId());
+					Tournament tournament = tournamentDBHandler.getTournamentContent(tempTournament.getId());
 					showTournamentHome(tournament);
 				}
 				break;
@@ -279,10 +282,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 
 	@Override
 	public void onConfirmationClick(int confirmationCode, boolean accepted) {
+		MatchStateDBHandler matchStateDBHandler = new MatchStateDBHandler(getContext());
+		MatchDBHandler matchDBHandler = new MatchDBHandler(getContext());
+
 		switch (confirmationCode) {
 			case CONFIRMATION_CODE_DELETE_SAVED_MATCHES:
 				if(accepted) {
-					if(dbHandler.deleteSavedMatchStates(matchStatesToDelete)) {
+					if (matchStateDBHandler.deleteSavedMatchStates(matchStatesToDelete)) {
 						Toast.makeText(getContext(), "Saved Match Instances Deleted", Toast.LENGTH_SHORT).show();
 					} else {
 						Toast.makeText(getContext(), "Unable to delete all saved matches. Please retry", Toast.LENGTH_LONG).show();
@@ -291,7 +297,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 				break;
 			case CONFIRMATION_CODE_DELETE_FINISHED_MATCHES:
 				if(accepted) {
-					if(dbHandler.deleteMatches(matchesToDelete)) {
+					if (matchDBHandler.deleteMatches(matchesToDelete)) {
 						Toast.makeText(getContext(), "Finished Matches Deleted", Toast.LENGTH_SHORT).show();
 					} else {
 						Toast.makeText(getContext(), "Unable to delete all finished matches. Please retry", Toast.LENGTH_LONG).show();
@@ -303,19 +309,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 				if(accepted) {
 					loadSavedMatch(matchStateID);
 					matchStateID = -1;
-					dbHandler.clearMatchStateHistory(1, -1, matchStateID);
+					matchStateDBHandler.clearMatchStateHistory(1, -1, matchStateID);
 				} else {
-					dbHandler.clearAllAutoSaveHistory();
+					matchStateDBHandler.clearAllAutoSaveHistory();
 				}
 				break;
 		}
 	}
 
 	private void loadSavedMatch(int matchStateID) {
+		MatchInfoDBHandler matchInfoDBHandler = new MatchInfoDBHandler(getContext());
+
 		if(getActivity() != null) {
 			String fragmentTag = NewMatchFragment.class.getSimpleName();
 
-			MatchInfo matchInfo = dbHandler.getMatchInfoBasedOnMatchStateID(matchStateID);
+			MatchInfo matchInfo = matchInfoDBHandler.getMatchInfoBasedOnMatchStateID(matchStateID);
 
 			getActivity().getSupportFragmentManager().beginTransaction()
 					.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID, matchInfo), fragmentTag)
@@ -325,7 +333,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	}
 
 	private void showSavedMatchDialog(boolean isMulti, int requestCode) {
-		List<MatchState> savedMatchDataList = dbHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, 0, null, false);
+		MatchStateDBHandler matchStateDBHandler = new MatchStateDBHandler(getContext());
+
+		List<MatchState> savedMatchDataList = matchStateDBHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, 0, null, false);
 		if(savedMatchDataList != null && savedMatchDataList.size() > 0) {
 			Intent getMatchListIntent = new Intent(getContext(), MatchStateSelectActivity.class);
 			getMatchListIntent.putExtra(MatchStateSelectActivity.ARG_MATCH_LIST, savedMatchDataList.toArray());
@@ -337,7 +347,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	}
 
 	private void checkForAutoSavedMatches() {
-		matchStateID = dbHandler.getLastAutoSave();
+		MatchStateDBHandler matchStateDBHandler = new MatchStateDBHandler(getContext());
+		matchStateID = matchStateDBHandler.getLastAutoSave();
 		if(matchStateID > 0 && getFragmentManager() != null) {
 			ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance(CONFIRMATION_CODE_LOAD_LAST_MATCH,
 					"Load Match", "Abruptly closed match found. Do you want to load it?" +
@@ -349,7 +360,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	}
 
 	private void displayFinishedMatches(boolean isMulti, int requestCode) {
-		List<Match> finishedMatches = dbHandler.getCompletedMatches();
+		MatchDBHandler matchDBHandler = new MatchDBHandler(getContext());
+		List<Match> finishedMatches = matchDBHandler.getCompletedMatches();
 		if(finishedMatches.size() > 0) {
 			Intent finishedMatchesIntent = new Intent(getContext(), CompletedMatchSelectActivity.class);
 			finishedMatchesIntent.putExtra(CompletedMatchSelectActivity.ARG_MATCH_LIST, finishedMatches.toArray());
@@ -361,8 +373,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	}
 
 	private void startNewTournament(FragmentManager fragMgr) {
+		TeamDBHandler teamDBHandler = new TeamDBHandler(getContext());
 		String fragmentTag;
-		if (dbHandler.getTeams(null, 0).size() < 2) {
+		if (teamDBHandler.getTeams(null, 0).size() < 2) {
 			String title = getResources().getString(R.string.notEnoughTeams);
 			String message = getResources().getString(R.string.tournamentNotEnoughTeamsMessage);
 			if (getFragmentManager() != null) {
@@ -382,7 +395,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 	}
 
 	private void showTournamentsDialog(boolean isMulti, int requestCode, boolean getCompleted) {
-		List<Tournament> tournamentList = dbHandler.getTournaments(getCompleted);
+		TournamentDBHandler tournamentDBHandler = new TournamentDBHandler(getContext());
+		List<Tournament> tournamentList = tournamentDBHandler.getTournaments(getCompleted);
 		if (tournamentList.size() > 0) {
 			Intent showTournamentsIntent = new Intent(getContext(), TournamentSelectActivity.class);
 			showTournamentsIntent.putExtra(TournamentSelectActivity.ARG_TOURNAMENT_LIST, tournamentList.toArray());

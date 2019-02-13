@@ -14,7 +14,7 @@ import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.intf.ListInteractionListener;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.MatchDBHandler;
 
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
 			holder.btnMatchOpen.setVisibility(View.VISIBLE);
 			holder.tvMatchDate.setVisibility(View.VISIBLE);
 
-			DatabaseHandler dbh = new DatabaseHandler(context);
+			MatchDBHandler dbh = new MatchDBHandler(context);
 			if (holder.matchInfo.isComplete()) {
 				CricketCardUtils matchData = dbh.getCompletedMatchData(holder.matchInfo.getMatchID());
 				matchResult = matchData.getResult();

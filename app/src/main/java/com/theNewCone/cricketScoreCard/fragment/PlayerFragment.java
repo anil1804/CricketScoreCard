@@ -28,7 +28,8 @@ import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.PlayerDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.TeamDBHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,7 +79,7 @@ public class PlayerFragment extends Fragment
         switch (item.getItemId()) {
             case R.id.menu_getPlayerList:
             	Intent intent = new Intent(getContext(), PlayerSelectActivity.class);
-            	intent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, new DatabaseHandler(getContext()).getAllPlayers().toArray());
+				intent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, new PlayerDBHandler(getContext()).getAllPlayers().toArray());
             	startActivityForResult(intent, REQ_CODE_DISPLAY_ALL_PLAYERS);
                 break;
 
@@ -164,7 +165,8 @@ public class PlayerFragment extends Fragment
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+		PlayerDBHandler dbHandler = new PlayerDBHandler(getContext());
+
 		switch (requestCode) {
 			case REQ_CODE_TEAM_SELECT:
 				if(resultCode == TeamSelectActivity.RESP_CODE_OK) {
@@ -197,7 +199,7 @@ public class PlayerFragment extends Fragment
 				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
 					selPlayer = (Player) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYER);
 					selPlayer = dbHandler.getPlayer(selPlayer.getID());
-					selTeams = CommonUtils.objectArrToTeamArr(dbHandler.getTeams(selPlayer.getTeamsAssociatedTo()).toArray());
+					selTeams = CommonUtils.objectArrToTeamArr(new TeamDBHandler(getContext()).getTeams(selPlayer.getTeamsAssociatedTo()).toArray());
 					populateData();
 				}
 				break;
@@ -343,7 +345,7 @@ public class PlayerFragment extends Fragment
 	private void savePlayer() {
 		storePlayer();
 
-        DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+		PlayerDBHandler dbHandler = new PlayerDBHandler(getContext());
 
         StringBuilder errorSB = new StringBuilder();
 
@@ -388,7 +390,7 @@ public class PlayerFragment extends Fragment
     }
 
     private void deletePlayer() {
-        DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+		PlayerDBHandler dbHandler = new PlayerDBHandler(getContext());
         boolean success = dbHandler.deletePlayer(selPlayer.getID());
 
         if(success) {

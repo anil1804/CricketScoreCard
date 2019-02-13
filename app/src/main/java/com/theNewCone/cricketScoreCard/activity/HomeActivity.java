@@ -37,7 +37,10 @@ import com.theNewCone.cricketScoreCard.tournament.Group;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
+import com.theNewCone.cricketScoreCard.utils.database.HelpContentDBHandler;
 import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
+import com.theNewCone.cricketScoreCard.utils.database.MatchDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.MatchStateDBHandler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,11 +57,11 @@ public class HomeActivity extends AppCompatActivity
 	NavigationView navigationView;
 
 	Toolbar toolbar;
-	private DatabaseHandler dbHandler;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		dbHandler = new DatabaseHandler(this);
+		MatchDBHandler matchDBHandler = new MatchDBHandler(this);
+		MatchStateDBHandler matchStateDBHandler = new MatchStateDBHandler(this);
 
 		//new ThemeColors(this);
 		super.onCreate(savedInstanceState);
@@ -86,13 +89,13 @@ public class HomeActivity extends AppCompatActivity
 				} else {
 					if (matchInfo.isComplete()) {
 						int matchID = matchInfo.getMatchID();
-						CricketCardUtils ccUtils = dbHandler.getCompletedMatchData(matchID);
-						Match match = dbHandler.getMatch(matchID);
+						CricketCardUtils ccUtils = matchDBHandler.getCompletedMatchData(matchID);
+						Match match = matchDBHandler.getMatch(matchID);
 						getSupportFragmentManager().beginTransaction()
 								.replace(R.id.frame_container, MatchSummaryFragment.newInstance(ccUtils, match))
 								.commitNow();
 					} else {
-						int matchStateID = dbHandler.getSavedMatchStateIDs(DatabaseHandler.SAVE_MANUAL, matchInfo.getMatchID(), null, true).get(0);
+						int matchStateID = matchStateDBHandler.getSavedMatchStateIDs(DatabaseHandler.SAVE_MANUAL, matchInfo.getMatchID(), null, true).get(0);
 						getSupportFragmentManager().beginTransaction()
 								.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID, matchInfo))
 								.commitNow();
@@ -290,7 +293,9 @@ public class HomeActivity extends AppCompatActivity
 	}
 
 	private void loadHelpContent() {
-		if (isAppUpdated() || dbHandler.hasHelpContent())
+		HelpContentDBHandler helpDBHandler = new HelpContentDBHandler(this);
+
+		if (isAppUpdated() || helpDBHandler.hasHelpContent())
 		{
 			HelpContentData helpContentData = new HelpContentData(this);
 			helpContentData.loadHelpContent();

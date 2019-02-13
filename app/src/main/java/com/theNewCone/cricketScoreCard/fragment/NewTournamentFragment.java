@@ -28,8 +28,8 @@ import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
+import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 public class NewTournamentFragment extends Fragment
 		implements View.OnClickListener {
@@ -731,7 +731,7 @@ public class NewTournamentFragment extends Fragment
 		Tournament tournament = new Tournament(etTournamentName.getText().toString(), selTeams,
 				maxOvers, maxWickets, numPlayers, maxPerBowler, numGroups, numRounds, type, stageType);
 
-		DatabaseHandler dbh = new DatabaseHandler(getContext());
+		TournamentDBHandler dbh = new TournamentDBHandler(getContext());
 
 		int id = dbh.createNewTournament(tournament);
 
