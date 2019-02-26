@@ -2,11 +2,13 @@ package com.theNewCone.cricketScoreCard.statistics;
 
 import com.theNewCone.cricketScoreCard.player.Player;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class BatsmanData {
 	private Player player;
-	private int highestScore, lowestScore, fours, sixers, fifties, hundreds;
+	private int highestScore, lowestScore, fifties, hundreds;
 	private int runsScored, ballsPlayed, totalInnings, notOuts;
 	private List<PlayerMatchData> playerMatchDataList;
 
@@ -22,18 +24,6 @@ public class BatsmanData {
 		return highestScore;
 	}
 
-	public int getLowestScore() {
-		return lowestScore;
-	}
-
-	public int getFours() {
-		return fours;
-	}
-
-	public int getSixers() {
-		return sixers;
-	}
-
 	public int getFifties() {
 		return fifties;
 	}
@@ -42,20 +32,12 @@ public class BatsmanData {
 		return hundreds;
 	}
 
-	public int getNotOuts() {
-		return notOuts;
-	}
-
 	public int getRunsScored() {
 		return runsScored;
 	}
 
 	public int getTotalInnings() {
 		return totalInnings;
-	}
-
-	public List<PlayerMatchData> getPlayerMatchDataList() {
-		return playerMatchDataList;
 	}
 
 	public void setPlayerMatchDataList(List<PlayerMatchData> playerMatchDataList) {
@@ -81,19 +63,60 @@ public class BatsmanData {
 
 			this.runsScored += runsScored;
 			this.ballsPlayed += matchData.getBallsPlayed();
-			this.sixers += matchData.getSixesHit();
-			this.fours += matchData.getFoursHit();
 
 			totalInnings++;
 			this.notOuts += matchData.isOut() ? 0 : 1;
 		}
 	}
 
-	private double getStrikeRate() {
+	public double getStrikeRate() {
 		return (double) runsScored/ballsPlayed;
 	}
 
-	private double getAverage() {
+	public double getAverage() {
 		return (double) runsScored/(totalInnings - notOuts);
+	}
+
+	public enum Sort implements Comparator<BatsmanData> {
+		ByHighestScore() {
+			@Override
+			public int compare(BatsmanData lhs, BatsmanData rhs) {
+				return lhs.getHighestScore() - rhs.getHighestScore();
+			}
+		},
+
+		ByTotalRuns() {
+			@Override
+			public int compare(BatsmanData lhs, BatsmanData rhs) {
+				return lhs.getRunsScored() - rhs.getRunsScored();
+			}
+		},
+
+		ByHundreds() {
+			@Override
+			public int compare(BatsmanData lhs, BatsmanData rhs) {
+				int diff = lhs.getHundreds() - rhs.getHundreds();
+				if (diff == 0) {
+					diff = lhs.getFifties() - rhs.getFifties();
+				}
+				return diff;
+			}
+		},
+
+		ByFifties() {
+			@Override
+			public int compare(BatsmanData lhs, BatsmanData rhs) {
+				int diff = lhs.getFifties() - rhs.getFifties();
+				if (diff == 0) {
+					diff = lhs.getHundreds() - rhs.getFifties();
+				}
+
+				return diff;
+			}
+		};
+
+		public Comparator<BatsmanData> descending() {
+			return Collections.reverseOrder(this);
+		}
 	}
 }

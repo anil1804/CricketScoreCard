@@ -24,13 +24,24 @@ public class PlayerDBHandler extends DatabaseHandler {
 		return getPlayer(playerID, false);
 	}
 
+	public Player getPlayer(int playerID, SQLiteDatabase db) {
+		return getPlayer(playerID, false);
+	}
+
 	public Player getPlayer(int playerID, boolean includeArchived) {
+		return getPlayer(playerID, includeArchived, null);
+	}
+
+	public Player getPlayer(int playerID, boolean includeArchived, SQLiteDatabase db) {
 		int archivedValue = includeArchived ? -1 : 1;
 		String selectQuery = String.format(Locale.getDefault(),
 				"SELECT * FROM %s WHERE %s = %d AND %s <> %d"
 				, TBL_PLAYER, TBL_PLAYER_ID, playerID, TBL_PLAYER_ARCHIVED, archivedValue);
 
-		SQLiteDatabase db = this.getReadableDatabase();
+		boolean isDBConnOpen = db != null;
+		if (!isDBConnOpen)
+			db = this.getReadableDatabase();
+
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		Player player = null;
@@ -39,7 +50,8 @@ public class PlayerDBHandler extends DatabaseHandler {
 			player = playerList.get(0);
 
 		cursor.close();
-		db.close();
+		if (!isDBConnOpen)
+			db.close();
 
 		return player;
 	}

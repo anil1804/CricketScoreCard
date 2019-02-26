@@ -8,7 +8,7 @@ public class PlayerMatchData {
 	private double oversBowled;
 	private int runsGiven, wicketsTaken, maidens;
 
-	private int catches, stumps;
+	private int catches, stumps, runOuts;
 
 	public int getMatchID() {
 		return matchID;
@@ -34,16 +34,8 @@ public class PlayerMatchData {
 		this.ballsPlayed = ballsPlayed;
 	}
 
-	int getFoursHit() {
-		return foursHit;
-	}
-
 	public void setFoursHit(int foursHit) {
 		this.foursHit = foursHit;
-	}
-
-	int getSixesHit() {
-		return sixesHit;
 	}
 
 	public void setSixesHit(int sixesHit) {
@@ -90,7 +82,7 @@ public class PlayerMatchData {
 		this.maidens = maidens;
 	}
 
-	public int getCatches() {
+	int getCatches() {
 		return catches;
 	}
 
@@ -98,11 +90,19 @@ public class PlayerMatchData {
 		this.catches = catches;
 	}
 
-	public int getStumps() {
+	int getStumps() {
 		return stumps;
 	}
 
 	public void setStumps(int stumps) {
 		this.stumps = stumps;
+	}
+
+	int getRunOuts() {
+		return runOuts;
+	}
+
+	public void setRunOuts(int runOuts) {
+		this.runOuts = runOuts;
 	}
 }

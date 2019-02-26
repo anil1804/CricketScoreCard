@@ -3,12 +3,14 @@ package com.theNewCone.cricketScoreCard.statistics;
 import com.theNewCone.cricketScoreCard.player.Player;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class BowlerData {
 	private Player player;
 	private double oversBowled;
-	private int runsGiven, wicketsTaken, maidens;
+	private int runsGiven, wicketsTaken, maidens, totalInnings;
 	private String bestFigures;
 	private List<PlayerMatchData> playerMatchDataList;
 
@@ -18,14 +20,6 @@ public class BowlerData {
 
 	public Player getPlayer() {
 		return player;
-	}
-
-	public double getOversBowled() {
-		return oversBowled;
-	}
-
-	public int getRunsGiven() {
-		return runsGiven;
 	}
 
 	public int getWicketsTaken() {
@@ -38,10 +32,6 @@ public class BowlerData {
 
 	public String getBestFigures() {
 		return bestFigures;
-	}
-
-	public List<PlayerMatchData> getPlayerMatchDataList() {
-		return playerMatchDataList;
 	}
 
 	public void setPlayerMatchDataList(List<PlayerMatchData> playerMatchDataList) {
@@ -71,6 +61,8 @@ public class BowlerData {
 			this.runsGiven += matchData.getRunsGiven();
 			this.maidens += matchData.getMaidens();
 			this.wicketsTaken += matchData.getWicketsTaken();
+
+			this.totalInnings++;
 		}
 
 		this.bestFigures = bfWicketsTaken + "/" + bfRunsGiven;
@@ -86,5 +78,37 @@ public class BowlerData {
 
 	public double getEconomy() {
 		return (double) runsGiven/oversBowled;
+	}
+
+	public int getTotalInnings() {
+		return totalInnings;
+	}
+
+	public enum Sort implements Comparator<BowlerData> {
+		ByBestFigures() {
+			@Override
+			public int compare(BowlerData lhs, BowlerData rhs) {
+				return lhs.getBestFigures().compareTo(rhs.getBestFigures());
+			}
+		},
+
+		ByTotalWickets() {
+			@Override
+			public int compare(BowlerData lhs, BowlerData rhs) {
+				return lhs.getWicketsTaken() - rhs.getWicketsTaken();
+			}
+		},
+
+		ByEconomy() {
+			@Override
+			public int compare(BowlerData lhs, BowlerData rhs) {
+				double diff = lhs.getEconomy() - rhs.getEconomy();
+				return (diff > 0) ? 1 : (diff < 0) ? -1 : 0;
+			}
+		};
+
+		public Comparator<BowlerData> descending() {
+			return Collections.reverseOrder(this);
+		}
 	}
 }

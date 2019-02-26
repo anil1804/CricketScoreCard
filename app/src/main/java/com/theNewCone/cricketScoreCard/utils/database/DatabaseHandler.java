@@ -18,7 +18,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public static final int maxUndoAllowed = Integer.MAX_VALUE;
 	static final String SAVE_AUTO = "Auto";
     private static final String DB_NAME = "CricketScoreCard";
-	private static final int DB_VERSION = 22;
+	private static final int DB_VERSION = 23;
 	public static final String SAVE_MANUAL = "Manual";
 	protected final Context context;
 	final String TBL_STATE = "CricketMatch_State";
@@ -125,6 +125,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	final String TBL_PLAYER_STATS = "PlayerStatistics";
 	final String TBL_PLAYER_STATS_ID = "ID";
+	final String TBL_PLAYER_STATS_PLAYER_ID = "PlayerID";
 	final String TBL_PLAYER_STATS_MATCH_ID = "MatchID";
 	final String TBL_PLAYER_STATS_TOURNAMENT_ID = "TournamentID";
 	final String TBL_PLAYER_STATS_CATCHES = "Catches";
@@ -133,6 +134,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	final String TBL_BATSMAN_STATS = "BatsmanStatistics";
 	final String TBL_BATSMAN_STATS_ID = "ID";
+	final String TBL_BATSMAN_STATS_PLAYER_ID = "PlayerID";
 	final String TBL_BATSMAN_STATS_MATCH_ID = "MatchID";
 	final String TBL_BATSMAN_STATS_TOURNAMENT_ID = "TournamentID";
 	final String TBL_BATSMAN_STATS_RUNS = "Runs";
@@ -151,6 +153,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	final String TBL_BOWLER_STATS = "BowlerStatistics";
 	final String TBL_BOWLER_STATS_ID = "ID";
+	final String TBL_BOWLER_STATS_PLAYER_ID = "PlayerID";
 	final String TBL_BOWLER_STATS_MATCH_ID = "MatchID";
 	final String TBL_BOWLER_STATS_TOURNAMENT_ID = "TournamentID";
 	final String TBL_BOWLER_STATS_RUNS_GIVEN = "RunsGiven";
@@ -259,6 +262,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			createPlayerStatsTable(db);
 			createBatsmanStatsTable(db);
 			createBowlerStatsTable(db);
+		}
+
+		if (oldVersion < 23) {
+			String alterTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s INTEGER", TBL_PLAYER_STATS, TBL_PLAYER_STATS_PLAYER_ID);
+			db.execSQL(alterTableSQL);
+
+			alterTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s INTEGER", TBL_BATSMAN_STATS, TBL_BATSMAN_STATS_PLAYER_ID);
+			db.execSQL(alterTableSQL);
+
+			alterTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s INTEGER", TBL_BOWLER_STATS, TBL_BOWLER_STATS_PLAYER_ID);
+			db.execSQL(alterTableSQL);
 		}
     }
 
@@ -443,6 +460,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		String createTableSQL =
 				"CREATE TABLE " + TBL_PLAYER_STATS + "("
 						+ TBL_PLAYER_STATS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+						+ TBL_PLAYER_STATS_PLAYER_ID + " INTEGER, "
 						+ TBL_PLAYER_STATS_MATCH_ID + " INTEGER, "
 						+ TBL_PLAYER_STATS_TOURNAMENT_ID + " INTEGER, "
 						+ TBL_PLAYER_STATS_CATCHES + " INTEGER, "
@@ -457,6 +475,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		String createTableSQL =
 				"CREATE TABLE " + TBL_BATSMAN_STATS + "("
 						+ TBL_BATSMAN_STATS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+						+ TBL_BATSMAN_STATS_PLAYER_ID + " INTEGER, "
 						+ TBL_BATSMAN_STATS_MATCH_ID + " INTEGER, "
 						+ TBL_BATSMAN_STATS_TOURNAMENT_ID + " INTEGER, "
 						+ TBL_BATSMAN_STATS_RUNS + " INTEGER, "
@@ -481,6 +500,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		String createTableSQL =
 				"CREATE TABLE " + TBL_BOWLER_STATS + "("
 						+ TBL_BOWLER_STATS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+						+ TBL_BOWLER_STATS_PLAYER_ID + " INTEGER, "
 						+ TBL_BOWLER_STATS_MATCH_ID + " INTEGER, "
 						+ TBL_BOWLER_STATS_TOURNAMENT_ID + " INTEGER, "
 						+ TBL_BOWLER_STATS_OVERS_BOWLED + " TEXT, "

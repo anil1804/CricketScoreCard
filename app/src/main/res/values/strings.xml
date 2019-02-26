@@ -354,9 +354,29 @@
 	<string name="addPenalty">Add Penalty</string>
 	<string name="singleMatchView">Single Match View</string>
 	<string name="tournamentMatchView">Tournament Match View</string>
-    <string name="gamePlay">Game</string>
-    <string name="runs">Runs</string>
-    <string name="summary">Summary</string>
-    <string name="matches">Matches</string>
-    <string name="matchPrefix">Match-</string>
+	<string name="gamePlay">Game</string>
+	<string name="runs">Runs</string>
+	<string name="summary">Summary</string>
+	<string name="matches">Matches</string>
+	<string name="matchPrefix">Match-</string>
+
+	<!-- Types of Statistics -->
+	<string name="stats_highest_score">Highest Score</string>
+	<string name="stats_total_runs">Total Runs</string>
+	<string name="stats_centuries">Centuries</string>
+	<string name="stats_half_centuries">Half Centuries</string>
+	<string name="stats_wickets">Wickets</string>
+	<string name="stats_economy">Economy</string>
+	<string name="stats_bowling_strike_rate">Bowling Strike Rate</string>
+	<string name="stats_bowling_average">Bowling Average</string>
+	<string name="stats_catches">Catches</string>
+	<string name="stats_stumping">Stumping</string>
+	<string name="inns">Inns</string>
+	<string name="bestBowlingFigures">BBF</string>
+	<string name="average">Avg.</string>
+	<string name="hundreds">100s</string>
+	<string name="fifties">50s</string>
+	<string name="catches">Cat.</string>
+	<string name="runOuts">R.O.</string>
+	<string name="stumping">Stump</string>
 </resources>
