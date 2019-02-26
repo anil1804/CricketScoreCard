@@ -632,19 +632,18 @@ public class NewTournamentTest {
 
 		String[] teamsToSelect = {"Australia", "India", "Pakistan", "Team-X", "Team-Y", "West Indies"};
 
-		String teams = "";
-
+		StringBuilder teamsSB = new StringBuilder();
 		for (int i = 0; i < teamsToSelect.length; i++) {
 			String team = teamsToSelect[i];
 			CommonTestUtils.goToView(team).perform(click());
 
-			teams += team;
+			teamsSB.append(team);
 			if (i < teamsToSelect.length - 1) {
-				teams += ",\t";
+				teamsSB.append(",\t");
 			}
 		}
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvSelectedTeams).check(matches(withText(teams)));
+		CommonTestUtils.getDisplayedView(R.id.tvSelectedTeams).check(matches(withText(teamsSB.toString())));
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentFormat)).check(matches(isDisplayed()));
 
 		CommonTestUtils.getView(R.string.tournamentFormat, R.string.groups, activity).perform(click());
@@ -680,11 +679,11 @@ public class NewTournamentTest {
 		assert (CommonTestUtils.checkViewExists(withText(resources.getString(R.string.tournamentStats))));
 		assert (CommonTestUtils.checkViewExists(withText(resources.getString(R.string.tournamentPoints))));
 
-		teams = teams.replaceAll("\t", "\n");
+		String teamsCheck = teamsSB.toString().replaceAll("\t", "\n");
 		CommonTestUtils.getDisplayedView(R.id.tvTHName).check(matches(withText(tournamentName)));
 		CommonTestUtils.getDisplayedView(R.id.tvTHFormat).check(matches(withText(TournamentFormat.GROUPS.stringValue())));
 		CommonTestUtils.getDisplayedView(R.id.tvTHStageType).check(matches(withText(TournamentStageType.SUPER_FOUR.stringValue())));
-		CommonTestUtils.getDisplayedView(R.id.tvTHTeams).check(matches(withText(teams)));
+		CommonTestUtils.getDisplayedView(R.id.tvTHTeams).check(matches(withText(teamsCheck)));
 
 		CommonTestUtils.deleteTournament(context, tournamentName);
 	}
@@ -703,19 +702,18 @@ public class NewTournamentTest {
 
 
 		String[] teamsToSelect = {"Australia", "India", "Pakistan", "West Indies"};
-		String teams = "";
-
+		StringBuilder teamsSB = new StringBuilder();
 		for (int i = 0; i < teamsToSelect.length; i++) {
 			String team = teamsToSelect[i];
 			CommonTestUtils.goToView(team).perform(click());
 
-			teams += team;
+			teamsSB.append(team);
 			if (i < teamsToSelect.length - 1) {
-				teams += ",\t";
+				teamsSB.append(",\t");
 			}
 		}
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvSelectedTeams).check(matches(withText(teams)));
+		CommonTestUtils.getDisplayedView(R.id.tvSelectedTeams).check(matches(withText(teamsSB.toString())));
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentFormat)).check(matches(isDisplayed()));
 
 		CommonTestUtils.getView(R.string.tournamentFormat, R.string.knockOut, activity).perform(click());
@@ -736,11 +734,11 @@ public class NewTournamentTest {
 		assert (CommonTestUtils.checkViewExists(withText(resources.getString(R.string.tournamentStats))));
 		assert (CommonTestUtils.checkViewExists(withText(resources.getString(R.string.tournamentPoints))));
 
-		teams = teams.replaceAll("\t", "\n");
+		String teamsToCheck = teamsSB.toString().replaceAll("\t", "\n");
 		CommonTestUtils.getDisplayedView(R.id.tvTHName).check(matches(withText(tournamentName)));
 		CommonTestUtils.getDisplayedView(R.id.tvTHFormat).check(matches(withText(TournamentFormat.KNOCK_OUT.stringValue())));
 		CommonTestUtils.getDisplayedView(R.id.tvTHStageType).check(matches(withText(TournamentStageType.NONE.stringValue())));
-		CommonTestUtils.getDisplayedView(R.id.tvTHTeams).check(matches(withText(teams)));
+		CommonTestUtils.getDisplayedView(R.id.tvTHTeams).check(matches(withText(teamsToCheck)));
 
 		CommonTestUtils.deleteTournament(context, tournamentName);
 	}

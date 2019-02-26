@@ -9,6 +9,7 @@ import android.support.test.runner.AndroidJUnit4;
 import com.theNewCone.cricketScoreCard.activity.HomeActivity;
 import com.theNewCone.cricketScoreCard.utils.CommonTestUtils;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
+import com.theNewCone.cricketScoreCard.utils.database.TeamDBHandler;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -27,7 +28,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 @RunWith(AndroidJUnit4.class)
 public class NewLimitedOversMatchTest {
 
-	private final String ADDITIONAL_IND_PLAYER = "Ambati Rayudu";
 	@Rule
 	public ActivityTestRule<HomeActivity> mActivityTestRule = new ActivityTestRule<>(HomeActivity.class);
 
@@ -37,40 +37,29 @@ public class NewLimitedOversMatchTest {
 		IdlingPolicies.setIdlingResourceTimeout(5, TimeUnit.SECONDS);
 	}
 
-/*
-	@Test
-	public void noTeamsAvailable() {
-		HomeActivity activity = homeActivityTestRule.getActivity();
-		Context context = activity.getApplicationContext();
-		CommonTestUtils.clearTeams(context);
 
+	@Test
+	public void teamsUnavailable() {
+		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
+
+		deleteAllTeams();
+
 		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
 		String message = resources.getString(R.string.NM_noTeamsAvailable)
 				+ resources.getString(R.string.NM_needMinimumTwoTeams);
 		CommonTestUtils.getDisplayedView(R.id.tvInsufficientTeams).check(matches(withText(message.trim())));
 		CommonTestUtils.getDisplayedView(R.id.btnManageTeam).perform(click());
 		CommonTestUtils.getDisplayedView(R.id.etTeamName).check(matches(isDisplayed()));
-	}
 
-	@Test
-	public void onlyOneTeamAvailable() {
-		HomeActivity activity = homeActivityTestRule.getActivity();
-		Context context = activity.getApplicationContext();
-		CommonTestUtils.clearTeams(context);
-		CommonTestUtils.setupTeams(context, TeamEnum.IND);
-
-		Resources resources = activity.getResources();
 		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
-		String message = resources.getString(R.string.NM_onlyOneTeamAvailable)
+		message = resources.getString(R.string.NM_onlyOneTeamAvailable)
 				+ resources.getString(R.string.NM_needMinimumTwoTeams);
 		CommonTestUtils.getDisplayedView(R.id.tvInsufficientTeams).check(matches(withText(message.trim())));
 		CommonTestUtils.getDisplayedView(R.id.btnManageTeam).perform(click());
 		CommonTestUtils.getDisplayedView(R.id.etTeamName).check(matches(isDisplayed()));
-
-		CommonTestUtils.clearTeams(context);
 	}
-*/
+
 
 	@Test
 	public void selectTeamsCorrectly() {
@@ -351,6 +340,7 @@ public class NewLimitedOversMatchTest {
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.cancel)).perform(click());
 
 		//More Number of Players
+		String ADDITIONAL_IND_PLAYER = "Ambati Rayudu";
 		CommonTestUtils.clickPlayers(R.id.btnNMSelectTeam2,
 				new String[]{ADDITIONAL_IND_PLAYER});
 		CommonTestUtils.checkIfToastShown(
@@ -505,5 +495,11 @@ public class NewLimitedOversMatchTest {
 
 		CommonTestUtils.getDisplayedView(R.id.tvBattingTeam).check(matches(withText("AUS")));
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.selBatsman));
+	}
+
+	private void deleteAllTeams() {
+		HomeActivity activity = mActivityTestRule.getActivity();
+		TeamDBHandler dbHandler = new TeamDBHandler(activity.getApplicationContext());
+		dbHandler.deleteAllRecords(dbHandler.TBL_TEAM);
 	}
 }
