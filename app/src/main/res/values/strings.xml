@@ -371,12 +371,16 @@
 	<string name="stats_bowling_average">Bowling Average</string>
 	<string name="stats_catches">Catches</string>
 	<string name="stats_stumping">Stumping</string>
-	<string name="inns">Inns</string>
-	<string name="bestBowlingFigures">BBF</string>
-	<string name="average">Avg.</string>
-	<string name="hundreds">100s</string>
-	<string name="fifties">50s</string>
-	<string name="catches">Cat.</string>
-	<string name="runOuts">R.O.</string>
-	<string name="stumping">Stump</string>
+	<string name="stats_hdr_inns">Inns</string>
+	<string name="stats_hdr_bestBowlingFigures">BBF</string>
+	<string name="stats_hdr_average">Avg.</string>
+	<string name="stats_hdr_hundreds">100s</string>
+	<string name="stats_hdr_fifties">50s</string>
+	<string name="stats_hdr_catches">Cat.</string>
+	<string name="stats_hdr_runOuts">R.O.</string>
+	<string name="stats_hdr_stumping">Stump</string>
+	<string name="stats_hdr_innings">Inns.</string>
+	<string name="stats_hdr_highScore">H.S.</string>
+	<string name="stats_hdr_total">Total</string>
+	<string name="stats_hdr_overs">Overs</string>
 </resources>

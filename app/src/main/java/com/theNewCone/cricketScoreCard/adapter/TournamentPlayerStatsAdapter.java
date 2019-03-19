@@ -14,6 +14,7 @@ import com.theNewCone.cricketScoreCard.enumeration.StatisticsType;
 import com.theNewCone.cricketScoreCard.statistics.BatsmanData;
 import com.theNewCone.cricketScoreCard.statistics.BowlerData;
 import com.theNewCone.cricketScoreCard.statistics.PlayerData;
+import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 
 import java.util.List;
 
@@ -62,43 +63,50 @@ public class TournamentPlayerStatsAdapter extends RecyclerView.Adapter<Tournamen
 
 	@Override
 	public int getItemCount() {
-		return dataList.size() + 1;
+		return dataList.size() < 10 ? dataList.size() + 1 : 11;
 	}
 
 	private void updateBatsmanStatistics(Object dataItem, MyViewHolder holder) {
 		if (dataItem == null) {
 			holder.llTPStats.setBackgroundColor(context.getResources().getColor(R.color.gray_300));
+
+			holder.tvPlayerName.setText(R.string.player);
+			holder.tvInnings.setText(R.string.stats_hdr_innings);
+
 			switch (statisticsType) {
 				case HIGHEST_SCORE:
-					holder.tvStats1.setText(R.string.headerRuns);
+					holder.tvStats1.setText(R.string.stats_hdr_highScore);
 					holder.tvStats2.setText(R.string.headerStrikeRate);
 					break;
 
 				case TOTAL_RUNS:
-					holder.tvStats1.setText(R.string.headerRuns);
-					holder.tvStats2.setText(R.string.average);
+					holder.tvStats1.setText(R.string.stats_hdr_total);
+					holder.tvStats2.setText(R.string.stats_hdr_average);
 					break;
 
 				case HUNDREDS_FIFTIES:
-					holder.tvStats1.setText(R.string.hundreds);
-					holder.tvStats2.setText(R.string.fifties);
+					holder.tvStats1.setText(R.string.stats_hdr_hundreds);
+					holder.tvStats2.setText(R.string.stats_hdr_fifties);
 					break;
 			}
 		} else if (dataItem instanceof BatsmanData) {
 			BatsmanData batsmanData = (BatsmanData) dataItem;
 
 			holder.tvPlayerName.setText(batsmanData.getPlayer().getName());
-			holder.tvInnings.setText(batsmanData.getTotalInnings());
+			holder.tvInnings.setText(String.valueOf(batsmanData.getTotalInnings()));
 
 			switch (statisticsType) {
 				case HIGHEST_SCORE:
 					holder.tvStats1.setText(String.valueOf(batsmanData.getHighestScore()));
-					holder.tvStats2.setText(String.valueOf(batsmanData.getStrikeRate()));
+					holder.tvStats2.setText(CommonUtils.doubleToString(batsmanData.getStrikeRate(), null));
 					break;
 
 				case TOTAL_RUNS:
 					holder.tvStats1.setText(String.valueOf(batsmanData.getRunsScored()));
-					holder.tvStats2.setText(String.valueOf(batsmanData.getAverage()));
+					String average = batsmanData.getAverage() > 0
+							? CommonUtils.doubleToString(batsmanData.getAverage(), null)
+							: "-";
+					holder.tvStats2.setText(average);
 					break;
 
 				case HUNDREDS_FIFTIES:
@@ -112,15 +120,19 @@ public class TournamentPlayerStatsAdapter extends RecyclerView.Adapter<Tournamen
 	private void updateBowlerStatistics(Object dataItem, MyViewHolder holder) {
 		if (dataItem == null) {
 			holder.llTPStats.setBackgroundColor(context.getResources().getColor(R.color.gray_300));
+
+			holder.tvPlayerName.setText(R.string.player);
+			holder.tvInnings.setText(R.string.stats_hdr_innings);
+
 			switch (statisticsType) {
 				case BOWLING_BEST_FIGURES:
-					holder.tvStats1.setText(R.string.bestBowlingFigures);
-					holder.tvStats2.setText(R.string.average);
+					holder.tvStats1.setText(R.string.stats_hdr_bestBowlingFigures);
+					holder.tvStats2.setText(R.string.stats_hdr_average);
 					break;
 
 				case ECONOMY:
 					holder.tvStats1.setText(R.string.headerEconomy);
-					holder.tvStats2.setText(R.string.headerMaidens);
+					holder.tvStats2.setText(R.string.stats_hdr_overs);
 					break;
 
 				case TOTAL_WICKETS:
@@ -132,22 +144,22 @@ public class TournamentPlayerStatsAdapter extends RecyclerView.Adapter<Tournamen
 			BowlerData bowlerData = (BowlerData) dataItem;
 
 			holder.tvPlayerName.setText(bowlerData.getPlayer().getName());
-			holder.tvInnings.setText(bowlerData.getTotalInnings());
+			holder.tvInnings.setText(String.valueOf(bowlerData.getTotalInnings()));
 
 			switch (statisticsType) {
 				case BOWLING_BEST_FIGURES:
 					holder.tvStats1.setText(bowlerData.getBestFigures());
-					holder.tvStats2.setText(String.valueOf(bowlerData.getAverage()));
+					holder.tvStats2.setText(CommonUtils.doubleToString(bowlerData.getAverage(), null));
 					break;
 
 				case ECONOMY:
-					holder.tvStats1.setText(String.valueOf(bowlerData.getEconomy()));
-					holder.tvStats2.setText(String.valueOf(bowlerData.getMaidens()));
+					holder.tvStats1.setText(CommonUtils.doubleToString(bowlerData.getEconomy(), null));
+					holder.tvStats2.setText(String.valueOf(bowlerData.getOversBowled()));
 					break;
 
 				case TOTAL_WICKETS:
 					holder.tvStats1.setText(String.valueOf(bowlerData.getWicketsTaken()));
-					holder.tvStats2.setText(String.valueOf(bowlerData.getStrikeRate()));
+					holder.tvStats2.setText(CommonUtils.doubleToString(bowlerData.getStrikeRate(), null));
 					break;
 			}
 		}
@@ -156,22 +168,26 @@ public class TournamentPlayerStatsAdapter extends RecyclerView.Adapter<Tournamen
 	private void updateFielderStatistics(Object dataItem, MyViewHolder holder) {
 		if (dataItem == null) {
 			holder.llTPStats.setBackgroundColor(context.getResources().getColor(R.color.gray_300));
+
+			holder.tvPlayerName.setText(R.string.player);
+			holder.tvInnings.setText(R.string.stats_hdr_innings);
+
 			switch (statisticsType) {
 				case CATCHES:
-					holder.tvStats1.setText(R.string.catches);
-					holder.tvStats2.setText(R.string.runOuts);
+					holder.tvStats1.setText(R.string.stats_hdr_catches);
+					holder.tvStats2.setText(R.string.stats_hdr_runOuts);
 					break;
 
 				case STUMPING:
-					holder.tvStats1.setText(R.string.stumping);
-					holder.tvStats2.setText(R.string.runOuts);
+					holder.tvStats1.setText(R.string.stats_hdr_stumping);
+					holder.tvStats2.setText(R.string.stats_hdr_runOuts);
 					break;
 			}
 		} else if (dataItem instanceof PlayerData) {
 			PlayerData playerData = (PlayerData) dataItem;
 
 			holder.tvPlayerName.setText(playerData.getPlayer().getName());
-			holder.tvInnings.setText(playerData.getTotalInnings());
+			holder.tvInnings.setText(String.valueOf(playerData.getTotalInnings()));
 
 			switch (statisticsType) {
 				case CATCHES:

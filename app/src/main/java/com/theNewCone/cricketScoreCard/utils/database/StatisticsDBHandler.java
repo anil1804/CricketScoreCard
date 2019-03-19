@@ -37,27 +37,26 @@ public class StatisticsDBHandler extends DatabaseHandler {
 				losingTeam = ccUtils.getCard();
 				winningTeam = ccUtils.getPrevInningsCard();
 			}
-			addMatchStats(winningTeam, losingTeam, ccUtils.getMatchInfo().getMatchID(), tournamentID);
+			addMatchStats(winningTeam, losingTeam, ccUtils.getMatchID(), tournamentID);
 		}
 	}
 
 	private void addMatchStats(@NonNull CricketCard winningTeamCard, @NonNull CricketCard losingTeamCard, int matchID, int tournamentID) {
-		SQLiteDatabase db = getWritableDatabase();
-		addPlayerStats(db, winningTeamCard, matchID, tournamentID);
-		addPlayerStats(db, losingTeamCard, matchID, tournamentID);
-		db.close();
+		addPlayerStats(winningTeamCard, matchID, tournamentID);
+		addPlayerStats(losingTeamCard, matchID, tournamentID);
 	}
 
-	private void addPlayerStats(SQLiteDatabase db, CricketCard card, int matchID, int tournamentID) {
+	private void addPlayerStats(CricketCard card, int matchID, int tournamentID) {
 		if (card != null) {
-			addPlayerStats(db, card.getFielderMap().values(), matchID, tournamentID);
-			addBatsmanStats(db, card.getBatsmen().values(), matchID, tournamentID);
-			addBowlerStats(db, card.getBowlerMap().values(), matchID, tournamentID);
+			addPlayerStats(card.getFielderMap().values(), matchID, tournamentID);
+			addBatsmanStats(card.getBatsmen().values(), matchID, tournamentID);
+			addBowlerStats(card.getBowlerMap().values(), matchID, tournamentID);
 		}
 	}
 
-	private void addPlayerStats(SQLiteDatabase db, @NonNull Collection<FielderStats> fielderStatsCollection, int matchID, int tournamentID) {
+	private void addPlayerStats(@NonNull Collection<FielderStats> fielderStatsCollection, int matchID, int tournamentID) {
 		if (fielderStatsCollection.size() > 0) {
+			SQLiteDatabase db = super.getWritableDatabase();
 			for (FielderStats fielderStats : fielderStatsCollection) {
 				ContentValues playerValues = new ContentValues();
 
@@ -75,8 +74,9 @@ public class StatisticsDBHandler extends DatabaseHandler {
 		}
 	}
 
-	private void addBatsmanStats(SQLiteDatabase db, @NonNull Collection<BatsmanStats> batsmanStatsCollection, int matchID, int tournamentID) {
+	private void addBatsmanStats(@NonNull Collection<BatsmanStats> batsmanStatsCollection, int matchID, int tournamentID) {
 		if (batsmanStatsCollection.size() > 0) {
+			SQLiteDatabase db = super.getWritableDatabase();
 			for (BatsmanStats batsmanStats : batsmanStatsCollection) {
 				ContentValues batsmanValues = new ContentValues();
 
@@ -106,8 +106,9 @@ public class StatisticsDBHandler extends DatabaseHandler {
 		}
 	}
 
-	private void addBowlerStats(SQLiteDatabase db, @NonNull Collection<BowlerStats> bowlerStatsCollection, int matchID, int tournamentID) {
+	private void addBowlerStats(@NonNull Collection<BowlerStats> bowlerStatsCollection, int matchID, int tournamentID) {
 		if (bowlerStatsCollection.size() > 0) {
+			SQLiteDatabase db = super.getWritableDatabase();
 			for (BowlerStats bowlerStats : bowlerStatsCollection) {
 				ContentValues bowlerValues = new ContentValues();
 
@@ -135,7 +136,7 @@ public class StatisticsDBHandler extends DatabaseHandler {
 		List<BatsmanData> batsmanDataList = new ArrayList<>();
 
 		String sqlQuery = String.format(Locale.getDefault(),
-				"SELECT * FROM %s WHERE %s = %d" +
+				"SELECT * FROM %s WHERE %s = %d " +
 						"ORDER BY %s",
 				TBL_BATSMAN_STATS, TBL_BATSMAN_STATS_TOURNAMENT_ID, tournamentID,
 				TBL_BATSMAN_STATS_PLAYER_ID);
@@ -149,7 +150,7 @@ public class StatisticsDBHandler extends DatabaseHandler {
 			List<PlayerMatchData> playerMatchDataList = null;
 
 			while (cursor.moveToNext()) {
-				int playerID = cursor.getColumnIndex(TBL_BATSMAN_STATS_PLAYER_ID);
+				int playerID = cursor.getInt(cursor.getColumnIndex(TBL_BATSMAN_STATS_PLAYER_ID));
 				if (prevPlayerID != playerID) {
 					if (batsmanData != null) {
 						batsmanData.setPlayerMatchDataList(playerMatchDataList);
@@ -200,7 +201,7 @@ public class StatisticsDBHandler extends DatabaseHandler {
 		List<BowlerData> bowlerDataList = new ArrayList<>();
 
 		String sqlQuery = String.format(Locale.getDefault(),
-				"SELECT * FROM %s WHERE %s = %d" +
+				"SELECT * FROM %s WHERE %s = %d " +
 						"ORDER BY %s",
 				TBL_BOWLER_STATS, TBL_BOWLER_STATS_TOURNAMENT_ID, tournamentID,
 				TBL_BOWLER_STATS_PLAYER_ID);
@@ -214,7 +215,7 @@ public class StatisticsDBHandler extends DatabaseHandler {
 			List<PlayerMatchData> playerMatchDataList = null;
 
 			while (cursor.moveToNext()) {
-				int playerID = cursor.getColumnIndex(TBL_BATSMAN_STATS_PLAYER_ID);
+				int playerID = cursor.getInt(cursor.getColumnIndex(TBL_BOWLER_STATS_PLAYER_ID));
 				if (prevPlayerID != playerID) {
 					if (bowlerData != null) {
 						bowlerData.setPlayerMatchDataList(playerMatchDataList);
@@ -250,9 +251,9 @@ public class StatisticsDBHandler extends DatabaseHandler {
 			playerMatchData.setMatchID(cursor.getInt(cursor.getColumnIndex(TBL_BOWLER_STATS_MATCH_ID)));
 
 			playerMatchData.setOversBowled(Double.parseDouble(cursor.getString(cursor.getColumnIndex(TBL_BOWLER_STATS_OVERS_BOWLED))));
-			playerMatchData.setRunsGiven(cursor.getInt(cursor.getInt(cursor.getColumnIndex(TBL_BOWLER_STATS_RUNS_GIVEN))));
-			playerMatchData.setMaidens(cursor.getInt(cursor.getInt(cursor.getColumnIndex(TBL_BOWLER_STATS_MAIDENS))));
-			playerMatchData.setWicketsTaken(cursor.getInt(cursor.getInt(cursor.getColumnIndex(TBL_BOWLER_STATS_WICKETS_TAKEN))));
+			playerMatchData.setRunsGiven(cursor.getInt(cursor.getColumnIndex(TBL_BOWLER_STATS_RUNS_GIVEN)));
+			playerMatchData.setMaidens(cursor.getInt(cursor.getColumnIndex(TBL_BOWLER_STATS_MAIDENS)));
+			playerMatchData.setWicketsTaken(cursor.getInt(cursor.getColumnIndex(TBL_BOWLER_STATS_WICKETS_TAKEN)));
 		}
 
 		return playerMatchData;
@@ -262,7 +263,7 @@ public class StatisticsDBHandler extends DatabaseHandler {
 		List<PlayerData> playerDataList = new ArrayList<>();
 
 		String sqlQuery = String.format(Locale.getDefault(),
-				"SELECT * FROM %s WHERE %s = %d" +
+				"SELECT * FROM %s WHERE %s = %d " +
 						"ORDER BY %s",
 				TBL_PLAYER_STATS, TBL_PLAYER_STATS_TOURNAMENT_ID, tournamentID,
 				TBL_PLAYER_STATS_PLAYER_ID);
@@ -276,7 +277,7 @@ public class StatisticsDBHandler extends DatabaseHandler {
 			List<PlayerMatchData> playerMatchDataList = null;
 
 			while (cursor.moveToNext()) {
-				int playerID = cursor.getColumnIndex(TBL_BATSMAN_STATS_PLAYER_ID);
+				int playerID = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_STATS_PLAYER_ID));
 				if (prevPlayerID != playerID) {
 					if (playerData != null) {
 						playerData.setPlayerMatchDataList(playerMatchDataList);
@@ -312,8 +313,8 @@ public class StatisticsDBHandler extends DatabaseHandler {
 			playerMatchData.setMatchID(cursor.getInt(cursor.getColumnIndex(TBL_BOWLER_STATS_MATCH_ID)));
 
 			playerMatchData.setCatches(cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_STATS_CATCHES)));
-			playerMatchData.setStumps(cursor.getInt(cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_STATS_STUMP_OUTS))));
-			playerMatchData.setRunOuts(cursor.getInt(cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_STATS_RUN_OUTS))));
+			playerMatchData.setStumps(cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_STATS_STUMP_OUTS)));
+			playerMatchData.setRunOuts(cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_STATS_RUN_OUTS)));
 		}
 
 		return playerMatchData;

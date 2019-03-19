@@ -23,25 +23,22 @@ public class StatisticsIntentService extends IntentService {
 	private static final String ACTION_TOURNAMENT_GET_SCORE_STATS = "GetTournamentPlayerStatistics";
 */
 
-	private static final String EXTRA_CC_UTILS = "CricketCardUtils";
-	private static final String EXTRA_TOURNAMENT_ID = "isTournament";
-
-	private Context context;
+	private static final String ARG_CC_UTILS = "CricketCardUtils";
+	private static final String ARG_TOURNAMENT_ID = "isTournament";
 
 	public StatisticsIntentService() {
 		super("StatisticsIntentService");
 	}
 
 	public void startActionStoreMatchStatistics(Context context, CricketCardUtils ccUtils, boolean isTournament, int tournamentID) {
-		this.context = context;
 
 		if(!isTournament)
 			tournamentID = 0;
 
 		Intent intent = new Intent(context, StatisticsIntentService.class);
 		intent.setAction(ACTION_STORE_MATCH_STATS);
-		intent.putExtra(EXTRA_CC_UTILS, CommonUtils.convertToJSON(ccUtils));
-		intent.putExtra(EXTRA_TOURNAMENT_ID, tournamentID);
+		intent.putExtra(ARG_CC_UTILS, CommonUtils.convertToJSON(ccUtils));
+		intent.putExtra(ARG_TOURNAMENT_ID, tournamentID);
 		context.startService(intent);
 	}
 
@@ -52,8 +49,8 @@ public class StatisticsIntentService extends IntentService {
 			if(action != null) {
 				switch (action) {
 					case ACTION_STORE_MATCH_STATS:
-						final CricketCardUtils ccUtils = CommonUtils.convertToCCUtils(intent.getStringExtra(EXTRA_CC_UTILS));
-						final int tournamentID = intent.getIntExtra(EXTRA_TOURNAMENT_ID, 0);
+						final CricketCardUtils ccUtils = CommonUtils.convertToCCUtils(intent.getStringExtra(ARG_CC_UTILS));
+						final int tournamentID = intent.getIntExtra(ARG_TOURNAMENT_ID, 0);
 						storeMatchStatistics(ccUtils, tournamentID);
 						break;
 				}
@@ -62,7 +59,7 @@ public class StatisticsIntentService extends IntentService {
 	}
 
 	private void storeMatchStatistics(CricketCardUtils ccUtils, int tournamentID) {
-		StatisticsDBHandler sdbHandler = new StatisticsDBHandler(context);
+		StatisticsDBHandler sdbHandler = new StatisticsDBHandler(this);
 		sdbHandler.addPlayerStats(ccUtils, tournamentID);
 	}
 }

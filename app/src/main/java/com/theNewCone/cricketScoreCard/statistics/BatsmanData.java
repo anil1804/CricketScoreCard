@@ -70,11 +70,11 @@ public class BatsmanData {
 	}
 
 	public double getStrikeRate() {
-		return (double) runsScored/ballsPlayed;
+		return (runsScored > 0) ? (double) (runsScored * 100) / ballsPlayed : 0;
 	}
 
 	public double getAverage() {
-		return (double) runsScored/(totalInnings - notOuts);
+		return (totalInnings - notOuts) > 0 ? (double) runsScored / (totalInnings - notOuts) : -1;
 	}
 
 	public enum Sort implements Comparator<BatsmanData> {

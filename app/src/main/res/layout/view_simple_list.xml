@@ -7,7 +7,9 @@
 	<TextView
 		android:id="@+id/tvSimpleListText"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content" />
+		android:layout_height="wrap_content"
+		android:paddingStart="5dp"
+		android:paddingEnd="5dp" />
 
 	<View style="@style/LineSeparator.Dark.Margin" />
 

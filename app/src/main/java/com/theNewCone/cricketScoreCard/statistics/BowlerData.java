@@ -26,10 +26,6 @@ public class BowlerData {
 		return wicketsTaken;
 	}
 
-	public int getMaidens() {
-		return maidens;
-	}
-
 	public String getBestFigures() {
 		return bestFigures;
 	}
@@ -84,6 +80,10 @@ public class BowlerData {
 		return totalInnings;
 	}
 
+	public double getOversBowled() {
+		return oversBowled;
+	}
+
 	public enum Sort implements Comparator<BowlerData> {
 		ByBestFigures() {
 			@Override
@@ -103,6 +103,9 @@ public class BowlerData {
 			@Override
 			public int compare(BowlerData lhs, BowlerData rhs) {
 				double diff = lhs.getEconomy() - rhs.getEconomy();
+				if (diff == 0) {
+					diff = (lhs.getOversBowled() - rhs.getOversBowled()) * -1;
+				}
 				return (diff > 0) ? 1 : (diff < 0) ? -1 : 0;
 			}
 		};

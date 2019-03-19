@@ -1,15 +1,18 @@
 package com.theNewCone.cricketScoreCard.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.theNewCone.cricketScoreCard.R;
+import com.theNewCone.cricketScoreCard.activity.TournamentPlayerStats;
 import com.theNewCone.cricketScoreCard.adapter.SimpleListAdapter;
 import com.theNewCone.cricketScoreCard.enumeration.StatisticsType;
 import com.theNewCone.cricketScoreCard.intf.ListInteractionListener;
@@ -20,18 +23,24 @@ import java.util.List;
 
 public class TournamentStatsFragment extends Fragment implements ListInteractionListener {
 
-	private Tournament tournament;
+	private final String ARG_TOURNAMENT_ID = "TournamentID";
+	private int tournamentID = 0;
 
 	public TournamentStatsFragment() {
 	}
 
 	public static TournamentStatsFragment newInstance(Tournament tournament) {
 		TournamentStatsFragment fragment = new TournamentStatsFragment();
-		fragment.tournament = tournament;
+		fragment.tournamentID = tournament.getId();
 
 		return fragment;
 	}
 
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState) {
+		super.onSaveInstanceState(outState);
+		saveBundle(outState);
+	}
 
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -50,7 +59,11 @@ public class TournamentStatsFragment extends Fragment implements ListInteraction
 		typesOfStatsList.add(StatisticsType.STUMPING);
 
 		SimpleListAdapter slAdapter = new SimpleListAdapter(typesOfStatsList, this);
+		rcvStatsList.setLayoutManager(new LinearLayoutManager(getContext()));
 		rcvStatsList.setAdapter(slAdapter);
+
+		if (savedInstanceState != null && tournamentID == 0)
+			loadFromBundle(savedInstanceState);
 
 		return theView;
 	}
@@ -66,14 +79,18 @@ public class TournamentStatsFragment extends Fragment implements ListInteraction
 
 	}
 
+	private void saveBundle(Bundle outState) {
+		outState.putSerializable(ARG_TOURNAMENT_ID, tournamentID);
+	}
+
+	private void loadFromBundle(Bundle savedInstanceState) {
+		tournamentID = savedInstanceState.getInt(ARG_TOURNAMENT_ID);
+	}
+
 	private void showStats(StatisticsType statsType) {
-		String fragmentTag;
-		fragmentTag = TournamentPlayerStats.class.getSimpleName();
-		if (getFragmentManager() != null) {
-			getFragmentManager().beginTransaction()
-					.replace(R.id.frame_container, TournamentPlayerStats.newInstance(tournament.getId(), statsType), fragmentTag)
-					.addToBackStack(fragmentTag)
-					.commit();
-		}
+		Intent showStatsIntent = new Intent(getContext(), TournamentPlayerStats.class);
+		showStatsIntent.putExtra(TournamentPlayerStats.PARAM_TOURNAMENT_ID, tournamentID);
+		showStatsIntent.putExtra(TournamentPlayerStats.PARAM_STATS_TYPE, statsType);
+		startActivity(showStatsIntent);
 	}
 }

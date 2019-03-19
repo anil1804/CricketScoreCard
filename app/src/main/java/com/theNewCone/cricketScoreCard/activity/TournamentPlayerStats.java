@@ -1,13 +1,10 @@
-package com.theNewCone.cricketScoreCard.fragment;
+package com.theNewCone.cricketScoreCard.activity;
 
-
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.adapter.TournamentPlayerStatsAdapter;
@@ -17,48 +14,33 @@ import com.theNewCone.cricketScoreCard.statistics.BowlerData;
 import com.theNewCone.cricketScoreCard.statistics.PlayerData;
 import com.theNewCone.cricketScoreCard.utils.database.StatisticsDBHandler;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 
-public class TournamentPlayerStats extends Fragment {
+public class TournamentPlayerStats extends Activity {
 
-	private static final String PARAM_TOURNAMENT_ID = "TournamentID";
-	private static final String PARAM_STATS_TYPE = "StatsType";
+	public static final String PARAM_TOURNAMENT_ID = "TournamentID";
+	public static final String PARAM_STATS_TYPE = "StatsType";
+
 	List<BatsmanData> batsmanDataList = null;
 	List<BowlerData> bowlerDataList = null;
 	List<PlayerData> playerDataList = null;
 	private int tournamentID;
 	private StatisticsType statsType;
 
-	public TournamentPlayerStats() {
-		// Required empty public constructor
-	}
-
-	public static TournamentPlayerStats newInstance(int tournamentID, StatisticsType statsType) {
-		TournamentPlayerStats fragment = new TournamentPlayerStats();
-		Bundle args = new Bundle();
-		args.putInt(PARAM_TOURNAMENT_ID, tournamentID);
-		args.putSerializable(PARAM_STATS_TYPE, statsType);
-		fragment.setArguments(args);
-		return fragment;
-	}
-
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (getArguments() != null) {
-			Bundle args = getArguments();
+		setContentView(R.layout.activity_tournament_player_stats);
+
+		Bundle args = getIntent().getExtras();
+		if (args != null) {
 			tournamentID = args.getInt(PARAM_TOURNAMENT_ID, 0);
 			statsType = (StatisticsType) args.get(PARAM_STATS_TYPE);
 		}
-	}
-
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
-		View theView = inflater.inflate(R.layout.fragment_tournament_player_stats, container, false);
-		RecyclerView rcvStatsPlayersList = theView.findViewById(R.id.rcvStatsPlayersList);
+		RecyclerView rcvStatsPlayersList = findViewById(R.id.rcvStatsPlayersList);
 
 		TournamentPlayerStatsAdapter tpsAdapter = null;
 		switch (statsType) {
@@ -68,7 +50,8 @@ public class TournamentPlayerStats extends Fragment {
 				if (batsmanDataList == null)
 					batsmanDataList = getBatsmanStats();
 
-				tpsAdapter = new TournamentPlayerStatsAdapter(getContext(), batsmanDataList, statsType);
+				if (batsmanDataList != null && batsmanDataList.size() > 0)
+					tpsAdapter = new TournamentPlayerStatsAdapter(this, batsmanDataList, statsType);
 				break;
 
 			case BOWLING_BEST_FIGURES:
@@ -77,7 +60,8 @@ public class TournamentPlayerStats extends Fragment {
 				if (bowlerDataList == null)
 					bowlerDataList = getBowlerStats();
 
-				tpsAdapter = new TournamentPlayerStatsAdapter(getContext(), bowlerDataList, statsType);
+				if (bowlerDataList != null && bowlerDataList.size() > 0)
+					tpsAdapter = new TournamentPlayerStatsAdapter(this, bowlerDataList, statsType);
 				break;
 
 			case CATCHES:
@@ -85,18 +69,22 @@ public class TournamentPlayerStats extends Fragment {
 				if (playerDataList == null)
 					playerDataList = getFielderStats();
 
-				tpsAdapter = new TournamentPlayerStatsAdapter(getContext(), playerDataList, statsType);
+				if (playerDataList != null && playerDataList.size() > 0)
+					tpsAdapter = new TournamentPlayerStatsAdapter(this, playerDataList, statsType);
 				break;
 		}
 
-		if (rcvStatsPlayersList != null)
+		if (tpsAdapter != null) {
+			rcvStatsPlayersList.setLayoutManager(new LinearLayoutManager(this));
 			rcvStatsPlayersList.setAdapter(tpsAdapter);
-
-		return theView;
+		} else {
+			Toast.makeText(this, "No statistics to show", Toast.LENGTH_SHORT).show();
+			finish();
+		}
 	}
 
 	private List<BatsmanData> getBatsmanStats() {
-		StatisticsDBHandler statisticsDBHandler = new StatisticsDBHandler(getContext());
+		StatisticsDBHandler statisticsDBHandler = new StatisticsDBHandler(this);
 
 		switch (statsType) {
 			case HIGHEST_SCORE:
@@ -112,6 +100,15 @@ public class TournamentPlayerStats extends Fragment {
 			case HUNDREDS_FIFTIES:
 				batsmanDataList = statisticsDBHandler.getBatsmanStatistics(tournamentID);
 				Collections.sort(batsmanDataList, BatsmanData.Sort.ByHundreds.descending());
+				List<BatsmanData> compressedList = new ArrayList<>();
+				for (BatsmanData batsmanData : batsmanDataList) {
+					if (batsmanData.getFifties() > 0 || batsmanData.getHundreds() > 0)
+						compressedList.add(batsmanData);
+					else
+						break;
+				}
+				batsmanDataList.clear();
+				batsmanDataList.addAll(compressedList);
 				break;
 		}
 
@@ -119,7 +116,7 @@ public class TournamentPlayerStats extends Fragment {
 	}
 
 	private List<BowlerData> getBowlerStats() {
-		StatisticsDBHandler statisticsDBHandler = new StatisticsDBHandler(getContext());
+		StatisticsDBHandler statisticsDBHandler = new StatisticsDBHandler(this);
 
 		switch (statsType) {
 			case BOWLING_BEST_FIGURES:
@@ -129,7 +126,7 @@ public class TournamentPlayerStats extends Fragment {
 
 			case ECONOMY:
 				bowlerDataList = statisticsDBHandler.getBowlerStatistics(tournamentID);
-				Collections.sort(bowlerDataList, BowlerData.Sort.ByEconomy.descending());
+				Collections.sort(bowlerDataList, BowlerData.Sort.ByEconomy);
 				break;
 
 			case TOTAL_WICKETS:
@@ -142,7 +139,7 @@ public class TournamentPlayerStats extends Fragment {
 	}
 
 	private List<PlayerData> getFielderStats() {
-		StatisticsDBHandler statisticsDBHandler = new StatisticsDBHandler(getContext());
+		StatisticsDBHandler statisticsDBHandler = new StatisticsDBHandler(this);
 
 		switch (statsType) {
 			case CATCHES:
