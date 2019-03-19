@@ -105,7 +105,6 @@
 			android:label="@string/title_activity_tournament_complete" />
 		<activity
 			android:name=".activity.TournamentPlayerStats"
-			android:screenOrientation="userPortrait"
 			android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
 	</application>
 
