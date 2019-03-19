@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.activity.PlayerSelectActivity;
+import com.theNewCone.cricketScoreCard.activity.PlayerStatsActivity;
 import com.theNewCone.cricketScoreCard.activity.TeamSelectActivity;
 import com.theNewCone.cricketScoreCard.enumeration.BattingType;
 import com.theNewCone.cricketScoreCard.enumeration.BowlingType;
@@ -44,7 +45,7 @@ public class PlayerFragment extends Fragment
     Player selPlayer;
 
 	Button btnSelectBatStyle, btnSelectBowlStyle, btnManageTeams;
-    Button btnDelete;
+	Button btnDelete, btnStatistics;
     List<Integer> associatedToTeams;
     Team[] selTeams;
 
@@ -149,9 +150,12 @@ public class PlayerFragment extends Fragment
                 confirmDeletePlayer();
                 break;
 
-
 			case R.id.btnPlayerManageTeams:
 				showTeamsSelectDialog();
+				break;
+
+			case R.id.btnPlayerShowStats:
+				showPlayerStatistics();
 				break;
         }
     }
@@ -230,6 +234,7 @@ public class PlayerFragment extends Fragment
 		btnManageTeams = theView.findViewById(R.id.btnPlayerManageTeams);
 
 		btnDelete = theView.findViewById(R.id.btnPlayerDelete);
+		btnStatistics = theView.findViewById(R.id.btnPlayerShowStats);
 
 		tvBatStyle.setOnClickListener(this);
 		tvBowlStyle.setOnClickListener(this);
@@ -298,6 +303,7 @@ public class PlayerFragment extends Fragment
 
 			if (selPlayer.getID() >= 0) {
 				btnDelete.setVisibility(View.VISIBLE);
+				btnStatistics.setVisibility(View.VISIBLE);
 			}
 		} else {
 			etName.setText("");
@@ -306,6 +312,7 @@ public class PlayerFragment extends Fragment
 			tvBowlStyle.setText(R.string.selectBowlStyle);
 			cbIsWK.setChecked(false);
 			btnDelete.setVisibility(View.INVISIBLE);
+			btnStatistics.setVisibility(View.GONE);
 			tvTeams.setText(getString(R.string.none));
 
 			etName.requestFocus();
@@ -444,5 +451,11 @@ public class PlayerFragment extends Fragment
 			dialog.setConfirmationClickListener(this);
 			dialog.show(getFragmentManager(), "ConfirmPlayerDeleteDialog");
 		}
+	}
+
+	private void showPlayerStatistics() {
+		Intent intent = new Intent(getContext(), PlayerStatsActivity.class);
+		intent.putExtra(PlayerStatsActivity.ARG_PLAYER, selPlayer);
+		startActivity(intent);
 	}
 }

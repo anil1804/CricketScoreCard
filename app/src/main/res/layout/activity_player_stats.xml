@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context="com.theNewCone.cricketScoreCard.activity.PlayerStatsActivity">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<TextView
+			android:id="@+id/tvPSPlayerName"
+			style="@style/TextViewStyle.Large.Bold.BigMargin" />
+
+		<LinearLayout
+			android:id="@+id/llPSMatchInfo"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+
+			<TextView
+				style="@style/TextViewStyle.Big.Bold"
+				android:text="@string/matches" />
+
+			<TextView
+				android:id="@+id/tvPSMatches"
+				style="@style/TextViewStyle.Big" />
+
+			<View style="@style/LineSeparator.Dark.Margin" />
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/llPSBatting"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+
+			<TextView
+				style="@style/TextViewStyle.Large.Bold"
+				android:text="@string/battingStats" />
+
+			<TableLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:stretchColumns="*">
+
+				<TableRow>
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_inns" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_runs" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_balls" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_highScore" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_hundreds" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_fifties" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_average" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/headerStrikeRate" />
+				</TableRow>
+
+				<TableRow>
+
+					<TextView
+						android:id="@+id/tvPSBatInns"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBatRuns"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBatBalls"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBatHS"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBat100s"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBat50s"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBatAvg"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBatSR"
+						style="@style/TextViewStyle.TableRow.Center" />
+				</TableRow>
+
+			</TableLayout>
+
+			<View style="@style/LineSeparator.Dark.Margin" />
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/llPSBowling"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+
+			<TextView
+				style="@style/TextViewStyle.Large.Bold"
+				android:text="@string/bowlingStats" />
+
+			<TableLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:stretchColumns="*">
+
+				<TableRow>
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_inns" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_overs" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_runs" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_wickets" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_bestBowlingFigures" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_average" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/headerStrikeRate" />
+
+				</TableRow>
+
+				<TableRow>
+
+					<TextView
+						android:id="@+id/tvPSBowlInns"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBowlOvers"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBowlRuns"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBowlWickets"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBowlBF"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBowlAvg"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBowlSR"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+				</TableRow>
+
+			</TableLayout>
+
+			<View style="@style/LineSeparator.Dark.Margin" />
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/llPSFielding"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+
+			<TextView
+				style="@style/TextViewStyle.Large.Bold"
+				android:text="@string/fieldingStats" />
+
+			<TableLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:stretchColumns="*">
+
+				<TableRow>
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/catches" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/runOuts" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stumpings" />
+
+				</TableRow>
+
+				<TableRow>
+
+					<TextView
+						android:id="@+id/tvPSCatches"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSRunOuts"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSStumpings"
+						style="@style/TextViewStyle.TableRow.Center" />
+				</TableRow>
+
+			</TableLayout>
+
+		</LinearLayout>
+
+		<TextView
+			android:id="@+id/tvPSNoData"
+			style="@style/TextViewStyle.Large"
+			android:text="@string/noDataFound"
+			android:visibility="gone" />
+
+	</LinearLayout>
+
+</ScrollView>

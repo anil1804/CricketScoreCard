@@ -371,7 +371,7 @@
 	<string name="stats_bowling_average">Bowling Average</string>
 	<string name="stats_catches">Catches</string>
 	<string name="stats_stumping">Stumping</string>
-	<string name="stats_hdr_inns">Inns</string>
+	<string name="stats_hdr_inns">I</string>
 	<string name="stats_hdr_bestBowlingFigures">BBF</string>
 	<string name="stats_hdr_average">Avg.</string>
 	<string name="stats_hdr_hundreds">100s</string>
@@ -382,5 +382,16 @@
 	<string name="stats_hdr_innings">Inns.</string>
 	<string name="stats_hdr_highScore">H.S.</string>
 	<string name="stats_hdr_total">Total</string>
-	<string name="stats_hdr_overs">Overs</string>
+	<string name="stats_hdr_overs">O</string>
+	<string name="battingStats">Batting Statistics</string>
+	<string name="catches">Catches</string>
+	<string name="runOuts">Run-Outs</string>
+	<string name="stumpings">Stumpings</string>
+	<string name="stats_hdr_runs">R</string>
+	<string name="stats_hdr_balls">B</string>
+	<string name="bowlingStats">Bowling Statistics</string>
+	<string name="stats_hdr_wickets">W</string>
+	<string name="fieldingStats">Fielding Statistics</string>
+	<string name="showStatistics">Show Statistics</string>
+	<string name="noDataFound">No Data Found</string>
 </resources>

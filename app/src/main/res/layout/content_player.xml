@@ -142,4 +142,12 @@
 
 	<View style="@style/LineSeparator.Dark.Margin" />
 
+	<Button
+		android:id="@+id/btnPlayerShowStats"
+		style="@style/ButtonStyle"
+		android:layout_gravity="center_horizontal"
+		android:contentDescription="@string/showStatistics"
+		android:text="@string/showStatistics"
+		android:visibility="gone" />
+
 </LinearLayout>

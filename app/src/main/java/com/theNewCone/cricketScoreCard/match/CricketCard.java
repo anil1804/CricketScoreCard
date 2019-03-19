@@ -198,6 +198,11 @@ public class CricketCard implements Serializable {
 		this.innings = innings;
 		this.totalOversBowled = "0.0";
 		inningsComplete = false;
+
+		for (Player player : bowlingTeam.getMatchPlayers()) {
+			FielderStats fielderStats = new FielderStats(player);
+			updateFielderInMap(fielderStats);
+		}
 	}
 
 	void addWides(int wides, boolean isCancel) {

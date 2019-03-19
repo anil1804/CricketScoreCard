@@ -7,6 +7,7 @@ import android.content.Intent;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.database.StatisticsDBHandler;
+import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 
 public class StatisticsIntentService extends IntentService {
@@ -30,10 +31,9 @@ public class StatisticsIntentService extends IntentService {
 		super("StatisticsIntentService");
 	}
 
-	public void startActionStoreMatchStatistics(Context context, CricketCardUtils ccUtils, boolean isTournament, int tournamentID) {
+	public void startActionStoreMatchStatistics(Context context, CricketCardUtils ccUtils) {
 
-		if(!isTournament)
-			tournamentID = 0;
+		int tournamentID = new TournamentDBHandler(this).getTournamentIDUsingMatchID(ccUtils.getMatchID());
 
 		Intent intent = new Intent(context, StatisticsIntentService.class);
 		intent.setAction(ACTION_STORE_MATCH_STATS);

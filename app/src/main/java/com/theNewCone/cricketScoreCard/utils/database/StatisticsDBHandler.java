@@ -319,4 +319,61 @@ public class StatisticsDBHandler extends DatabaseHandler {
 
 		return playerMatchData;
 	}
+
+	public PlayerData getPlayerStatistics(Player player) {
+		PlayerData playerData = new PlayerData(player);
+
+		/* Extracting Fielder Data */
+		String sqlQuery = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d",
+				TBL_PLAYER_STATS, TBL_PLAYER_STATS_PLAYER_ID, player.getID());
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cursor = db.rawQuery(sqlQuery, null, null);
+
+		if (cursor != null && cursor.moveToFirst()) {
+			List<PlayerMatchData> playerMatchDataList = new ArrayList<>();
+			while (cursor.moveToNext()) {
+				playerMatchDataList.add(getFielderDataFromCursor(cursor));
+			}
+
+			playerData.setPlayerMatchDataList(playerMatchDataList);
+			cursor.close();
+		}
+
+		/* Extracting Batsman Data */
+		sqlQuery = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d",
+				TBL_BATSMAN_STATS, TBL_BATSMAN_STATS_PLAYER_ID, player.getID());
+
+		cursor = db.rawQuery(sqlQuery, null, null);
+
+		if (cursor != null && cursor.moveToFirst()) {
+			List<PlayerMatchData> playerMatchDataList = new ArrayList<>();
+			BatsmanData batsmanData = new BatsmanData(player);
+			while (cursor.moveToNext()) {
+				playerMatchDataList.add(getBatsmanDataFromCursor(cursor));
+			}
+
+			batsmanData.setPlayerMatchDataList(playerMatchDataList);
+			playerData.setBatsmanData(batsmanData);
+		}
+
+		/* Extracting Bowler Data */
+		sqlQuery = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d",
+				TBL_BOWLER_STATS, TBL_BOWLER_STATS_PLAYER_ID, player.getID());
+
+		cursor = db.rawQuery(sqlQuery, null, null);
+
+		if (cursor != null && cursor.moveToFirst()) {
+			List<PlayerMatchData> playerMatchDataList = new ArrayList<>();
+			BowlerData bowlerData = new BowlerData(player);
+			while (cursor.moveToNext()) {
+				playerMatchDataList.add(getBatsmanDataFromCursor(cursor));
+			}
+
+			bowlerData.setPlayerMatchDataList(playerMatchDataList);
+			playerData.setBowlerData(bowlerData);
+		}
+
+		return playerData;
+	}
 }

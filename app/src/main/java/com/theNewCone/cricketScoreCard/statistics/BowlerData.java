@@ -30,11 +30,14 @@ public class BowlerData {
 		return bestFigures;
 	}
 
+	public int getRunsGiven() {
+		return runsGiven;
+	}
+
 	public void setPlayerMatchDataList(List<PlayerMatchData> playerMatchDataList) {
 		this.playerMatchDataList = playerMatchDataList;
 		updatePlayerStats();
 	}
-
 
 	private void updatePlayerStats() {
 		int bfRunsGiven = 0, bfWicketsTaken = 0;

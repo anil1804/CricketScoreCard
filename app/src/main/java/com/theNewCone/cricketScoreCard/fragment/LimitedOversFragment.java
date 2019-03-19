@@ -1456,7 +1456,7 @@ public class LimitedOversFragment extends Fragment
 		}
 
 		StatisticsIntentService service = new StatisticsIntentService();
-		service.startActionStoreMatchStatistics(getContext(), ccUtils, isTournament, tournamentID);
+		service.startActionStoreMatchStatistics(getContext(), ccUtils);
 	}
 
 	private void quitMatch() {

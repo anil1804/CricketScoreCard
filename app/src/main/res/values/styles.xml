@@ -234,6 +234,16 @@
 		<item name="android:textStyle">bold</item>
 	</style>
 
+	<style name="TextViewStyle.TableRow.Center">
+		<item name="android:background">@drawable/customborder</item>
+		<item name="android:gravity">center</item>
+	</style>
+
+	<style name="TextViewStyle.TableRow.Header.Center">
+		<item name="android:background">@drawable/customborder</item>
+		<item name="android:gravity">center</item>
+	</style>
+
 	<style name="TextViewStyle.TableRow.Data">
 		<item name="android:layout_width">30dp</item>
 		<item name="android:gravity">right</item>

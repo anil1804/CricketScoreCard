@@ -36,6 +36,10 @@ public class BatsmanData {
 		return runsScored;
 	}
 
+	public int getBallsPlayed() {
+		return ballsPlayed;
+	}
+
 	public int getTotalInnings() {
 		return totalInnings;
 	}

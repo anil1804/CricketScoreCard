@@ -11,6 +11,8 @@ public class PlayerData {
 
 	private Player player;
 	private List<PlayerMatchData> playerMatchDataList;
+	private BatsmanData batsmanData;
+	private BowlerData bowlerData;
 
 	public PlayerData(Player player) {
 		this.player = player;
@@ -39,6 +41,22 @@ public class PlayerData {
 	public void setPlayerMatchDataList(List<PlayerMatchData> playerData) {
 		this.playerMatchDataList = playerData;
 		updatePlayerFieldingData();
+	}
+
+	public BatsmanData getBatsmanData() {
+		return batsmanData;
+	}
+
+	public void setBatsmanData(BatsmanData batsmanData) {
+		this.batsmanData = batsmanData;
+	}
+
+	public BowlerData getBowlerData() {
+		return bowlerData;
+	}
+
+	public void setBowlerData(BowlerData bowlerData) {
+		this.bowlerData = bowlerData;
 	}
 
 	private void updatePlayerFieldingData() {
