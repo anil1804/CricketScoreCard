@@ -25,7 +25,7 @@ public class SimpleListAdapter extends RecyclerView.Adapter<SimpleListAdapter.My
 	@Override
 	public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
 		View view = LayoutInflater.from(parent.getContext())
-				.inflate(R.layout.fragment_team_view, parent, false);
+				.inflate(R.layout.view_simple_list, parent, false);
 		return new MyViewHolder(view);
 	}
 
