@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CricketCardUtils implements Cloneable {
-	private int numConsecutiveDots = 0, tossWonByTeamID, maxWickets, prevBallFacingBatsmanID;
+	private int numConsecutiveDots = 0, tossWonByTeamID, maxWickets, prevBallFacingBatsmanID, matchID;
 	private boolean newOver, matchTied = false, isAbandoned = false;
 	private boolean isTournament = false;
 
@@ -129,6 +129,16 @@ public class CricketCardUtils implements Cloneable {
 		return isTournament;
 	}
 
+	public CricketCardUtils(CricketCard card, int matchID, String matchName, Team team1, Team team2, int maxWickets) {
+		this.card = card;
+		this.matchID = matchID;
+		this.matchName = matchName;
+		this.team1 = team1;
+		this.team2 = team2;
+		this.maxWickets = maxWickets;
+		this.newOver = true;
+	}
+
 	public MatchInfo getMatchInfo() {
 		return matchInfo;
 	}
@@ -138,18 +148,13 @@ public class CricketCardUtils implements Cloneable {
 		this.isTournament = true;
 	}
 
-	public CricketCardUtils(CricketCard card, String matchName, Team team1, Team team2, int maxWickets) {
-		this.card = card;
-		this.matchName = matchName;
-		this.team1 = team1;
-		this.team2 = team2;
-		this.maxWickets = maxWickets;
-		this.newOver = true;
+	public int getMatchID() {
+		return matchID;
 	}
 
 	private CricketCardUtils cloneCCUtils(CricketCardUtils ccUtils) {
     	CricketCardUtils cricketCardUtils =
-				new CricketCardUtils(ccUtils.getCard(), ccUtils.getMatchName(), ccUtils.getTeam1(),
+				new CricketCardUtils(ccUtils.getCard(), ccUtils.getMatchID(), ccUtils.getMatchName(), ccUtils.getTeam1(),
 						ccUtils.getTeam2(), ccUtils.getMaxWickets());
 
 		cricketCardUtils.numConsecutiveDots = ccUtils.numConsecutiveDots;
@@ -385,6 +390,8 @@ public class CricketCardUtils implements Cloneable {
 					fielderStats.incrementCatches();
 					break;
 			}
+
+			card.updateFielderInMap(fielderStats);
 		}
 	}
 

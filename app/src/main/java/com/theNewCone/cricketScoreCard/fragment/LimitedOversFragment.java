@@ -175,8 +175,6 @@ public class LimitedOversFragment extends Fragment
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 
-		this.tournamentID = new TournamentDBHandler(getContext()).getTournamentIDUsingMatchID(matchID);
-
 		if (isLoad) {
 			if (matchStateID > 0) {
 				loadMatch(matchStateID);
@@ -187,6 +185,7 @@ public class LimitedOversFragment extends Fragment
 			}
 		} else {
 			if (isTournament) {
+				this.tournamentID = new TournamentDBHandler(getContext()).getTournamentIDUsingMatchID(matchID);
 				startTournamentMatch();
 				saveMatchName = ccUtils.getMatchName();
 				saveMatch(saveMatchName);
@@ -697,7 +696,7 @@ public class LimitedOversFragment extends Fragment
 				new CricketCard(battingTeam, bowlingTeam,
 						String.valueOf(maxOvers), maxPerBowler, maxWickets, 1);
 
-		ccUtils = new CricketCardUtils(card, matchName, battingTeam, bowlingTeam, maxWickets);
+		ccUtils = new CricketCardUtils(card, matchID, matchName, battingTeam, bowlingTeam, maxWickets);
 		ccUtils.setTossWonBy(tossWonBy.getId());
 
 		if (matchInfo != null) {
@@ -1256,7 +1255,7 @@ public class LimitedOversFragment extends Fragment
 	private void showSavedMatchDialog() {
 		MatchStateDBHandler matchStateDBHandler = new MatchStateDBHandler(getContext());
 
-		List<MatchState> savedMatchDataList = matchStateDBHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, matchID, null, false);
+		List<MatchState> savedMatchDataList = matchStateDBHandler.getSavedMatches(DatabaseHandler.SAVE_MANUAL, matchID, null, isTournament);
 		if(savedMatchDataList != null && savedMatchDataList.size() > 0) {
 			Intent getMatchListIntent = new Intent(getContext(), MatchStateSelectActivity.class);
 			getMatchListIntent.putExtra(MatchStateSelectActivity.ARG_MATCH_LIST, savedMatchDataList.toArray());
@@ -1445,21 +1444,15 @@ public class LimitedOversFragment extends Fragment
 		MatchStateDBHandler matchStateDBHandler = new MatchStateDBHandler(getContext());
 
 		matchDBHandler.completeMatch(matchID, CommonUtils.convertToJSON(ccUtils));
-
 		matchStateDBHandler.clearAllMatchHistory(matchID);
 
 		if (getActivity() != null && getFragmentManager() != null) {
 			if (isTournament) {
-				CommonUtils.clearBackStackUntil(getFragmentManager(),
-						NewMatchFragment.class.getSimpleName());
 				TournamentUtils tournamentUtils = new TournamentUtils(getContext());
 				tournamentUtils.closeTournamentMatch(ccUtils);
-				getActivity().onBackPressed();
-			} else {
-				CommonUtils.clearBackStackUntil(getFragmentManager(),
-						NewMatchFragment.class.getSimpleName());
-				getActivity().onBackPressed();
 			}
+			//CommonUtils.clearBackStackUntil(getFragmentManager(), NewMatchFragment.class.getSimpleName());
+			getActivity().onBackPressed();
 		}
 
 		StatisticsIntentService service = new StatisticsIntentService();
@@ -1467,19 +1460,12 @@ public class LimitedOversFragment extends Fragment
 	}
 
 	private void quitMatch() {
-		/*dbHandler.clearMatchStateHistory(0, matchID, -1);
-		if (getActivity() != null && getFragmentManager() != null) {
+		MatchStateDBHandler matchStateDBHandler = new MatchStateDBHandler(getContext());
+		matchStateDBHandler.clearMatchStateHistory(1, matchID, -1);
 
-			if (isTournament) {
-				CommonUtils.clearBackStackUntil(getFragmentManager(),
-						NewMatchFragment.class.getSimpleName());
-				getActivity().onBackPressed();
-			} else {
-				CommonUtils.clearBackStackUntil(getFragmentManager(),
-						NewMatchFragment.class.getSimpleName());
-				getActivity().onBackPressed();
-			}
-		}*/
-		completeMatch();
+		if (getActivity() != null && getFragmentManager() != null) {
+			CommonUtils.clearBackStackUntil(getFragmentManager(), NewMatchFragment.class.getSimpleName());
+			getActivity().onBackPressed();
+		}
 	}
 }
