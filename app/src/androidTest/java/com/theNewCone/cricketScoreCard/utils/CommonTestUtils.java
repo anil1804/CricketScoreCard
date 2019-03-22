@@ -110,7 +110,7 @@ public class CommonTestUtils {
 		return onView(childAtPosition(parentMatcher, position)).perform(scrollTo());
 	}
 
-	public static ViewInteraction getChild(Matcher<View> parentMatcher, Matcher<View> childMatcher) {
+	static ViewInteraction getChild(Matcher<View> parentMatcher, Matcher<View> childMatcher) {
 		return onView(childWithParent(parentMatcher, childMatcher));
 	}
 
