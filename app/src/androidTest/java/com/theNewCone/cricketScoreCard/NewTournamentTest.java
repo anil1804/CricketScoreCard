@@ -42,7 +42,7 @@ public class NewTournamentTest {
 /*
 	@Test
 	public void notEnoughTeams() {
-		HomeActivity activity = homeActivityTestRule.getActivity();
+		HomeActivity activity = mActivityTestRule.getActivity();
 		Context context = activity.getApplicationContext();
 		Resources resources = activity.getResources();
 
