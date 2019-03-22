@@ -9,7 +9,7 @@ import android.util.Log;
 import com.theNewCone.cricketScoreCard.activity.HomeActivity;
 import com.theNewCone.cricketScoreCard.utils.CommonTestUtils;
 import com.theNewCone.cricketScoreCard.utils.MatchRunInfo;
-import com.theNewCone.cricketScoreCard.utils.MatchSimulator;
+import com.theNewCone.cricketScoreCard.utils.TournamentTestUtils;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -20,13 +20,10 @@ import java.util.concurrent.TimeUnit;
 
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.replaceText;
-import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.allOf;
 
-public class TournamentTest {
+public class TournamentTest_Bilateral {
 	private final String tournamentName = "Aus V Ind - India 2019";
 
 	@Rule
@@ -41,16 +38,19 @@ public class TournamentTest {
 
 	@Test
 	public void testBilateralSeries() {
-		createAusVsIndBilateralSeries();
-		testAusVsIndBilateralSeriesMatch1();
-		testAusVsIndBilateralSeriesMatch2();
-		testAusVsIndBilateralSeriesMatch3();
+		createAusVsIndSeries();
+		openTournamentScheduleScreen();
+
+		triggerMatch(1);
+		triggerMatch(2);
+		triggerMatch(3);
 	}
 
-	private void createAusVsIndBilateralSeries() {
+	private void createAusVsIndSeries() {
 		HomeActivity activity = homeActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
+		TournamentTestUtils.closeLoadMatchPopup(homeActivityTestRule);
 		CommonTestUtils.getDisplayedView(R.id.btnLoadTournament).perform(click());
 
 		if(CommonTestUtils.checkViewExists(withText(tournamentName))) {
@@ -72,31 +72,21 @@ public class TournamentTest {
 			CommonTestUtils.getDisplayedView(R.id.etNumRounds).perform(replaceText(String.valueOf(3)));
 
 			CommonTestUtils.getDisplayedView(resources.getString(R.string.setMatchData)).perform(click());
-			CommonTestUtils.goToView(R.id.etMaxOvers).perform(replaceText("20"));
+
+			/* 20 Overs*/
+			/*CommonTestUtils.goToView(R.id.etMaxOvers).perform(replaceText("20"));
 			CommonTestUtils.goToView(R.id.etMaxWickets).perform(replaceText("10"));
+			CommonTestUtils.goToView(R.id.etNumPlayers).perform(replaceText("11"));*/
+
+			/* 5 Overs*/
+			CommonTestUtils.goToView(R.id.etMaxOvers).perform(replaceText("5"));
+			CommonTestUtils.goToView(R.id.etMaxWickets).perform(replaceText("2"));
+			CommonTestUtils.goToView(R.id.etMaxPerBowler).perform(replaceText("2"));
 			CommonTestUtils.goToView(R.id.etNumPlayers).perform(replaceText("11"));
 
 			CommonTestUtils.goToView(resources.getString(R.string.confirm)).perform(click());
 		}
 
-		CommonTestUtils.clickNavigationMenuItem(1);
-	}
-
-	private void testAusVsIndBilateralSeriesMatch1() {
-		openTournamentScheduleScreen();
-		triggerAusVsIndMatch(1);
-		CommonTestUtils.clickNavigationMenuItem(1);
-	}
-
-	private void testAusVsIndBilateralSeriesMatch2() {
-		openTournamentScheduleScreen();
-		triggerAusVsIndMatch(2);
-		CommonTestUtils.clickNavigationMenuItem(1);
-	}
-
-	private void testAusVsIndBilateralSeriesMatch3() {
-		openTournamentScheduleScreen();
-		triggerAusVsIndMatch(3);
 		CommonTestUtils.clickNavigationMenuItem(1);
 	}
 
@@ -109,7 +99,7 @@ public class TournamentTest {
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentSchedule)).perform(click());
 	}
 
-	private void triggerAusVsIndMatch(int matchNumber) {
+	private void triggerMatch(int matchNumber) {
 		HomeActivity activity = homeActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
@@ -152,30 +142,6 @@ public class TournamentTest {
 
 		Log.i(Constants.LOG_TAG, String.format("Match-%d, %s won the toss and chose to %s", matchNumber, tossWonBy, resources.getString(choseTo)));
 
-		triggerMatch(matchNumber, info);
-	}
-
-	private void triggerMatch(int matchNumber, MatchRunInfo info) {
-		HomeActivity activity = homeActivityTestRule.getActivity();
-		Resources resources = activity.getResources();
-
-		String matchNumberText = resources.getString(R.string.matchPrefix) + String.valueOf(matchNumber);
-		if(CommonTestUtils.checkViewExists(allOf(
-				withText("Start"),
-				withParent(allOf(
-						withId(R.id.clTHScheduleItem),
-						hasDescendant(withText(matchNumberText))))))) {
-			CommonTestUtils
-					.getChild(allOf(withId(R.id.clTHScheduleItem), hasDescendant(withText(matchNumberText))), withText("Start"))
-					.perform(click());
-
-			MatchSimulator simulator = new MatchSimulator(activity);
-			String csvFile = "csv/templates/" +  matchNumber%5 + ".csv";
-			Log.i(Constants.LOG_TAG, "CSV File being used to simulate match is " + csvFile);
-
-			simulator.simulateCSV(csvFile, info);
-		} else {
-			Log.i(Constants.LOG_TAG, String.format("Match-%d is already running/complete", matchNumber));
-		}
+		TournamentTestUtils.triggerMatch(matchNumber, info, homeActivityTestRule);
 	}
 }
