@@ -364,7 +364,8 @@ public class TournamentUtils {
 		Group group;
 		List<Team> winningsTeams = new ArrayList<>();
 
-		if (tournament.getFormat() == TournamentFormat.KNOCK_OUT) {
+		if (tournament.getFormat() == TournamentFormat.KNOCK_OUT
+				|| (tournament.getFormat() == TournamentFormat.ROUND_ROBIN && lastGroup.getStageType() == TournamentStageType.KNOCK_OUT)) {
 			if (lastGroup.getMatchInfoList() != null) {
 				for (MatchInfo matchInfo : lastGroup.getMatchInfoList()) {
 					winningsTeams.add(matchInfo.getWinningTeam());
@@ -381,6 +382,19 @@ public class TournamentUtils {
 				for (int i = 0; i < numberOfTeamsPerGroup; i++) {
 					winningsTeams.add(pointsDataList.get(i).getTeam());
 				}
+			}
+		} else if (tournament.getFormat() == TournamentFormat.ROUND_ROBIN) {
+			int numberOfTeams = 2;
+			int lastGroupMatchCount = lastGroup.getMatchInfoList().size();
+			if (lastGroupMatchCount > 12) {
+				numberOfTeams = 8;
+			} else if (lastGroupMatchCount > 6) {
+				numberOfTeams = 4;
+			}
+
+			List<PointsData> pointsDataList = lastGroup.getPointsData();
+			for (int i = 0; i < numberOfTeams; i++) {
+				winningsTeams.add(pointsDataList.get(i).getTeam());
 			}
 		}
 
@@ -509,8 +523,7 @@ public class TournamentUtils {
 			group = createGroupSchedule(group, groupStage);
 			tournament.updateGroup(group);
 		} else {
-			MatchInfo matchInfo = lastGroup.getMatchInfoList().get(0);
-			completeTournament(tournament, matchInfo.getWinningTeam());
+			completeTournament(tournament, lastGroup.getPointsData().get(0).getTeam());
 		}
 
 		return tournament;
