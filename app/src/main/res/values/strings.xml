@@ -394,4 +394,5 @@
 	<string name="fieldingStats">Fielding Statistics</string>
 	<string name="showStatistics">Show Statistics</string>
 	<string name="noDataFound">No Data Found</string>
+	<string name="stats_hdr_economy">Econ.</string>
 </resources>

@@ -7,7 +7,6 @@ import android.content.Intent;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.database.StatisticsDBHandler;
-import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 
 public class StatisticsIntentService extends IntentService {
@@ -25,20 +24,15 @@ public class StatisticsIntentService extends IntentService {
 */
 
 	private static final String ARG_CC_UTILS = "CricketCardUtils";
-	private static final String ARG_TOURNAMENT_ID = "isTournament";
 
 	public StatisticsIntentService() {
 		super("StatisticsIntentService");
 	}
 
 	public void startActionStoreMatchStatistics(Context context, CricketCardUtils ccUtils) {
-
-		int tournamentID = new TournamentDBHandler(this).getTournamentIDUsingMatchID(ccUtils.getMatchID());
-
 		Intent intent = new Intent(context, StatisticsIntentService.class);
 		intent.setAction(ACTION_STORE_MATCH_STATS);
 		intent.putExtra(ARG_CC_UTILS, CommonUtils.convertToJSON(ccUtils));
-		intent.putExtra(ARG_TOURNAMENT_ID, tournamentID);
 		context.startService(intent);
 	}
 
@@ -50,16 +44,15 @@ public class StatisticsIntentService extends IntentService {
 				switch (action) {
 					case ACTION_STORE_MATCH_STATS:
 						final CricketCardUtils ccUtils = CommonUtils.convertToCCUtils(intent.getStringExtra(ARG_CC_UTILS));
-						final int tournamentID = intent.getIntExtra(ARG_TOURNAMENT_ID, 0);
-						storeMatchStatistics(ccUtils, tournamentID);
+						storeMatchStatistics(ccUtils);
 						break;
 				}
 			}
 		}
 	}
 
-	private void storeMatchStatistics(CricketCardUtils ccUtils, int tournamentID) {
+	private void storeMatchStatistics(CricketCardUtils ccUtils) {
 		StatisticsDBHandler sdbHandler = new StatisticsDBHandler(this);
-		sdbHandler.addPlayerStats(ccUtils, tournamentID);
+		sdbHandler.addPlayerStats(ccUtils);
 	}
 }

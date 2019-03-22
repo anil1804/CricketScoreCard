@@ -132,6 +132,17 @@ public class TournamentPlayerStats extends Activity {
 			case TOTAL_WICKETS:
 				bowlerDataList = statisticsDBHandler.getBowlerStatistics(tournamentID);
 				Collections.sort(bowlerDataList, BowlerData.Sort.ByTotalWickets.descending());
+
+				List<BowlerData> compressedList = new ArrayList<>();
+				for (BowlerData bowlerData : bowlerDataList) {
+					if (bowlerData.getWicketsTaken() > 0)
+						compressedList.add(bowlerData);
+					else
+						break;
+				}
+				bowlerDataList.clear();
+				bowlerDataList.addAll(compressedList);
+
 				break;
 		}
 
@@ -140,16 +151,37 @@ public class TournamentPlayerStats extends Activity {
 
 	private List<PlayerData> getFielderStats() {
 		StatisticsDBHandler statisticsDBHandler = new StatisticsDBHandler(this);
+		List<PlayerData> compressedList = new ArrayList<>();
 
 		switch (statsType) {
 			case CATCHES:
 				playerDataList = statisticsDBHandler.getFielderStatistics(tournamentID);
 				Collections.sort(playerDataList, PlayerData.Sort.ByCatches.descending());
+
+				for (PlayerData playerData : playerDataList) {
+					if (playerData.getCatches() > 0 || playerData.getRunOuts() > 0)
+						compressedList.add(playerData);
+					else
+						break;
+				}
+				playerDataList.clear();
+				playerDataList.addAll(compressedList);
+
 				break;
 
 			case STUMPING:
 				playerDataList = statisticsDBHandler.getFielderStatistics(tournamentID);
 				Collections.sort(playerDataList, PlayerData.Sort.ByStumping.descending());
+
+				for (PlayerData playerData : playerDataList) {
+					if (playerData.getStumps() > 0 || playerData.getRunOuts() > 0)
+						compressedList.add(playerData);
+					else
+						break;
+				}
+				playerDataList.clear();
+				playerDataList.addAll(compressedList);
+
 				break;
 		}
 

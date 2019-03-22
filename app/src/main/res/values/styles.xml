@@ -235,12 +235,12 @@
 	</style>
 
 	<style name="TextViewStyle.TableRow.Center">
-		<item name="android:background">@drawable/customborder</item>
+		<item name="android:background">@drawable/borders_inner</item>
 		<item name="android:gravity">center</item>
 	</style>
 
 	<style name="TextViewStyle.TableRow.Header.Center">
-		<item name="android:background">@drawable/customborder</item>
+		<item name="android:background">@drawable/borders_inner</item>
 		<item name="android:gravity">center</item>
 	</style>
 

@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.player.Player;
+import com.theNewCone.cricketScoreCard.statistics.BatsmanData;
+import com.theNewCone.cricketScoreCard.statistics.BowlerData;
 import com.theNewCone.cricketScoreCard.statistics.PlayerData;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.database.StatisticsDBHandler;
@@ -36,32 +38,42 @@ public class PlayerStatsActivity extends Activity {
 		boolean hasStats = false;
 
 		/* Batsman Statistics */
-		if (playerData.getBatsmanData() != null) {
+		BatsmanData batsmanData = playerData.getBatsmanData();
+		if (batsmanData != null) {
 			hasStats = true;
 
-			((TextView) findViewById(R.id.tvPSBatRuns)).setText(String.valueOf(playerData.getBatsmanData().getTotalInnings()));
-			((TextView) findViewById(R.id.tvPSBatInns)).setText(String.valueOf(playerData.getBatsmanData().getRunsScored()));
-			((TextView) findViewById(R.id.tvPSBatBalls)).setText(String.valueOf(playerData.getBatsmanData().getBallsPlayed()));
-			((TextView) findViewById(R.id.tvPSBatHS)).setText(String.valueOf(playerData.getBatsmanData().getHighestScore()));
-			((TextView) findViewById(R.id.tvPSBat50s)).setText(String.valueOf(playerData.getBatsmanData().getFifties()));
-			((TextView) findViewById(R.id.tvPSBat100s)).setText(String.valueOf(playerData.getBatsmanData().getHundreds()));
-			((TextView) findViewById(R.id.tvPSBatAvg)).setText(CommonUtils.doubleToString(playerData.getBatsmanData().getAverage(), null));
-			((TextView) findViewById(R.id.tvPSBatSR)).setText(CommonUtils.doubleToString(playerData.getBatsmanData().getStrikeRate(), null));
+			String average = batsmanData.getAverage() > 0 ? CommonUtils.doubleToString(batsmanData.getAverage(), null) : "-";
+			String strikeRate = batsmanData.getStrikeRate() > 0 ? CommonUtils.doubleToString(batsmanData.getStrikeRate(), null) : "-";
+
+			((TextView) findViewById(R.id.tvPSBatRuns)).setText(String.valueOf(batsmanData.getTotalInnings()));
+			((TextView) findViewById(R.id.tvPSBatInns)).setText(String.valueOf(batsmanData.getRunsScored()));
+			((TextView) findViewById(R.id.tvPSBatBalls)).setText(String.valueOf(batsmanData.getBallsPlayed()));
+			((TextView) findViewById(R.id.tvPSBatHS)).setText(String.valueOf(batsmanData.getHighestScore()));
+			((TextView) findViewById(R.id.tvPSBat50s)).setText(String.valueOf(batsmanData.getFifties()));
+			((TextView) findViewById(R.id.tvPSBat100s)).setText(String.valueOf(batsmanData.getHundreds()));
+			((TextView) findViewById(R.id.tvPSBatAvg)).setText(average);
+			((TextView) findViewById(R.id.tvPSBatSR)).setText(strikeRate);
 		} else {
 			findViewById(R.id.llPSBatting).setVisibility(View.GONE);
 		}
 
 		/* Bowler Statistics */
-		if (playerData.getBowlerData() != null) {
+		BowlerData bowlerData = playerData.getBowlerData();
+		if (bowlerData != null) {
 			hasStats = true;
 
-			((TextView) findViewById(R.id.tvPSBowlOvers)).setText(CommonUtils.doubleToString(playerData.getBowlerData().getTotalInnings(), "#.#"));
-			((TextView) findViewById(R.id.tvPSBowlOvers)).setText(CommonUtils.doubleToString(playerData.getBowlerData().getOversBowled(), "#.#"));
-			((TextView) findViewById(R.id.tvPSBowlRuns)).setText(String.valueOf(playerData.getBowlerData().getRunsGiven()));
-			((TextView) findViewById(R.id.tvPSBowlWickets)).setText(String.valueOf(playerData.getBowlerData().getWicketsTaken()));
-			((TextView) findViewById(R.id.tvPSBowlBF)).setText(String.valueOf(playerData.getBowlerData().getBestFigures()));
-			((TextView) findViewById(R.id.tvPSBowlAvg)).setText(CommonUtils.doubleToString(playerData.getBowlerData().getAverage(), null));
-			((TextView) findViewById(R.id.tvPSBowlSR)).setText(CommonUtils.doubleToString(playerData.getBowlerData().getStrikeRate(), null));
+			String average = bowlerData.getAverage() > 0 ? CommonUtils.doubleToString(bowlerData.getAverage(), null) : "-";
+			String economy = bowlerData.getAverage() > 0 ? CommonUtils.doubleToString(bowlerData.getAverage(), null) : "-";
+			String strikeRate = bowlerData.getStrikeRate() > 0 ? CommonUtils.doubleToString(bowlerData.getStrikeRate(), null) : "-";
+
+			((TextView) findViewById(R.id.tvPSBowlOvers)).setText(CommonUtils.doubleToString(bowlerData.getTotalInnings(), "#.#"));
+			((TextView) findViewById(R.id.tvPSBowlOvers)).setText(CommonUtils.doubleToString(bowlerData.getOversBowled(), "#.#"));
+			((TextView) findViewById(R.id.tvPSBowlRuns)).setText(String.valueOf(bowlerData.getRunsGiven()));
+			((TextView) findViewById(R.id.tvPSBowlWickets)).setText(String.valueOf(bowlerData.getWicketsTaken()));
+			((TextView) findViewById(R.id.tvPSBowlAvg)).setText(economy);
+			((TextView) findViewById(R.id.tvPSBowlBF)).setText(String.valueOf(bowlerData.getBestFigures()));
+			((TextView) findViewById(R.id.tvPSBowlAvg)).setText(average);
+			((TextView) findViewById(R.id.tvPSBowlSR)).setText(strikeRate);
 		} else {
 			findViewById(R.id.llPSBowling).setVisibility(View.GONE);
 		}

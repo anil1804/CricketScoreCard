@@ -40,13 +40,13 @@ public class BowlerData {
 	}
 
 	private void updatePlayerStats() {
-		int bfRunsGiven = 0, bfWicketsTaken = 0;
+		int bfRunsGiven = Integer.MAX_VALUE, bfWicketsTaken = 0;
 
 		for(PlayerMatchData matchData : playerMatchDataList) {
 			int runsGiven = matchData.getRunsGiven();
 			int wicketsTaken = matchData.getWicketsTaken();
 
-			if(wicketsTaken > bfRunsGiven)
+			if (wicketsTaken > bfWicketsTaken)
 			{
 				bfWicketsTaken = wicketsTaken;
 				bfRunsGiven = runsGiven;
@@ -68,15 +68,31 @@ public class BowlerData {
 	}
 
 	public double getStrikeRate() {
-		return (double) CommonUtils.oversToBalls(oversBowled)/wicketsTaken;
+		double strikeRate = -1;
+		if (wicketsTaken > 0)
+			strikeRate = (double) CommonUtils.oversToBalls(oversBowled) / wicketsTaken;
+
+		return strikeRate;
 	}
 
 	public double getAverage() {
-		return (double) runsGiven/wicketsTaken;
+		double average = -1;
+		if (runsGiven == 0)
+			average = 0;
+		else if (wicketsTaken > 0)
+			average = (double) runsGiven / wicketsTaken;
+
+		return average;
 	}
 
 	public double getEconomy() {
-		return (double) runsGiven/oversBowled;
+		double economy = -1;
+		if (runsGiven == 0)
+			economy = 0;
+		else if (oversBowled > 0)
+			economy = (double) runsGiven / oversBowled;
+
+		return economy;
 	}
 
 	public int getTotalInnings() {

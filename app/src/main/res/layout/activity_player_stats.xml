@@ -12,7 +12,10 @@
 
 		<TextView
 			android:id="@+id/tvPSPlayerName"
-			style="@style/TextViewStyle.Large.Bold.BigMargin" />
+			style="@style/TextViewStyle.Large.Bold.BigMargin"
+			android:layout_marginStart="2dp"
+			android:layout_marginEnd="2dp"
+			android:textColor="@color/blue_500" />
 
 		<LinearLayout
 			android:id="@+id/llPSMatchInfo"
@@ -28,9 +31,9 @@
 				android:id="@+id/tvPSMatches"
 				style="@style/TextViewStyle.Big" />
 
-			<View style="@style/LineSeparator.Dark.Margin" />
-
 		</LinearLayout>
+
+		<View style="@style/LineSeparator.Dark.Margin" />
 
 		<LinearLayout
 			android:id="@+id/llPSBatting"
@@ -158,6 +161,10 @@
 
 					<TextView
 						style="@style/TextViewStyle.TableRow.Header.Center"
+						android:text="@string/stats_hdr_economy" />
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Header.Center"
 						android:text="@string/stats_hdr_bestBowlingFigures" />
 
 					<TextView
@@ -186,6 +193,10 @@
 
 					<TextView
 						android:id="@+id/tvPSBowlWickets"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvPSBowlEconomy"
 						style="@style/TextViewStyle.TableRow.Center" />
 
 					<TextView
@@ -260,7 +271,7 @@
 
 		<TextView
 			android:id="@+id/tvPSNoData"
-			style="@style/TextViewStyle.Large"
+			style="@style/TextViewStyle.Big"
 			android:text="@string/noDataFound"
 			android:visibility="gone" />
 

@@ -1440,6 +1440,9 @@ public class LimitedOversFragment extends Fragment
 	}
 
 	private void completeMatch() {
+		StatisticsIntentService service = new StatisticsIntentService();
+		service.startActionStoreMatchStatistics(getContext(), ccUtils);
+
 		MatchDBHandler matchDBHandler = new MatchDBHandler(getContext());
 		MatchStateDBHandler matchStateDBHandler = new MatchStateDBHandler(getContext());
 
@@ -1454,9 +1457,6 @@ public class LimitedOversFragment extends Fragment
 			//CommonUtils.clearBackStackUntil(getFragmentManager(), NewMatchFragment.class.getSimpleName());
 			getActivity().onBackPressed();
 		}
-
-		StatisticsIntentService service = new StatisticsIntentService();
-		service.startActionStoreMatchStatistics(getContext(), ccUtils);
 	}
 
 	private void quitMatch() {

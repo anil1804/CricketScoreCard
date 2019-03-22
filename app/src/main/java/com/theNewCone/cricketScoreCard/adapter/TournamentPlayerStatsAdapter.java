@@ -98,7 +98,10 @@ public class TournamentPlayerStatsAdapter extends RecyclerView.Adapter<Tournamen
 			switch (statisticsType) {
 				case HIGHEST_SCORE:
 					holder.tvStats1.setText(String.valueOf(batsmanData.getHighestScore()));
-					holder.tvStats2.setText(CommonUtils.doubleToString(batsmanData.getStrikeRate(), null));
+					String strikeRate = batsmanData.getStrikeRate() > 0
+							? CommonUtils.doubleToString(batsmanData.getStrikeRate(), null)
+							: "-";
+					holder.tvStats2.setText(strikeRate);
 					break;
 
 				case TOTAL_RUNS:
@@ -149,17 +152,26 @@ public class TournamentPlayerStatsAdapter extends RecyclerView.Adapter<Tournamen
 			switch (statisticsType) {
 				case BOWLING_BEST_FIGURES:
 					holder.tvStats1.setText(bowlerData.getBestFigures());
-					holder.tvStats2.setText(CommonUtils.doubleToString(bowlerData.getAverage(), null));
+					String average = bowlerData.getAverage() > 0
+							? CommonUtils.doubleToString(bowlerData.getAverage(), null)
+							: "-";
+					holder.tvStats2.setText(average);
 					break;
 
 				case ECONOMY:
-					holder.tvStats1.setText(CommonUtils.doubleToString(bowlerData.getEconomy(), null));
+					String economy = bowlerData.getEconomy() > 0
+							? CommonUtils.doubleToString(bowlerData.getEconomy(), null)
+							: "-";
+					holder.tvStats1.setText(economy);
 					holder.tvStats2.setText(String.valueOf(bowlerData.getOversBowled()));
 					break;
 
 				case TOTAL_WICKETS:
 					holder.tvStats1.setText(String.valueOf(bowlerData.getWicketsTaken()));
-					holder.tvStats2.setText(CommonUtils.doubleToString(bowlerData.getStrikeRate(), null));
+					String strikeRate = bowlerData.getStrikeRate() > 0
+							? CommonUtils.doubleToString(bowlerData.getStrikeRate(), null)
+							: "-";
+					holder.tvStats2.setText(strikeRate);
 					break;
 			}
 		}

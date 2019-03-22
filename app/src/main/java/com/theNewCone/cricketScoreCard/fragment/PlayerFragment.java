@@ -247,6 +247,7 @@ public class PlayerFragment extends Fragment
 		btnManageTeams.setOnClickListener(this);
 
 		btnDelete.setOnClickListener(this);
+		btnStatistics.setOnClickListener(this);
 	}
 
 	private void showBattingStyleDialog() {
