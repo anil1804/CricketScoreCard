@@ -19,7 +19,7 @@ public class ManageDBData {
 		this.context = context;
 	}
 
-	private List<Team> addTeams(TeamEnum teamValue) {
+	public List<Team> addTeams(TeamEnum teamValue) {
 		List<Team> teamList = new ArrayList<>();
 
 		if (teamValue == TeamEnum.AUS || teamValue == TeamEnum.ALL) {

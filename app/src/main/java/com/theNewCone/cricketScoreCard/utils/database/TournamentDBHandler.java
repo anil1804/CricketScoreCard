@@ -143,7 +143,7 @@ public class TournamentDBHandler extends DatabaseHandler {
 	}
 
 	public int getTournamentIDUsingMatchID(int matchID) {
-		SQLiteDatabase db = getWritableDatabase();
+		SQLiteDatabase db = super.getWritableDatabase();
 
 		String sqlQuery = String.format(Locale.getDefault(),
 				"SELECT %s FROM %s WHERE %s = " +
@@ -157,6 +157,8 @@ public class TournamentDBHandler extends DatabaseHandler {
 			tournamentID = cursor.getInt(0);
 			cursor.close();
 		}
+
+		db.close();
 
 		return tournamentID;
 	}

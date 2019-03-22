@@ -6,7 +6,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -32,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 public class CommonUtils {
 
@@ -42,7 +42,7 @@ public class CommonUtils {
 
 			int balls = oversToBalls(overs);
 
-			double actualOvers = balls / 6 + ((double)(balls % 6))/6;
+			double actualOvers = ((double) balls / 6) + ((double) (balls % 6)) / 6;
 
 			runRate = score / actualOvers;
 		}
@@ -562,5 +562,9 @@ public class CommonUtils {
 
 	public static void clearBackStackUntil(FragmentManager fragmentManager, String backStackEntry) {
 		fragmentManager.popBackStack(backStackEntry, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+	}
+
+	static int generateRandomInt(int min, int max) {
+		return new Random().nextInt(max - min + 1) + min;
 	}
 }

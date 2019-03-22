@@ -254,6 +254,7 @@ public class MatchStateDBHandler extends DatabaseHandler {
 		if (whereClauseSB != null) {
 			SQLiteDatabase db = this.getWritableDatabase();
 			recordsDeleted = db.delete(TBL_STATE, whereClauseSB.toString(), null);
+			db.close();
 		}
 
 		return recordsDeleted == recordsToDelete;

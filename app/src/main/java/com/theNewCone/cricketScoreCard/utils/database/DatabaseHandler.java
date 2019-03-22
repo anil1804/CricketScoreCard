@@ -124,7 +124,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	final String TBL_POINTS_DATA_OVERS_BOWLED = "TotalOversBowled";
 
 	final String TBL_PLAYER_STATS = "PlayerStatistics";
-	final String TBL_PLAYER_STATS_ID = "ID";
+	private final String TBL_PLAYER_STATS_ID = "ID";
 	final String TBL_PLAYER_STATS_PLAYER_ID = "PlayerID";
 	final String TBL_PLAYER_STATS_MATCH_ID = "MatchID";
 	final String TBL_PLAYER_STATS_TOURNAMENT_ID = "TournamentID";
@@ -133,7 +133,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	final String TBL_PLAYER_STATS_STUMP_OUTS = "StumpOuts";
 
 	final String TBL_BATSMAN_STATS = "BatsmanStatistics";
-	final String TBL_BATSMAN_STATS_ID = "ID";
+	private final String TBL_BATSMAN_STATS_ID = "ID";
 	final String TBL_BATSMAN_STATS_PLAYER_ID = "PlayerID";
 	final String TBL_BATSMAN_STATS_MATCH_ID = "MatchID";
 	final String TBL_BATSMAN_STATS_TOURNAMENT_ID = "TournamentID";
@@ -152,7 +152,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	final String TBL_BATSMAN_STATS_DISMISSED_BY = "DismissedBy";
 
 	final String TBL_BOWLER_STATS = "BowlerStatistics";
-	final String TBL_BOWLER_STATS_ID = "ID";
+	private final String TBL_BOWLER_STATS_ID = "ID";
 	final String TBL_BOWLER_STATS_PLAYER_ID = "PlayerID";
 	final String TBL_BOWLER_STATS_MATCH_ID = "MatchID";
 	final String TBL_BOWLER_STATS_TOURNAMENT_ID = "TournamentID";
@@ -535,5 +535,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				db.delete(TBL_STATE, null, null);
 				break;
 		}
+
+		db.close();
 	}
 }

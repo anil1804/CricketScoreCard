@@ -27,8 +27,9 @@ public class StatisticsDBHandler extends DatabaseHandler {
 		super(context);
 	}
 
-	public void addPlayerStats(CricketCardUtils ccUtils, int tournamentID) {
+	public void addPlayerStats(CricketCardUtils ccUtils) {
 		if (ccUtils != null) {
+			int tournamentID = new TournamentDBHandler(this.context).getTournamentIDUsingMatchID(ccUtils.getMatchID());
 			CricketCard winningTeam, losingTeam;
 			if (ccUtils.getWinningTeam().equals(ccUtils.getCard().getBattingTeam())) {
 				winningTeam = ccUtils.getCard();
@@ -149,7 +150,7 @@ public class StatisticsDBHandler extends DatabaseHandler {
 			BatsmanData batsmanData = null;
 			List<PlayerMatchData> playerMatchDataList = null;
 
-			while (cursor.moveToNext()) {
+			do {
 				int playerID = cursor.getInt(cursor.getColumnIndex(TBL_BATSMAN_STATS_PLAYER_ID));
 				if (prevPlayerID != playerID) {
 					if (batsmanData != null) {
@@ -164,7 +165,7 @@ public class StatisticsDBHandler extends DatabaseHandler {
 
 				if (playerMatchDataList != null)
 					playerMatchDataList.add(getBatsmanDataFromCursor(cursor));
-			}
+			} while (cursor.moveToNext());
 
 			if (batsmanData != null) {
 				batsmanData.setPlayerMatchDataList(playerMatchDataList);
@@ -214,7 +215,7 @@ public class StatisticsDBHandler extends DatabaseHandler {
 			BowlerData bowlerData = null;
 			List<PlayerMatchData> playerMatchDataList = null;
 
-			while (cursor.moveToNext()) {
+			do {
 				int playerID = cursor.getInt(cursor.getColumnIndex(TBL_BOWLER_STATS_PLAYER_ID));
 				if (prevPlayerID != playerID) {
 					if (bowlerData != null) {
@@ -229,7 +230,7 @@ public class StatisticsDBHandler extends DatabaseHandler {
 
 				if (playerMatchDataList != null)
 					playerMatchDataList.add(getBowlerDataFromCursor(cursor));
-			}
+			} while (cursor.moveToNext());
 
 			if (bowlerData != null) {
 				bowlerData.setPlayerMatchDataList(playerMatchDataList);
@@ -276,7 +277,7 @@ public class StatisticsDBHandler extends DatabaseHandler {
 			PlayerData playerData = null;
 			List<PlayerMatchData> playerMatchDataList = null;
 
-			while (cursor.moveToNext()) {
+			do {
 				int playerID = cursor.getInt(cursor.getColumnIndex(TBL_PLAYER_STATS_PLAYER_ID));
 				if (prevPlayerID != playerID) {
 					if (playerData != null) {
@@ -291,7 +292,7 @@ public class StatisticsDBHandler extends DatabaseHandler {
 
 				if (playerMatchDataList != null)
 					playerMatchDataList.add(getFielderDataFromCursor(cursor));
-			}
+			} while (cursor.moveToNext());
 
 			if (playerData != null) {
 				playerData.setPlayerMatchDataList(playerMatchDataList);
@@ -332,11 +333,14 @@ public class StatisticsDBHandler extends DatabaseHandler {
 
 		if (cursor != null && cursor.moveToFirst()) {
 			List<PlayerMatchData> playerMatchDataList = new ArrayList<>();
-			while (cursor.moveToNext()) {
+			do {
 				playerMatchDataList.add(getFielderDataFromCursor(cursor));
+			} while (cursor.moveToNext());
+
+			if (playerMatchDataList.size() > 0) {
+				playerData.setPlayerMatchDataList(playerMatchDataList);
 			}
 
-			playerData.setPlayerMatchDataList(playerMatchDataList);
 			cursor.close();
 		}
 
@@ -349,12 +353,16 @@ public class StatisticsDBHandler extends DatabaseHandler {
 		if (cursor != null && cursor.moveToFirst()) {
 			List<PlayerMatchData> playerMatchDataList = new ArrayList<>();
 			BatsmanData batsmanData = new BatsmanData(player);
-			while (cursor.moveToNext()) {
+			do {
 				playerMatchDataList.add(getBatsmanDataFromCursor(cursor));
+			} while (cursor.moveToNext());
+
+			if (playerMatchDataList.size() > 0) {
+				batsmanData.setPlayerMatchDataList(playerMatchDataList);
+				playerData.setBatsmanData(batsmanData);
 			}
 
-			batsmanData.setPlayerMatchDataList(playerMatchDataList);
-			playerData.setBatsmanData(batsmanData);
+			cursor.close();
 		}
 
 		/* Extracting Bowler Data */
@@ -366,13 +374,19 @@ public class StatisticsDBHandler extends DatabaseHandler {
 		if (cursor != null && cursor.moveToFirst()) {
 			List<PlayerMatchData> playerMatchDataList = new ArrayList<>();
 			BowlerData bowlerData = new BowlerData(player);
-			while (cursor.moveToNext()) {
-				playerMatchDataList.add(getBatsmanDataFromCursor(cursor));
+			do {
+				playerMatchDataList.add(getBowlerDataFromCursor(cursor));
+			} while (cursor.moveToNext());
+
+			if (playerMatchDataList.size() > 0) {
+				bowlerData.setPlayerMatchDataList(playerMatchDataList);
+				playerData.setBowlerData(bowlerData);
 			}
 
-			bowlerData.setPlayerMatchDataList(playerMatchDataList);
-			playerData.setBowlerData(bowlerData);
+			cursor.close();
 		}
+
+		db.close();
 
 		return playerData;
 	}

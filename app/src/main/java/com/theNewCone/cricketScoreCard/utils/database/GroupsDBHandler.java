@@ -92,6 +92,8 @@ public class GroupsDBHandler extends DatabaseHandler {
 
 				cursor.close();
 			}
+
+			db.close();
 		}
 
 		return groupList;

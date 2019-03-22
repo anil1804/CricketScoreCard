@@ -214,7 +214,9 @@ public class MatchInfoDBHandler extends DatabaseHandler {
 					new String[]{String.valueOf(matchInfoID)}, null, null, null);
 			if (cursor != null && cursor.moveToFirst()) {
 				matchInfo = getMatchInfoFromCursor(db, cursor);
+				cursor.close();
 			}
+			db.close();
 		}
 
 		return matchInfo;

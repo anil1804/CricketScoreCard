@@ -113,7 +113,10 @@ public class TeamDBHandler extends DatabaseHandler {
 		whereClauseSB.append(archivedValue);
 
 		SQLiteDatabase db = this.getReadableDatabase();
-		return getTeams(teamIDList, db, includeArchived);
+		List<Team> teamList = getTeams(teamIDList, db, includeArchived);
+
+		db.close();
+		return teamList;
 	}
 
 	public List<Team> getTeams(List<Integer> teamIDList, SQLiteDatabase db) {

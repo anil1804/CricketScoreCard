@@ -46,6 +46,8 @@ public class PointsDataDBHandler extends DatabaseHandler {
 			} else {
 				db.insert(TBL_POINTS_DATA, null, values);
 			}
+
+			db.close();
 		}
 
 		return rowID;
@@ -72,6 +74,8 @@ public class PointsDataDBHandler extends DatabaseHandler {
 
 			db.update(TBL_POINTS_DATA, values,
 					TBL_POINTS_DATA_ID + "= ?", new String[]{String.valueOf(pointsData.getId())});
+
+			db.close();
 		}
 	}
 
@@ -148,7 +152,10 @@ public class PointsDataDBHandler extends DatabaseHandler {
 
 			if (cursor != null && cursor.moveToFirst()) {
 				pointsData = getPointsTableFromCursor(cursor).get(0);
+				cursor.close();
 			}
+
+			db.close();
 		}
 
 		return pointsData;
