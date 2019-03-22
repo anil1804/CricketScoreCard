@@ -9,7 +9,7 @@ public class MatchRunInfo {
 	private String[] team1Players, team2Players;
 	private Team team1, team2;
 	private int choseTo;
-	private final int maxOvers, maxWickets, numPlayers;
+	private final int maxOvers, maxWickets, numPlayers, oversPerBowler;
 
 	public MatchRunInfo(boolean isTournament) {
 		this.isTournament = isTournament;
@@ -17,6 +17,7 @@ public class MatchRunInfo {
 		this.maxOvers = 0;
 		this.maxWickets = 0;
 		this.numPlayers = 0;
+		this.oversPerBowler = 0;
 	}
 
 	public MatchRunInfo(String matchName, int maxOvers, int maxWickets, int numPlayers) {
@@ -25,6 +26,16 @@ public class MatchRunInfo {
 		this.maxOvers = maxOvers;
 		this.maxWickets = maxWickets;
 		this.numPlayers = numPlayers;
+		this.oversPerBowler = 0;
+	}
+
+	public MatchRunInfo(String matchName, int maxOvers, int maxWickets, int oversPerBowler, int numPlayers) {
+		this.isTournament = false;
+		this.matchName = matchName;
+		this.maxOvers = maxOvers;
+		this.maxWickets = maxWickets;
+		this.numPlayers = numPlayers;
+		this.oversPerBowler = oversPerBowler;
 	}
 
 	public void setTeam1(String name, String shortName, String[] players, String captain, String wicketKeeper) {
@@ -104,5 +115,9 @@ public class MatchRunInfo {
 
 	int getNumPlayers() {
 		return numPlayers;
+	}
+
+	int getOversPerBowler() {
+		return oversPerBowler;
 	}
 }
