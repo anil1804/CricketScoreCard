@@ -184,6 +184,13 @@
 		<item name="android:textStyle">bold</item>
 	</style>
 
+	<style name="TextViewStyle.Big.Bold.SmallMargin">
+		<item name="android:layout_marginStart">4dp</item>
+		<item name="android:layout_marginEnd">4dp</item>
+		<item name="android:layout_marginTop">10dp</item>
+		<item name="android:layout_marginBottom">10dp</item>
+	</style>
+
 	<style name="TextViewStyle.Big.Bold.BigMargin">
 		<item name="android:layout_marginStart">12dp</item>
 		<item name="android:layout_marginEnd">12dp</item>

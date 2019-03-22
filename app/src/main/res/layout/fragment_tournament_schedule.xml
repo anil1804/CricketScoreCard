@@ -1,22 +1,14 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayout"
+	android:id="@+id/svContent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.theNewCone.cricketScoreCard.fragment.TournamentHomeScheduleFragment">
 
+	<android.support.v7.widget.RecyclerView
+		android:id="@+id/rcvScheduleList"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="20dp" />
 
-    <ScrollView
-        android:id="@+id/svContent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rcvScheduleList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp" />
-
-    </ScrollView>
-
-</LinearLayout>
+</ScrollView>
