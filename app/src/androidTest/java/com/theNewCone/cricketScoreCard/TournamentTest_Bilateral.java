@@ -4,18 +4,16 @@ import android.content.res.Resources;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingPolicies;
 import android.support.test.rule.ActivityTestRule;
-import android.util.Log;
 
 import com.theNewCone.cricketScoreCard.activity.HomeActivity;
+import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
 import com.theNewCone.cricketScoreCard.utils.CommonTestUtils;
-import com.theNewCone.cricketScoreCard.utils.MatchRunInfo;
 import com.theNewCone.cricketScoreCard.utils.TournamentTestUtils;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.test.espresso.action.ViewActions.click;
@@ -50,7 +48,7 @@ public class TournamentTest_Bilateral {
 		HomeActivity activity = homeActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
-		TournamentTestUtils.closeLoadMatchPopup(homeActivityTestRule);
+		TournamentTestUtils.closeLoadMatchPopup();
 		CommonTestUtils.getDisplayedView(R.id.btnLoadTournament).perform(click());
 
 		if(CommonTestUtils.checkViewExists(withText(tournamentName))) {
@@ -100,48 +98,6 @@ public class TournamentTest_Bilateral {
 	}
 
 	private void triggerMatch(int matchNumber) {
-		HomeActivity activity = homeActivityTestRule.getActivity();
-		Resources resources = activity.getResources();
-
-		final String[] IND_PLAYERS = {
-				"Rohit Sharma",
-				"Shikhar Dhawan",
-				"Lokesh Rahul",
-				"AVirat Kohli",
-				"MS Dhoni",
-				"Dinesh Karthik",
-				"Krunal Pandya",
-				"Ravindra Jadeja",
-				"Kuldeep Yadav",
-				"Jasprit Bumrah",
-				"Bhuvneshwar Kumar"
-		};
-
-		final String[] AUS_PLAYERS = {
-				"Aaron Finch",
-				"D Arcy Short",
-				"Chris Lynn",
-				"Glenn Maxwell",
-				"Ben McDermott",
-				"Alex Carey",
-				"Ashton Agar",
-				"Nathan Coulter-Nile",
-				"Adam Zampa",
-				"Andrew Tye",
-				"Billy Stanlake"
-		};
-
-
-		String tossWonBy = (new Random().nextInt(2)) == 0 ? "AUS" : "IND";
-		int choseTo = (new Random().nextInt(2)) == 0 ? R.string.batting : R.string.bowling;
-
-		MatchRunInfo info = new MatchRunInfo(true);
-		info.setTeam1("Australia", "AUS", AUS_PLAYERS, AUS_PLAYERS[0], AUS_PLAYERS[5]);
-		info.setTeam2("India", "IND", IND_PLAYERS, IND_PLAYERS[3], IND_PLAYERS[4]);
-		info.updateTossDetails(tossWonBy, choseTo);
-
-		Log.i(Constants.LOG_TAG, String.format("Match-%d, %s won the toss and chose to %s", matchNumber, tossWonBy, resources.getString(choseTo)));
-
-		TournamentTestUtils.triggerMatch(matchNumber, info, homeActivityTestRule);
+		TournamentTestUtils.triggerMatch(TeamEnum.AUS, TeamEnum.IND, matchNumber, null);
 	}
 }

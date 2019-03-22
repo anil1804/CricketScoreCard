@@ -1,8 +1,11 @@
 package com.theNewCone.cricketScoreCard.utils;
 
+import android.app.Activity;
 import android.content.res.Resources;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.NoMatchingViewException;
-import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import android.support.test.runner.lifecycle.Stage;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -10,14 +13,14 @@ import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
-import com.theNewCone.cricketScoreCard.activity.HomeActivity;
-import com.theNewCone.cricketScoreCard.enumeration.Stage;
 import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -28,7 +31,7 @@ import static org.hamcrest.Matchers.allOf;
 
 public class TournamentTestUtils {
 
-	public static final String[] IND_PLAYERS = {
+	private static final String[] IND_PLAYERS = {
 			"Rohit Sharma",
 			"Shikhar Dhawan",
 			"Lokesh Rahul",
@@ -42,7 +45,7 @@ public class TournamentTestUtils {
 			"Bhuvneshwar Kumar"
 	};
 
-	public static final String[] AUS_PLAYERS = {
+	private static final String[] AUS_PLAYERS = {
 			"Aaron Finch",
 			"D Arcy Short",
 			"Chris Lynn",
@@ -56,7 +59,7 @@ public class TournamentTestUtils {
 			"Billy Stanlake"
 	};
 
-	public static final String[] NZ_PLAYERS = {
+	private static final String[] NZ_PLAYERS = {
 			"Rob Nicol",
 			"Martin Guptill",
 			"Brendon McCullum",
@@ -70,11 +73,14 @@ public class TournamentTestUtils {
 			"Kyle Mills"
 	};
 
-	public static void triggerMatch(int matchNumber, MatchRunInfo info, ActivityTestRule<HomeActivity> homeActivityTestRule) {
-		HomeActivity activity = homeActivityTestRule.getActivity();
-		Resources resources = activity.getResources();
+	private static void triggerMatch(int matchNumber, MatchRunInfo info, String matchNumberText) {
+		Activity currentActivity = getCurrentActivity();
+		Resources resources = currentActivity.getResources();
 
-		String matchNumberText = resources.getString(R.string.matchPrefix) + String.valueOf(matchNumber);
+		matchNumberText = matchNumberText == null
+				? resources.getString(R.string.matchPrefix) + String.valueOf(matchNumber)
+				: matchNumberText;
+
 		if (CommonTestUtils.checkViewExists(allOf(
 				withText("Start"),
 				withParent(allOf(
@@ -84,7 +90,7 @@ public class TournamentTestUtils {
 					.getChild(allOf(withId(R.id.clTHScheduleItem), hasDescendant(withText(matchNumberText))), withText("Start"))
 					.perform(click());
 
-			MatchSimulator simulator = new MatchSimulator(activity);
+			MatchSimulator simulator = new MatchSimulator(currentActivity);
 			String csvFile = "csv/templates/5Overs/" + CommonUtils.generateRandomInt(1, 5) + ".csv";
 			Log.i(Constants.LOG_TAG, "CSV File being used to simulate match is " + csvFile);
 
@@ -94,8 +100,9 @@ public class TournamentTestUtils {
 		}
 	}
 
-	public static void closeLoadMatchPopup(ActivityTestRule<HomeActivity> homeActivityTestRule) {
-		Resources resources = homeActivityTestRule.getActivity().getResources();
+	public static void closeLoadMatchPopup() {
+		Activity currentActivity = getCurrentActivity();
+		Resources resources = currentActivity.getResources();
 		try {
 			CommonTestUtils.getDisplayedView(resources.getString(R.string.no)).perform(click());
 		} catch (NoMatchingViewException ex) {
@@ -103,9 +110,11 @@ public class TournamentTestUtils {
 		}
 	}
 
-	public static String getFullTeamName(ActivityTestRule testRule, String teamName) {
+	private static String getFullTeamName(String teamName) {
+		Activity currentActivity = getCurrentActivity();
+
 		HashMap<String, String> teamNames = new HashMap<>();
-		List<Team> allTeams = new ManageDBData(testRule.getActivity().getApplicationContext()).addTeams(TeamEnum.ALL);
+		List<Team> allTeams = new ManageDBData(currentActivity.getApplicationContext()).addTeams(TeamEnum.ALL);
 		for (Team team : allTeams) {
 			teamNames.put(team.getShortName().toUpperCase(), team.getName());
 		}
@@ -113,14 +122,13 @@ public class TournamentTestUtils {
 		return teamNames.get(teamName.toUpperCase());
 	}
 
-	public static String[] getPlayingTeams(ActivityTestRule testRule, Stage stage, int matchNumber) {
-		String[] teamsPlaying = new String[2];
+	private static String[] getPlayingTeams(int groupIndex, int matchNumber) {
+		Activity currentActivity = getCurrentActivity();
 
-		RecyclerView rcvGroupList = testRule.getActivity().findViewById(R.id.rcvScheduleList);
+		String[] teamsPlaying = null;
+
+		RecyclerView rcvGroupList = currentActivity.findViewById(R.id.rcvScheduleList);
 		if (rcvGroupList != null && rcvGroupList.getLayoutManager() != null) {
-
-			int groupIndex = stage == Stage.FINAL ? 1 : 0;
-
 			View groupView = rcvGroupList.getLayoutManager().findViewByPosition(groupIndex);
 			if (groupView != null) {
 				RecyclerView rcvMatchList = groupView.findViewById(R.id.rcvGroupTeamList);
@@ -136,6 +144,76 @@ public class TournamentTestUtils {
 			}
 		}
 
+		for (int i = 0; teamsPlaying != null && i < teamsPlaying.length; i++)
+			teamsPlaying[i] = teamsPlaying[i].trim();
+
 		return teamsPlaying;
+	}
+
+	private static Activity getCurrentActivity() {
+		final Activity[] currentActivity = new Activity[1];
+		InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+			@Override
+			public void run() {
+				Collection<Activity> allActivities = ActivityLifecycleMonitorRegistry.getInstance()
+						.getActivitiesInStage(Stage.RESUMED);
+				if (!allActivities.isEmpty()) {
+					currentActivity[0] = allActivities.iterator().next();
+				}
+			}
+		});
+
+		return currentActivity[0];
+	}
+
+	public static void triggerMatch(TeamEnum team1Enum, TeamEnum team2Enum, int matchNumber, String matchNumberText) {
+		Activity currentActivity = getCurrentActivity();
+		Resources resources = currentActivity.getResources();
+
+		if (team1Enum != null && team2Enum != null) {
+			String team1 = team1Enum.toString();
+			String team2 = team2Enum.toString();
+			String team1Full = TournamentTestUtils.getFullTeamName(team1);
+			String team2Full = TournamentTestUtils.getFullTeamName(team2);
+
+			String tossWonBy = (new Random().nextInt(2)) == 0 ? team1.toUpperCase() : team2.toUpperCase();
+			int choseTo = (new Random().nextInt(2)) == 0 ? R.string.batting : R.string.bowling;
+
+			MatchRunInfo info = new MatchRunInfo(true);
+			info.updateTossDetails(tossWonBy, choseTo);
+
+			switch (TeamEnum.valueOf(team1.toUpperCase())) {
+				case AUS:
+					info.setTeam1(team1Full, team1, TournamentTestUtils.AUS_PLAYERS, TournamentTestUtils.AUS_PLAYERS[0], TournamentTestUtils.AUS_PLAYERS[5]);
+					break;
+				case NZ:
+					info.setTeam1(team1Full, team1, TournamentTestUtils.NZ_PLAYERS, TournamentTestUtils.NZ_PLAYERS[3], TournamentTestUtils.NZ_PLAYERS[2]);
+					break;
+				case IND:
+					info.setTeam1(team1Full, team1, TournamentTestUtils.IND_PLAYERS, TournamentTestUtils.IND_PLAYERS[3], TournamentTestUtils.IND_PLAYERS[4]);
+					break;
+			}
+
+			switch (TeamEnum.valueOf(team2.toUpperCase())) {
+				case AUS:
+					info.setTeam2(team2Full, team2, TournamentTestUtils.AUS_PLAYERS, TournamentTestUtils.AUS_PLAYERS[0], TournamentTestUtils.AUS_PLAYERS[5]);
+					break;
+				case NZ:
+					info.setTeam2(team2Full, team2, TournamentTestUtils.NZ_PLAYERS, TournamentTestUtils.NZ_PLAYERS[3], TournamentTestUtils.NZ_PLAYERS[2]);
+					break;
+				case IND:
+					info.setTeam2(team2Full, team2, TournamentTestUtils.IND_PLAYERS, TournamentTestUtils.IND_PLAYERS[3], TournamentTestUtils.IND_PLAYERS[4]);
+					break;
+			}
+
+			Log.i(Constants.LOG_TAG, String.format("Match-%d, %s won the toss and chose to %s", matchNumber, tossWonBy, resources.getString(choseTo)));
+
+			TournamentTestUtils.triggerMatch(matchNumber, info, matchNumberText);
+		}
+	}
+
+	public static void triggerMatch(int groupIndex, int matchNumber, String matchNumberText) {
+		String[] teamsPlaying = TournamentTestUtils.getPlayingTeams(groupIndex, matchNumber);
+		triggerMatch(TeamEnum.valueOf(teamsPlaying[0]), TeamEnum.valueOf(teamsPlaying[1]), matchNumber, matchNumberText);
 	}
 }
