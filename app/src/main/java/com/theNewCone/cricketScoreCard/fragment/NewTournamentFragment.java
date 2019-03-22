@@ -564,7 +564,7 @@ public class NewTournamentFragment extends Fragment
 			messageSB.append(". ");
 			messageSB.append(getResources().getString(R.string.NT_selectType));
 		} else {
-			if ((type == TournamentFormat.ROUND_ROBIN || type != TournamentFormat.GROUPS) && stageType == null) {
+			if ((type == TournamentFormat.ROUND_ROBIN || type == TournamentFormat.GROUPS) && stageType == null) {
 				messageSB.append(errorNumber++);
 				messageSB.append(". ");
 				messageSB.append(getResources().getString(R.string.NT_selectStage));
