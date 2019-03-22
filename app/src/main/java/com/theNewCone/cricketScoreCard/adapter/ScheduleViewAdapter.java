@@ -55,7 +55,7 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
 		int resultColor;
 		String groupName;
 		if (format == TournamentFormat.BILATERAL || format == TournamentFormat.ROUND_ROBIN || format == TournamentFormat.KNOCK_OUT) {
-			groupName = context.getResources().getString(R.string.matchPrefix) + (holder.matchInfo.getMatchNumber()+1);
+			groupName = context.getResources().getString(R.string.matchPrefix) + (holder.matchInfo.getMatchNumber());
 		} else {
 			int matchNumber = groupMatchSeqNum.get(holder.matchInfo.getGroupNumber(), 0);
 			if (matchNumber == 0) {
