@@ -558,7 +558,10 @@ public class NewMatchFragment extends Fragment
 
 	private void setTournamentMatchName() {
 		String versus = team1.getShortName() + "v" + team2.getShortName();
-		StringBuilder teamNameSB = new StringBuilder(tournament.getName());
+		StringBuilder teamNameSB = new StringBuilder();
+
+		teamNameSB.append("TMT-");
+		teamNameSB.append(tournament.getId());
 		teamNameSB.append(":");
 		switch (tournament.getFormat()) {
 			case KNOCK_OUT:
