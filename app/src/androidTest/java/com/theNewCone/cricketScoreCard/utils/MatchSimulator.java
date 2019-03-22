@@ -3,6 +3,7 @@ package com.theNewCone.cricketScoreCard.utils;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.PerformException;
 import android.util.Log;
 
 import com.theNewCone.cricketScoreCard.Constants;
@@ -70,6 +71,8 @@ public class MatchSimulator {
 			CommonTestUtils.getDisplayedView(R.id.etMaxWickets).perform(replaceText(String.valueOf(info.getMaxWickets())));
 		if(info.getNumPlayers() > 0)
 			CommonTestUtils.getDisplayedView(R.id.etNumPlayers).perform(replaceText(String.valueOf(info.getNumPlayers())));
+		if (info.getOversPerBowler() > 0)
+			CommonTestUtils.getDisplayedView(R.id.etMaxPerBowler).perform(replaceText(String.valueOf(info.getOversPerBowler())));
 		if(info.getMatchName() != null && !"".equals(info.getMatchName().trim()))
 			CommonTestUtils.getDisplayedView(R.id.etMatchName).perform(replaceText(info.getMatchName()));
 
@@ -415,7 +418,12 @@ public class MatchSimulator {
 
 	private void completeMatch() {
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.closeMatch)).perform(click());
-		CommonTestUtils.getDisplayedView(resources.getString(R.string.yes)).perform(click());
+		try {
+			CommonTestUtils.getDisplayedView(resources.getString(R.string.yes)).perform(click());
+		} catch (PerformException ex) {
+			//DO NOTHING
+		}
+		Log.i(Constants.LOG_TAG, "Finished Match Simulation");
 	}
 
 	private void addPenalty(MatchStep matchStep) {
