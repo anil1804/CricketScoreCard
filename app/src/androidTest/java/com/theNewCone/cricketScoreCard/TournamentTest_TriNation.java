@@ -36,19 +36,22 @@ public class TournamentTest_TriNation {
 
 	@Test
 	public void testTriNationSeries() {
-		createAusIndNZSeries();
+		int numRounds = 1;
+		createAusIndNZSeries(numRounds);
 		openTournamentScheduleScreen();
 
-		for (int i = 1; i <= 6; i++)
+		for (int i = 1; i <= (3 * numRounds); i++)
 			triggerMatch(Stage.ROUND_ROBIN, i);
 
 		triggerMatch(Stage.FINAL, 1);
 	}
 
-	private void createAusIndNZSeries() {
+	private void createAusIndNZSeries(int numRounds) {
 		Resources resources = testRule.getActivity().getResources();
 
 		TournamentTestUtils.closeLoadMatchPopup();
+		TournamentTestUtils.deleteTournament(tournamentName, testRule.getActivity());
+
 		CommonTestUtils.getDisplayedView(R.id.btnLoadTournament).perform(click());
 
 		if (CommonTestUtils.checkViewExists(withText(tournamentName))) {
@@ -68,7 +71,7 @@ public class TournamentTest_TriNation {
 			CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
 
 			CommonTestUtils.getDisplayedView(resources.getString(R.string.roundRobin)).perform(click());
-			CommonTestUtils.getDisplayedView(R.id.etNumRounds).perform(replaceText(String.valueOf(2)));
+			CommonTestUtils.getDisplayedView(R.id.etNumRounds).perform(replaceText(String.valueOf(numRounds)));
 			CommonTestUtils.getDisplayedView(R.id.rbTSKnockOut).perform(click());
 
 			CommonTestUtils.getDisplayedView(resources.getString(R.string.setMatchData)).perform(click());
@@ -95,6 +98,9 @@ public class TournamentTest_TriNation {
 	}
 
 	private void triggerMatch(Stage stage, int matchNumber) {
+		Resources resources = testRule.getActivity().getResources();
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentSchedule)).perform(click());
+
 		int groupIndex = stage == Stage.FINAL ? 1 : 0;
 		TournamentTestUtils.triggerMatch(groupIndex, matchNumber, null);
 	}

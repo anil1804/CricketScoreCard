@@ -25,7 +25,7 @@ public class TournamentTest_Bilateral {
 	private final String tournamentName = "Aus V Ind - India 2019";
 
 	@Rule
-	public ActivityTestRule<HomeActivity> homeActivityTestRule = new ActivityTestRule<>(HomeActivity.class);
+	public ActivityTestRule<HomeActivity> testRule = new ActivityTestRule<>(HomeActivity.class);
 
 	@BeforeClass
 
@@ -45,10 +45,12 @@ public class TournamentTest_Bilateral {
 	}
 
 	private void createAusVsIndSeries() {
-		HomeActivity activity = homeActivityTestRule.getActivity();
+		HomeActivity activity = testRule.getActivity();
 		Resources resources = activity.getResources();
 
 		TournamentTestUtils.closeLoadMatchPopup();
+		TournamentTestUtils.deleteTournament(tournamentName, activity);
+
 		CommonTestUtils.getDisplayedView(R.id.btnLoadTournament).perform(click());
 
 		if(CommonTestUtils.checkViewExists(withText(tournamentName))) {
@@ -89,7 +91,7 @@ public class TournamentTest_Bilateral {
 	}
 
 	private void openTournamentScheduleScreen() {
-		HomeActivity activity = homeActivityTestRule.getActivity();
+		HomeActivity activity = testRule.getActivity();
 		Resources resources = activity.getResources();
 
 		CommonTestUtils.getDisplayedView(R.id.btnLoadTournament).perform(click());
@@ -98,6 +100,9 @@ public class TournamentTest_Bilateral {
 	}
 
 	private void triggerMatch(int matchNumber) {
+		Resources resources = testRule.getActivity().getResources();
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentSchedule)).perform(click());
+
 		TournamentTestUtils.triggerMatch(TeamEnum.AUS, TeamEnum.IND, matchNumber, null);
 	}
 }

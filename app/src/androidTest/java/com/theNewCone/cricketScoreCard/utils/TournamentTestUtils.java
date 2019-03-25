@@ -1,6 +1,7 @@
 package com.theNewCone.cricketScoreCard.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.NoMatchingViewException;
@@ -16,6 +17,7 @@ import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
+import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -206,7 +208,7 @@ public class TournamentTestUtils {
 					break;
 			}
 
-			Log.i(Constants.LOG_TAG, String.format("Match-%d, %s won the toss and chose to %s", matchNumber, tossWonBy, resources.getString(choseTo)));
+			Log.i(Constants.LOG_TAG, String.format("Match-%d, %s: %s won the toss and chose to %s", matchNumber, (team1 + " vs " + team2), tossWonBy, resources.getString(choseTo)));
 
 			TournamentTestUtils.triggerMatch(matchNumber, info, matchNumberText);
 		}
@@ -215,5 +217,9 @@ public class TournamentTestUtils {
 	public static void triggerMatch(int groupIndex, int matchNumber, String matchNumberText) {
 		String[] teamsPlaying = TournamentTestUtils.getPlayingTeams(groupIndex, matchNumber);
 		triggerMatch(TeamEnum.valueOf(teamsPlaying[0]), TeamEnum.valueOf(teamsPlaying[1]), matchNumber, matchNumberText);
+	}
+
+	public static void deleteTournament(String tournamentName, Context context) {
+		new TournamentDBHandler(context).deleteTournament(tournamentName);
 	}
 }
