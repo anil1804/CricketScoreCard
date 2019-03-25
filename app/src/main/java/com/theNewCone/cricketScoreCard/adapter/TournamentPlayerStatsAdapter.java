@@ -201,15 +201,18 @@ public class TournamentPlayerStatsAdapter extends RecyclerView.Adapter<Tournamen
 			holder.tvPlayerName.setText(playerData.getPlayer().getName());
 			holder.tvInnings.setText(String.valueOf(playerData.getTotalInnings()));
 
+			String runOuts = playerData.getRunOuts() > 0 ? String.valueOf(playerData.getRunOuts()) : "-";
 			switch (statisticsType) {
 				case CATCHES:
-					holder.tvStats1.setText(String.valueOf(playerData.getCatches()));
-					holder.tvStats2.setText(String.valueOf(playerData.getRunOuts()));
+					String catches = playerData.getCatches() > 0 ? String.valueOf(playerData.getCatches()) : "-";
+					holder.tvStats1.setText(catches);
+					holder.tvStats2.setText(runOuts);
 					break;
 
 				case STUMPING:
-					holder.tvStats1.setText(String.valueOf(playerData.getStumps()));
-					holder.tvStats2.setText(String.valueOf(playerData.getRunOuts()));
+					String stumpOuts = playerData.getStumps() > 0 ? String.valueOf(playerData.getStumps()) : "-";
+					holder.tvStats1.setText(stumpOuts);
+					holder.tvStats2.setText(runOuts);
 					break;
 			}
 		}

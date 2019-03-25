@@ -107,7 +107,20 @@ public class BowlerData {
 		ByBestFigures() {
 			@Override
 			public int compare(BowlerData lhs, BowlerData rhs) {
-				return lhs.getBestFigures().compareTo(rhs.getBestFigures());
+				String[] lhsData = lhs.getBestFigures().split("/");
+				String[] rhsData = rhs.getBestFigures().split("/");
+
+				int lhsWickets = Integer.parseInt(lhsData[0]);
+				int lhsRuns = Integer.parseInt(lhsData[1]);
+				int rhsWickets = Integer.parseInt(rhsData[0]);
+				int rhsRuns = Integer.parseInt(rhsData[1]);
+
+				int compare = lhsWickets - rhsWickets;
+				if (compare == 0) {
+					compare = rhsRuns - lhsRuns;
+				}
+
+				return compare;
 			}
 		},
 
