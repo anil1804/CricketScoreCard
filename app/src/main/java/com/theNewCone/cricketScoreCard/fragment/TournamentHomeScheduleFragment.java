@@ -31,6 +31,7 @@ public class TournamentHomeScheduleFragment extends Fragment
 	private static final String ARG_TOURNAMENT = "Tournament";
 
 	Tournament tournament = null;
+	View rootView;
 
 	public TournamentHomeScheduleFragment() {
 	}
@@ -46,12 +47,21 @@ public class TournamentHomeScheduleFragment extends Fragment
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_tournament_schedule, container, false);
+		rootView = inflater.inflate(R.layout.fragment_tournament_schedule, container, false);
 
+		return rootView;
+	}
+
+	@Override
+	public void onResume() {
 		if (getArguments() != null) {
 			tournament = (Tournament) getArguments().getSerializable(ARG_TOURNAMENT);
+			displayContent();
 		}
+		super.onResume();
+	}
 
+	private void displayContent() {
 		if (tournament != null && getContext() != null) {
 			List<Group> groupList = tournament.getGroupList();
 
@@ -99,8 +109,6 @@ public class TournamentHomeScheduleFragment extends Fragment
 				rcvScheduleList.setItemAnimator(new DefaultItemAnimator());
 			}
 		}
-
-		return rootView;
 	}
 
 	@Override

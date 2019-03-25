@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 
 import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
@@ -57,6 +58,7 @@ public class HomeActivity extends AppCompatActivity
 	NavigationView navigationView;
 
 	Toolbar toolbar;
+	Tournament tournament = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +68,11 @@ public class HomeActivity extends AppCompatActivity
 		//new ThemeColors(this);
 		super.onCreate(savedInstanceState);
 
+		setContentView(R.layout.activity_home);
+
 		new ManageDBData(this).addTeamsAndPlayers(TeamEnum.ALL);
 
-		setContentView(R.layout.activity_home);
 		if (savedInstanceState == null) {
-			Tournament tournament = null;
 			Group group = null;
 			MatchInfo matchInfo = null;
 			if (getIntent() != null && getIntent().getExtras() != null) {
@@ -119,14 +121,27 @@ public class HomeActivity extends AppCompatActivity
 		if (drawer.isDrawerOpen(GravityCompat.START)) {
 			drawer.closeDrawer(GravityCompat.START);
 		} else {
-			if(getSupportFragmentManager().getBackStackEntryCount() > 0)
-				getSupportFragmentManager().popBackStack();
-			else {
-				if (isFragmentVisible(HomeFragment.class.getSimpleName())) {
-					finish();
-				} else {
-					super.onBackPressed();
+			if (isFragmentVisible(HomeFragment.class.getSimpleName())) {
+				finish();
+			} else {
+				if (isFragmentVisible(LimitedOversFragment.class.getSimpleName())) {
+					FrameLayout frameLayout = findViewById(R.id.frame_container);
+					frameLayout.removeAllViews();
+
+					if (tournament == null) {
+						HashMap<String, Object> respMap = new HashMap<>();
+						respMap.put(Constants.FRAGMENT, HomeFragment.newInstance());
+						respMap.put(Constants.FRAGMENT_TAG, HomeFragment.class.getSimpleName());
+						replaceFragment(respMap);
+					} else {
+						Intent tournamentIntent = new Intent(this, TournamentHomeActivity.class);
+						tournamentIntent.putExtra(TournamentHomeActivity.ARG_TOURNAMENT_ID, tournament.getId());
+						tournamentIntent.putExtra(TournamentHomeActivity.ARG_TOURNAMENT_FORMAT, tournament.getFormat());
+						startActivity(tournamentIntent);
+					}
 				}
+
+				super.onBackPressed();
 			}
 		}
 	}
@@ -167,9 +182,9 @@ public class HomeActivity extends AppCompatActivity
 	@Override
 	public void disableAllDrawerMenuItems() {
 		int menuSize = navigationView.getMenu().size();
-		for(int i=0; i<menuSize; i++) {
+		for (int i = 0; i < menuSize; i++) {
 			MenuItem item = navigationView.getMenu().getItem(i);
-			if(item.isVisible())
+			if (item.isVisible())
 				item.setEnabled(false);
 		}
 	}
@@ -177,16 +192,16 @@ public class HomeActivity extends AppCompatActivity
 	@Override
 	public void disableDrawerMenuItem(int id) {
 		MenuItem item = navigationView.getMenu().findItem(id);
-		if(item != null)
+		if (item != null)
 			item.setEnabled(false);
 	}
 
 	@Override
 	public void enableAllDrawerMenuItems() {
 		int menuSize = navigationView.getMenu().size();
-		for(int i=0; i<menuSize; i++) {
+		for (int i = 0; i < menuSize; i++) {
 			MenuItem item = navigationView.getMenu().getItem(i);
-			if(item.isVisible())
+			if (item.isVisible())
 				item.setEnabled(true);
 		}
 	}
@@ -194,7 +209,7 @@ public class HomeActivity extends AppCompatActivity
 	@Override
 	public void enableDrawerMenuItem(int id) {
 		MenuItem item = navigationView.getMenu().findItem(id);
-		if(item != null)
+		if (item != null)
 			item.setEnabled(true);
 	}
 
@@ -203,15 +218,22 @@ public class HomeActivity extends AppCompatActivity
 	}
 
 	private void replaceFragment(HashMap<String, Object> fragDtlMap) {
-		if (fragDtlMap.size() == 2) {
+		if (fragDtlMap.size() == 3) {
 			Fragment fragment = (Fragment) fragDtlMap.get(Constants.FRAGMENT);
 			String fragmentTag = (String) fragDtlMap.get(Constants.FRAGMENT_TAG);
+			boolean addToBackStack = Boolean.valueOf((String) fragDtlMap.get(Constants.FRAGMENT_ADD_TO_BACK_STACK));
 
 			if (fragment != null && fragmentTag != null) {
-				getSupportFragmentManager().beginTransaction()
-						.replace(R.id.frame_container, fragment, fragmentTag)
-						.addToBackStack(fragmentTag)
-						.commit();
+				if (addToBackStack) {
+					getSupportFragmentManager().beginTransaction()
+							.replace(R.id.frame_container, fragment, fragmentTag)
+							.addToBackStack(fragmentTag)
+							.commit();
+				} else {
+					getSupportFragmentManager().beginTransaction()
+							.replace(R.id.frame_container, fragment, fragmentTag)
+							.commit();
+				}
 			}
 		}
 	}
@@ -244,30 +266,34 @@ public class HomeActivity extends AppCompatActivity
 
 		switch (item.getItemId()) {
 			case R.id.nav_home:
-				if(!isFragmentVisible(HomeFragment.class.getSimpleName())) {
+				if (!isFragmentVisible(HomeFragment.class.getSimpleName())) {
 					respMap.put(Constants.FRAGMENT, HomeFragment.newInstance());
 					respMap.put(Constants.FRAGMENT_TAG, HomeFragment.class.getSimpleName());
+					respMap.put(Constants.FRAGMENT_ADD_TO_BACK_STACK, String.valueOf(true));
 				}
 				break;
 
 			case R.id.nav_manage_player:
-				if(!isFragmentVisible(PlayerFragment.class.getSimpleName())) {
+				if (!isFragmentVisible(PlayerFragment.class.getSimpleName())) {
 					respMap.put(Constants.FRAGMENT, PlayerFragment.newInstance());
 					respMap.put(Constants.FRAGMENT_TAG, PlayerFragment.class.getSimpleName());
+					respMap.put(Constants.FRAGMENT_ADD_TO_BACK_STACK, String.valueOf(true));
 				}
 				break;
 
 			case R.id.nav_manage_team:
-				if(!isFragmentVisible(TeamFragment.class.getSimpleName())) {
+				if (!isFragmentVisible(TeamFragment.class.getSimpleName())) {
 					respMap.put(Constants.FRAGMENT, TeamFragment.newInstance());
 					respMap.put(Constants.FRAGMENT_TAG, TeamFragment.class.getSimpleName());
+					respMap.put(Constants.FRAGMENT_ADD_TO_BACK_STACK, String.valueOf(true));
 				}
 				break;
 
 			case R.id.nav_new_match:
-				if(!isFragmentVisible(NewMatchFragment.class.getSimpleName())) {
+				if (!isFragmentVisible(NewMatchFragment.class.getSimpleName())) {
 					respMap.put(Constants.FRAGMENT, NewMatchFragment.newInstance());
 					respMap.put(Constants.FRAGMENT_TAG, NewMatchFragment.class.getSimpleName());
+					respMap.put(Constants.FRAGMENT_ADD_TO_BACK_STACK, String.valueOf(false));
 				}
 				break;
 
@@ -284,8 +310,8 @@ public class HomeActivity extends AppCompatActivity
 	private boolean isFragmentVisible(@NonNull String fragmentTag) {
 		List<Fragment> fragList = getSupportFragmentManager().getFragments();
 
-		for(Fragment frag : fragList) {
-			if(frag != null && frag.isVisible() && fragmentTag.equals(frag.getTag()))
+		for (Fragment frag : fragList) {
+			if (frag != null && frag.isVisible() && fragmentTag.equals(frag.getTag()))
 				return true;
 		}
 
@@ -295,8 +321,7 @@ public class HomeActivity extends AppCompatActivity
 	private void loadHelpContent() {
 		HelpContentDBHandler helpDBHandler = new HelpContentDBHandler(this);
 
-		if (isAppUpdated() || helpDBHandler.hasHelpContent())
-		{
+		if (isAppUpdated() || helpDBHandler.hasHelpContent()) {
 			HelpContentData helpContentData = new HelpContentData(this);
 			helpContentData.loadHelpContent();
 		}
@@ -318,7 +343,7 @@ public class HomeActivity extends AppCompatActivity
 
 		Log.i(Constants.LOG_TAG, String.format("Stored Value - %d, New Value - %d", storedLastModified, lastModified));
 
-		if(storedLastModified == 0L || storedLastModified < lastModified) {
+		if (storedLastModified == 0L || storedLastModified < lastModified) {
 			isAppUpdated = true;
 			prefs.edit().putLong(Constants.PREFS_APP_LAST_MODIFIED, lastModified).apply();
 		}

@@ -67,10 +67,7 @@ public class TournamentHomeActivity extends AppCompatActivity
 			deriveTournamentTabs(format);
 
 		toolbar = findViewById(R.id.toolbar);
-		SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-		mViewPager = findViewById(R.id.container);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
+		setTabContent();
 
 		TabLayout tabLayout = findViewById(R.id.tabs);
 
@@ -99,7 +96,6 @@ public class TournamentHomeActivity extends AppCompatActivity
 	protected void onStart() {
 		if (tournamentID > 0) {
 			tournament = new TournamentDBHandler(this).getTournamentContent(tournamentID);
-
 			TournamentUtils utils = new TournamentUtils(this);
 			utils.checkTournamentStageComplete(tournament);
 		}
@@ -256,5 +252,12 @@ public class TournamentHomeActivity extends AppCompatActivity
 		public int getCount() {
 			return visibleTabList.size();
 		}
+	}
+
+	private void setTabContent() {
+		SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+		mViewPager = findViewById(R.id.container);
+		mViewPager.setAdapter(mSectionsPagerAdapter);
 	}
 }

@@ -10,6 +10,7 @@ public class Constants {
 	public static final String ARG_EXTRA_TYPE = "Extra Type";
 	public static final String FRAGMENT = "Fragment";
 	public static final String FRAGMENT_TAG = "FragmentTag";
+	public static final String FRAGMENT_ADD_TO_BACK_STACK = "AddToBackStack";
 	public static final String PREFS_APP_LAST_MODIFIED = "LastModifiedTS";
 
 	public static final boolean ALLOW_DUPLICATE_MATCH_NAME = true;

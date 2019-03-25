@@ -327,7 +327,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Conf
 
 			getActivity().getSupportFragmentManager().beginTransaction()
 					.replace(R.id.frame_container, LimitedOversFragment.loadInstance(matchStateID, matchInfo), fragmentTag)
-					.addToBackStack(fragmentTag)
 					.commit();
 		}
 	}

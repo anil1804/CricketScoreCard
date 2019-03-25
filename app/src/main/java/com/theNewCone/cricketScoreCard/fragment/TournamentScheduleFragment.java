@@ -224,7 +224,6 @@ public class TournamentScheduleFragment extends Fragment
 
 			fragMgr.beginTransaction()
 					.replace(R.id.frame_container, TournamentScheduleFragment.newInstance(tournament, groupIndex), fragmentTag)
-					.addToBackStack(fragmentTag)
 					.commit();
 		}
 	}
