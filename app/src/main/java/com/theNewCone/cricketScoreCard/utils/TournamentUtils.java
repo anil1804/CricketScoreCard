@@ -365,7 +365,7 @@ public class TournamentUtils {
 		List<Team> winningsTeams = new ArrayList<>();
 
 		if (tournament.getFormat() == TournamentFormat.KNOCK_OUT
-				|| (tournament.getFormat() == TournamentFormat.ROUND_ROBIN && lastGroup.getStageType() == TournamentStageType.KNOCK_OUT)) {
+				|| (tournament.getFormat() == TournamentFormat.ROUND_ROBIN && lastGroupsStage != Stage.ROUND_ROBIN)) {
 			if (lastGroup.getMatchInfoList() != null) {
 				for (MatchInfo matchInfo : lastGroup.getMatchInfoList()) {
 					winningsTeams.add(matchInfo.getWinningTeam());
@@ -386,9 +386,9 @@ public class TournamentUtils {
 		} else if (tournament.getFormat() == TournamentFormat.ROUND_ROBIN) {
 			int numberOfTeams = 2;
 			int lastGroupMatchCount = lastGroup.getMatchInfoList().size();
-			if (lastGroupMatchCount > 12) {
+			if (lastGroupMatchCount >= 12) {
 				numberOfTeams = 8;
-			} else if (lastGroupMatchCount > 6) {
+			} else if (lastGroupMatchCount >= 6) {
 				numberOfTeams = 4;
 			}
 

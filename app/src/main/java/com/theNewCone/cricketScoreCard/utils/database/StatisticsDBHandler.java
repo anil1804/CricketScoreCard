@@ -27,27 +27,17 @@ public class StatisticsDBHandler extends DatabaseHandler {
 		super(context);
 	}
 
-	public void addPlayerStats(CricketCardUtils ccUtils) {
+	public void addMatchStats(CricketCardUtils ccUtils) {
 		if (ccUtils != null) {
 			int tournamentID = new TournamentDBHandler(this.context).getTournamentIDUsingMatchID(ccUtils.getMatchID());
-			CricketCard winningTeam, losingTeam;
-			if (ccUtils.getWinningTeam().equals(ccUtils.getCard().getBattingTeam())) {
-				winningTeam = ccUtils.getCard();
-				losingTeam = ccUtils.getPrevInningsCard();
-			} else {
-				losingTeam = ccUtils.getCard();
-				winningTeam = ccUtils.getPrevInningsCard();
-			}
-			addMatchStats(winningTeam, losingTeam, ccUtils.getMatchID(), tournamentID);
+			CricketCard team1Card = ccUtils.getPrevInningsCard(), team2Card = ccUtils.getCard();
+
+			addMatchStats(team1Card, ccUtils.getMatchID(), tournamentID);
+			addMatchStats(team2Card, ccUtils.getMatchID(), tournamentID);
 		}
 	}
 
-	private void addMatchStats(@NonNull CricketCard winningTeamCard, @NonNull CricketCard losingTeamCard, int matchID, int tournamentID) {
-		addPlayerStats(winningTeamCard, matchID, tournamentID);
-		addPlayerStats(losingTeamCard, matchID, tournamentID);
-	}
-
-	private void addPlayerStats(CricketCard card, int matchID, int tournamentID) {
+	private void addMatchStats(CricketCard card, int matchID, int tournamentID) {
 		if (card != null) {
 			addPlayerStats(card.getFielderMap().values(), matchID, tournamentID);
 			addBatsmanStats(card.getBatsmen().values(), matchID, tournamentID);

@@ -53,6 +53,6 @@ public class StatisticsIntentService extends IntentService {
 
 	private void storeMatchStatistics(CricketCardUtils ccUtils) {
 		StatisticsDBHandler sdbHandler = new StatisticsDBHandler(this);
-		sdbHandler.addPlayerStats(ccUtils);
+		sdbHandler.addMatchStats(ccUtils);
 	}
 }

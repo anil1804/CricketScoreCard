@@ -31,5 +31,9 @@
         </menu>
     </item>
 
-    <item android:id="@+id/menu_close" app:showAsAction="never" android:icon="@drawable/ic_stop" android:title="@string/quit"/>
+	<item
+		android:id="@+id/menu_quit"
+		android:icon="@drawable/ic_stop"
+		android:title="@string/quit"
+		app:showAsAction="never" />
 </menu>

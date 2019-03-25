@@ -55,7 +55,6 @@ import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 import com.theNewCone.cricketScoreCard.utils.database.MatchDBHandler;
 import com.theNewCone.cricketScoreCard.utils.database.MatchInfoDBHandler;
 import com.theNewCone.cricketScoreCard.utils.database.MatchStateDBHandler;
-import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -126,7 +125,7 @@ public class LimitedOversFragment extends Fragment
 	MatchInfo matchInfo;
 
 	private int matchStateID = -1;
-	private int matchID, currentUndoCount, tournamentID;
+	private int matchID, currentUndoCount;
 	private boolean startInnings = true, isLoad = false, isUndo = false;
 	private String saveMatchName;
 	String[] poMPlayers;
@@ -185,7 +184,6 @@ public class LimitedOversFragment extends Fragment
 			}
 		} else {
 			if (isTournament) {
-				this.tournamentID = new TournamentDBHandler(getContext()).getTournamentIDUsingMatchID(matchID);
 				startTournamentMatch();
 				saveMatchName = ccUtils.getMatchName();
 				saveMatch(saveMatchName);
@@ -350,7 +348,7 @@ public class LimitedOversFragment extends Fragment
 
 			case R.id.menu_abandon:
 				isAbandoned = true;
-				completeMatch(MatchResult.NO_RESULT.toString(), null);
+				setMatchResult(MatchResult.NO_RESULT.toString(), null);
 				break;
 
 			case R.id.menu_cancel_runs:
@@ -1205,7 +1203,7 @@ public class LimitedOversFragment extends Fragment
 			matchTied = true;
 		}
 
-		completeMatch(result, winningTeam);
+		setMatchResult(result, winningTeam);
 
 		theView.findViewById(R.id.llScoring).setVisibility(View.GONE);
 		tvResult.setVisibility(View.VISIBLE);
@@ -1364,7 +1362,7 @@ public class LimitedOversFragment extends Fragment
 		}
 	}
 
-	private void completeMatch(String result, Team winningTeam) {
+	private void setMatchResult(String result, Team winningTeam) {
 		ccUtils.setResult(result, winningTeam, matchTied, isAbandoned);
 	}
 
@@ -1449,12 +1447,11 @@ public class LimitedOversFragment extends Fragment
 		matchDBHandler.completeMatch(matchID, CommonUtils.convertToJSON(ccUtils));
 		matchStateDBHandler.clearAllMatchHistory(matchID);
 
-		if (getActivity() != null && getFragmentManager() != null) {
+		if (getActivity() != null) {
 			if (isTournament) {
 				TournamentUtils tournamentUtils = new TournamentUtils(getContext());
 				tournamentUtils.closeTournamentMatch(ccUtils);
 			}
-			//CommonUtils.clearBackStackUntil(getFragmentManager(), NewMatchFragment.class.getSimpleName());
 			getActivity().onBackPressed();
 		}
 	}
