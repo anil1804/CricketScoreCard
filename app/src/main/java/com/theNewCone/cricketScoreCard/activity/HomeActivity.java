@@ -22,7 +22,6 @@ import android.widget.FrameLayout;
 
 import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
-import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
 import com.theNewCone.cricketScoreCard.fragment.HomeFragment;
 import com.theNewCone.cricketScoreCard.fragment.LimitedOversFragment;
 import com.theNewCone.cricketScoreCard.fragment.MatchSummaryFragment;
@@ -39,7 +38,6 @@ import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 import com.theNewCone.cricketScoreCard.utils.database.HelpContentDBHandler;
-import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
 import com.theNewCone.cricketScoreCard.utils.database.MatchDBHandler;
 import com.theNewCone.cricketScoreCard.utils.database.MatchStateDBHandler;
 
@@ -69,8 +67,6 @@ public class HomeActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_home);
-
-		new ManageDBData(this).addTeamsAndPlayers(TeamEnum.ALL);
 
 		if (savedInstanceState == null) {
 			Group group = null;

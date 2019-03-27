@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.PerformException;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
@@ -62,19 +63,39 @@ public class MatchSimulator {
 	private void createNewMatch(MatchRunInfo info) {
 		Resources resources = activity.getResources();
 
-		if(!info.isTournament())
-			CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
+		int maxOvers = info.getMaxOvers();
+		int maxWickets = info.getMaxWickets();
+		int numPlayers = info.getNumPlayers();
+		int oversPerBowler = info.getOversPerBowler();
+		String matchName = info.getMatchName();
 
-		if(info.getMaxOvers() > 0)
-			CommonTestUtils.getDisplayedView(R.id.etMaxOvers).perform(replaceText(String.valueOf(info.getMaxOvers())));
-		if(info.getMaxWickets() > 0)
-			CommonTestUtils.getDisplayedView(R.id.etMaxWickets).perform(replaceText(String.valueOf(info.getMaxWickets())));
-		if(info.getNumPlayers() > 0)
-			CommonTestUtils.getDisplayedView(R.id.etNumPlayers).perform(replaceText(String.valueOf(info.getNumPlayers())));
-		if (info.getOversPerBowler() > 0)
-			CommonTestUtils.getDisplayedView(R.id.etMaxPerBowler).perform(replaceText(String.valueOf(info.getOversPerBowler())));
-		if(info.getMatchName() != null && !"".equals(info.getMatchName().trim()))
-			CommonTestUtils.getDisplayedView(R.id.etMatchName).perform(replaceText(info.getMatchName()));
+		if (info.isTournament()) {
+			Activity currActivity = CommonTestUtils.getCurrentActivity();
+			maxOvers = Integer.parseInt(((TextView) currActivity.findViewById(R.id.tvMaxOvers)).getText().toString());
+			maxWickets = Integer.parseInt(((TextView) currActivity.findViewById(R.id.tvMaxWickets)).getText().toString());
+			numPlayers = Integer.parseInt(((TextView) currActivity.findViewById(R.id.tvNumPlayers)).getText().toString());
+			oversPerBowler = Integer.parseInt(((TextView) currActivity.findViewById(R.id.tvMaxPerBowler)).getText().toString());
+			matchName = ((TextView) currActivity.findViewById(R.id.etMatchName)).getText().toString();
+		} else {
+			CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
+			if (maxOvers > 0) {
+				CommonTestUtils.getDisplayedView(R.id.etMaxOvers).perform(replaceText(String.valueOf(maxOvers)));
+			}
+			if (maxWickets > 0) {
+				CommonTestUtils.getDisplayedView(R.id.etMaxWickets).perform(replaceText(String.valueOf(maxWickets)));
+			}
+			if (numPlayers > 0) {
+				CommonTestUtils.getDisplayedView(R.id.etNumPlayers).perform(replaceText(String.valueOf(numPlayers)));
+			}
+			if (oversPerBowler > 0) {
+				CommonTestUtils.getDisplayedView(R.id.etMaxPerBowler).perform(replaceText(String.valueOf(oversPerBowler)));
+			}
+			if (matchName != null && !"".equals(matchName.trim())) {
+				CommonTestUtils.getDisplayedView(R.id.etMatchName).perform(replaceText(matchName));
+			}
+		}
+
+		info.updateMatchRunInfo(matchName, maxOvers, maxWickets, oversPerBowler, numPlayers);
 
 		CommonTestUtils.selectTeam(info, true);
 		CommonTestUtils.selectTeam(info, false);

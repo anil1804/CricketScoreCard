@@ -4,13 +4,12 @@ import com.theNewCone.cricketScoreCard.match.Team;
 
 public class MatchRunInfo {
 	private final boolean isTournament;
-	private final String matchName;
+	private String matchName;
 	private String team1Capt, team1WK, team2Capt, team2WK, tossWonBy;
 	private String[] team1Players, team2Players;
 	private Team team1, team2;
 	private int choseTo;
-	private final int maxOvers, maxWickets, numPlayers, oversPerBowler;
-	private int selectPlayerCount;
+	private int maxOvers, maxWickets, numPlayers, oversPerBowler;
 
 	MatchRunInfo(boolean isTournament) {
 		this.isTournament = isTournament;
@@ -19,8 +18,6 @@ public class MatchRunInfo {
 		this.maxWickets = 0;
 		this.numPlayers = 0;
 		this.oversPerBowler = 0;
-
-		this.selectPlayerCount = this.numPlayers;
 	}
 
 	public MatchRunInfo(String matchName, int maxOvers, int maxWickets, int numPlayers) {
@@ -30,8 +27,6 @@ public class MatchRunInfo {
 		this.maxWickets = maxWickets;
 		this.numPlayers = numPlayers;
 		this.oversPerBowler = 0;
-
-		this.selectPlayerCount = this.numPlayers;
 	}
 
 	public MatchRunInfo(String matchName, int maxOvers, int maxWickets, int oversPerBowler, int numPlayers) {
@@ -41,8 +36,6 @@ public class MatchRunInfo {
 		this.maxWickets = maxWickets;
 		this.numPlayers = numPlayers;
 		this.oversPerBowler = oversPerBowler;
-
-		this.selectPlayerCount = this.numPlayers;
 	}
 
 	public void setTeam1(String name, String shortName, String[] players, String captain, String wicketKeeper) {
@@ -57,6 +50,14 @@ public class MatchRunInfo {
 		this.team2Players = players;
 		this.team2Capt = captain;
 		this.team2WK = wicketKeeper;
+	}
+
+	void updateMatchRunInfo(String matchName, int maxOvers, int maxWickets, int oversPerBowler, int numPlayers) {
+		this.matchName = matchName;
+		this.maxOvers = maxOvers;
+		this.maxWickets = maxWickets;
+		this.numPlayers = numPlayers;
+		this.oversPerBowler = oversPerBowler;
 	}
 
 	public void updateTossDetails(String tossWonBy, int choseTo) {
@@ -126,13 +127,5 @@ public class MatchRunInfo {
 
 	int getOversPerBowler() {
 		return oversPerBowler;
-	}
-
-	int getSelectPlayerCount() {
-		return selectPlayerCount;
-	}
-
-	public void setSelectPlayerCount(int selectPlayerCount) {
-		this.selectPlayerCount = selectPlayerCount;
 	}
 }

@@ -10,9 +10,10 @@
     <item android:id="@+id/menu_quit" app:showAsAction="never" android:title="@string/quit"
         android:icon="@drawable/ic_stop"/>
 
+	<!--TODO: Hide this menu option-->
 	<item
 		android:id="@+id/menu_load"
-		android:title="Load Data"
+		android:title="@string/loadData"
 		app:showAsAction="never" />
 
 </menu>

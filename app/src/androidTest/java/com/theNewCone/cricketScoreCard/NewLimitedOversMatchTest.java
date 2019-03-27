@@ -39,9 +39,9 @@ public class NewLimitedOversMatchTest {
 		IdlingPolicies.setIdlingResourceTimeout(5, TimeUnit.SECONDS);
 	}
 
-
 	@Test
 	public void matchNameValidation() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
@@ -73,6 +73,7 @@ public class NewLimitedOversMatchTest {
 
 	@Test
 	public void playerSelection() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
@@ -122,6 +123,7 @@ public class NewLimitedOversMatchTest {
 
 	@Test
 	public void validateOversPlayersWickets() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
@@ -210,6 +212,7 @@ public class NewLimitedOversMatchTest {
 
 	@Test
 	public void captainOrWKSelection() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
@@ -245,7 +248,8 @@ public class NewLimitedOversMatchTest {
 		//Team1 - Wicket-Keeper Not in Team
 		String[] WI_PLAYERS = new String[11];
 		System.arraycopy(CommonTestUtils.WI_PLAYERS, 0, WI_PLAYERS, 0, 11);
-		WI_PLAYERS[2] = "AMarlon Samuels";
+//		WI_PLAYERS[2] = "AMarlon Samuels";
+		WI_PLAYERS[2] = "Marlon Samuels";
 
 		info.setTeam1("West Indies", "WI", WI_PLAYERS, team1Captain, team1WK);
 		CommonTestUtils.selectTeam(info, true, true, false, false);
@@ -255,7 +259,8 @@ public class NewLimitedOversMatchTest {
 
 		//Team1 - Captain Not in Team
 		System.arraycopy(CommonTestUtils.WI_PLAYERS, 0, WI_PLAYERS, 0, 11);
-		WI_PLAYERS[5] = "AMarlon Samuels";
+//		WI_PLAYERS[5] = "AMarlon Samuels";
+		WI_PLAYERS[5] = "Marlon Samuels";
 		info.setTeam1("West Indies", "WI", WI_PLAYERS, team1Captain, team1WK);
 		CommonTestUtils.selectTeam(info, true, true, false, false);
 		CommonTestUtils.checkIfToastShown(
@@ -265,6 +270,7 @@ public class NewLimitedOversMatchTest {
 
 	@Test
 	public void playerCountMismatch() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
@@ -280,7 +286,6 @@ public class NewLimitedOversMatchTest {
 		System.arraycopy(CommonTestUtils.IND_PLAYERS, 0, IND_PLAYERS, 0, 9);
 		info.setTeam2("India", "IND", IND_PLAYERS,
 				CommonTestUtils.IND_PLAYERS[0], CommonTestUtils.IND_PLAYERS[3]);
-		info.setSelectPlayerCount(9);
 
 		CommonTestUtils.selectTeam(info, false, true, false, false);
 		CommonTestUtils.checkIfToastShown(
@@ -294,7 +299,6 @@ public class NewLimitedOversMatchTest {
 		IND_PLAYERS[11] = "Ambati Rayudu";
 		info.setTeam2("India", "IND", IND_PLAYERS,
 				CommonTestUtils.IND_PLAYERS[0], CommonTestUtils.IND_PLAYERS[3]);
-		info.setSelectPlayerCount(12);
 
 		CommonTestUtils.selectTeam(info, false, true, false, false);
 		CommonTestUtils.checkIfToastShown(
@@ -420,6 +424,7 @@ public class NewLimitedOversMatchTest {
 
 	@Test
 	public void progressToNextStage() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 

@@ -1,7 +1,6 @@
 package com.theNewCone.cricketScoreCard;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingPolicies;
 import android.support.test.espresso.IdlingResourceTimeoutException;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.activity.HomeActivity;
 import com.theNewCone.cricketScoreCard.utils.CommonTestUtils;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -27,7 +25,6 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 @LargeTest
@@ -49,6 +46,7 @@ public class TeamManageTest {
 
 	@Test
 	public void validateInputData() {
+		CommonTestUtils.loadDBData();
 		ViewInteraction btnManageTeam = CommonTestUtils.getDisplayedView(R.id.btnManageTeam);
 		btnManageTeam.perform(click());
 
@@ -73,26 +71,9 @@ public class TeamManageTest {
 		CommonTestUtils.checkIfToastShown(R.string.Team_enterValidTeamShortName);
 	}
 
-	//	@Test
-	public void testNoTeamsFoundIsShown() {
-		deleteAllTeams();
-
-		ViewInteraction btnManageTeam = CommonTestUtils.getDisplayedView(R.id.btnManageTeam);
-		btnManageTeam.perform(click());
-
-		ViewInteraction menu_getTeamList = CommonTestUtils.getDisplayedView(R.id.menu_getTeamList);
-		menu_getTeamList.perform(click());
-
-		ViewInteraction tvNoTeams = CommonTestUtils.getDisplayedView(R.id.tvNoTeams);
-		tvNoTeams.check(matches(isDisplayed()));
-		tvNoTeams.check(matches(withText(R.string.noTeamsFound)));
-
-		ViewInteraction btnCancel = CommonTestUtils.getDisplayedView(R.id.btnCancel);
-		btnCancel.check(matches(isDisplayed()));
-	}
-
 	@Test
 	public void manageTeams() {
+		CommonTestUtils.loadDBData();
 		CommonTestUtils.getDisplayedView(R.id.btnManageTeam).perform(click());
 		teamDelete(nameFirst);
 		teamDelete(nameSecond);
@@ -142,6 +123,7 @@ public class TeamManageTest {
 
 	@Test
 	public void teamPlayerAssign() {
+		CommonTestUtils.loadDBData();
 		Activity activity = mActivityTestRule.getActivity();
 
 		CommonTestUtils.getDisplayedView(R.id.btnManageTeam).perform(click());
@@ -196,12 +178,6 @@ public class TeamManageTest {
 
 		CommonTestUtils.clickNavigationMenuItem(3);
 		teamDelete(nameFirst);
-	}
-
-	private void deleteAllTeams() {
-		Context context = mActivityTestRule.getActivity().getApplicationContext();
-		DatabaseHandler dbh = new DatabaseHandler(context);
-		dbh.deleteAllRecords(dbh.TBL_TEAM);
 	}
 
 	private void teamCreate() {

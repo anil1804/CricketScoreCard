@@ -1,7 +1,6 @@
 package com.theNewCone.cricketScoreCard;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingPolicies;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.activity.HomeActivity;
 import com.theNewCone.cricketScoreCard.utils.CommonTestUtils;
-import com.theNewCone.cricketScoreCard.utils.database.DatabaseHandler;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -29,7 +27,6 @@ import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
@@ -56,6 +53,7 @@ public class PlayerManageTest {
 
 	@Test
 	public void validateInput() {
+		CommonTestUtils.loadDBData();
 		CommonTestUtils.getDisplayedView(R.id.btnManagePlayer).perform(click());
 		Resources resources = mActivityTestRule.getActivity().getResources();
 
@@ -89,21 +87,9 @@ public class PlayerManageTest {
 		CommonTestUtils.checkIfToastShown(errorMessage);
 	}
 
-	//@Test
-	public void testNoPlayersFoundIsShown() {
-		deleteAllPlayers();
-
-		CommonTestUtils.getDisplayedView(R.id.btnManagePlayer).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.menu_getPlayerList).perform(click());
-		ViewInteraction tvNoPlayers = CommonTestUtils.getDisplayedView(R.id.tvNoPlayers);
-		tvNoPlayers.check(matches(isDisplayed()));
-		tvNoPlayers.check(matches(withText(R.string.noPlayersFound)));
-
-		CommonTestUtils.getDisplayedView(R.id.btnCancel).check(matches(isDisplayed()));
-	}
-
 	@Test
 	public void testPlayerManage() {
+		CommonTestUtils.loadDBData();
 		CommonTestUtils.getDisplayedView(R.id.btnManagePlayer).perform(click());
 		playerDelete(nameFirst);
 		playerDelete(nameSecond);
@@ -163,6 +149,7 @@ public class PlayerManageTest {
 
 	@Test
 	public void testTeamAssign() {
+		CommonTestUtils.loadDBData();
 		Activity activity = mActivityTestRule.getActivity();
 
 		String[] teams = {
@@ -212,12 +199,6 @@ public class PlayerManageTest {
 		/*Delete the Player created*/
 		CommonTestUtils.clickNavigationMenuItem(2);
 		playerDelete(nameFirst);
-	}
-
-	private void deleteAllPlayers() {
-		Context context = mActivityTestRule.getActivity().getApplicationContext();
-		DatabaseHandler dbh = new DatabaseHandler(context);
-		dbh.deleteAllRecords(dbh.TBL_PLAYER);
 	}
 
 	private void playerCreate() {

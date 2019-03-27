@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.activity.TeamSelectActivity;
-import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
 import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.enumeration.TournamentStageType;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
@@ -28,7 +27,6 @@ import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
-import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
 import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 public class NewTournamentFragment extends Fragment
@@ -70,7 +68,6 @@ public class NewTournamentFragment extends Fragment
 		theView = inflater.inflate(R.layout.fragment_new_tournament, container, false);
 
 		initialize();
-		new ManageDBData(getContext()).addTeamsAndPlayers(TeamEnum.ALL);
 
 		if (getActivity() != null)
 			getActivity().setTitle(getString(R.string.title_fragment_new_tournament));

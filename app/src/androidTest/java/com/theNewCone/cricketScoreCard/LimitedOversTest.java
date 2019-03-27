@@ -30,6 +30,7 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateIndVsWI20Overs() {
+		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
 
 		final String[] IND_PLAYERS = {
@@ -47,7 +48,8 @@ public class LimitedOversTest {
 		};
 
 		final String[] WI_PLAYERS = {
-				"AShai Hope",
+//				"AShai Hope",
+				"Shai Hope",
 				"Denesh Ramdin",
 				"Shimron Hetmyer",
 				"Kieron Pollard",
@@ -70,6 +72,7 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateIndWVsPakW20Overs() {
+		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
 
 		final String[] PAKW_PLAYERS = {
@@ -110,19 +113,24 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateWIvsSA20Overs() {
+		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
 
 		final String[] WI_PLAYERS = {
 				"Chris Gayle",
 				"Devon Smith",
-				"AMarlon Samuels",
-				"AShivnarine Chanderpaul",
+//				"AMarlon Samuels",
+//				"AShivnarine Chanderpaul",
+				"Marlon Samuels",
+				"Shivnarine Chanderpaul",
 				"Dwayne Smith",
-				"ARamnaresh Sarwan",
+//				"ARamnaresh Sarwan",
+				"Ramnaresh Sarwan",
 				"Denesh Ramdin",
 				"Dwayne Bravo",
 				"Daren Powell",
-				"ARavi Rampaul",
+//				"ARavi Rampaul",
+				"Ravi Rampaul",
 				"Fidel Edwards"
 		};
 
@@ -150,13 +158,16 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateIndVsPak20Overs() {
+		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
 
 		final String[] IND_PLAYERS = {
 				"Gautam Gambhir",
-				"AYusuf Pathan",
+//				"AYusuf Pathan",
+				"Yusuf Pathan",
 				"Robin Uthappa",
-				"AYuvraj Singh",
+//				"AYuvraj Singh",
+				"Yuvraj Singh",
 				"MS Dhoni",
 				"Rohit Sharma",
 				"Irfan Pathan",
@@ -170,13 +181,16 @@ public class LimitedOversTest {
 				"Mohammad Hafeez",
 				"Imran Nazir",
 				"Kamran Akmal",
-				"AYounis Khan",
+//				"AYounis Khan",
+				"Younis Khan",
 				"Shoaib Malik",
 				"Misbah-ul-Haq",
 				"Shahid Afridi",
-				"AYasir Arafat",
+//				"AYasir Arafat",
+				"Yasir Arafat",
 				"Sohail Tanvir",
-				"AUmar Gul",
+//				"AUmar Gul",
+				"Umar Gul",
 				"Mohammad Asif"
 		};
 
@@ -190,6 +204,7 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateNZvsSL20Overs() {
+		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
 
 		final String[] NZ_PLAYERS = {
@@ -230,6 +245,7 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateIndVsWI5Overs() {
+		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
 
 		final String[] IND_PLAYERS = {
@@ -247,7 +263,8 @@ public class LimitedOversTest {
 		};
 
 		final String[] WI_PLAYERS = {
-				"AShai Hope",
+//				"AShai Hope",
+				"Shai Hope",
 				"Denesh Ramdin",
 				"Shimron Hetmyer",
 				"Kieron Pollard",
@@ -270,6 +287,7 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateIndWVsPakW5Overs() {
+		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
 
 		final String[] PAKW_PLAYERS = {
@@ -310,19 +328,24 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateWIvsSA5Overs() {
+		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
 
 		final String[] WI_PLAYERS = {
 				"Chris Gayle",
 				"Devon Smith",
-				"AMarlon Samuels",
-				"AShivnarine Chanderpaul",
+//				"AMarlon Samuels",
+//				"AShivnarine Chanderpaul",
+				"Marlon Samuels",
+				"Shivnarine Chanderpaul",
 				"Dwayne Smith",
-				"ARamnaresh Sarwan",
+//				"ARamnaresh Sarwan",
+				"Ramnaresh Sarwan",
 				"Denesh Ramdin",
 				"Dwayne Bravo",
 				"Daren Powell",
-				"ARavi Rampaul",
+//				"ARavi Rampaul",
+				"Ravi Rampaul",
 				"Fidel Edwards"
 		};
 
@@ -350,13 +373,16 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateIndVsPak5Overs() {
+		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
 
 		final String[] IND_PLAYERS = {
 				"Gautam Gambhir",
-				"AYusuf Pathan",
+//				"AYusuf Pathan",
+				"Yusuf Pathan",
 				"Robin Uthappa",
-				"AYuvraj Singh",
+//				"AYuvraj Singh",
+				"Yuvraj Singh",
 				"MS Dhoni",
 				"Rohit Sharma",
 				"Irfan Pathan",
@@ -370,13 +396,16 @@ public class LimitedOversTest {
 				"Mohammad Hafeez",
 				"Imran Nazir",
 				"Kamran Akmal",
-				"AYounis Khan",
+//				"AYounis Khan",
+				"Younis Khan",
 				"Shoaib Malik",
 				"Misbah-ul-Haq",
 				"Shahid Afridi",
-				"AYasir Arafat",
+//				"AYasir Arafat",
+				"Yasir Arafat",
 				"Sohail Tanvir",
-				"AUmar Gul",
+//				"AUmar Gul",
+				"Umar Gul",
 				"Mohammad Asif"
 		};
 
@@ -390,6 +419,7 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateNZvsSL5Overs() {
+		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
 
 		final String[] NZ_PLAYERS = {

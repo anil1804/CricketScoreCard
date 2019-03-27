@@ -408,4 +408,5 @@
 	<string name="PTS_notEnoughPlayers">Team doesn\'t have enough number of players.</string>
 	<string name="captain">Captain</string>
 	<string name="wicketKeeper">Wicket Keeper</string>
+	<string name="loadData">Load Data</string>
 </resources>

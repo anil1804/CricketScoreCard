@@ -39,25 +39,9 @@ public class NewTournamentTest {
 		IdlingPolicies.setIdlingResourceTimeout(5, TimeUnit.SECONDS);
 	}
 
-/*
-	@Test
-	public void notEnoughTeams() {
-		HomeActivity activity = mActivityTestRule.getActivity();
-		Context context = activity.getApplicationContext();
-		Resources resources = activity.getResources();
-
-		CommonTestUtils.clearTeams(context);
-
-		CommonTestUtils.getDisplayedView(R.id.btnNewTournament).perform(click());
-		CommonTestUtils.getDisplayedView(resources.getString(R.string.notEnoughTeams))
-				.check(matches(isDisplayed()));
-		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentNotEnoughTeamsMessage))
-				.check(matches(isDisplayed()));
-	}
-*/
-
 	@Test
 	public void showTeamCountChangedMessage() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
@@ -78,6 +62,7 @@ public class NewTournamentTest {
 
 	@Test
 	public void showValidTournamentFormats() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
@@ -151,6 +136,7 @@ public class NewTournamentTest {
 
 	@Test
 	public void createBilateralSeries() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Context context = activity.getApplicationContext();
 		Resources resources = activity.getResources();
@@ -198,6 +184,7 @@ public class NewTournamentTest {
 
 	@Test
 	public void showValidRoundRobinStages() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
@@ -257,6 +244,7 @@ public class NewTournamentTest {
 
 	@Test
 	public void validateRoundRobinInfo() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
@@ -285,6 +273,7 @@ public class NewTournamentTest {
 
 	@Test
 	public void createRoundRobinTournament() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Context context = activity.getApplicationContext();
 		Resources resources = activity.getResources();
@@ -339,6 +328,7 @@ public class NewTournamentTest {
 
 	@Test
 	public void showValidGroupStages() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
@@ -584,6 +574,7 @@ public class NewTournamentTest {
 
 	@Test
 	public void validateGroupsInfo() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
@@ -620,6 +611,7 @@ public class NewTournamentTest {
 
 	@Test
 	public void createGroupFormatTournament() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Context context = activity.getApplicationContext();
 		Resources resources = activity.getResources();
@@ -690,6 +682,7 @@ public class NewTournamentTest {
 
 	@Test
 	public void createKnockOutSeries() {
+		CommonTestUtils.loadDBData();
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Context context = activity.getApplicationContext();
 		Resources resources = activity.getResources();

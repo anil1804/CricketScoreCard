@@ -5,12 +5,15 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.IdRes;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingResourceTimeoutException;
 import android.support.test.espresso.NoMatchingRootException;
 import android.support.test.espresso.NoMatchingViewException;
+import android.support.test.espresso.PerformException;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.ViewInteraction;
+import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import android.support.test.runner.lifecycle.Stage;
@@ -29,7 +32,10 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -80,7 +86,8 @@ public class CommonTestUtils {
 			"Carlos Brathwaite",
 			"Fabian Allen",
 			"Oshane Thomas",
-			"AShai Hope",
+//			"AShai Hope",
+			"Shai Hope",
 			"Keemo Paul",
 			"Khary Pierre"
 	};
@@ -111,10 +118,6 @@ public class CommonTestUtils {
 	public static ViewInteraction goToViewStarting(String text) {
 		text = text.trim();
 		return onView(withText(startsWith(text))).perform(scrollTo());
-	}
-
-	private static ViewInteraction goToChildAtPosition(Matcher<View> parentMatcher, int position) {
-		return onView(childAtPosition(parentMatcher, position)).perform(scrollTo());
 	}
 
 	static ViewInteraction getView(Matcher<View> parentMatcher, Matcher<View> viewMatcher) {
@@ -201,26 +204,34 @@ public class CommonTestUtils {
 		return COUNT[0];
 	}
 
-	private static boolean selectTeamPlayers(String[] players, int numPlayers, int selPlayerCount) {
+	private static boolean selectTeamPlayers(String[] players, int numPlayers) {
 		getDisplayedView(R.id.btnPTSSelectPlayers).perform(click());
 		if (checkViewExists(withId(R.id.rcvPlayerList))) {
-			if (getChildCount(R.id.rcvPlayerList) > numPlayers) {
-				for (int i = 0; i < numPlayers; i++) {
-					goToChildAtPosition(withId(R.id.rcvPlayerList), i).perform(click());
-				}
 
-				int i = 0;
-				for (String playerName : players) {
-					if (i >= selPlayerCount)
-						break;
+			List<String> playersToSelect =
+					getPlayersToSelect((RecyclerView) getCurrentActivity().findViewById(R.id.rcvPlayerList),
+							players, numPlayers);
+
+			for (String playerName : playersToSelect) {
+				int childCount = getChildCount(R.id.rcvPlayerList);
+				int currChildPosition = 0, incBy = 2;
+				boolean foundItem = false;
+				while (!foundItem) {
 					try {
 						goToViewStarting(playerName).perform(click());
-					} catch (NoMatchingViewException ex) {
-						getView(withId(R.id.rcvPlayerList), withText(startsWith(playerName))).perform(click());
+						foundItem = true;
+					} catch (NoMatchingViewException | PerformException ex) {
+						if (currChildPosition <= childCount) {
+							getDisplayedView(R.id.rcvPlayerList).perform(RecyclerViewActions.scrollToPosition(currChildPosition));
+							int currDiff = childCount - currChildPosition;
+							currChildPosition += currDiff > incBy ? incBy : (currDiff == 0) ? 1 : currDiff;
+						} else {
+							throw ex;
+						}
 					}
-					i++;
 				}
 			}
+
 			getDisplayedView("OK").perform(click());
 
 			return true;
@@ -309,7 +320,7 @@ public class CommonTestUtils {
 
 		//Select Players
 		if (selectPlayers) {
-			boolean playersSelected = CommonTestUtils.selectTeamPlayers(teamPlayers, info.getNumPlayers(), info.getSelectPlayerCount());
+			boolean playersSelected = CommonTestUtils.selectTeamPlayers(teamPlayers, info.getNumPlayers());
 
 			if (playersSelected) {
 				//Select Captain
@@ -343,5 +354,46 @@ public class CommonTestUtils {
 		});
 
 		return currentActivity[0];
+	}
+
+	public static void loadDBData() {
+		Activity activity = getCurrentActivity();
+		Resources resources = activity.getResources();
+
+		Espresso.openActionBarOverflowOrOptionsMenu(activity.getApplicationContext());
+		CommonTestUtils.goToView(resources.getString(R.string.loadData)).perform(click());
+	}
+
+	private static List<String> getPlayersToSelect(RecyclerView playerListView, String[] playersToSelect, int selectedCount) {
+		List<String> finalPlayerList = new ArrayList<>();
+		List<String> playersToSelectList = Arrays.asList(playersToSelect);
+
+		List<String> currentlySelectedPlayers = new ArrayList<>();
+		if (playerListView != null && playerListView.getLayoutManager() != null) {
+			for (int i = 0; i < selectedCount; i++) {
+				View playerView = playerListView.getLayoutManager().findViewByPosition(i);
+				if (playerView != null) {
+					String playerName = ((TextView) playerView.findViewById(R.id.tvPlayerName)).getText().toString();
+
+					if (playerName.contains("(w)")) {
+						playerName = playerName.substring(0, playerName.length() - 3).trim();
+					}
+
+					if (!playersToSelectList.contains(playerName)) {
+						finalPlayerList.add(playerName);
+					}
+
+					currentlySelectedPlayers.add(playerName);
+				}
+			}
+		}
+
+		for (String playerName : playersToSelectList) {
+			if (!currentlySelectedPlayers.contains(playerName)) {
+				finalPlayerList.add(playerName);
+			}
+		}
+
+		return finalPlayerList;
 	}
 }
