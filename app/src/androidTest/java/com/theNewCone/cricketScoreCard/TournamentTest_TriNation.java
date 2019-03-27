@@ -36,6 +36,8 @@ public class TournamentTest_TriNation {
 
 	@Test
 	public void testTriNationSeries() {
+		CommonTestUtils.loadDBData();
+
 		int numRounds = 1;
 		createAusIndNZSeries(numRounds);
 		openTournamentScheduleScreen();
@@ -102,6 +104,7 @@ public class TournamentTest_TriNation {
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentSchedule)).perform(click());
 
 		int groupIndex = stage == Stage.FINAL ? 1 : 0;
-		TournamentTestUtils.triggerMatch(groupIndex, matchNumber, null);
+		String currentRoundText = stage == Stage.FINAL ? Stage.FINAL.enumString() : Stage.ROUND_ROBIN.enumString();
+		TournamentTestUtils.triggerMatch(groupIndex, matchNumber, null, currentRoundText);
 	}
 }

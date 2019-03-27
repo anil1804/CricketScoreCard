@@ -36,6 +36,8 @@ public class TournamentTest_Bilateral {
 
 	@Test
 	public void testBilateralSeries() {
+		CommonTestUtils.loadDBData();
+
 		createAusVsIndSeries();
 		openTournamentScheduleScreen();
 
@@ -103,6 +105,7 @@ public class TournamentTest_Bilateral {
 		Resources resources = testRule.getActivity().getResources();
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentSchedule)).perform(click());
 
-		TournamentTestUtils.triggerMatch(TeamEnum.AUS, TeamEnum.IND, matchNumber, null);
+		TournamentTestUtils.triggerMatch(TeamEnum.AUS, TeamEnum.IND, matchNumber,
+				null, resources.getString(R.string.matches));
 	}
 }
