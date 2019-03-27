@@ -1,6 +1,5 @@
 package com.theNewCone.cricketScoreCard.fragment;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,13 +15,13 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.theNewCone.cricketScoreCard.R;
-import com.theNewCone.cricketScoreCard.activity.PlayerSelectActivity;
+import com.theNewCone.cricketScoreCard.activity.PlayingTeamSelectActivity;
 import com.theNewCone.cricketScoreCard.comparator.TeamComparator;
-import com.theNewCone.cricketScoreCard.intf.DialogItemClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.match.Match;
 import com.theNewCone.cricketScoreCard.match.Team;
@@ -32,27 +31,18 @@ import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
 import com.theNewCone.cricketScoreCard.utils.database.MatchDBHandler;
-import com.theNewCone.cricketScoreCard.utils.database.PlayerDBHandler;
 import com.theNewCone.cricketScoreCard.utils.database.TeamDBHandler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 public class NewMatchFragment extends Fragment
-    implements View.OnClickListener, DialogItemClickListener {
+		implements View.OnClickListener {
 
-	private final int REQ_CODE_PLAYER_SELECT_TEAM1 = 1;
-	private final int REQ_CODE_PLAYER_SELECT_TEAM2 = 2;
-	private final int REQ_CODE_SELECT_CAPTAIN_TEAM1 = 3;
-	private final int REQ_CODE_SELECT_CAPTAIN_TEAM2 = 4;
-	private final int REQ_CODE_SELECT_WK_TEAM1 = 5;
-	private final int REQ_CODE_SELECT_WK_TEAM2 = 6;
-
-	private final String ENUM_TYPE_TEAM1 = "Team1Select";
-	private final String ENUM_TYPE_TEAM2 = "Team2Select";
+	private final int REQ_CODE_SELECT_TEAM1 = 1;
+	private final int REQ_CODE_SELECT_TEAM2 = 2;
 
 	private Tournament tournament = null;
 	private MatchInfo matchInfo = null;
@@ -67,8 +57,7 @@ public class NewMatchFragment extends Fragment
     RadioGroup rgToss, rgTossChoose;
     RadioButton rbTossTeam1, rbTossTeam2, rbTossBat, rbTossBowl;
     ScrollView svNewMatch;
-
-	List<Player> team1Players, team2Players;
+	TableLayout tlTeamData;
 
 	int maxPerBowler = 0, maxOvers, maxWickets, numPlayers = 0;
 
@@ -115,14 +104,6 @@ public class NewMatchFragment extends Fragment
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-			case R.id.tvTeam1:
-				displayTeamSelect(ENUM_TYPE_TEAM1);
-				break;
-
-			case R.id.tvTeam2:
-				displayTeamSelect(ENUM_TYPE_TEAM2);
-				break;
-
 			case R.id.btnValidate:
 				validateInput();
 				break;
@@ -185,72 +166,11 @@ public class NewMatchFragment extends Fragment
 				break;
 
 			case R.id.btnNMSelectTeam1:
-				displayPlayerSelect(team1, REQ_CODE_PLAYER_SELECT_TEAM1);
+				displayTeamSelect(REQ_CODE_SELECT_TEAM1);
 				break;
 
 			case R.id.btnNMSelectTeam2:
-				displayPlayerSelect(team2, REQ_CODE_PLAYER_SELECT_TEAM2);
-				break;
-
-			case R.id.tvTeam1Captain:
-				if(team1 != null) {
-					displayCaptainWKSelect(team1, REQ_CODE_SELECT_CAPTAIN_TEAM1, team1.getCaptain());
-				} else {
-					Toast.makeText(getContext(),
-							getResources().getString(R.string.NM_selectTeamForCapAndWK).trim(),
-							Toast.LENGTH_SHORT).show();
-				}
-				break;
-
-			case R.id.tvTeam1WK:
-				if(team1 != null) {
-					displayCaptainWKSelect(team1, REQ_CODE_SELECT_WK_TEAM1, team1.getWicketKeeper());
-				} else {
-					Toast.makeText(getContext(),
-							getResources().getString(R.string.NM_selectTeamForCapAndWK).trim(),
-							Toast.LENGTH_SHORT).show();
-				}
-				break;
-
-			case R.id.tvTeam2Captain:
-				if(team2 != null) {
-					displayCaptainWKSelect(team2, REQ_CODE_SELECT_CAPTAIN_TEAM2, team2.getCaptain());
-				} else {
-					Toast.makeText(getContext(),
-							getResources().getString(R.string.NM_selectTeamForCapAndWK).trim(),
-							Toast.LENGTH_SHORT).show();
-				}
-				break;
-
-			case R.id.tvTeam2WK:
-				if(team2 != null) {
-					displayCaptainWKSelect(team2, REQ_CODE_SELECT_WK_TEAM2, team2.getWicketKeeper());
-				} else {
-					Toast.makeText(getContext(),
-							getResources().getString(R.string.NM_selectTeamForCapAndWK).trim(),
-							Toast.LENGTH_SHORT).show();
-				}
-				break;
-		}
-	}
-
-	@Override
-	public void onItemSelect(String type, String value, int position) {
-		switch (type) {
-			case ENUM_TYPE_TEAM1:
-				team1 = teams.get(position);
-				tvTeam1.setText(value);
-				rbTossTeam1.setText(team1.getShortName());
-				setMatchName();
-				btnNMSelectTeam1.setVisibility(View.VISIBLE);
-				break;
-
-			case ENUM_TYPE_TEAM2:
-				team2 = teams.get(position);
-				tvTeam2.setText(value);
-				rbTossTeam2.setText(team2.getShortName());
-				setMatchName();
-				btnNMSelectTeam2.setVisibility(View.VISIBLE);
+				displayTeamSelect(REQ_CODE_SELECT_TEAM2);
 				break;
 		}
 	}
@@ -260,69 +180,35 @@ public class NewMatchFragment extends Fragment
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (requestCode) {
-			case REQ_CODE_PLAYER_SELECT_TEAM1:
-				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
-					team1Players = Arrays.asList
-							(CommonUtils.objectArrToPlayerArr(
-									(Object []) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYERS)));
-					team1.setMatchPlayers(team1Players);
-					tvTeam1Capt.setVisibility(View.VISIBLE);
+			case REQ_CODE_SELECT_TEAM1:
+				if (resultCode == PlayingTeamSelectActivity.RESP_CODE_OK) {
+					team1 = (Team) data.getSerializableExtra(PlayingTeamSelectActivity.ARG_SEL_TEAM);
+				}
+				if (team1 != null) {
+					tlTeamData.setVisibility(View.VISIBLE);
+					tvTeam1.setText(team1.getName());
+					if (team1.getCaptain() != null)
+						tvTeam1Capt.setText(team1.getCaptain().getName());
+					if (team1.getWicketKeeper() != null)
+						tvTeam1WK.setText(team1.getWicketKeeper().getName());
 
-					String captain = team1.getCaptain() != null ? team1.getCaptain().getName() : getResources().getString(R.string.none);
-					String wk = team1.getWicketKeeper() != null ? team1.getWicketKeeper().getName() : getResources().getString(R.string.none);
-
-					tvTeam1Capt.setText(String.format(getString(R.string.captainName), captain));
-					tvTeam1WK.setVisibility(View.VISIBLE);
-					tvTeam1WK.setText(String.format(getString(R.string.wkName), wk));
+					updateMatchInfo();
 				}
 				break;
 
-			case REQ_CODE_PLAYER_SELECT_TEAM2:
-				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
-					team2Players = Arrays.asList(
-							CommonUtils.objectArrToPlayerArr(
-									(Object []) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYERS)));
-					team2.setMatchPlayers(team2Players);
-
-					String captain = team2.getCaptain() != null ? team2.getCaptain().getName() : getResources().getString(R.string.none);
-					String wk = team2.getWicketKeeper() != null ? team2.getWicketKeeper().getName() : getResources().getString(R.string.none);
-
-					tvTeam2Capt.setVisibility(View.VISIBLE);
-					tvTeam2Capt.setText(String.format(getString(R.string.captainName), captain));
-					tvTeam2WK.setVisibility(View.VISIBLE);
-					tvTeam2WK.setText(String.format(getString(R.string.wkName), wk));
+			case REQ_CODE_SELECT_TEAM2:
+				if (resultCode == PlayingTeamSelectActivity.RESP_CODE_OK) {
+					team2 = (Team) data.getSerializableExtra(PlayingTeamSelectActivity.ARG_SEL_TEAM);
 				}
-				break;
+				if (team2 != null) {
+					tlTeamData.setVisibility(View.VISIBLE);
+					tvTeam2.setText(team2.getName());
+					if (team2.getCaptain() != null)
+						tvTeam2Capt.setText(team2.getCaptain().getName());
+					if (team2.getWicketKeeper() != null)
+						tvTeam2WK.setText(team2.getWicketKeeper().getName());
 
-			case REQ_CODE_SELECT_CAPTAIN_TEAM1:
-				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
-					Player captain = (Player) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYER);
-					team1.setCaptain(captain);
-					tvTeam1Capt.setText(String.format(getString(R.string.captainName), captain.getName()));
-				}
-				break;
-
-			case REQ_CODE_SELECT_WK_TEAM1:
-				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
-					Player wk = (Player) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYER);
-					team1.setWicketKeeper(wk);
-					tvTeam1WK.setText(String.format(getString(R.string.wkName), wk.getName()));
-				}
-				break;
-
-			case REQ_CODE_SELECT_CAPTAIN_TEAM2:
-				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
-					Player captain = (Player) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYER);
-					team2.setCaptain(captain);
-					tvTeam2Capt.setText(String.format(getString(R.string.captainName), captain.getName()));
-				}
-				break;
-
-			case REQ_CODE_SELECT_WK_TEAM2:
-				if(resultCode == PlayerSelectActivity.RESP_CODE_OK) {
-					Player wk = (Player) data.getSerializableExtra(PlayerSelectActivity.ARG_RESP_SEL_PLAYER);
-					team2.setWicketKeeper(wk);
-					tvTeam2WK.setText(String.format(getString(R.string.wkName), wk.getName()));
+					updateMatchInfo();
 				}
 				break;
 		}
@@ -396,6 +282,8 @@ public class NewMatchFragment extends Fragment
 			}
 		});
 
+		tlTeamData = theView.findViewById(R.id.tlNMTeamData);
+
 		tvTeam1 = theView.findViewById(R.id.tvTeam1);
 		tvTeam2 = theView.findViewById(R.id.tvTeam2);
 		tvTeam1Capt = theView.findViewById(R.id.tvTeam1Captain);
@@ -420,13 +308,6 @@ public class NewMatchFragment extends Fragment
 
 		svNewMatch = theView.findViewById(R.id.svNewMatch);
 
-		tvTeam1.setOnClickListener(this);
-		tvTeam2.setOnClickListener(this);
-		tvTeam1Capt.setOnClickListener(this);
-		tvTeam1WK.setOnClickListener(this);
-		tvTeam2Capt.setOnClickListener(this);
-		tvTeam2WK.setOnClickListener(this);
-
 		btnCancel.setOnClickListener(this);
 		btnValidate.setOnClickListener(this);
 		btnStartMatch.setOnClickListener(this);
@@ -448,8 +329,6 @@ public class NewMatchFragment extends Fragment
 
 		tvTeam1.setText(matchInfo.getTeam1().getName());
 		tvTeam2.setText(matchInfo.getTeam2().getName());
-		tvTeam1.setEnabled(false);
-		tvTeam2.setEnabled(false);
 
 		maxOvers = tournament.getMaxOvers();
 		maxPerBowler = tournament.getMaxPerBowler();
@@ -497,36 +376,6 @@ public class NewMatchFragment extends Fragment
 				updateMaxPerBowler();
 			}
 		}
-
-		if(team1 != null) {
-			tvTeam1.setText(team1.getName());
-			btnNMSelectTeam1.setVisibility(View.VISIBLE);
-			if(team1Players != null) {
-				tvTeam1Capt.setVisibility(View.VISIBLE);
-				if(team1.getCaptain() != null) {
-					tvTeam1Capt.setText(team1.getCaptain().getName());
-				}
-				tvTeam1WK.setVisibility(View.VISIBLE);
-				if(team1.getWicketKeeper() != null) {
-					tvTeam1WK.setText(team1.getWicketKeeper().getName());
-				}
-			}
-		}
-
-		if(team2 != null) {
-			tvTeam2.setText(team2.getName());
-			btnNMSelectTeam2.setVisibility(View.VISIBLE);
-			if(team2Players != null) {
-				tvTeam2Capt.setVisibility(View.VISIBLE);
-				if(team2.getCaptain() != null) {
-					tvTeam2Capt.setText(team2.getCaptain().getName());
-				}
-				tvTeam2WK.setVisibility(View.VISIBLE);
-				if(team2.getWicketKeeper() != null) {
-					tvTeam2WK.setText(team2.getWicketKeeper().getName());
-				}
-			}
-		}
 	}
 
     private void updateMaxPerBowler() {
@@ -545,8 +394,13 @@ public class NewMatchFragment extends Fragment
 		Collections.sort(teams, new TeamComparator(null));
 	}
 
-	private void setMatchName() {
-		if(team1 != null && team2 != null && team1.getId() != team2.getId()) {
+	private void updateMatchInfo() {
+		if (team1 != null && team2 != null && team1.getId() != team2.getId()
+				&& team1.getMatchPlayers() != null && team2.getMatchPlayers() != null) {
+			btnValidate.setVisibility(View.VISIBLE);
+			rbTossTeam1.setText(team1.getShortName());
+			rbTossTeam2.setText(team2.getShortName());
+
 			String teamName = etMatchName.getText().toString();
 			if(teamName.length() == 0) {
 				teamName = team1.getShortName() + " v " + team2.getShortName() + " " + CommonUtils.currTimestamp("yyyyMMMdd");
@@ -557,92 +411,59 @@ public class NewMatchFragment extends Fragment
 	}
 
 	private void setTournamentMatchName() {
-		String versus = team1.getShortName() + "v" + team2.getShortName();
 		StringBuilder teamNameSB = new StringBuilder();
 
+		//Tournament Info
 		teamNameSB.append("TMT-");
 		teamNameSB.append(tournament.getId());
-		teamNameSB.append(":");
-		switch (tournament.getFormat()) {
-			case KNOCK_OUT:
-			case GROUPS:
-			case ROUND_ROBIN:
-				teamNameSB.append(group.getStage().getTag());
-				teamNameSB.append(":");
-				teamNameSB.append(versus);
-				break;
 
-			case BILATERAL:
-				int matchNum = 0;
-				for (MatchInfo groupMatchInfo : group.getMatchInfoList()) {
-					matchNum++;
-					if (matchInfo.getId() == groupMatchInfo.getId()) {
-						break;
-					}
-				}
-				teamNameSB.append("Match-");
-				teamNameSB.append(matchNum);
+		//Group Info
+		teamNameSB.append(":");
+		teamNameSB.append("Grp-");
+		teamNameSB.append(group.getGroupNumber());
+
+		int matchNum = 0;
+		for (MatchInfo groupMatchInfo : group.getMatchInfoList()) {
+			if (matchInfo.getId() == groupMatchInfo.getId()) {
+				matchNum = groupMatchInfo.getMatchNumber();
 				break;
+			}
 		}
+
+		//Match Info
+		teamNameSB.append(":");
+		teamNameSB.append("Match-");
+		teamNameSB.append(matchNum);
 
 		etMatchName.setText(teamNameSB);
 		etMatchName.setEnabled(false);
 	}
 
-	private void displayTeamSelect(String teamSelect) {
-		if(getFragmentManager() != null) {
-			String[] teamDetails = new String[teams.size()];
-
-			int i=0;
-			int ignoreTeam = -1;
-
-			for(Team team : teams) {
-				if(team.getId() != ignoreTeam) {
-					teamDetails[i++] = team.getName();
-				}
+	private void displayTeamSelect(int reqCode) {
+		if (numPlayers > 0) {
+			Intent teamSelectIntent = new Intent(getContext(), PlayingTeamSelectActivity.class);
+			ArrayList<Integer> ignoreTeamsList = new ArrayList<>();
+			Team selectedTeam = null;
+			if (reqCode == REQ_CODE_SELECT_TEAM1) {
+				selectedTeam = team1;
+				if (team2 != null)
+					ignoreTeamsList.add(team2.getId());
+			} else if (reqCode == REQ_CODE_SELECT_TEAM2) {
+				selectedTeam = team2;
+				if (team1 != null)
+					ignoreTeamsList.add(team1.getId());
 			}
 
-			StringDialog dialog = StringDialog.newInstance("Select Team", teamDetails, teamSelect);
-			dialog.setDialogItemClickListener(this);
-			dialog.show(getFragmentManager(), teamSelect + "Dialog");
-		}
-	}
+			teamSelectIntent.putExtra(PlayingTeamSelectActivity.ARG_IS_TOURNAMENT, isTournament);
+			teamSelectIntent.putExtra(PlayingTeamSelectActivity.ARG_NUM_PLAYERS, numPlayers);
+			if (selectedTeam != null)
+				teamSelectIntent.putExtra(PlayingTeamSelectActivity.ARG_SEL_TEAM, selectedTeam);
+			if (ignoreTeamsList.size() > 0)
+				teamSelectIntent.putExtra(PlayingTeamSelectActivity.ARG_IGNORE_TEAMS, ignoreTeamsList);
 
-	private void displayPlayerSelect(Team team, int reqCode) {
-		List<Player> displayPlayerList = new PlayerDBHandler(getContext()).getTeamPlayers(team.getId());
-		if(displayPlayerList != null && displayPlayerList.size() > 0) {
-			if(displayPlayerList.size() >= numPlayers) {
-				ArrayList<Integer> associatedPlayers = new ArrayList<>();
-
-				List<Player> teamPlayers = team.getMatchPlayers();
-
-				for (int i = 0; i < numPlayers; i++) {
-					associatedPlayers.add(
-							(teamPlayers == null || teamPlayers.size() == 0)
-									? displayPlayerList.get(i).getID()
-									: teamPlayers.get(i).getID()
-					);
-				}
-
-				Intent playerDisplayIntent = new Intent(getContext(), PlayerSelectActivity.class);
-				playerDisplayIntent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, displayPlayerList.toArray());
-				playerDisplayIntent.putExtra(PlayerSelectActivity.ARG_IS_MULTI_SELECT, true);
-				playerDisplayIntent.putIntegerArrayListExtra(
-						PlayerSelectActivity.ARG_ASSOCIATED_PLAYERS, associatedPlayers);
-				playerDisplayIntent.putExtra(PlayerSelectActivity.ARG_NUM_PLAYERS, numPlayers);
-
-				startActivityForResult(playerDisplayIntent, reqCode);
-			} else {
-				Toast.makeText(getContext(),
-						String.format(Locale.getDefault(), getResources().getString(R.string.NM_notEnoughPlayers), team.getShortName()).trim(),
-						Toast.LENGTH_LONG).show();
-			}
+			startActivityForResult(teamSelectIntent, reqCode);
 		} else {
-			Toast.makeText(getContext(),
-					String.format(Locale.getDefault(),
-							getResources().getString(R.string.NM_noPlayersInTeam),
-							team.getShortName()).trim(),
-					Toast.LENGTH_LONG).show();
+			Toast.makeText(getContext(), "Provide Number Players before selecting team", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -657,8 +478,6 @@ public class NewMatchFragment extends Fragment
 			numPlayers = etNumPlayers.getText().toString().equals("")
 					? 0 : Integer.parseInt(etNumPlayers.getText().toString());
 		}
-
-		String deficientTeam = getTeamHavingInsufficientPlayers(numPlayers);
 
 		String errorMessage = null;
 		Player dupPlayer = checkForCommonPlayers();
@@ -677,46 +496,12 @@ public class NewMatchFragment extends Fragment
 			errorMessage = getResources().getString(R.string.NM_bowlerOversMoreThanMaxOvers);
 		} else if(maxPerBowler < ((maxOvers % numPlayers == 0) ? maxOvers/numPlayers : (maxOvers/numPlayers + 1))) {
 			errorMessage = getResources().getString(R.string.NM_notEnoughBowlers);
-		} else if(deficientTeam != null) {
-			errorMessage = getResources().getString(R.string.NM_notEnoughPlayersIn) + deficientTeam;
-		} else if (team1.getMatchPlayers() == null) {
-			errorMessage = String.format(Locale.getDefault(),
-					getResources().getString(R.string.NM_selectPlayersForTeam),
-					team1.getShortName());
-		} else if(team2.getMatchPlayers() == null) {
-			errorMessage = String.format(Locale.getDefault(),
-					getResources().getString(R.string.NM_selectPlayersForTeam),
-					team2.getShortName());
 		} else if(dupPlayer != null) {
 			errorMessage = String.format(Locale.getDefault(),
 					getResources().getString(R.string.NM_duplicatePlayer),
 					dupPlayer.getName());
 		} else if(team1.getMatchPlayers().size() != numPlayers || team2.getMatchPlayers().size() != numPlayers) {
 			errorMessage = getResources().getString(R.string.NM_playerCountChanged);
-		}else if (team1.getCaptain() == null || team1.getWicketKeeper() == null) {
-			errorMessage = String.format(Locale.getDefault(),
-					getResources().getString(R.string.NM_selectCapAndWK),
-					team1.getShortName());
-		} else if (team2.getCaptain() == null || team2.getWicketKeeper() == null) {
-			errorMessage = String.format(Locale.getDefault(),
-					getResources().getString(R.string.NM_selectCapAndWK),
-					team2.getShortName());
-		} else if (!team1.contains(team1.getCaptain())) {
-			errorMessage = String.format(Locale.getDefault(),
-					getResources().getString(R.string.NM_captNotInTeam),
-					team1.getCaptain().getName(), team1.getShortName());
-		} else if (!team1.contains(team1.getWicketKeeper())) {
-			errorMessage = String.format(Locale.getDefault(),
-					getResources().getString(R.string.NM_wkNotInTeam),
-					team1.getWicketKeeper().getName(), team1.getShortName());
-		} else if (!team2.contains(team2.getCaptain())) {
-			errorMessage = String.format(Locale.getDefault(),
-					getResources().getString(R.string.NM_captNotInTeam),
-					team2.getCaptain().getName(), team2.getShortName());
-		} else if (!team2.contains(team2.getWicketKeeper())) {
-			errorMessage = String.format(Locale.getDefault(),
-					getResources().getString(R.string.NM_wkNotInTeam),
-					team2.getWicketKeeper().getName(), team2.getShortName());
 		}
 
 		if(errorMessage != null) {
@@ -727,51 +512,17 @@ public class NewMatchFragment extends Fragment
 		}
 	}
 
-	private String getTeamHavingInsufficientPlayers(int numPlayers) {
-		TeamDBHandler dbh = new TeamDBHandler(getContext());
-
-		if(team1 != null && team2 != null) {
-			if (dbh.getAssociatedPlayers(team1.getId()).size() < numPlayers)
-				return team1.getShortName();
-			else if (dbh.getAssociatedPlayers(team2.getId()).size() < numPlayers)
-				return team2.getShortName();
-		}
-
-		return null;
-	}
-
-	private void displayCaptainWKSelect(Team team, int reqCode, Player selected) {
-		if(team != null && team.getMatchPlayers() != null) {
-			List<Player> displayPlayerList = team.getMatchPlayers();
-			ArrayList<Integer> associatedPlayers = new ArrayList<>();
-
-			if (selected != null)
-				associatedPlayers.add(selected.getID());
-
-			Intent playerDisplayIntent = new Intent(getContext(), PlayerSelectActivity.class);
-			playerDisplayIntent.putExtra(PlayerSelectActivity.ARG_PLAYER_LIST, displayPlayerList.toArray());
-			playerDisplayIntent.putExtra(PlayerSelectActivity.ARG_IS_MULTI_SELECT, false);
-			playerDisplayIntent.putIntegerArrayListExtra(
-					PlayerSelectActivity.ARG_ASSOCIATED_PLAYERS, associatedPlayers);
-
-			startActivityForResult(playerDisplayIntent, reqCode);
-		} else {
-			Toast.makeText(getContext(),
-					"Select the team and players prior to selecting captain/wiki", Toast.LENGTH_SHORT).show();
-		}
-	}
-
 	private Player checkForCommonPlayers(){
     	Player dupPlayer = null;
 
-    	if(team1 != null && team2 != null && team1Players != null && team2Players != null) {
-			for (Player player : team1Players) {
+		if (team1 != null && team2 != null && team1.getMatchPlayers() != null && team2.getMatchPlayers() != null) {
+			for (Player player : team1.getMatchPlayers()) {
 				if (team2.contains(player)) {
 					dupPlayer = player;
 					break;
 				}
 			}
-			for (Player player : team2Players) {
+			for (Player player : team2.getMatchPlayers()) {
 				if (team1.contains(player)) {
 					dupPlayer = player;
 					break;
@@ -807,8 +558,6 @@ public class NewMatchFragment extends Fragment
 	}
 
 	private void setLayoutForMatchStart() {
-        tvTeam1.setEnabled(false);
-        tvTeam2.setEnabled(false);
         btnNMSelectTeam1.setEnabled(false);
         btnNMSelectTeam2.setEnabled(false);
         etMaxOvers.setEnabled(false);

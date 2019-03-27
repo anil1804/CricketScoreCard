@@ -76,24 +76,8 @@ public class MatchSimulator {
 		if(info.getMatchName() != null && !"".equals(info.getMatchName().trim()))
 			CommonTestUtils.getDisplayedView(R.id.etMatchName).perform(replaceText(info.getMatchName()));
 
-		if(!info.isTournament()) {
-			CommonTestUtils.getDisplayedView(R.id.tvTeam1).perform(click());
-			CommonTestUtils.getDisplayedView(info.getTeam1().getName()).perform(click());
-			CommonTestUtils.getDisplayedView(R.id.tvTeam2).perform(click());
-			CommonTestUtils.getDisplayedView(info.getTeam2().getName()).perform(click());
-		}
-
-		CommonTestUtils.selectTeamPlayers(R.id.btnNMSelectTeam1, info.getTeam1Players());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1Captain).perform(click());
-		CommonTestUtils.goToViewStarting(info.getTeam1Capt()).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1WK).perform(click());
-		CommonTestUtils.goToViewStarting(info.getTeam1WK()).perform(click());
-
-		CommonTestUtils.selectTeamPlayers(R.id.btnNMSelectTeam2, info.getTeam2Players());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2Captain).perform(click());
-		CommonTestUtils.goToViewStarting(info.getTeam2Capt()).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2WK).perform(click());
-		CommonTestUtils.goToViewStarting(info.getTeam2WK()).perform(click());
+		CommonTestUtils.selectTeam(info, true);
+		CommonTestUtils.selectTeam(info, false);
 
 		CommonTestUtils.goToView(resources.getString(R.string.toss)).perform(click());
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tossWonBy)).check(matches(isDisplayed()));
@@ -242,7 +226,7 @@ public class MatchSimulator {
 				break;
 		}
 
-		CommonTestUtils.getChild(withContentDescription(R.string.scoringButtons), withText(R.string.wicket)).perform(click());
+		CommonTestUtils.getView(withContentDescription(R.string.scoringButtons), withText(R.string.wicket)).perform(click());
 		CommonTestUtils.getDisplayedView(wicketType).perform(click());
 
 		String extraType = null;
@@ -343,7 +327,7 @@ public class MatchSimulator {
 			}
 		}
 
-		CommonTestUtils.getChild(withContentDescription(R.string.scoringButtons), withText(extraType)).perform(click());
+		CommonTestUtils.getView(withContentDescription(R.string.scoringButtons), withText(extraType)).perform(click());
 
 		if (extraSubType != null) {
 			CommonTestUtils.getDisplayedView(extraSubType).perform(click());
@@ -400,7 +384,7 @@ public class MatchSimulator {
 		}
 
 		CommonTestUtils.getDisplayedView(runsButtonId);
-		CommonTestUtils.getChild(withContentDescription(R.string.scoringButtons), withText(runsButtonText)).perform(click());
+		CommonTestUtils.getView(withContentDescription(R.string.scoringButtons), withText(runsButtonText)).perform(click());
 		if (otherRuns) {
 			CommonTestUtils.getDisplayedView(R.id.etStringInput).perform(replaceText(String.valueOf(matchStep.getRuns())));
 			CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
@@ -412,7 +396,7 @@ public class MatchSimulator {
 	}
 
 	private void selectPlayerOfMatch(MatchStep matchStep) {
-		CommonTestUtils.getChild(withContentDescription(R.string.playerOfMatch), withText(matchStep.getPomTeam())).perform(click());
+		CommonTestUtils.getView(withContentDescription(R.string.playerOfMatch), withText(matchStep.getPomTeam())).perform(click());
 		CommonTestUtils.goToViewStarting(matchStep.getPom()).perform(click());
 	}
 

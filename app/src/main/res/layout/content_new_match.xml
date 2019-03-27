@@ -37,93 +37,7 @@
 
             </LinearLayout>
 
-            <!-- Separator -->
-            <View style="@style/LineSeparator.Dark.SmallMargin"/>
-
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:columnCount="4"
-                android:columnOrderPreserved="true">
-
-				<TextView
-					style="@style/TextViewStyle.Bold.Medium.MorePadding"
-					android:labelFor="@id/tvTeam1"
-					android:text="@string/team1"/>
-
-				<TextView
-					android:id="@+id/tvTeam1"
-					style="@style/TextViewStyle"
-					android:text="@string/selectTeam"/>
-
-                <Button
-                    android:id="@+id/btnNMSelectTeam1"
-                    style="@style/ButtonStyle.Small"
-                    android:layout_column="2"
-                    android:drawableStart="@drawable/ic_edit"
-                    android:visibility="gone"/>
-
-                <TextView
-                    android:id="@+id/tvTeam1Captain"
-                    style="@style/TextViewStyle.LeftRightPadding"
-                    android:layout_columnSpan="2"
-                    android:text="@string/captainName"
-                    android:visibility="gone"/>
-
-                <TextView
-                    android:id="@+id/tvTeam1WK"
-                    style="@style/TextViewStyle"
-                    android:layout_columnSpan="2"
-                    android:text="@string/wkName"
-                    android:visibility="gone"/>
-
-            </GridLayout>
-
-            <!-- Separator -->
-            <View style="@style/LineSeparator.Dark.SmallMargin"/>
-
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:columnCount="4"
-                android:columnOrderPreserved="true">
-
-				<TextView
-					style="@style/TextViewStyle.Bold.Medium.MorePadding"
-					android:labelFor="@id/tvTeam2"
-					android:text="@string/team2"/>
-
-				<TextView
-					android:id="@+id/tvTeam2"
-					style="@style/TextViewStyle"
-					android:text="@string/selectTeam"/>
-
-                <Button
-                    android:id="@+id/btnNMSelectTeam2"
-                    style="@style/ButtonStyle.Small"
-                    android:layout_columnSpan="2"
-                    android:drawableStart="@drawable/ic_edit"
-                    android:visibility="gone"/>
-
-                <TextView
-                    android:id="@+id/tvTeam2Captain"
-                    style="@style/TextViewStyle.LeftRightPadding"
-                    android:layout_columnSpan="2"
-                    android:text="@string/captainName"
-                    android:visibility="gone"/>
-
-                <TextView
-                    android:id="@+id/tvTeam2WK"
-                    style="@style/TextViewStyle"
-                    android:layout_columnSpan="2"
-                    android:text="@string/wkName"
-                    android:visibility="gone"/>
-
-			</GridLayout>
-
-            <!-- Separator -->
-            <View style="@style/LineSeparator.Dark.SmallMargin"/>
-
+			<!-- Match Details - Normal Match -->
 			<GridLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -192,6 +106,7 @@
 
 			</GridLayout>
 
+			<!-- Match Details - Tournament Match -->
 			<GridLayout
 				android:id="@+id/glTournamentMatch"
 				android:layout_width="match_parent"
@@ -243,6 +158,93 @@
 
 			</GridLayout>
 
+			<!-- Team Selection -->
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center_horizontal"
+				android:orientation="horizontal">
+
+				<Button
+					android:id="@+id/btnNMSelectTeam1"
+					style="@style/ButtonStyle.Medium"
+					android:drawableTop="@drawable/ic_select"
+					android:text="@string/selectTeam1" />
+
+				<Button
+					android:id="@+id/btnNMSelectTeam2"
+					style="@style/ButtonStyle.Medium"
+					android:drawableTop="@drawable/ic_select"
+					android:text="@string/selectTeam2" />
+
+			</LinearLayout>
+
+			<!-- Team Data -->
+
+			<TableLayout
+				android:id="@+id/tlNMTeamData"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:columnCount="3"
+				android:stretchColumns="1,2"
+				android:visibility="gone">
+
+				<!-- Separator -->
+				<View style="@style/LineSeparator.Dark.SmallMargin" />
+
+				<TableRow>
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Left.Border"
+						android:text="@string/team" />
+
+					<TextView
+						android:id="@+id/tvTeam1"
+						style="@style/TextViewStyle.TableRow.Header.Border" />
+
+					<TextView
+						android:id="@+id/tvTeam2"
+						style="@style/TextViewStyle.TableRow.Header.Border" />
+
+				</TableRow>
+
+				<TableRow>
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Left.Border"
+						android:text="@string/captain" />
+
+					<TextView
+						android:id="@+id/tvTeam1Captain"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvTeam2Captain"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+				</TableRow>
+
+				<TableRow>
+
+					<TextView
+						style="@style/TextViewStyle.TableRow.Left.Border"
+						android:text="@string/wicketKeeper" />
+
+					<TextView
+						android:id="@+id/tvTeam1WK"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+					<TextView
+						android:id="@+id/tvTeam2WK"
+						style="@style/TextViewStyle.TableRow.Center" />
+
+				</TableRow>
+
+				<!-- Separator -->
+				<View style="@style/LineSeparator.Dark.SmallMargin" />
+
+			</TableLayout>
+
 			<TextView
 				style="@style/TextViewStyle"
 				android:id="@+id/tvMatchID"
@@ -264,7 +266,8 @@
 					android:id="@+id/btnValidate"
 					style="@style/ButtonStyle.Medium"
 					android:drawableTop="@drawable/ic_toss"
-					android:text="@string/toss" />
+					android:text="@string/toss"
+					android:visibility="gone" />
 
 			</LinearLayout>
 

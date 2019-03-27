@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.IdRes;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.IdlingResourceTimeoutException;
 import android.support.test.espresso.NoMatchingRootException;
 import android.support.test.espresso.NoMatchingViewException;
@@ -11,18 +12,24 @@ import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.matcher.ViewMatchers;
+import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import android.support.test.runner.lifecycle.Stage;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.R;
+import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+
+import java.util.Collection;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -110,8 +117,8 @@ public class CommonTestUtils {
 		return onView(childAtPosition(parentMatcher, position)).perform(scrollTo());
 	}
 
-	static ViewInteraction getChild(Matcher<View> parentMatcher, Matcher<View> childMatcher) {
-		return onView(childWithParent(parentMatcher, childMatcher));
+	static ViewInteraction getView(Matcher<View> parentMatcher, Matcher<View> viewMatcher) {
+		return onView(childWithParent(parentMatcher, viewMatcher));
 	}
 
 	public static boolean checkViewExists(Matcher<View> matcher) {
@@ -194,36 +201,32 @@ public class CommonTestUtils {
 		return COUNT[0];
 	}
 
-	public static void selectTeamPlayers(int buttonId, String[] players) {
-		int numPlayers = players.length;
-
-		goToView(buttonId).perform(click());
-		if (getChildCount(R.id.rcvPlayerList) > numPlayers) {
-			for (int i = 0; i < numPlayers; i++) {
-				goToChildAtPosition(withId(R.id.rcvPlayerList), i).perform(click());
-			}
-
-			int i = 0;
-			for (String playerName : players) {
-				if (i >= numPlayers)
-					break;
-				try {
-					goToViewStarting(playerName).perform(click());
-				} catch (NoMatchingViewException ex) {
-					getChild(withId(R.id.rcvPlayerList), withText(startsWith(playerName))).perform(click());
+	private static boolean selectTeamPlayers(String[] players, int numPlayers, int selPlayerCount) {
+		getDisplayedView(R.id.btnPTSSelectPlayers).perform(click());
+		if (checkViewExists(withId(R.id.rcvPlayerList))) {
+			if (getChildCount(R.id.rcvPlayerList) > numPlayers) {
+				for (int i = 0; i < numPlayers; i++) {
+					goToChildAtPosition(withId(R.id.rcvPlayerList), i).perform(click());
 				}
-				i++;
-			}
-		}
-		getDisplayedView("OK").perform(click());
-	}
 
-	public static void clickPlayers(int buttonId, String[] players) {
-		goToView(buttonId).perform(click());
-		for (String playerName : players) {
-			goToViewStarting(playerName).perform(click());
+				int i = 0;
+				for (String playerName : players) {
+					if (i >= selPlayerCount)
+						break;
+					try {
+						goToViewStarting(playerName).perform(click());
+					} catch (NoMatchingViewException ex) {
+						getView(withId(R.id.rcvPlayerList), withText(startsWith(playerName))).perform(click());
+					}
+					i++;
+				}
+			}
+			getDisplayedView("OK").perform(click());
+
+			return true;
+		} else {
+			return false;
 		}
-		getDisplayedView("OK").perform(click());
 	}
 
 	private static Matcher<View> childWithParent(final Matcher<View> parentMatcher, final Matcher<View> childMatcher) {
@@ -249,7 +252,7 @@ public class CommonTestUtils {
 
 	public static ViewInteraction getView(int parentContentDescriptionStringId, int childTextStringId, Activity activity) {
 		Resources resources = activity.getResources();
-		return getChild(
+		return getView(
 				withContentDescription(resources.getString(parentContentDescriptionStringId)),
 				withText(resources.getString(childTextStringId)));
 	}
@@ -272,5 +275,73 @@ public class CommonTestUtils {
 				seekBar.setProgress(progress);
 			}
 		};
+	}
+
+	public static void selectTeam(MatchRunInfo info, boolean isTeam1) {
+		selectTeam(info, isTeam1, true, true, true);
+	}
+
+	public static void selectTeam(MatchRunInfo info, boolean isTeam1, boolean selectPlayers, boolean selectCaptain, boolean selectWiki) {
+		Resources resources = getCurrentActivity().getResources();
+
+		Team team = isTeam1 ? info.getTeam1() : info.getTeam2();
+		String[] teamPlayers = isTeam1 ? info.getTeam1Players() : info.getTeam2Players();
+		String captain = isTeam1 ? info.getTeam1Capt() : info.getTeam2Capt();
+		String wicketKeeper = isTeam1 ? info.getTeam1WK() : info.getTeam2WK();
+
+		Activity activity = getCurrentActivity();
+		TextView teamNameView;
+		//Select Team
+		if (isTeam1) {
+			teamNameView = activity.findViewById(R.id.tvTeam1);
+			CommonTestUtils.getDisplayedView(R.id.btnNMSelectTeam1).perform(click());
+		} else {
+			teamNameView = activity.findViewById(R.id.tvTeam2);
+			CommonTestUtils.getDisplayedView(R.id.btnNMSelectTeam2).perform(click());
+		}
+
+		if (!info.isTournament()) {
+			boolean teamAlreadySelected = !teamNameView.getText().toString().equals("");
+			if (teamAlreadySelected)
+				CommonTestUtils.getDisplayedView(R.id.btnPTSSelectTeam).perform(click());
+			CommonTestUtils.getDisplayedView(team.getName()).perform(click());
+		}
+
+		//Select Players
+		if (selectPlayers) {
+			boolean playersSelected = CommonTestUtils.selectTeamPlayers(teamPlayers, info.getNumPlayers(), info.getSelectPlayerCount());
+
+			if (playersSelected) {
+				//Select Captain
+				if (selectCaptain) {
+					CommonTestUtils.getDisplayedView(R.id.btnPTSSelectCaptain).perform(click());
+					CommonTestUtils.goToViewStarting(captain).perform(click());
+				}
+
+				//Select Wicket-Keeper
+				if (selectWiki) {
+					CommonTestUtils.getDisplayedView(R.id.btnPTSSelectWK).perform(click());
+					CommonTestUtils.goToViewStarting(wicketKeeper).perform(click());
+				}
+
+				CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
+			}
+		}
+	}
+
+	static Activity getCurrentActivity() {
+		final Activity[] currentActivity = new Activity[1];
+		InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+			@Override
+			public void run() {
+				Collection<Activity> allActivities = ActivityLifecycleMonitorRegistry.getInstance()
+						.getActivitiesInStage(Stage.RESUMED);
+				if (!allActivities.isEmpty()) {
+					currentActivity[0] = allActivities.iterator().next();
+				}
+			}
+		});
+
+		return currentActivity[0];
 	}
 }

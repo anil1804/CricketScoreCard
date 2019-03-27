@@ -9,7 +9,7 @@ import android.support.test.runner.AndroidJUnit4;
 import com.theNewCone.cricketScoreCard.activity.HomeActivity;
 import com.theNewCone.cricketScoreCard.utils.CommonTestUtils;
 import com.theNewCone.cricketScoreCard.utils.CommonUtils;
-import com.theNewCone.cricketScoreCard.utils.database.TeamDBHandler;
+import com.theNewCone.cricketScoreCard.utils.MatchRunInfo;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -28,6 +28,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 @RunWith(AndroidJUnit4.class)
 public class NewLimitedOversMatchTest {
 
+	private MatchRunInfo info = new MatchRunInfo("Random Match", 5, 2, 11);
+
 	@Rule
 	public ActivityTestRule<HomeActivity> mActivityTestRule = new ActivityTestRule<>(HomeActivity.class);
 
@@ -39,71 +41,20 @@ public class NewLimitedOversMatchTest {
 
 
 	@Test
-	public void teamsUnavailable() {
-		HomeActivity activity = mActivityTestRule.getActivity();
-		Resources resources = activity.getResources();
-
-		deleteAllTeams();
-
-		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
-		String message = resources.getString(R.string.NM_noTeamsAvailable)
-				+ resources.getString(R.string.NM_needMinimumTwoTeams);
-		CommonTestUtils.getDisplayedView(R.id.tvInsufficientTeams).check(matches(withText(message.trim())));
-		CommonTestUtils.getDisplayedView(R.id.btnManageTeam).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.etTeamName).check(matches(isDisplayed()));
-
-		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
-		message = resources.getString(R.string.NM_onlyOneTeamAvailable)
-				+ resources.getString(R.string.NM_needMinimumTwoTeams);
-		CommonTestUtils.getDisplayedView(R.id.tvInsufficientTeams).check(matches(withText(message.trim())));
-		CommonTestUtils.getDisplayedView(R.id.btnManageTeam).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.etTeamName).check(matches(isDisplayed()));
-	}
-
-
-	@Test
-	public void selectTeamsCorrectly() {
-		HomeActivity activity = mActivityTestRule.getActivity();
-		Resources resources = activity.getResources();
-
-		//No Teams Selected
-		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
-		CommonTestUtils.getDisplayedView(resources.getString(R.string.toss)).perform(click());
-		CommonTestUtils.checkIfToastShown(resources.getString(R.string.NM_selectBothTeams));
-
-		//Only Team-1 selected
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1).perform(click());
-		CommonTestUtils.getDisplayedView("Australia").perform(click());
-		CommonTestUtils.getDisplayedView(resources.getString(R.string.toss)).perform(click());
-		CommonTestUtils.checkIfToastShown(resources.getString(R.string.NM_selectBothTeams));
-
-		//Only Team-2 selected
-		CommonTestUtils.clickNavigationMenuItem(1);
-		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2).perform(click());
-		CommonTestUtils.getDisplayedView("India").perform(click());
-		CommonTestUtils.getDisplayedView(resources.getString(R.string.toss)).perform(click());
-		CommonTestUtils.checkIfToastShown(resources.getString(R.string.NM_selectBothTeams));
-
-		//Same Teams selected are same
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1).perform(click());
-		CommonTestUtils.getDisplayedView("India").perform(click());
-		CommonTestUtils.getDisplayedView(resources.getString(R.string.toss)).perform(click());
-		CommonTestUtils.checkIfToastShown(resources.getString(R.string.NM_selectDifferentTeams));
-	}
-
-	@Test
 	public void matchNameValidation() {
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
+		info.setTeam1("Australia", "AUS", CommonTestUtils.AUS_PLAYERS,
+				CommonTestUtils.AUS_PLAYERS[0], CommonTestUtils.AUS_PLAYERS[5]);
+		info.setTeam2("India", "IND", CommonTestUtils.IND_PLAYERS,
+				CommonTestUtils.IND_PLAYERS[0], CommonTestUtils.IND_PLAYERS[3]);
+
 		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
 
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1).perform(click());
-		CommonTestUtils.getDisplayedView("Australia").perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2).perform(click());
-		CommonTestUtils.getDisplayedView("India").perform(click());
-
+		//Team Selection
+		CommonTestUtils.selectTeam(info, true);
+		CommonTestUtils.selectTeam(info, false);
 
 		//Automatic Name generation
 		String teamName = "AUS v IND " + CommonUtils.currTimestamp("yyyyMMMdd");
@@ -124,44 +75,49 @@ public class NewLimitedOversMatchTest {
 	public void playerSelection() {
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
-		String[] playersAus = CommonTestUtils.AUS_PLAYERS;
-		playersAus[10] = "K Khaleel Ahmed";
+
+		info.setTeam1("Team-X", "TX", new String[0], null, null);
 
 		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
 
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1).perform(click());
-		CommonTestUtils.getDisplayedView("Team-X").perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2).perform(click());
-		CommonTestUtils.getDisplayedView("Team-Y").perform(click());
-
 		//Team1 - No Players
 		CommonTestUtils.getDisplayedView(R.id.btnNMSelectTeam1).perform(click());
-		CommonTestUtils.checkIfToastShown(
-				String.format(resources.getString(R.string.NM_noPlayersInTeam), "TX"));
+		CommonTestUtils.getDisplayedView("Team-X").perform(click());
+		CommonTestUtils.getDisplayedView(R.id.btnPTSSelectPlayers).perform(click());
+		CommonTestUtils.checkIfToastShown(resources.getString(R.string.PTS_notEnoughPlayers));
+		CommonTestUtils.getDisplayedView(R.id.btnPTSCancel).perform(click());
 
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1).perform(click());
-		CommonTestUtils.getDisplayedView("Australia").perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2).perform(click());
-		CommonTestUtils.getDisplayedView("India").perform(click());
-
-		//Team1 - not enough players
+		//Team1 - Not Enough players
 		CommonTestUtils.getDisplayedView(R.id.etNumPlayers).perform(replaceText("25"));
-		CommonTestUtils.getDisplayedView(R.id.btnNMSelectTeam1).perform(click());
-		CommonTestUtils.checkIfToastShown(
-				String.format(resources.getString(R.string.NM_notEnoughPlayers), "AUS"));
+		info.setTeam1("Australia", "AUS", CommonTestUtils.AUS_PLAYERS,
+				CommonTestUtils.AUS_PLAYERS[0], CommonTestUtils.AUS_PLAYERS[5]);
+		CommonTestUtils.selectTeam(info, true, true, false, false);
+		CommonTestUtils.checkIfToastShown(resources.getString(R.string.PTS_notEnoughPlayers));
+		CommonTestUtils.getDisplayedView(R.id.btnPTSCancel).perform(click());
 
 		//Team-1 Players not selected
 		CommonTestUtils.getDisplayedView(R.id.etNumPlayers).perform(replaceText("11"));
-		CommonTestUtils.selectTeamPlayers(R.id.btnNMSelectTeam1, CommonTestUtils.AUS_PLAYERS);
-		CommonTestUtils.getDisplayedView(R.id.btnValidate).perform(click());
-		CommonTestUtils.checkIfToastShown(
-				String.format(resources.getString(R.string.NM_selectPlayersForTeam), "IND"));
+		CommonTestUtils.selectTeam(info, true, false, false, false);
+		CommonTestUtils.getDisplayedView(R.id.btnPTSOk).perform(click());
+		CommonTestUtils.checkIfToastShown(resources.getString(R.string.PTS_selectPlayersForTeam));
+		CommonTestUtils.getDisplayedView(R.id.btnPTSCancel).perform(click());
 
 		//Duplicate Player Selection
-		CommonTestUtils.selectTeamPlayers(R.id.btnNMSelectTeam2, CommonTestUtils.IND_PLAYERS);
+		String[] AUS_PLAYERS = new String[11];
+		System.arraycopy(CommonTestUtils.AUS_PLAYERS, 0, AUS_PLAYERS, 0, 11);
+		AUS_PLAYERS[10] = "K Khaleel Ahmed";
+
+		CommonTestUtils.getDisplayedView(R.id.etNumPlayers).perform(replaceText("11"));
+		info.setTeam1("Australia", "AUS", AUS_PLAYERS,
+				CommonTestUtils.AUS_PLAYERS[0], CommonTestUtils.AUS_PLAYERS[5]);
+		info.setTeam2("India", "IND", CommonTestUtils.IND_PLAYERS,
+				CommonTestUtils.IND_PLAYERS[0], CommonTestUtils.IND_PLAYERS[3]);
+
+		CommonTestUtils.selectTeam(info, true);
+		CommonTestUtils.selectTeam(info, false);
 		CommonTestUtils.getDisplayedView(R.id.btnValidate).perform(click());
 		CommonTestUtils.checkIfToastShown(
-				String.format(resources.getString(R.string.NM_duplicatePlayer), playersAus[10]));
+				String.format(resources.getString(R.string.NM_duplicatePlayer), AUS_PLAYERS[10]));
 	}
 
 	@Test
@@ -169,12 +125,14 @@ public class NewLimitedOversMatchTest {
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
-		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
+		info.setTeam1("Australia", "AUS", CommonTestUtils.AUS_PLAYERS,
+				CommonTestUtils.AUS_PLAYERS[0], CommonTestUtils.AUS_PLAYERS[5]);
+		info.setTeam2("India", "IND", CommonTestUtils.IND_PLAYERS,
+				CommonTestUtils.IND_PLAYERS[0], CommonTestUtils.IND_PLAYERS[3]);
 
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1).perform(click());
-		CommonTestUtils.getDisplayedView("India").perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2).perform(click());
-		CommonTestUtils.getDisplayedView("Team-Y").perform(click());
+		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
+		CommonTestUtils.selectTeam(info, true);
+		CommonTestUtils.selectTeam(info, false);
 
 		//Max Overs to be non-zero & positive
 		CommonTestUtils.getDisplayedView(R.id.etMaxOvers).perform(replaceText("0"));
@@ -258,64 +216,51 @@ public class NewLimitedOversMatchTest {
 		String team1Captain = CommonTestUtils.WI_PLAYERS[5], team1WK = CommonTestUtils.WI_PLAYERS[2];
 		String team2Captain = CommonTestUtils.IND_PLAYERS[0], team2WK = CommonTestUtils.IND_PLAYERS[3];
 
+		info.setTeam1("West Indies", "WI", CommonTestUtils.WI_PLAYERS, team1Captain, team1WK);
+		info.setTeam2("India", "IND", CommonTestUtils.IND_PLAYERS, team2Captain, team2WK);
+
 		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
 
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1).perform(click());
-		CommonTestUtils.getDisplayedView("West Indies").perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2).perform(click());
-		CommonTestUtils.getDisplayedView("India").perform(click());
-
 		//Team1 - None Selected
-		CommonTestUtils.selectTeamPlayers(R.id.btnNMSelectTeam1, CommonTestUtils.WI_PLAYERS);
-		CommonTestUtils.selectTeamPlayers(R.id.btnNMSelectTeam2, CommonTestUtils.IND_PLAYERS);
-		CommonTestUtils.getDisplayedView(R.id.btnValidate).perform(click());
-		CommonTestUtils.checkIfToastShown(
-				String.format(resources.getString(R.string.NM_selectCapAndWK), "WI"));
+		CommonTestUtils.selectTeam(info, true, true, false, false);
+		CommonTestUtils.checkIfToastShown(resources.getString(R.string.PTS_selectCapAndWK));
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.cancel)).perform(click());
 
 		//Team1 - Only Captain Selected
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1Captain).perform(click());
-		CommonTestUtils.goToViewStarting(team1Captain).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.btnValidate).perform(click());
-		CommonTestUtils.checkIfToastShown(
-				String.format(resources.getString(R.string.NM_selectCapAndWK), "WI"));
+		CommonTestUtils.selectTeam(info, true, true, true, false);
+		CommonTestUtils.checkIfToastShown(resources.getString(R.string.PTS_selectCapAndWK));
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.cancel)).perform(click());
 
 		//Team2 - None Selected
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1WK).perform(click());
-		CommonTestUtils.goToViewStarting(team1WK).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.btnValidate).perform(click());
-		CommonTestUtils.checkIfToastShown(
-				String.format(resources.getString(R.string.NM_selectCapAndWK), "IND"));
+		CommonTestUtils.selectTeam(info, true);
+		CommonTestUtils.selectTeam(info, false, true, false, false);
+		CommonTestUtils.checkIfToastShown(resources.getString(R.string.PTS_selectCapAndWK));
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.cancel)).perform(click());
 
 		//Team2 - Only Wicket-Keeper Selected
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2WK).perform(click());
-		CommonTestUtils.goToViewStarting(team2WK).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.btnValidate).perform(click());
-		CommonTestUtils.checkIfToastShown(
-				String.format(resources.getString(R.string.NM_selectCapAndWK), "IND"));
+		CommonTestUtils.selectTeam(info, false, true, false, true);
+		CommonTestUtils.checkIfToastShown(resources.getString(R.string.PTS_selectCapAndWK));
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.cancel)).perform(click());
 
 		//Team1 - Wicket-Keeper Not in Team
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2Captain).perform(click());
-		CommonTestUtils.goToViewStarting(team2Captain).perform(click());
-		String ADDITIONAL_WI_PLAYER = "AMarlon Samuels";
-		CommonTestUtils.clickPlayers(R.id.btnNMSelectTeam1, new String[]{ADDITIONAL_WI_PLAYER, CommonTestUtils.WI_PLAYERS[2]});
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1Captain).check(matches(withText(
-				String.format(resources.getString(R.string.captainName), team1Captain))));
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1WK).check(matches(withText(
-				String.format(resources.getString(R.string.wkName), team1WK))));
-		CommonTestUtils.getDisplayedView(R.id.btnValidate).perform(click());
-		CommonTestUtils.checkIfToastShown(
-				String.format(resources.getString(R.string.NM_wkNotInTeam), team1WK, "WI"));
+		String[] WI_PLAYERS = new String[11];
+		System.arraycopy(CommonTestUtils.WI_PLAYERS, 0, WI_PLAYERS, 0, 11);
+		WI_PLAYERS[2] = "AMarlon Samuels";
 
-		//Team2 - Captain Not in Team
-		/*CommonTestUtils.clickPlayers(R.id.btnNMSelectTeam1, new String[]{CommonTestUtils.WI_PLAYERS[2], ADDITIONAL_WI_PLAYER});
-		CommonTestUtils.clickPlayers(R.id.btnNMSelectTeam2, new String[]{CommonTestUtils.IND_PLAYERS[0], ADDITIONAL_IND_PLAYER});
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2Captain).check(matches(withText(
-				String.format(resources.getString(R.string.captainName), team2Captain))));
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2WK).check(matches(withText(
-				String.format(resources.getString(R.string.wkName), team2WK))));
-		CommonTestUtils.getDisplayedView(R.id.btnValidate).perform(click());
+		info.setTeam1("West Indies", "WI", WI_PLAYERS, team1Captain, team1WK);
+		CommonTestUtils.selectTeam(info, true, true, false, false);
 		CommonTestUtils.checkIfToastShown(
-				String.format(resources.getString(R.string.NM_captNotInTeam), team2Captain, "IND"));*/
+				String.format(resources.getString(R.string.PTS_wkNotInTeam), team1WK));
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.cancel)).perform(click());
+
+		//Team1 - Captain Not in Team
+		System.arraycopy(CommonTestUtils.WI_PLAYERS, 0, WI_PLAYERS, 0, 11);
+		WI_PLAYERS[5] = "AMarlon Samuels";
+		info.setTeam1("West Indies", "WI", WI_PLAYERS, team1Captain, team1WK);
+		CommonTestUtils.selectTeam(info, true, true, false, false);
+		CommonTestUtils.checkIfToastShown(
+				String.format(resources.getString(R.string.PTS_captNotInTeam), team1Captain));
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.cancel)).perform(click());
 	}
 
 	@Test
@@ -323,31 +268,45 @@ public class NewLimitedOversMatchTest {
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
+		info.setTeam1("Australia", "AUS", CommonTestUtils.AUS_PLAYERS,
+				CommonTestUtils.AUS_PLAYERS[0], CommonTestUtils.AUS_PLAYERS[5]);
+		info.setTeam2("India", "IND", CommonTestUtils.IND_PLAYERS,
+				CommonTestUtils.IND_PLAYERS[0], CommonTestUtils.IND_PLAYERS[3]);
+
 		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
 
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1).perform(click());
-		CommonTestUtils.getDisplayedView("Australia").perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2).perform(click());
-		CommonTestUtils.getDisplayedView("India").perform(click());
-		CommonTestUtils.selectTeamPlayers(R.id.btnNMSelectTeam1, CommonTestUtils.AUS_PLAYERS);
-		CommonTestUtils.selectTeamPlayers(R.id.btnNMSelectTeam2, CommonTestUtils.IND_PLAYERS);
-
 		//Less Number of Players
-		CommonTestUtils.clickPlayers(R.id.btnNMSelectTeam2,
-				new String[]{CommonTestUtils.IND_PLAYERS[4], CommonTestUtils.IND_PLAYERS[7]});
+		String[] IND_PLAYERS = new String[9];
+		System.arraycopy(CommonTestUtils.IND_PLAYERS, 0, IND_PLAYERS, 0, 9);
+		info.setTeam2("India", "IND", IND_PLAYERS,
+				CommonTestUtils.IND_PLAYERS[0], CommonTestUtils.IND_PLAYERS[3]);
+		info.setSelectPlayerCount(9);
+
+		CommonTestUtils.selectTeam(info, false, true, false, false);
 		CommonTestUtils.checkIfToastShown(
 				String.format(resources.getString(R.string.Player_selectExactPlayers), 9, 11));
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.cancel)).perform(click());
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.cancel)).perform(click());
 
 		//More Number of Players
-		String ADDITIONAL_IND_PLAYER = "Ambati Rayudu";
-		CommonTestUtils.clickPlayers(R.id.btnNMSelectTeam2,
-				new String[]{ADDITIONAL_IND_PLAYER});
+		IND_PLAYERS = new String[12];
+		System.arraycopy(CommonTestUtils.IND_PLAYERS, 0, IND_PLAYERS, 0, 11);
+		IND_PLAYERS[11] = "Ambati Rayudu";
+		info.setTeam2("India", "IND", IND_PLAYERS,
+				CommonTestUtils.IND_PLAYERS[0], CommonTestUtils.IND_PLAYERS[3]);
+		info.setSelectPlayerCount(12);
+
+		CommonTestUtils.selectTeam(info, false, true, false, false);
 		CommonTestUtils.checkIfToastShown(
 				String.format(resources.getString(R.string.Player_selectExactPlayers), 12, 11));
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.cancel)).perform(click());
+		CommonTestUtils.getDisplayedView(resources.getString(R.string.cancel)).perform(click());
 
 		//Player Count Changed
+		info.setTeam2("India", "IND", CommonTestUtils.IND_PLAYERS,
+				CommonTestUtils.IND_PLAYERS[0], CommonTestUtils.IND_PLAYERS[3]);
+		CommonTestUtils.selectTeam(info, true);
+		CommonTestUtils.selectTeam(info, false);
 		CommonTestUtils.getDisplayedView(R.id.etMaxWickets).perform(replaceText("9"));
 		CommonTestUtils.getDisplayedView(R.id.btnValidate).perform(click());
 		CommonTestUtils.checkIfToastShown(resources.getString(R.string.NM_playerCountChanged));
@@ -464,27 +423,23 @@ public class NewLimitedOversMatchTest {
 		HomeActivity activity = mActivityTestRule.getActivity();
 		Resources resources = activity.getResources();
 
+		String matchName = "NLOMTest - Match1";
+		int maxOvers = 5, maxWickets = 2, numPlayers = 11;
+		MatchRunInfo info = new MatchRunInfo(matchName, maxOvers, maxWickets, numPlayers);
+		info.setTeam1("Australia", "AUS", CommonTestUtils.AUS_PLAYERS,
+				CommonTestUtils.AUS_PLAYERS[0], CommonTestUtils.AUS_PLAYERS[5]);
+		info.setTeam2("India", "IND", CommonTestUtils.IND_PLAYERS,
+				CommonTestUtils.IND_PLAYERS[0], CommonTestUtils.IND_PLAYERS[3]);
+
 		CommonTestUtils.getDisplayedView(R.id.btnNewMatch).perform(click());
 
-		CommonTestUtils.getDisplayedView(R.id.etMaxOvers).perform(replaceText("5"));
-		CommonTestUtils.getDisplayedView(R.id.etMaxWickets).perform(replaceText("2"));
-		CommonTestUtils.getDisplayedView(R.id.etNumPlayers).perform(replaceText("11"));
+		CommonTestUtils.getDisplayedView(R.id.etMatchName).perform(replaceText(matchName));
+		CommonTestUtils.getDisplayedView(R.id.etMaxOvers).perform(replaceText(String.valueOf(maxOvers)));
+		CommonTestUtils.getDisplayedView(R.id.etMaxWickets).perform(replaceText(String.valueOf(maxWickets)));
+		CommonTestUtils.getDisplayedView(R.id.etNumPlayers).perform(replaceText(String.valueOf(numPlayers)));
 
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1).perform(click());
-		CommonTestUtils.getDisplayedView("Australia").perform(click());
-		CommonTestUtils.selectTeamPlayers(R.id.btnNMSelectTeam1, CommonTestUtils.AUS_PLAYERS);
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1Captain).perform(click());
-		CommonTestUtils.goToViewStarting(CommonTestUtils.AUS_PLAYERS[0]).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam1WK).perform(click());
-		CommonTestUtils.goToViewStarting(CommonTestUtils.AUS_PLAYERS[5]).perform(click());
-
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2).perform(click());
-		CommonTestUtils.getDisplayedView("India").perform(click());
-		CommonTestUtils.selectTeamPlayers(R.id.btnNMSelectTeam2, CommonTestUtils.IND_PLAYERS);
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2Captain).perform(click());
-		CommonTestUtils.goToViewStarting(CommonTestUtils.IND_PLAYERS[0]).perform(click());
-		CommonTestUtils.getDisplayedView(R.id.tvTeam2WK).perform(click());
-		CommonTestUtils.goToViewStarting(CommonTestUtils.IND_PLAYERS[3]).perform(click());
+		CommonTestUtils.selectTeam(info, true);
+		CommonTestUtils.selectTeam(info, false);
 
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.toss)).perform(click());
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tossWonBy)).check(matches(isDisplayed()));
@@ -495,11 +450,5 @@ public class NewLimitedOversMatchTest {
 
 		CommonTestUtils.getDisplayedView(R.id.tvBattingTeam).check(matches(withText("AUS")));
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.selBatsman));
-	}
-
-	private void deleteAllTeams() {
-		HomeActivity activity = mActivityTestRule.getActivity();
-		TeamDBHandler dbHandler = new TeamDBHandler(activity.getApplicationContext());
-		dbHandler.deleteAllRecords(dbHandler.TBL_TEAM);
 	}
 }

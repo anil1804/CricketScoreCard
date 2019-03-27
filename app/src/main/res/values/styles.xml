@@ -71,15 +71,20 @@
 	</style>
 
 	<style name="ButtonStyle.Medium">
-		<item name="android:layout_width">wrap_content</item>
 		<item name="android:layout_height">50dp</item>
 		<item name="android:layout_marginStart">15dp</item>
 		<item name="android:scaleType">fitCenter</item>
 		<item name="android:textSize">10sp</item>
+		<item name="android:textAllCaps">true</item>
 		<item name="android:tint">@color/colorPrimaryDark_default</item>
 		<item name="android:background">@drawable/button_rounded_rectangle_medium_selector</item>
 		<item name="android:gravity">center_horizontal|bottom</item>
 		<item name="android:textColor">@color/colorPrimaryDark_default</item>
+	</style>
+
+	<style name="ButtonStyle.Medium.Transparent">
+		<item name="android:background">@drawable/button_rounded_rectangle_medium_selector_trans
+		</item>
 	</style>
 
 	<style name="ButtonStyle.Submit">
@@ -241,6 +246,11 @@
 		<item name="android:textStyle">bold</item>
 	</style>
 
+	<style name="TextViewStyle.TableRow.Left">
+		<item name="android:textSize">12sp</item>
+		<item name="android:textStyle">bold</item>
+	</style>
+
 	<style name="TextViewStyle.TableRow.Center">
 		<item name="android:background">@drawable/borders_inner</item>
 		<item name="android:gravity">center</item>
@@ -249,6 +259,16 @@
 	<style name="TextViewStyle.TableRow.Header.Center">
 		<item name="android:background">@drawable/borders_inner</item>
 		<item name="android:gravity">center</item>
+	</style>
+
+	<style name="TextViewStyle.TableRow.Header.Border">
+		<item name="android:background">@drawable/borders_inner</item>
+		<item name="android:gravity">center</item>
+	</style>
+
+	<style name="TextViewStyle.TableRow.Left.Border">
+		<item name="android:background">@drawable/borders_inner</item>
+		<item name="android:gravity">center_vertical</item>
 	</style>
 
 	<style name="TextViewStyle.TableRow.Data">

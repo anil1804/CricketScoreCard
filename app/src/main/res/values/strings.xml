@@ -176,7 +176,7 @@
 	<string name="matchNameCD">Match Name</string>
 	<string name="team1">Team-1</string>
 	<string name="team2">Team-2</string>
-	<string name="selectTeam">Select Team</string>
+	<string name="selectTeam">Select\nTeam</string>
 	<string name="validate">Validate</string>
 	<string name="maxOvers">Max Overs</string>
 	<string name="maxWickets">Max Wickets</string>
@@ -311,7 +311,7 @@
 	<string name="NM_bowlerOversMoreThanMaxOvers">Max overs per bowler cannot be more than max overs\n</string>
 	<string name="NM_notEnoughBowlers">Not enough Players/Max Overs per Bowler to complete full quota of Overs\n</string>
 	<string name="NM_notEnoughPlayersIn">Not enough players in</string>
-	<string name="NM_selectPlayersForTeam">Select the players for %1$s by clicking \'Edit\' button next to Team name\n</string>
+	<string name="NM_selectPlayersForTeam">Select the players for %1$s by clicking \'Select Team\' button.\n</string>
 	<string name="NM_duplicatePlayer">Same player %1$s found in both teams\n</string>
 	<string name="NM_playerCountChanged">Number of players seems to have changed. Please reselect playing teams for both teams\n</string>
 	<string name="NM_selectCapAndWK">Both captain and wicket-keeper for %1$s need to be selected\n</string>
@@ -395,4 +395,17 @@
 	<string name="showStatistics">Show Statistics</string>
 	<string name="noDataFound">No Data Found</string>
 	<string name="stats_hdr_economy">Econ.</string>
+	<string name="selectPlayers">Select\nPlayers</string>
+	<string name="selectCaptain">Select\nCaptain</string>
+	<string name="selectWK">Select\nWK</string>
+	<string name="selectTeam1">Select\nTeam-1</string>
+	<string name="selectTeam2">Select\nTeam-2</string>
+	<string name="PTS_selectTeam">Please Select the Team.\n</string>
+	<string name="PTS_selectPlayersForTeam">Select the players by clicking \'Select Players\' button.\n</string>
+	<string name="PTS_selectCapAndWK">Both captain and wicket-keeper need to be selected\n</string>
+	<string name="PTS_captNotInTeam">%1$s not part of playing team. Select different captain.\n</string>
+	<string name="PTS_wkNotInTeam">%1$s not part of playing team. Select different wicket-keeper.\n</string>
+	<string name="PTS_notEnoughPlayers">Team doesn\'t have enough number of players.</string>
+	<string name="captain">Captain</string>
+	<string name="wicketKeeper">Wicket Keeper</string>
 </resources>

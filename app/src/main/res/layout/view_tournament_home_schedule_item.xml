@@ -54,7 +54,7 @@
 
     <Button
         android:id="@+id/btnScheduleMatchStart"
-        style="@style/ButtonStyle.Medium"
+		style="@style/ButtonStyle.Medium.Transparent"
         android:drawableTop="@drawable/ic_start"
         android:text="@string/start"
         app:layout_constraintTop_toTopOf="@id/llScheduleMatchData"
@@ -63,7 +63,7 @@
 
     <Button
         android:id="@+id/btnScheduleMatchOpen"
-        style="@style/ButtonStyle.Medium"
+		style="@style/ButtonStyle.Medium.Transparent"
         android:drawableTop="@drawable/ic_card"
         android:text="@string/loadMatch"
         android:visibility="gone"

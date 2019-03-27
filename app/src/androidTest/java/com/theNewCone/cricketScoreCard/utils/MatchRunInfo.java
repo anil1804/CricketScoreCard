@@ -10,14 +10,17 @@ public class MatchRunInfo {
 	private Team team1, team2;
 	private int choseTo;
 	private final int maxOvers, maxWickets, numPlayers, oversPerBowler;
+	private int selectPlayerCount;
 
-	public MatchRunInfo(boolean isTournament) {
+	MatchRunInfo(boolean isTournament) {
 		this.isTournament = isTournament;
 		this.matchName = null;
 		this.maxOvers = 0;
 		this.maxWickets = 0;
 		this.numPlayers = 0;
 		this.oversPerBowler = 0;
+
+		this.selectPlayerCount = this.numPlayers;
 	}
 
 	public MatchRunInfo(String matchName, int maxOvers, int maxWickets, int numPlayers) {
@@ -27,6 +30,8 @@ public class MatchRunInfo {
 		this.maxWickets = maxWickets;
 		this.numPlayers = numPlayers;
 		this.oversPerBowler = 0;
+
+		this.selectPlayerCount = this.numPlayers;
 	}
 
 	public MatchRunInfo(String matchName, int maxOvers, int maxWickets, int oversPerBowler, int numPlayers) {
@@ -36,6 +41,8 @@ public class MatchRunInfo {
 		this.maxWickets = maxWickets;
 		this.numPlayers = numPlayers;
 		this.oversPerBowler = oversPerBowler;
+
+		this.selectPlayerCount = this.numPlayers;
 	}
 
 	public void setTeam1(String name, String shortName, String[] players, String captain, String wicketKeeper) {
@@ -119,5 +126,13 @@ public class MatchRunInfo {
 
 	int getOversPerBowler() {
 		return oversPerBowler;
+	}
+
+	int getSelectPlayerCount() {
+		return selectPlayerCount;
+	}
+
+	public void setSelectPlayerCount(int selectPlayerCount) {
+		this.selectPlayerCount = selectPlayerCount;
 	}
 }

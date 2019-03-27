@@ -29,6 +29,7 @@ public class TeamSelectActivity extends Activity
 	public static final String ARG_RESP_TEAM = "SelectedTeam";
 	public static final String ARG_RESP_TEAMS = "SelectedTeams";
 	public static final String ARG_SELECT_COUNT = "SelectionCount";
+	public static final String ARG_IGNORE_TEAMS = "IgnoreTeams";
 
 	public static int RESP_CODE_OK = 1;
 	public static int RESP_CODE_CANCEL = -1;
@@ -39,7 +40,7 @@ public class TeamSelectActivity extends Activity
 
 	List<Team> selTeams;
 	Team selTeam;
-	ArrayList<Integer> currentlyAssociatedTeams;
+	ArrayList<Integer> currentlyAssociatedTeams, ignoreTeams;
 
 	Button btnTeamSelectOk, btnTeamSelectCancel, btnCancel;
 
@@ -53,10 +54,13 @@ public class TeamSelectActivity extends Activity
 		if(intent !=  null && intent.getExtras() != null) {
 			Bundle extras = intent.getExtras();
 			isMultiSelect = extras.getBoolean(ARG_IS_MULTI, false);
+
 			currentlyAssociatedTeams = extras.getIntegerArrayList(ARG_EXISTING_TEAMS);
 			if(currentlyAssociatedTeams != null) {
 				selTeams.addAll(new TeamDBHandler(this).getTeams(currentlyAssociatedTeams));
 			}
+
+			ignoreTeams = extras.getIntegerArrayList(ARG_IGNORE_TEAMS);
 			selectionCount = extras.getInt(ARG_SELECT_COUNT, -1);
 		}
 
@@ -69,8 +73,17 @@ public class TeamSelectActivity extends Activity
 		btnCancel = findViewById(R.id.btnCancel);
 		btnCancel.setOnClickListener(this);
 
-		// Set the adapter
+		//Remove Ignorable Teams
 		List<Team> teamList = getTeamList();
+		if (ignoreTeams != null) {
+			for (int i = teamList.size() - 1; i >= 0; i--) {
+				if (ignoreTeams.contains(teamList.get(i).getId())) {
+					teamList.remove(i);
+				}
+			}
+		}
+
+		// Set the adapter
 		Collections.sort(teamList, new TeamComparator(currentlyAssociatedTeams));
 
 		RecyclerView recyclerView = findViewById(R.id.rcvTeamList);

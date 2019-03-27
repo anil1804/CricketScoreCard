@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:gravity="start"
+	android:orientation="vertical"
+	tools:context="com.theNewCone.cricketScoreCard.activity.PlayingTeamSelectActivity">
+
+	<Button
+		android:id="@+id/btnPTSSelectTeam"
+		style="@style/ButtonStyle.Medium"
+		android:drawableTop="@drawable/ic_list"
+		android:text="@string/selectTeam"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<Button
+		android:id="@+id/btnPTSSelectPlayers"
+		style="@style/ButtonStyle.Medium"
+		android:drawableTop="@drawable/ic_people"
+		android:text="@string/selectPlayers"
+		app:layout_constraintBottom_toBottomOf="@id/btnPTSSelectTeam"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toTopOf="@id/btnPTSSelectTeam" />
+
+	<TextView
+		android:id="@+id/tvPTSTeamName"
+		style="@style/TextViewStyle.Big.Bold.BigMargin"
+		android:gravity="center"
+		android:textColor="@color/blue_A700"
+		android:visibility="visible"
+		app:layout_constraintBottom_toBottomOf="@id/btnPTSSelectTeam"
+		app:layout_constraintEnd_toStartOf="@id/btnPTSSelectPlayers"
+		app:layout_constraintStart_toEndOf="@id/btnPTSSelectTeam"
+		app:layout_constraintTop_toTopOf="@id/btnPTSSelectTeam" />
+
+	<View
+		android:id="@+id/separator1"
+		style="@style/LineSeparator.Dark.SmallMargin"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/btnPTSSelectTeam" />
+
+	<TextView
+		android:id="@+id/tvPTSTeamPlayers"
+		style="@style/TextViewStyle.MorePadding"
+		android:layout_width="match_parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/separator1" />
+
+	<View
+		android:id="@+id/separator2"
+		style="@style/LineSeparator.Dark.SmallMargin"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/tvPTSTeamPlayers" />
+
+	<Button
+		android:id="@+id/btnPTSSelectCaptain"
+		style="@style/ButtonStyle.Medium"
+		android:drawableTop="@drawable/ic_assign"
+		android:text="@string/selectCaptain"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/separator2" />
+
+	<TextView
+		android:id="@+id/tvPTSTeamCaptain"
+		style="@style/TextViewStyle.Medium.MorePadding"
+		android:text="@string/captainName"
+		app:layout_constraintBottom_toBottomOf="@id/btnPTSSelectCaptain"
+		app:layout_constraintStart_toEndOf="@id/btnPTSSelectCaptain"
+		app:layout_constraintTop_toTopOf="@id/btnPTSSelectCaptain" />
+
+	<Button
+		android:id="@+id/btnPTSSelectWK"
+		style="@style/ButtonStyle.Medium"
+		android:drawableTop="@drawable/ic_assign"
+		android:text="@string/selectWK"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/btnPTSSelectCaptain" />
+
+	<TextView
+		android:id="@+id/tvPTSTeamWK"
+		style="@style/TextViewStyle.Medium.MorePadding"
+		android:text="@string/wkName"
+		app:layout_constraintBottom_toBottomOf="@id/btnPTSSelectWK"
+		app:layout_constraintStart_toEndOf="@id/btnPTSSelectWK"
+		app:layout_constraintTop_toTopOf="@id/btnPTSSelectWK" />
+
+	<LinearLayout
+		style="@style/LinearLayoutStyleSubmit"
+		android:layout_marginTop="10dp"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/btnPTSSelectWK">
+
+		<Button
+			android:id="@+id/btnPTSCancel"
+			style="@style/ButtonStyle.Submit"
+			android:text="@string/cancel" />
+
+		<Button
+			android:id="@+id/btnPTSOk"
+			style="@style/ButtonStyle.Submit"
+			android:text="@string/ok" />
+
+	</LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

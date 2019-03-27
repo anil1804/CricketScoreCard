@@ -20,21 +20,21 @@
 
         <Button
             android:id="@+id/btnNewMatch"
-            style="@style/ButtonStyle.Medium"
+			style="@style/ButtonStyle.Medium.Transparent"
             android:drawableTop="@drawable/ic_add_screen"
             android:contentDescription="@string/newMatch"
             android:text="@string/newMatch"/>
 
         <Button
             android:id="@+id/btnLoadMatch"
-            style="@style/ButtonStyle.Medium"
+			style="@style/ButtonStyle.Medium.Transparent"
             android:drawableTop="@drawable/ic_download"
             android:contentDescription="@string/loadMatch"
             android:text="@string/loadMatch"/>
 
         <Button
             android:id="@+id/btnDeleteMatches"
-            style="@style/ButtonStyle.Medium"
+			style="@style/ButtonStyle.Medium.Transparent"
             android:drawableTop="@drawable/ic_delete"
             android:contentDescription="@string/deleteMatches"
             android:text="@string/deleteMatches"/>
@@ -49,7 +49,7 @@
 
         <Button
             android:id="@+id/btnFinishedMatches"
-            style="@style/ButtonStyle.Medium"
+			style="@style/ButtonStyle.Medium.Transparent"
             android:drawableTop="@drawable/ic_card"
             android:contentDescription="@string/finishedMatches"
             android:text="@string/finishedMatches"/>
@@ -73,21 +73,21 @@
 
 		<Button
 			android:id="@+id/btnNewTournament"
-			style="@style/ButtonStyle.Medium"
+			style="@style/ButtonStyle.Medium.Transparent"
 			android:contentDescription="@string/newTournament"
 			android:drawableTop="@drawable/ic_new_trophy"
 			android:text="@string/newTournament" />
 
 		<Button
 			android:id="@+id/btnLoadTournament"
-			style="@style/ButtonStyle.Medium"
+			style="@style/ButtonStyle.Medium.Transparent"
 			android:contentDescription="@string/loadTournament"
 			android:drawableTop="@drawable/ic_trophy"
 			android:text="@string/loadTournament" />
 
 		<Button
 			android:id="@+id/btnFinishedTournaments"
-			style="@style/ButtonStyle.Medium"
+			style="@style/ButtonStyle.Medium.Transparent"
 			android:contentDescription="@string/finishedTournament"
 			android:drawableTop="@drawable/ic_finished_trophy"
 			android:text="@string/finishedTournament" />
@@ -112,14 +112,14 @@
             android:drawableTop="@drawable/ic_people"
             android:contentDescription="@string/team"
             android:text="@string/team"
-            style="@style/ButtonStyle.Medium"/>
+			style="@style/ButtonStyle.Medium.Transparent" />
 
 		<Button
 			android:id="@+id/btnManagePlayer"
 			android:drawableTop="@drawable/ic_person"
 			android:contentDescription="@string/player"
 			android:text="@string/player"
-			style="@style/ButtonStyle.Medium"/>
+			style="@style/ButtonStyle.Medium.Transparent" />
 
     </LinearLayout>
 

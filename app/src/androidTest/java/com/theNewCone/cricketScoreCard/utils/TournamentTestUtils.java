@@ -3,10 +3,7 @@ package com.theNewCone.cricketScoreCard.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.NoMatchingViewException;
-import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
-import android.support.test.runner.lifecycle.Stage;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -19,14 +16,14 @@ import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
 import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static android.support.test.espresso.matcher.ViewMatchers.withChild;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
@@ -75,21 +72,32 @@ public class TournamentTestUtils {
 			"Kyle Mills"
 	};
 
-	private static void triggerMatch(int matchNumber, MatchRunInfo info, String matchNumberText) {
-		Activity currentActivity = getCurrentActivity();
+	private static void triggerMatch(int matchNumber, MatchRunInfo info, String matchNumberText, String currentRoundText) {
+		Activity currentActivity = CommonTestUtils.getCurrentActivity();
 		Resources resources = currentActivity.getResources();
 
+		currentRoundText = currentRoundText.toUpperCase();
 		matchNumberText = matchNumberText == null
 				? resources.getString(R.string.matchPrefix) + String.valueOf(matchNumber)
 				: matchNumberText;
 
 		if (CommonTestUtils.checkViewExists(allOf(
-				withText("Start"),
-				withParent(allOf(
-						withId(R.id.clTHScheduleItem),
-						hasDescendant(withText(matchNumberText))))))) {
+				withParent(
+						allOf(
+								hasDescendant(withText(matchNumberText)),
+								isDescendantOfA(withChild(withText(currentRoundText)))
+						)),
+				withText("Start")
+		))) {
+
 			CommonTestUtils
-					.getChild(allOf(withId(R.id.clTHScheduleItem), hasDescendant(withText(matchNumberText))), withText("Start"))
+					.getView(
+							allOf(
+									hasDescendant(withText(matchNumberText)),
+									isDescendantOfA(withChild(withText(currentRoundText)))
+							),
+							withText("Start")
+					)
 					.perform(click());
 
 			MatchSimulator simulator = new MatchSimulator(currentActivity);
@@ -103,7 +111,7 @@ public class TournamentTestUtils {
 	}
 
 	public static void closeLoadMatchPopup() {
-		Activity currentActivity = getCurrentActivity();
+		Activity currentActivity = CommonTestUtils.getCurrentActivity();
 		Resources resources = currentActivity.getResources();
 		try {
 			CommonTestUtils.getDisplayedView(resources.getString(R.string.no)).perform(click());
@@ -113,7 +121,7 @@ public class TournamentTestUtils {
 	}
 
 	private static String getFullTeamName(String teamName) {
-		Activity currentActivity = getCurrentActivity();
+		Activity currentActivity = CommonTestUtils.getCurrentActivity();
 
 		HashMap<String, String> teamNames = new HashMap<>();
 		List<Team> allTeams = new ManageDBData(currentActivity.getApplicationContext()).addTeams(TeamEnum.ALL);
@@ -125,7 +133,7 @@ public class TournamentTestUtils {
 	}
 
 	private static String[] getPlayingTeams(int groupIndex, int matchNumber) {
-		Activity currentActivity = getCurrentActivity();
+		Activity currentActivity = CommonTestUtils.getCurrentActivity();
 
 		String[] teamsPlaying = null;
 
@@ -152,24 +160,8 @@ public class TournamentTestUtils {
 		return teamsPlaying;
 	}
 
-	private static Activity getCurrentActivity() {
-		final Activity[] currentActivity = new Activity[1];
-		InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-			@Override
-			public void run() {
-				Collection<Activity> allActivities = ActivityLifecycleMonitorRegistry.getInstance()
-						.getActivitiesInStage(Stage.RESUMED);
-				if (!allActivities.isEmpty()) {
-					currentActivity[0] = allActivities.iterator().next();
-				}
-			}
-		});
-
-		return currentActivity[0];
-	}
-
-	public static void triggerMatch(TeamEnum team1Enum, TeamEnum team2Enum, int matchNumber, String matchNumberText) {
-		Activity currentActivity = getCurrentActivity();
+	public static void triggerMatch(TeamEnum team1Enum, TeamEnum team2Enum, int matchNumber, String matchNumberText, String currentRoundText) {
+		Activity currentActivity = CommonTestUtils.getCurrentActivity();
 		Resources resources = currentActivity.getResources();
 
 		if (team1Enum != null && team2Enum != null) {
@@ -210,13 +202,13 @@ public class TournamentTestUtils {
 
 			Log.i(Constants.LOG_TAG, String.format("Match-%d, %s: %s won the toss and chose to %s", matchNumber, (team1 + " vs " + team2), tossWonBy, resources.getString(choseTo)));
 
-			TournamentTestUtils.triggerMatch(matchNumber, info, matchNumberText);
+			TournamentTestUtils.triggerMatch(matchNumber, info, matchNumberText, currentRoundText);
 		}
 	}
 
-	public static void triggerMatch(int groupIndex, int matchNumber, String matchNumberText) {
+	public static void triggerMatch(int groupIndex, int matchNumber, String matchNumberText, String currentRoundText) {
 		String[] teamsPlaying = TournamentTestUtils.getPlayingTeams(groupIndex, matchNumber);
-		triggerMatch(TeamEnum.valueOf(teamsPlaying[0]), TeamEnum.valueOf(teamsPlaying[1]), matchNumber, matchNumberText);
+		triggerMatch(TeamEnum.valueOf(teamsPlaying[0]), TeamEnum.valueOf(teamsPlaying[1]), matchNumber, matchNumberText, currentRoundText);
 	}
 
 	public static void deleteTournament(String tournamentName, Context context) {
