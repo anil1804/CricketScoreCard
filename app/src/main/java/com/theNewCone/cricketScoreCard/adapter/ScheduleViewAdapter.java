@@ -3,7 +3,6 @@ package com.theNewCone.cricketScoreCard.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,6 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
 	private final Context context;
 	private final ListInteractionListener listener;
 	private final TournamentFormat format;
-	private SparseIntArray groupMatchSeqNum = new SparseIntArray();
 
 	ScheduleViewAdapter(Context context, TournamentFormat format, List<MatchInfo> matchInfoList, ListInteractionListener listener) {
 		this.context = context;
@@ -57,16 +55,7 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
 		if (format == TournamentFormat.BILATERAL || format == TournamentFormat.ROUND_ROBIN || format == TournamentFormat.KNOCK_OUT) {
 			groupName = context.getResources().getString(R.string.matchPrefix) + (holder.matchInfo.getMatchNumber());
 		} else {
-			int matchNumber = groupMatchSeqNum.get(holder.matchInfo.getGroupNumber(), 0);
-			if (matchNumber == 0) {
-				matchNumber = 1;
-			} else {
-				matchNumber++;
-			}
-
-			groupMatchSeqNum.put(holder.matchInfo.getGroupNumber(), matchNumber);
-
-			groupName = "Grp-" + holder.matchInfo.getGroupNumber() + ", Match-" + matchNumber;
+			groupName = "Grp-" + holder.matchInfo.getGroupNumber() + ", Match-" + holder.matchInfo.getMatchNumber();
 		}
 		holder.tvGroupName.setText(groupName);
 

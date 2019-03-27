@@ -100,7 +100,7 @@ public class TournamentUtils {
 
 	private Group createBilateralSchedule(Group group) {
 		for (int a = 0; a < group.getNumRounds(); a++) {
-			group.updateMatchInfo(new MatchInfo(a, group.getGroupNumber(), group.getName(), Stage.NONE,
+			group.updateMatchInfo(new MatchInfo(a + 1, group.getGroupNumber(), group.getName(), Stage.NONE,
 					group.getTeams()[0], group.getTeams()[1]));
 		}
 
