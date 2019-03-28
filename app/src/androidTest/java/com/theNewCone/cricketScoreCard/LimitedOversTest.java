@@ -48,7 +48,6 @@ public class LimitedOversTest {
 		};
 
 		final String[] WI_PLAYERS = {
-//				"AShai Hope",
 				"Shai Hope",
 				"Denesh Ramdin",
 				"Shimron Hetmyer",
@@ -119,17 +118,13 @@ public class LimitedOversTest {
 		final String[] WI_PLAYERS = {
 				"Chris Gayle",
 				"Devon Smith",
-//				"AMarlon Samuels",
-//				"AShivnarine Chanderpaul",
 				"Marlon Samuels",
 				"Shivnarine Chanderpaul",
 				"Dwayne Smith",
-//				"ARamnaresh Sarwan",
 				"Ramnaresh Sarwan",
 				"Denesh Ramdin",
 				"Dwayne Bravo",
 				"Daren Powell",
-//				"ARavi Rampaul",
 				"Ravi Rampaul",
 				"Fidel Edwards"
 		};
@@ -163,10 +158,8 @@ public class LimitedOversTest {
 
 		final String[] IND_PLAYERS = {
 				"Gautam Gambhir",
-//				"AYusuf Pathan",
 				"Yusuf Pathan",
 				"Robin Uthappa",
-//				"AYuvraj Singh",
 				"Yuvraj Singh",
 				"MS Dhoni",
 				"Rohit Sharma",
@@ -181,15 +174,12 @@ public class LimitedOversTest {
 				"Mohammad Hafeez",
 				"Imran Nazir",
 				"Kamran Akmal",
-//				"AYounis Khan",
 				"Younis Khan",
 				"Shoaib Malik",
 				"Misbah-ul-Haq",
 				"Shahid Afridi",
-//				"AYasir Arafat",
 				"Yasir Arafat",
 				"Sohail Tanvir",
-//				"AUmar Gul",
 				"Umar Gul",
 				"Mohammad Asif"
 		};
@@ -263,7 +253,6 @@ public class LimitedOversTest {
 		};
 
 		final String[] WI_PLAYERS = {
-//				"AShai Hope",
 				"Shai Hope",
 				"Denesh Ramdin",
 				"Shimron Hetmyer",
@@ -334,17 +323,13 @@ public class LimitedOversTest {
 		final String[] WI_PLAYERS = {
 				"Chris Gayle",
 				"Devon Smith",
-//				"AMarlon Samuels",
-//				"AShivnarine Chanderpaul",
 				"Marlon Samuels",
 				"Shivnarine Chanderpaul",
 				"Dwayne Smith",
-//				"ARamnaresh Sarwan",
 				"Ramnaresh Sarwan",
 				"Denesh Ramdin",
 				"Dwayne Bravo",
 				"Daren Powell",
-//				"ARavi Rampaul",
 				"Ravi Rampaul",
 				"Fidel Edwards"
 		};
@@ -378,10 +363,8 @@ public class LimitedOversTest {
 
 		final String[] IND_PLAYERS = {
 				"Gautam Gambhir",
-//				"AYusuf Pathan",
 				"Yusuf Pathan",
 				"Robin Uthappa",
-//				"AYuvraj Singh",
 				"Yuvraj Singh",
 				"MS Dhoni",
 				"Rohit Sharma",
@@ -396,15 +379,13 @@ public class LimitedOversTest {
 				"Mohammad Hafeez",
 				"Imran Nazir",
 				"Kamran Akmal",
-//				"AYounis Khan",
 				"Younis Khan",
 				"Shoaib Malik",
 				"Misbah-ul-Haq",
 				"Shahid Afridi",
-//				"AYasir Arafat",
 				"Yasir Arafat",
 				"Sohail Tanvir",
-//				"AUmar Gul",
+
 				"Umar Gul",
 				"Mohammad Asif"
 		};

@@ -86,7 +86,6 @@ public class CommonTestUtils {
 			"Carlos Brathwaite",
 			"Fabian Allen",
 			"Oshane Thomas",
-//			"AShai Hope",
 			"Shai Hope",
 			"Keemo Paul",
 			"Khary Pierre"

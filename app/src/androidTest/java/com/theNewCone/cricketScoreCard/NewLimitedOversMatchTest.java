@@ -248,7 +248,6 @@ public class NewLimitedOversMatchTest {
 		//Team1 - Wicket-Keeper Not in Team
 		String[] WI_PLAYERS = new String[11];
 		System.arraycopy(CommonTestUtils.WI_PLAYERS, 0, WI_PLAYERS, 0, 11);
-//		WI_PLAYERS[2] = "AMarlon Samuels";
 		WI_PLAYERS[2] = "Marlon Samuels";
 
 		info.setTeam1("West Indies", "WI", WI_PLAYERS, team1Captain, team1WK);
@@ -258,8 +257,7 @@ public class NewLimitedOversMatchTest {
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.cancel)).perform(click());
 
 		//Team1 - Captain Not in Team
-		System.arraycopy(CommonTestUtils.WI_PLAYERS, 0, WI_PLAYERS, 0, 11);
-//		WI_PLAYERS[5] = "AMarlon Samuels";
+		System.arraycopy(CommonTestUtils.WI_PLAYERS, 0, WI_PLAYERS, 0, 11);//		WI_PLAYERS[5] = "AMarlon Samuels";
 		WI_PLAYERS[5] = "Marlon Samuels";
 		info.setTeam1("West Indies", "WI", WI_PLAYERS, team1Captain, team1WK);
 		CommonTestUtils.selectTeam(info, true, true, false, false);

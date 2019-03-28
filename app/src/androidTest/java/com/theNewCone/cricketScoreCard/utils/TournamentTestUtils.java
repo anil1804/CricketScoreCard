@@ -34,7 +34,6 @@ public class TournamentTestUtils {
 			"Rohit Sharma",
 			"Shikhar Dhawan",
 			"Lokesh Rahul",
-//			"AVirat Kohli",
 			"Virat Kohli",
 			"MS Dhoni",
 			"Dinesh Karthik",
