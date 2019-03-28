@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.adapter.GroupViewAdapter;
-import com.theNewCone.cricketScoreCard.intf.ConfirmationDialogClickListener;
 import com.theNewCone.cricketScoreCard.intf.DrawerController;
 import com.theNewCone.cricketScoreCard.tournament.Group;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
@@ -25,9 +24,8 @@ import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 import java.util.List;
 
 public class TournamentGroupsFragment extends Fragment
-		implements View.OnClickListener, ConfirmationDialogClickListener {
+		implements View.OnClickListener {
 
-	private static final int CONFIRMATION_CODE_EXIT = 1;
 	View theView;
 	RecyclerView rcvGroupsList;
 	private Tournament tournament;
@@ -51,18 +49,15 @@ public class TournamentGroupsFragment extends Fragment
 		//Back pressed Logic for fragment
 		theView.setFocusableInTouchMode(true);
 		theView.requestFocus();
-		final ConfirmationDialogClickListener listener = this;
 		theView.setOnKeyListener(new View.OnKeyListener() {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if (event.getAction() == KeyEvent.ACTION_DOWN) {
 					if (keyCode == KeyEvent.KEYCODE_BACK) {
 						if (getFragmentManager() != null) {
-							ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance(CONFIRMATION_CODE_EXIT,
-									"Exit", "Do you want to exit confirming the Groups?" +
-											"\n\nYou can redo it later by opening an 'ONGOING' Tournaments from the home screen.");
-							confirmationDialog.setConfirmationClickListener(listener);
-							confirmationDialog.show(getFragmentManager(), "ExitGroupSetupDialog");
+							InformationDialog infoDialog = InformationDialog.newInstance("Invalid Action",
+									"Clicking on Back is not possible.\n\n Please confirm Groups to continue with Tournament creation.");
+							infoDialog.show(getFragmentManager(), "ExitGroupSetupDialog");
 						}
 						return true;
 					}
@@ -104,17 +99,6 @@ public class TournamentGroupsFragment extends Fragment
 		}
 	}
 
-	@Override
-	public void onConfirmationClick(int confirmationCode, boolean accepted) {
-		switch (confirmationCode) {
-			case CONFIRMATION_CODE_EXIT:
-				if (accepted) {
-					goHome();
-				}
-				break;
-		}
-	}
-
 	private void layoutView() {
 		TournamentUtils tournamentUtils = new TournamentUtils(getContext());
 		tournament = tournamentUtils.createInitialGroups(tournament);
@@ -148,20 +132,6 @@ public class TournamentGroupsFragment extends Fragment
 			fragMgr.beginTransaction()
 					.replace(R.id.frame_container, TournamentScheduleFragment.newInstance(tournament, 0), fragmentTag)
 					.commit();
-		}
-	}
-
-	private void goHome() {
-		if (getActivity() != null && getFragmentManager() != null && getFragmentManager().getBackStackEntryCount() > 0) {
-			int backStackCount = getFragmentManager().getBackStackEntryCount();
-			for (int i = backStackCount - 1; i >= 0; i--) {
-				FragmentManager.BackStackEntry entry = getFragmentManager().getBackStackEntryAt(i);
-				if (HomeFragment.class.getSimpleName().equals(entry.getName())) {
-					getActivity().onBackPressed();
-				} else {
-					getFragmentManager().popBackStack();
-				}
-			}
 		}
 	}
 

@@ -1,19 +1,17 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:orientation="vertical"
 	tools:context="com.theNewCone.cricketScoreCard.fragment.TournamentScheduleFragment">
 
-	<TextView
-		android:id="@+id/tvScheduleGroupName"
-		style="@style/TextViewStyle.Medium" />
-
-	<ScrollView
-		android:id="@+id/svContent"
+	<LinearLayout
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<TextView
+			android:id="@+id/tvScheduleGroupName"
+			style="@style/TextViewStyle.Medium" />
 
 		<android.support.v7.widget.RecyclerView
 			android:id="@+id/rcvScheduleList"
@@ -21,40 +19,39 @@
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="20dp" />
 
-	</ScrollView>
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"
+			android:orientation="horizontal">
 
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:gravity="center_horizontal"
-		android:orientation="horizontal"
-		app:layout_constraintTop_toBottomOf="@id/svContent">
+			<Button
+				android:id="@+id/btnTournamentSchedulePrevious"
+				style="@style/ButtonStyle.Medium"
+				android:drawableTop="@drawable/ic_backward"
+				android:text="@string/previous" />
 
-		<Button
-			android:id="@+id/btnTournamentSchedulePrevious"
-			style="@style/ButtonStyle.Medium"
-			android:drawableTop="@drawable/ic_backward"
-			android:text="@string/previous" />
+			<Button
+				android:id="@+id/btnTournamentScheduleRegenerate"
+				style="@style/ButtonStyle.Medium"
+				android:drawableTop="@drawable/ic_refresh"
+				android:text="@string/reOrderSchedule" />
 
-		<Button
-			android:id="@+id/btnTournamentScheduleRegenerate"
-			style="@style/ButtonStyle.Medium"
-			android:drawableTop="@drawable/ic_refresh"
-			android:text="@string/reOrderSchedule" />
+			<Button
+				android:id="@+id/btnTournamentScheduleConfirm"
+				style="@style/ButtonStyle.Medium"
+				android:drawableTop="@drawable/ic_save"
+				android:text="@string/confirm" />
 
-		<Button
-			android:id="@+id/btnTournamentScheduleConfirm"
-			style="@style/ButtonStyle.Medium"
-			android:drawableTop="@drawable/ic_save"
-			android:text="@string/confirm" />
+			<Button
+				android:id="@+id/btnTournamentScheduleNext"
+				style="@style/ButtonStyle.Medium"
+				android:drawableTop="@drawable/ic_forward"
+				android:text="@string/next"
+				android:visibility="gone" />
 
-		<Button
-			android:id="@+id/btnTournamentScheduleNext"
-			style="@style/ButtonStyle.Medium"
-			android:drawableTop="@drawable/ic_forward"
-			android:text="@string/next"
-			android:visibility="gone" />
+		</LinearLayout>
 
 	</LinearLayout>
 
-</LinearLayout>
+</ScrollView>
