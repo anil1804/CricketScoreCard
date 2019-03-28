@@ -100,17 +100,22 @@ public class TournamentHomeFragment extends Fragment {
 		if(matchInfoList != null && matchInfoList.size() > 0) {
 			int team1MatchCount = 0, team2MatchCount = 0;
 			Team team1 = tournament.getTeams()[0], team2 = tournament.getTeams()[1];
+			boolean isSeriesActive = false;
 			for(MatchInfo matchInfo : matchInfoList) {
 				if(matchInfo.isComplete()) {
-					if(matchInfo.getWinningTeam().equals(team1))
-						team1MatchCount++;
-					else
-						team2MatchCount++;
+					if (matchInfo.getWinningTeam() != null) {
+						if (matchInfo.getWinningTeam().equals(team1))
+							team1MatchCount++;
+						else
+							team2MatchCount++;
+					}
+				} else {
+					isSeriesActive = true;
 				}
 			}
 
 			if(team1MatchCount > 0 || team2MatchCount > 0) {
-				if((team1MatchCount + team2MatchCount) < matchInfoList.size()) {
+				if (isSeriesActive) {
 					if (team1MatchCount == team2MatchCount) {
 						summaryText = "Series level at " + team1MatchCount + "-" + team2MatchCount;
 					} else if (team1MatchCount > team2MatchCount) {
