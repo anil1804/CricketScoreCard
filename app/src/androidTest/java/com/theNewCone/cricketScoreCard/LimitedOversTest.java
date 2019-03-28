@@ -30,8 +30,8 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateIndVsWI20Overs() {
-		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
+		CommonTestUtils.loadDBData();
 
 		final String[] IND_PLAYERS = {
 				"Rohit Sharma",
@@ -71,8 +71,8 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateIndWVsPakW20Overs() {
-		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
+		CommonTestUtils.loadDBData();
 
 		final String[] PAKW_PLAYERS = {
 				"Ayesha Zafar",
@@ -112,8 +112,8 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateWIvsSA20Overs() {
-		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
+		CommonTestUtils.loadDBData();
 
 		final String[] WI_PLAYERS = {
 				"Chris Gayle",
@@ -153,8 +153,8 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateIndVsPak20Overs() {
-		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
+		CommonTestUtils.loadDBData();
 
 		final String[] IND_PLAYERS = {
 				"Gautam Gambhir",
@@ -194,8 +194,8 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateNZvsSL20Overs() {
-		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
+		CommonTestUtils.loadDBData();
 
 		final String[] NZ_PLAYERS = {
 				"Rob Nicol",
@@ -235,8 +235,8 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateIndVsWI5Overs() {
-		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
+		CommonTestUtils.loadDBData();
 
 		final String[] IND_PLAYERS = {
 				"Rohit Sharma",
@@ -276,8 +276,8 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateIndWVsPakW5Overs() {
-		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
+		CommonTestUtils.loadDBData();
 
 		final String[] PAKW_PLAYERS = {
 				"Ayesha Zafar",
@@ -317,8 +317,8 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateWIvsSA5Overs() {
-		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
+		CommonTestUtils.loadDBData();
 
 		final String[] WI_PLAYERS = {
 				"Chris Gayle",
@@ -358,8 +358,8 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateIndVsPak5Overs() {
-		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
+		CommonTestUtils.loadDBData();
 
 		final String[] IND_PLAYERS = {
 				"Gautam Gambhir",
@@ -400,8 +400,8 @@ public class LimitedOversTest {
 
 	@Test
 	public void simulateNZvsSL5Overs() {
-		CommonTestUtils.loadDBData();
 		closeLoadMatchPopup();
+		CommonTestUtils.loadDBData();
 
 		final String[] NZ_PLAYERS = {
 				"Rob Nicol",

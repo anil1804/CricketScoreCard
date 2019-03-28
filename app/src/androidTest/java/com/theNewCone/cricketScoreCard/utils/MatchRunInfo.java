@@ -5,9 +5,8 @@ import com.theNewCone.cricketScoreCard.match.Team;
 public class MatchRunInfo {
 	private final boolean isTournament;
 	private String matchName;
-	private String team1Capt, team1WK, team2Capt, team2WK, tossWonBy;
-	private String[] team1Players, team2Players;
-	private Team team1, team2;
+	private TeamInfo team1Info, team2Info;
+	private String tossWonBy;
 	private int choseTo;
 	private int maxOvers, maxWickets, numPlayers, oversPerBowler;
 
@@ -39,17 +38,21 @@ public class MatchRunInfo {
 	}
 
 	public void setTeam1(String name, String shortName, String[] players, String captain, String wicketKeeper) {
-		this.team1 = new Team(name, shortName);
-		this.team1Players = players;
-		this.team1Capt = captain;
-		this.team1WK = wicketKeeper;
+		team1Info = new TeamInfo(new Team(name, shortName));
+		team1Info.setPlayerInfo(players, captain, wicketKeeper);
+	}
+
+	void setTeam1(TeamInfo teamInfo) {
+		this.team1Info = teamInfo;
 	}
 
 	public void setTeam2(String name, String shortName, String[] players, String captain, String wicketKeeper) {
-		this.team2 = new Team(name, shortName);
-		this.team2Players = players;
-		this.team2Capt = captain;
-		this.team2WK = wicketKeeper;
+		team2Info = new TeamInfo(new Team(name, shortName));
+		team2Info.setPlayerInfo(players, captain, wicketKeeper);
+	}
+
+	void setTeam2(TeamInfo teamInfo) {
+		this.team2Info = teamInfo;
 	}
 
 	void updateMatchRunInfo(String matchName, int maxOvers, int maxWickets, int oversPerBowler, int numPlayers) {
@@ -73,40 +76,16 @@ public class MatchRunInfo {
 		return matchName;
 	}
 
-	String getTeam1Capt() {
-		return team1Capt;
+	TeamInfo getTeam1Info() {
+		return team1Info;
 	}
 
-	String getTeam1WK() {
-		return team1WK;
-	}
-
-	String getTeam2Capt() {
-		return team2Capt;
-	}
-
-	String getTeam2WK() {
-		return team2WK;
-	}
-
-	Team getTeam1() {
-		return team1;
-	}
-
-	Team getTeam2() {
-		return team2;
+	TeamInfo getTeam2Info() {
+		return team2Info;
 	}
 
 	String getTossWonBy() {
 		return tossWonBy;
-	}
-
-	String[] getTeam1Players() {
-		return team1Players;
-	}
-
-	String[] getTeam2Players() {
-		return team2Players;
 	}
 
 	int getChoseTo() {

@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
-import com.theNewCone.cricketScoreCard.match.Team;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,17 +46,15 @@ public class MatchSimulator {
 	public void simulateCSV(String templateFile, MatchRunInfo info) {
 		createNewMatch(info);
 
-		Team team1 = info.getTeam1(), team2 = info.getTeam2();
-		String[] team1PlayerList = info.getTeam1Players(), team2PlayerList = info.getTeam2Players();
-		if ((team1.getShortName().equals(info.getTossWonBy()) && info.getChoseTo() == R.string.bowling)
-				|| (team2.getShortName().equals(info.getTossWonBy()) && info.getChoseTo()== R.string.batting)) {
-			team1 = info.getTeam2();
-			team2 = info.getTeam1();
-			team1PlayerList = info.getTeam2Players();
-			team2PlayerList = info.getTeam1Players();
+		TeamInfo team1Info = info.getTeam1Info(), team2Info = info.getTeam2Info();
+
+		if ((team1Info.getTeam().getShortName().equals(info.getTossWonBy()) && info.getChoseTo() == R.string.bowling)
+				|| (team2Info.getTeam().getShortName().equals(info.getTossWonBy()) && info.getChoseTo() == R.string.batting)) {
+			info.setTeam1(team2Info);
+			info.setTeam2(team1Info);
 		}
 
-		startSimulation(templateFile, team1, team2, team1PlayerList, team2PlayerList);
+		startSimulation(templateFile, info);
 	}
 
 	private void createNewMatch(MatchRunInfo info) {
@@ -109,11 +106,10 @@ public class MatchSimulator {
 	}
 
 
-	private void startSimulation(String templateFile, Team team1, Team team2,
-								 String[] team1Players, String[] team2Players) {
+	private void startSimulation(String templateFile, MatchRunInfo info) {
 		MatchStepRecorder stepRecorder = new MatchStepRecorder(activity.getApplicationContext());
 
-		List<MatchStep> matchStepList = stepRecorder.recordMatchSteps(templateFile, team1, team2, team1Players, team2Players);
+		List<MatchStep> matchStepList = stepRecorder.recordMatchSteps(templateFile, info);
 
 		simulateSteps(matchStepList);
 	}
@@ -170,7 +166,6 @@ public class MatchSimulator {
 			}
 
 			Log.v(Constants.LOG_TAG, String.format("Step Number %d completed", stepNum));
-//				CommonTestUtils.sleepABit(200);
 			stepNum++;
 		}
 	}

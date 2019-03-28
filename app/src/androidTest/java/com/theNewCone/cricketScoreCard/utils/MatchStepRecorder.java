@@ -7,7 +7,6 @@ import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.enumeration.AutoScoreType;
 import com.theNewCone.cricketScoreCard.enumeration.DismissalType;
 import com.theNewCone.cricketScoreCard.enumeration.ExtraType;
-import com.theNewCone.cricketScoreCard.match.Team;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -114,8 +113,7 @@ class MatchStepRecorder {
 		return matchStep;
 	}
 
-	List<MatchStep> recordMatchSteps(String templateFile, Team team1, Team team2,
-									 String[] team1Players, String[] team2Players) {
+	List<MatchStep> recordMatchSteps(String templateFile, MatchRunInfo info) {
 
 		List<MatchStep> matchStepList = new ArrayList<>();
 
@@ -128,6 +126,7 @@ class MatchStepRecorder {
 			String line;
 			int lineNum = 1;
 
+			TeamInfo team1Info = info.getTeam1Info(), team2Info = info.getTeam2Info();
 			while ((line = br.readLine()) != null) {
 				if (breakSteps.contains(lineNum))
 					Log.v(Constants.LOG_TAG, "Applying a break");
@@ -137,20 +136,20 @@ class MatchStepRecorder {
 					continue;
 				}
 
-				for (int i = team1Players.length; i > 0; i--) {
+				for (int i = team1Info.getPlayers().length; i > 0; i--) {
 					String stringToReplace = "Team1Player" + i;
-					line = line.replaceAll(stringToReplace, team1Players[i - 1]);
+					line = line.replaceAll(stringToReplace, team1Info.getPlayers()[i - 1]);
 					stringToReplace = "Team2Player" + i;
-					line = line.replaceAll(stringToReplace, team2Players[i - 1]);
+					line = line.replaceAll(stringToReplace, team2Info.getPlayers()[i - 1]);
 				}
 				String stringToReplace = "Team1SName";
-				line = line.replaceAll(stringToReplace, team1.getShortName());
+				line = line.replaceAll(stringToReplace, team1Info.getTeam().getShortName());
 				stringToReplace = "Team2SName";
-				line = line.replaceAll(stringToReplace, team2.getShortName());
+				line = line.replaceAll(stringToReplace, team2Info.getTeam().getShortName());
 				stringToReplace = "Team1FName";
-				line = line.replaceAll(stringToReplace, team1.getName());
+				line = line.replaceAll(stringToReplace, team1Info.getTeam().getName());
 				stringToReplace = "Team2FName";
-				line = line.replaceAll(stringToReplace, team2.getName());
+				line = line.replaceAll(stringToReplace, team2Info.getTeam().getName());
 
 
 				matchStepList.add(recordMatchStep(line, lineNum));

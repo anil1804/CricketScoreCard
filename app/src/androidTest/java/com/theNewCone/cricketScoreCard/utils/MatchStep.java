@@ -65,7 +65,7 @@ class MatchStep {
 		return pom;
 	}
 
-	public String getPenaltyAwardedTo() {
+	String getPenaltyAwardedTo() {
 		return penaltyAwardedTo;
 	}
 

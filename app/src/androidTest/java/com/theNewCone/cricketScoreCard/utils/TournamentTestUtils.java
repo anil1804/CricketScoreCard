@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
 import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentStageType;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
 import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Random;
 
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.withChild;
@@ -29,48 +31,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
 public class TournamentTestUtils {
-
-	private static final String[] IND_PLAYERS = {
-			"Rohit Sharma",
-			"Shikhar Dhawan",
-			"Lokesh Rahul",
-			"Virat Kohli",
-			"MS Dhoni",
-			"Dinesh Karthik",
-			"Krunal Pandya",
-			"Ravindra Jadeja",
-			"Kuldeep Yadav",
-			"Jasprit Bumrah",
-			"Bhuvneshwar Kumar"
-	};
-
-	private static final String[] AUS_PLAYERS = {
-			"Aaron Finch",
-			"D Arcy Short",
-			"Chris Lynn",
-			"Glenn Maxwell",
-			"Ben McDermott",
-			"Alex Carey",
-			"Ashton Agar",
-			"Nathan Coulter-Nile",
-			"Adam Zampa",
-			"Andrew Tye",
-			"Billy Stanlake"
-	};
-
-	private static final String[] NZ_PLAYERS = {
-			"Rob Nicol",
-			"Martin Guptill",
-			"Brendon McCullum",
-			"Ross Taylor",
-			"Jacob Oram",
-			"Nathan McCullum",
-			"James Franklin",
-			"Kane Williamson",
-			"Daniel Vettori",
-			"Tim Southee",
-			"Kyle Mills"
-	};
 
 	private static void triggerMatch(int matchNumber, MatchRunInfo info, String matchNumberText, String currentRoundText) {
 		Activity currentActivity = CommonTestUtils.getCurrentActivity();
@@ -98,7 +58,7 @@ public class TournamentTestUtils {
 							),
 							withText("Start")
 					)
-					.perform(click());
+					.perform(scrollTo()).perform(click());
 
 			MatchSimulator simulator = new MatchSimulator(currentActivity);
 			String csvFile = "csv/templates/5Overs/" + CommonUtils.generateRandomInt(1, 5) + ".csv";
@@ -167,8 +127,6 @@ public class TournamentTestUtils {
 		if (team1Enum != null && team2Enum != null) {
 			String team1 = team1Enum.toString();
 			String team2 = team2Enum.toString();
-			String team1Full = TournamentTestUtils.getFullTeamName(team1);
-			String team2Full = TournamentTestUtils.getFullTeamName(team2);
 
 			String tossWonBy = (new Random().nextInt(2)) == 0 ? team1.toUpperCase() : team2.toUpperCase();
 			int choseTo = (new Random().nextInt(2)) == 0 ? R.string.batting : R.string.bowling;
@@ -176,34 +134,43 @@ public class TournamentTestUtils {
 			MatchRunInfo info = new MatchRunInfo(true);
 			info.updateTossDetails(tossWonBy, choseTo);
 
-			switch (TeamEnum.valueOf(team1.toUpperCase())) {
-				case AUS:
-					info.setTeam1(team1Full, team1, TournamentTestUtils.AUS_PLAYERS, TournamentTestUtils.AUS_PLAYERS[0], TournamentTestUtils.AUS_PLAYERS[5]);
-					break;
-				case NZ:
-					info.setTeam1(team1Full, team1, TournamentTestUtils.NZ_PLAYERS, TournamentTestUtils.NZ_PLAYERS[3], TournamentTestUtils.NZ_PLAYERS[2]);
-					break;
-				case IND:
-					info.setTeam1(team1Full, team1, TournamentTestUtils.IND_PLAYERS, TournamentTestUtils.IND_PLAYERS[3], TournamentTestUtils.IND_PLAYERS[4]);
-					break;
-			}
-
-			switch (TeamEnum.valueOf(team2.toUpperCase())) {
-				case AUS:
-					info.setTeam2(team2Full, team2, TournamentTestUtils.AUS_PLAYERS, TournamentTestUtils.AUS_PLAYERS[0], TournamentTestUtils.AUS_PLAYERS[5]);
-					break;
-				case NZ:
-					info.setTeam2(team2Full, team2, TournamentTestUtils.NZ_PLAYERS, TournamentTestUtils.NZ_PLAYERS[3], TournamentTestUtils.NZ_PLAYERS[2]);
-					break;
-				case IND:
-					info.setTeam2(team2Full, team2, TournamentTestUtils.IND_PLAYERS, TournamentTestUtils.IND_PLAYERS[3], TournamentTestUtils.IND_PLAYERS[4]);
-					break;
-			}
+			info.setTeam1(getTeamInfo(team1));
+			info.setTeam2(getTeamInfo(team2));
 
 			Log.i(Constants.LOG_TAG, String.format("Match-%d, %s: %s won the toss and chose to %s", matchNumber, (team1 + " vs " + team2), tossWonBy, resources.getString(choseTo)));
 
 			TournamentTestUtils.triggerMatch(matchNumber, info, matchNumberText, currentRoundText);
 		}
+	}
+
+	private static TeamInfo getTeamInfo(String team) {
+		String teamFull = TournamentTestUtils.getFullTeamName(team);
+		TeamInfo teamInfo = new TeamInfo(new Team(team, teamFull));
+		switch (TeamEnum.valueOf(team.toUpperCase())) {
+			case AUS:
+				teamInfo.setPlayerInfo(TeamPlayers.AUS_PLAYERS, TeamPlayers.AUS_PLAYERS[0], TeamPlayers.AUS_PLAYERS[5]);
+				break;
+			case NZ:
+				teamInfo.setPlayerInfo(TeamPlayers.NZ_PLAYERS, TeamPlayers.NZ_PLAYERS[3], TeamPlayers.NZ_PLAYERS[2]);
+				break;
+			case IND:
+				teamInfo.setPlayerInfo(TeamPlayers.IND_PLAYERS, TeamPlayers.IND_PLAYERS[3], TeamPlayers.IND_PLAYERS[4]);
+				break;
+			case PAK:
+				teamInfo.setPlayerInfo(TeamPlayers.PAK_PLAYERS, TeamPlayers.PAK_PLAYERS[4], TeamPlayers.PAK_PLAYERS[2]);
+				break;
+			case WI:
+				teamInfo.setPlayerInfo(TeamPlayers.WI_PLAYERS, TeamPlayers.WI_PLAYERS[6], TeamPlayers.WI_PLAYERS[2]);
+				break;
+			case SA:
+				teamInfo.setPlayerInfo(TeamPlayers.SA_PLAYERS, TeamPlayers.SA_PLAYERS[0], TeamPlayers.SA_PLAYERS[4]);
+				break;
+			case SL:
+				teamInfo.setPlayerInfo(TeamPlayers.SL_PLAYERS, TeamPlayers.SL_PLAYERS[0], TeamPlayers.SL_PLAYERS[2]);
+				break;
+		}
+
+		return teamInfo;
 	}
 
 	public static void triggerMatch(int groupIndex, int matchNumber, String matchNumberText, String currentRoundText) {
@@ -213,5 +180,31 @@ public class TournamentTestUtils {
 
 	public static void deleteTournament(String tournamentName, Context context) {
 		new TournamentDBHandler(context).deleteTournament(tournamentName);
+	}
+
+	public static int getTSButtonID(TournamentStageType stageType) {
+		int buttonID = 0;
+		switch (stageType) {
+			case KNOCK_OUT:
+				buttonID = R.id.rbTSKnockOut;
+				break;
+
+			case NONE:
+				buttonID = R.id.rbTSNone;
+				break;
+
+			case QUALIFIER:
+				buttonID = R.id.rbTSQualifiers;
+				break;
+
+			case SUPER_FOUR:
+				buttonID = R.id.rbTSSuperFourStage;
+				break;
+
+			case SUPER_SIX:
+				buttonID = R.id.rbTSSuperSixStage;
+				break;
+		}
+		return buttonID;
 	}
 }

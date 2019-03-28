@@ -25,7 +25,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.R;
-import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.utils.database.TournamentDBHandler;
 
 import org.hamcrest.Description;
@@ -180,7 +179,6 @@ public class CommonTestUtils {
 		};
 	}
 
-
 	private static int getChildCount(@IdRes int viewId) {
 		final int[] COUNT = {0};
 
@@ -294,10 +292,7 @@ public class CommonTestUtils {
 	public static void selectTeam(MatchRunInfo info, boolean isTeam1, boolean selectPlayers, boolean selectCaptain, boolean selectWiki) {
 		Resources resources = getCurrentActivity().getResources();
 
-		Team team = isTeam1 ? info.getTeam1() : info.getTeam2();
-		String[] teamPlayers = isTeam1 ? info.getTeam1Players() : info.getTeam2Players();
-		String captain = isTeam1 ? info.getTeam1Capt() : info.getTeam2Capt();
-		String wicketKeeper = isTeam1 ? info.getTeam1WK() : info.getTeam2WK();
+		TeamInfo teamInfo = isTeam1 ? info.getTeam1Info() : info.getTeam2Info();
 
 		Activity activity = getCurrentActivity();
 		TextView teamNameView;
@@ -314,24 +309,24 @@ public class CommonTestUtils {
 			boolean teamAlreadySelected = !teamNameView.getText().toString().equals("");
 			if (teamAlreadySelected)
 				CommonTestUtils.getDisplayedView(R.id.btnPTSSelectTeam).perform(click());
-			CommonTestUtils.getDisplayedView(team.getName()).perform(click());
+			CommonTestUtils.getDisplayedView(teamInfo.getTeam().getName()).perform(click());
 		}
 
 		//Select Players
 		if (selectPlayers) {
-			boolean playersSelected = CommonTestUtils.selectTeamPlayers(teamPlayers, info.getNumPlayers());
+			boolean playersSelected = CommonTestUtils.selectTeamPlayers(teamInfo.getPlayers(), info.getNumPlayers());
 
 			if (playersSelected) {
 				//Select Captain
 				if (selectCaptain) {
 					CommonTestUtils.getDisplayedView(R.id.btnPTSSelectCaptain).perform(click());
-					CommonTestUtils.goToViewStarting(captain).perform(click());
+					CommonTestUtils.goToViewStarting(teamInfo.getCaptain()).perform(click());
 				}
 
 				//Select Wicket-Keeper
 				if (selectWiki) {
 					CommonTestUtils.getDisplayedView(R.id.btnPTSSelectWK).perform(click());
-					CommonTestUtils.goToViewStarting(wicketKeeper).perform(click());
+					CommonTestUtils.goToViewStarting(teamInfo.getWicketKeeper()).perform(click());
 				}
 
 				CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());

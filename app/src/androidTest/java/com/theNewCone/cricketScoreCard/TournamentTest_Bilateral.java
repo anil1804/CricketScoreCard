@@ -36,8 +36,6 @@ public class TournamentTest_Bilateral {
 
 	@Test
 	public void testBilateralSeries() {
-		CommonTestUtils.loadDBData();
-
 		createAusVsIndSeries();
 		openTournamentScheduleScreen();
 
@@ -47,10 +45,12 @@ public class TournamentTest_Bilateral {
 	}
 
 	private void createAusVsIndSeries() {
+		TournamentTestUtils.closeLoadMatchPopup();
+		CommonTestUtils.loadDBData();
+
 		HomeActivity activity = testRule.getActivity();
 		Resources resources = activity.getResources();
 
-		TournamentTestUtils.closeLoadMatchPopup();
 		TournamentTestUtils.deleteTournament(tournamentName, activity);
 
 		CommonTestUtils.getDisplayedView(R.id.btnLoadTournament).perform(click());

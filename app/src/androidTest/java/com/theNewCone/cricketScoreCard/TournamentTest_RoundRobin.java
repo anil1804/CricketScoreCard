@@ -7,6 +7,7 @@ import android.support.test.rule.ActivityTestRule;
 
 import com.theNewCone.cricketScoreCard.activity.HomeActivity;
 import com.theNewCone.cricketScoreCard.enumeration.Stage;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentStageType;
 import com.theNewCone.cricketScoreCard.utils.CommonTestUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentTestUtils;
 
@@ -21,8 +22,7 @@ import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
-public class TournamentTest_TriNation {
-	private final String tournamentName = "Tri Nation Cup 2019";
+public class TournamentTest_RoundRobin {
 
 	@Rule
 	public ActivityTestRule testRule = new ActivityTestRule<>(HomeActivity.class);
@@ -35,23 +35,67 @@ public class TournamentTest_TriNation {
 	}
 
 	@Test
-	public void testTriNationSeries() {
-		CommonTestUtils.loadDBData();
-
-		int numRounds = 1;
-		createAusIndNZSeries(numRounds);
-		openTournamentScheduleScreen();
-
-		for (int i = 1; i <= (3 * numRounds); i++)
-			triggerMatch(Stage.ROUND_ROBIN, i);
-
-		triggerMatch(Stage.FINAL, 1);
+	public void testTriNationSeries1RKO() {
+		String[] teams = {
+				"Australia",
+				"India",
+				"New Zealand"
+		};
+		testRoundRobinSeries(teams, 1, TournamentStageType.KNOCK_OUT, "3 Nation Cup - 1R KO");
 	}
 
-	private void createAusIndNZSeries(int numRounds) {
+	@Test
+	public void testTriNationSeries2RNone() {
+		String[] teams = {
+				"Australia",
+				"India",
+				"New Zealand"
+		};
+		testRoundRobinSeries(teams, 2, TournamentStageType.NONE, "3 Nation Cup - 2R None");
+	}
+
+	@Test
+	public void testSixNationSeries1RKO() {
+		String[] teams = {
+				"Australia",
+				"India",
+				"NZ",
+				"Pakistan",
+				"WI",
+				"South Africa"
+		};
+		testRoundRobinSeries(teams, 1, TournamentStageType.KNOCK_OUT, "6 Nation Cup - 1R KO");
+	}
+
+	private void testRoundRobinSeries(String[] teams, int numRounds, TournamentStageType stageType, String tournamentName) {
+		TournamentTestUtils.closeLoadMatchPopup();
+		CommonTestUtils.loadDBData();
+
+		createRoundRobinSeries(teams, numRounds, stageType, tournamentName);
+		openTournamentScheduleScreen(tournamentName);
+
+		int numTeams = teams.length;
+		int rrMatches = (numTeams * (numTeams - 1)) / 2;
+
+		for (int i = 1; i <= (rrMatches * numRounds); i++)
+			triggerMatch(Stage.ROUND_ROBIN, i);
+
+		if (stageType == TournamentStageType.KNOCK_OUT) {
+			if (numTeams >= 12) {
+				for (int i = 1; i <= 4; i++)
+					triggerMatch(Stage.QUARTER_FINAL, i);
+			}
+			if (numTeams >= 6) {
+				for (int i = 1; i <= 2; i++)
+					triggerMatch(Stage.SEMI_FINAL, i);
+			}
+			triggerMatch(Stage.FINAL, 1);
+		}
+	}
+
+	private void createRoundRobinSeries(String[] teams, int numRounds, TournamentStageType stageType, String tournamentName) {
 		Resources resources = testRule.getActivity().getResources();
 
-		TournamentTestUtils.closeLoadMatchPopup();
 		TournamentTestUtils.deleteTournament(tournamentName, testRule.getActivity());
 
 		CommonTestUtils.getDisplayedView(R.id.btnLoadTournament).perform(click());
@@ -64,17 +108,17 @@ public class TournamentTest_TriNation {
 			}
 			CommonTestUtils.getDisplayedView(R.id.btnNewTournament).perform(click());
 			CommonTestUtils.getDisplayedView(R.id.etTournamentName).perform(replaceText(tournamentName));
-			CommonTestUtils.getDisplayedView(R.id.etTournamentTeamCount).perform(replaceText("3"));
+			CommonTestUtils.getDisplayedView(R.id.etTournamentTeamCount).perform(replaceText(String.valueOf(teams.length)));
 			CommonTestUtils.getDisplayedView(R.id.btnSelectTournamentTeams).perform(click());
 
-			CommonTestUtils.getDisplayedView("Australia").perform(click());
-			CommonTestUtils.getDisplayedView("India").perform(click());
-			CommonTestUtils.getDisplayedView("New Zealand").perform(click());
+			for (String team : teams)
+				CommonTestUtils.getDisplayedView(team).perform(click());
 			CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
 
 			CommonTestUtils.getDisplayedView(resources.getString(R.string.roundRobin)).perform(click());
 			CommonTestUtils.getDisplayedView(R.id.etNumRounds).perform(replaceText(String.valueOf(numRounds)));
-			CommonTestUtils.getDisplayedView(R.id.rbTSKnockOut).perform(click());
+			CommonTestUtils.getDisplayedView(TournamentTestUtils.getTSButtonID(stageType)).perform(click());
+
 
 			CommonTestUtils.getDisplayedView(resources.getString(R.string.setMatchData)).perform(click());
 			CommonTestUtils.goToView(R.id.etMaxOvers).perform(replaceText("5"));
@@ -85,13 +129,13 @@ public class TournamentTest_TriNation {
 			CommonTestUtils.goToView(resources.getString(R.string.confirm)).perform(click());
 
 			CommonTestUtils.checkViewExists(withText(resources.getString(R.string.confirm)));
-			CommonTestUtils.getDisplayedView(R.id.btnTournamentScheduleConfirm).perform(click());
+			CommonTestUtils.goToView(R.id.btnTournamentScheduleConfirm).perform(click());
 		}
 
 		CommonTestUtils.clickNavigationMenuItem(1);
 	}
 
-	private void openTournamentScheduleScreen() {
+	private void openTournamentScheduleScreen(String tournamentName) {
 		Resources resources = testRule.getActivity().getResources();
 
 		CommonTestUtils.getDisplayedView(R.id.btnLoadTournament).perform(click());
