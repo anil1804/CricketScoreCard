@@ -24,10 +24,7 @@ class MatchStepRecorder {
 	private MatchStep recordMatchStep(String line, int lineNum) {
 
 		String[] matchStepDetails = line.split(",");
-		Log.d(Constants.LOG_TAG,
-				String.format("Number of records in line number %d are %d\n",
-						lineNum,
-						matchStepDetails.length));
+		Log.d(Constants.LOG_TAG, String.format("Line - %d : %s\n", lineNum, line));
 
 		return createNewMatchStep(matchStepDetails);
 	}

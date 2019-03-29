@@ -59,9 +59,9 @@ public class TournamentTest_RoundRobin {
 		String[] teams = {
 				"Australia",
 				"India",
-				"NZ",
+				"New Zealand",
 				"Pakistan",
-				"WI",
+				"West Indies",
 				"South Africa"
 		};
 		testRoundRobinSeries(teams, 1, TournamentStageType.KNOCK_OUT, "6 Nation Cup - 1R KO");
@@ -77,19 +77,37 @@ public class TournamentTest_RoundRobin {
 		int numTeams = teams.length;
 		int rrMatches = (numTeams * (numTeams - 1)) / 2;
 
-		for (int i = 1; i <= (rrMatches * numRounds); i++)
-			triggerMatch(Stage.ROUND_ROBIN, i);
+		int groupNumber = 1;
+		for (int matchNum = 1; matchNum <= (rrMatches * numRounds); matchNum++)
+			triggerMatch(Stage.ROUND_ROBIN, groupNumber, matchNum);
 
 		if (stageType == TournamentStageType.KNOCK_OUT) {
 			if (numTeams >= 12) {
-				for (int i = 1; i <= 4; i++)
-					triggerMatch(Stage.QUARTER_FINAL, i);
+				++groupNumber;
+				for (int matchNum = 1; matchNum <= 4; matchNum++)
+					triggerMatch(Stage.QUARTER_FINAL, groupNumber, matchNum);
 			}
 			if (numTeams >= 6) {
-				for (int i = 1; i <= 2; i++)
-					triggerMatch(Stage.SEMI_FINAL, i);
+				++groupNumber;
+				for (int matchNum = 1; matchNum <= 2; matchNum++)
+					triggerMatch(Stage.SEMI_FINAL, groupNumber, matchNum);
 			}
-			triggerMatch(Stage.FINAL, 1);
+			triggerMatch(Stage.FINAL, ++groupNumber, 1);
+		} else if (stageType == TournamentStageType.QUALIFIER) {
+			triggerMatch(Stage.QUALIFIER, ++groupNumber, 1);
+			triggerMatch(Stage.ELIMINATOR_1, ++groupNumber, 1);
+			triggerMatch(Stage.ELIMINATOR_2, ++groupNumber, 1);
+			triggerMatch(Stage.FINAL, ++groupNumber, 1);
+		} else if (stageType == TournamentStageType.SUPER_FOUR) {
+			++groupNumber;
+			for (int matchNum = 1; matchNum <= 6; matchNum++)
+				triggerMatch(Stage.SUPER_FOUR, groupNumber, matchNum);
+			triggerMatch(Stage.FINAL, ++groupNumber, 1);
+		} else if (stageType == TournamentStageType.SUPER_SIX) {
+			++groupNumber;
+			for (int matchNum = 1; matchNum <= 15; matchNum++)
+				triggerMatch(Stage.SUPER_FOUR, groupNumber, matchNum);
+			triggerMatch(Stage.FINAL, ++groupNumber, 1);
 		}
 	}
 
@@ -143,12 +161,12 @@ public class TournamentTest_RoundRobin {
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentSchedule)).perform(click());
 	}
 
-	private void triggerMatch(Stage stage, int matchNumber) {
+	private void triggerMatch(Stage stage, int groupIndex, int matchNumber) {
 		Resources resources = testRule.getActivity().getResources();
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentSchedule)).perform(click());
 
-		int groupIndex = stage == Stage.FINAL ? 1 : 0;
-		String currentRoundText = stage == Stage.FINAL ? Stage.FINAL.enumString() : Stage.ROUND_ROBIN.enumString();
+		groupIndex--;
+		String currentRoundText = stage.enumString();
 		TournamentTestUtils.triggerMatch(groupIndex, matchNumber, null, currentRoundText);
 	}
 }

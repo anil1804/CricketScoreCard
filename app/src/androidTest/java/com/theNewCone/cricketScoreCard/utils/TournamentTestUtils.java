@@ -137,7 +137,7 @@ public class TournamentTestUtils {
 			info.setTeam1(getTeamInfo(team1));
 			info.setTeam2(getTeamInfo(team2));
 
-			Log.i(Constants.LOG_TAG, String.format("Match-%d, %s: %s won the toss and chose to %s", matchNumber, (team1 + " vs " + team2), tossWonBy, resources.getString(choseTo)));
+			Log.i(Constants.LOG_TAG, String.format("Stage: %s, Match-%d, %s: %s won the toss and chose to %s", currentRoundText, matchNumber, (team1 + " vs " + team2), tossWonBy, resources.getString(choseTo)));
 
 			TournamentTestUtils.triggerMatch(matchNumber, info, matchNumberText, currentRoundText);
 		}
@@ -145,7 +145,7 @@ public class TournamentTestUtils {
 
 	private static TeamInfo getTeamInfo(String team) {
 		String teamFull = TournamentTestUtils.getFullTeamName(team);
-		TeamInfo teamInfo = new TeamInfo(new Team(team, teamFull));
+		TeamInfo teamInfo = new TeamInfo(new Team(teamFull, team));
 		switch (TeamEnum.valueOf(team.toUpperCase())) {
 			case AUS:
 				teamInfo.setPlayerInfo(TeamPlayers.AUS_PLAYERS, TeamPlayers.AUS_PLAYERS[0], TeamPlayers.AUS_PLAYERS[5]);

@@ -11,6 +11,13 @@ class TeamInfo {
 		this.team = team;
 	}
 
+	TeamInfo(Team team, String[] players, String captain, String wicketKeeper) {
+		this.team = team;
+		this.players = players;
+		this.captain = captain;
+		this.wicketKeeper = wicketKeeper;
+	}
+
 	String getCaptain() {
 		return captain;
 	}

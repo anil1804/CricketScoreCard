@@ -46,7 +46,10 @@ public class MatchSimulator {
 	public void simulateCSV(String templateFile, MatchRunInfo info) {
 		createNewMatch(info);
 
-		TeamInfo team1Info = info.getTeam1Info(), team2Info = info.getTeam2Info();
+		TeamInfo team1Info = new TeamInfo(info.getTeam1Info().getTeam(),
+				info.getTeam1Info().getPlayers(), info.getTeam1Info().getCaptain(), info.getTeam1Info().getWicketKeeper());
+		TeamInfo team2Info = new TeamInfo(info.getTeam2Info().getTeam(),
+				info.getTeam2Info().getPlayers(), info.getTeam2Info().getCaptain(), info.getTeam2Info().getWicketKeeper());
 
 		if ((team1Info.getTeam().getShortName().equals(info.getTossWonBy()) && info.getChoseTo() == R.string.bowling)
 				|| (team2Info.getTeam().getShortName().equals(info.getTossWonBy()) && info.getChoseTo() == R.string.batting)) {
