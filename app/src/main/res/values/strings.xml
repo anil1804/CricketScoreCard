@@ -409,4 +409,6 @@
 	<string name="captain">Captain</string>
 	<string name="wicketKeeper">Wicket Keeper</string>
 	<string name="loadData">Load Data</string>
+	<string name="collapse">Collapse</string>
+	<string name="expand">Expand</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.theNewCone.cricketScoreCard.utils.database;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -18,7 +17,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public static final int maxUndoAllowed = Integer.MAX_VALUE;
 	static final String SAVE_AUTO = "Auto";
     private static final String DB_NAME = "CricketScoreCard";
-	private static final int DB_VERSION = 23;
+	private static final int DB_VERSION = 24;
 	public static final String SAVE_MANUAL = "Manual";
 	protected final Context context;
 	final String TBL_STATE = "CricketMatch_State";
@@ -29,7 +28,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	final String TBL_STATE_NAME = "Name";
 	final String TBL_STATE_ORDER = "SaveOrder";
 
-	public final String TBL_PLAYER = "Player";
+	final String TBL_PLAYER = "Player";
 	final String TBL_STATE_MATCH_ID = "MatchID";
 	final String TBL_PLAYER_ID = "ID";
 	final String TBL_PLAYER_NAME = "Name";
@@ -38,7 +37,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	final String TBL_PLAYER_BOWL_STYLE = "BowlingStyle";
 	final String TBL_PLAYER_IS_WK = "IsWK";
 
-	public final String TBL_TEAM = "Team";
+	final String TBL_TEAM = "Team";
 	final String TBL_PLAYER_ARCHIVED = "isArchived";
 	final String TBL_TEAM_ID = "ID";
 	final String TBL_TEAM_NAME = "Name";
@@ -88,6 +87,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	final String TBL_GROUP_STAGE = "Stage";
 	final String TBL_GROUP_TEAMS = "TeamIDs";
 	final String TBL_GROUP_IS_SCHEDULED = "Scheduled";
+	final String TBL_GROUP_IS_COMPLETED = "Completed";
 
 	final String TBL_MATCH_INFO = "GroupMatchInfo";
 	final String TBL_MATCH_INFO_ID = "ID";
@@ -277,6 +277,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 					"ALTER TABLE %s ADD COLUMN %s INTEGER", TBL_BOWLER_STATS, TBL_BOWLER_STATS_PLAYER_ID);
 			db.execSQL(alterTableSQL);
 		}
+
+		if (oldVersion < 24) {
+			String alterTableSQL = String.format(Locale.getDefault(),
+					"ALTER TABLE %s ADD COLUMN %s INTEGER DEFAULT 0", TBL_GROUP, TBL_GROUP_IS_COMPLETED);
+			db.execSQL(alterTableSQL);
+		}
     }
 
     private void createStateTable(SQLiteDatabase db) {
@@ -404,7 +410,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 						+ TBL_GROUP_STAGE_TYPE + " TEXT, "
 						+ TBL_GROUP_STAGE + " TEXT, "
 						+ TBL_GROUP_TEAMS + " TEXT, "
-						+ TBL_GROUP_IS_SCHEDULED + " INTEGER DEFAULT 0"
+						+ TBL_GROUP_IS_SCHEDULED + " INTEGER DEFAULT 0, "
+						+ TBL_GROUP_IS_COMPLETED + " INTEGER DEFAULT 0"
 						+ ")";
 
 		db.execSQL(createTableSQL);
@@ -515,27 +522,5 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 						+ ")";
 
 		db.execSQL(createTableSQL);
-	}
-
-	public void deleteAllRecords(String tableName) {
-		SQLiteDatabase db = getWritableDatabase();
-		ContentValues values = new ContentValues();
-		switch (tableName) {
-			case TBL_TEAM:
-				values.put(TBL_TEAM_ARCHIVED, 1);
-				db.update(TBL_TEAM, values, null, null);
-				break;
-
-			case TBL_PLAYER:
-				values.put(TBL_PLAYER_ARCHIVED, 1);
-				db.update(TBL_PLAYER, values, null, null);
-				break;
-
-			case TBL_STATE:
-				db.delete(TBL_STATE, null, null);
-				break;
-		}
-
-		db.close();
 	}
 }

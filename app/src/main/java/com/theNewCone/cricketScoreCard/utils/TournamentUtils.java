@@ -274,6 +274,9 @@ public class TournamentUtils {
 			Group lastGroup = tournamentGroupList.get(tournamentGroupList.size() - 1);
 			Stage lastGroupsStage = lastGroup.getStage();
 
+			lastGroup.setComplete(true);
+			tournament.updateGroup(lastGroup);
+
 			int groupNumber = tournamentGroupList.size() + 1;
 			switch (tournament.getStageType()) {
 				case KNOCK_OUT:
@@ -385,10 +388,10 @@ public class TournamentUtils {
 			}
 		} else if (tournament.getFormat() == TournamentFormat.ROUND_ROBIN) {
 			int numberOfTeams = 2;
-			int lastGroupMatchCount = lastGroup.getMatchInfoList().size();
-			if (lastGroupMatchCount >= 12) {
+			int lastGroupTeamCount = lastGroup.getTeams().length;
+			if (lastGroupTeamCount >= 12) {
 				numberOfTeams = 8;
-			} else if (lastGroupMatchCount >= 6) {
+			} else if (lastGroupTeamCount >= 6) {
 				numberOfTeams = 4;
 			}
 
@@ -444,7 +447,8 @@ public class TournamentUtils {
 
 	private Tournament progressToNextStage_Qualifiers(Tournament tournament, List<Group> tournamentGroupList, Group lastGroup, int groupNumber) {
 		Group group;
-		if (lastGroup.getStage() == Stage.ROUND_1) {
+		if (lastGroup.getStage() == Stage.GROUP
+				|| lastGroup.getStage() == Stage.ROUND_ROBIN) {
 			List<PointsData> pointsData = lastGroup.getPointsData();
 			Team topTeam = pointsData.get(0).getTeam();
 			Team secondTeam = pointsData.get(1).getTeam();
@@ -597,8 +601,9 @@ public class TournamentUtils {
 				}
 			}
 
-			if (isComplete)
+			if (isComplete) {
 				progressToNextStage(tournament);
+			}
 		}
 	}
 

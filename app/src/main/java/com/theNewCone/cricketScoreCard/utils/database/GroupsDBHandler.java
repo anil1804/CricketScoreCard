@@ -36,6 +36,7 @@ public class GroupsDBHandler extends DatabaseHandler {
 			values.put(TBL_GROUP_STAGE_TYPE, group.getStageType().toString());
 			values.put(TBL_GROUP_STAGE, group.getStage().toString());
 			values.put(TBL_GROUP_IS_SCHEDULED, group.isScheduled());
+			values.put(TBL_GROUP_IS_COMPLETED, group.isComplete());
 			values.put(TBL_GROUP_TOURNAMENT_ID, tournamentID);
 			values.put(TBL_GROUP_TEAMS, CommonUtils.intListToJSON(teamIDs));
 
@@ -72,6 +73,7 @@ public class GroupsDBHandler extends DatabaseHandler {
 					Stage stage = Stage.valueOf(cursor.getString(cursor.getColumnIndex(TBL_GROUP_STAGE)));
 					int numRounds = cursor.getInt(cursor.getColumnIndex(TBL_GROUP_NUM_ROUNDS));
 					boolean isScheduled = cursor.getInt(cursor.getColumnIndex(TBL_GROUP_IS_SCHEDULED)) == 1;
+					boolean isCompleted = cursor.getInt(cursor.getColumnIndex(TBL_GROUP_IS_COMPLETED)) == 1;
 
 					List<Integer> teamIDs = CommonUtils.jsonToIntList(cursor.getString(cursor.getColumnIndex(TBL_GROUP_TEAMS)));
 					List<Team> teamList = new TeamDBHandler(super.context).getTeams(teamIDs, db, true);
@@ -82,6 +84,7 @@ public class GroupsDBHandler extends DatabaseHandler {
 
 					group.setId(id);
 					group.setScheduled(isScheduled);
+					group.setComplete(isCompleted);
 
 					group.setMatchInfoList(new MatchInfoDBHandler(super.context).getGroupMatchInfo(id, db));
 

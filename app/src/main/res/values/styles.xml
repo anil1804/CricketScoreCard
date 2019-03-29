@@ -345,6 +345,21 @@
 		<item name="android:textSize">10sp</item>
 	</style>
 
+	<style name="ImageButtonStyle.Runs">
+		<item name="android:background">@drawable/shape_rectangle_runs</item>
+	</style>
+
+	<style name="ImageButtonStyle.Extras">
+		<item name="android:background">@drawable/shape_rectangle_extras</item>
+	</style>
+
+	<style name="ImageButtonStyle.NoText">
+		<item name="android:layout_width">24dp</item>
+		<item name="android:layout_height">24dp</item>
+		<item name="android:padding">4dp</item>
+		<item name="android:layout_margin">4dp</item>
+	</style>
+
 	<style name="LinearLayoutStyleSubmit">
 		<item name="android:layout_width">match_parent</item>
 		<item name="android:layout_height">wrap_content</item>
@@ -368,14 +383,6 @@
 		<item name="android:layout_height">20dp</item>
 		<item name="android:padding">0dp</item>
 		<item name="android:layout_margin">0dp</item>
-	</style>
-
-	<style name="ImageButtonStyle.Runs">
-		<item name="android:background">@drawable/shape_rectangle_runs</item>
-	</style>
-
-	<style name="ImageButtonStyle.Extras">
-		<item name="android:background">@drawable/shape_rectangle_extras</item>
 	</style>
 
 	<style name="FullscreenTheme" parent="AppTheme.NoActionBar">

@@ -49,16 +49,12 @@ public class TournamentHomeScheduleFragment extends Fragment
 							 Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.fragment_tournament_schedule, container, false);
 
-		return rootView;
-	}
-
-	@Override
-	public void onResume() {
 		if (getArguments() != null) {
 			tournament = (Tournament) getArguments().getSerializable(ARG_TOURNAMENT);
 			displayContent();
 		}
-		super.onResume();
+
+		return rootView;
 	}
 
 	private void displayContent() {
@@ -72,12 +68,17 @@ public class TournamentHomeScheduleFragment extends Fragment
 				List<Group> groupListForSchedule = new ArrayList<>();
 				Group newGroup = new Group(prevGroup.getStage().enumString(), prevGroup.getStage());
 
+				boolean isStageComplete = true;
 				for (int i = 0; i < groupList.size(); i++) {
-					Group group = groupList.get(i);
+					Group currGroup = groupList.get(i);
+					if (!prevGroup.isComplete())
+						isStageComplete = false;
 
-					if (prevGroup.getStage() != group.getStage()) {
+					if (prevGroup.getStage() != currGroup.getStage()) {
+						newGroup.setComplete(isStageComplete);
 						groupListForSchedule.add(newGroup);
-						newGroup = new Group(group.getStage().enumString(), group.getStage());
+						newGroup = new Group(currGroup.getStage().enumString(), currGroup.getStage());
+						isStageComplete = true;
 					}
 
 					List<MatchInfo> matchInfoList = newGroup.getMatchInfoList();
@@ -85,11 +86,16 @@ public class TournamentHomeScheduleFragment extends Fragment
 						matchInfoList = new ArrayList<>();
 
 					Collections.sort(matchInfoList, new MatchInfoComparator());
-					matchInfoList.addAll(group.getMatchInfoList());
+					matchInfoList.addAll(currGroup.getMatchInfoList());
 					newGroup.setMatchInfoList(matchInfoList);
 
-					if (i == (groupList.size() - 1))
+					if (i == (groupList.size() - 1)) {
+						if (!currGroup.isComplete())
+							isStageComplete = false;
+
+						newGroup.setComplete(isStageComplete);
 						groupListForSchedule.add(newGroup);
+					}
 				}
 
 				Collections.sort(groupListForSchedule, new GroupComparator());

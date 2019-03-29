@@ -17,6 +17,7 @@ import com.theNewCone.cricketScoreCard.comparator.GroupScheduleComparator;
 import com.theNewCone.cricketScoreCard.tournament.Group;
 import com.theNewCone.cricketScoreCard.tournament.Tournament;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,14 +43,25 @@ public class TournamentHomePointsTableFragment extends Fragment {
 		if (tournament != null) {
 			List<Group> groupList = tournament.getGroupList();
 
-			if (groupList != null) {
-				Collections.sort(groupList, new GroupScheduleComparator());
+			List<Group> pointsGroupList = new ArrayList<>();
+			for (Group currGroup : groupList) {
+				switch (currGroup.getStage()) {
+					case GROUP:
+					case ROUND_ROBIN:
+					case SUPER_FOUR:
+					case SUPER_SIX:
+						pointsGroupList.add(currGroup);
+				}
+			}
+
+			if (pointsGroupList.size() > 0) {
+				Collections.sort(pointsGroupList, new GroupScheduleComparator());
 
 				RecyclerView rcvPointsList = theView.findViewById(R.id.rcvPointsTableList);
 				rcvPointsList.setLayoutManager(new LinearLayoutManager(getContext()));
 				rcvPointsList.setHasFixedSize(false);
 
-				PointsTableViewAdapter adapter = new PointsTableViewAdapter(getContext(), groupList);
+				PointsTableViewAdapter adapter = new PointsTableViewAdapter(getContext(), pointsGroupList);
 				rcvPointsList.setAdapter(adapter);
 
 				LinearLayoutManager llm = new LinearLayoutManager(getContext());

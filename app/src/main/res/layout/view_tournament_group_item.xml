@@ -5,11 +5,33 @@
 	android:orientation="vertical"
 	tools:context="com.theNewCone.cricketScoreCard.fragment.TournamentGroupsFragment">
 
-	<TextView
-		android:id="@+id/tvGroupName"
-		style="@style/TextViewStyle.Big.Bold.Heading">
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="@color/gray_500"
+		android:gravity="center"
+		android:orientation="horizontal">
 
-	</TextView>
+		<TextView
+			android:id="@+id/tvGroupName"
+			style="@style/TextViewStyle.Big.Bold.Heading"
+			android:layout_width="0dp"
+			android:layout_weight="1" />
+
+		<ImageView
+			android:id="@+id/ivVTHIExpanded"
+			style="@style/ImageButtonStyle.NoText"
+			android:contentDescription="@string/collapse"
+			android:src="@drawable/ic_expanded" />
+
+		<ImageView
+			android:id="@+id/ivVTHICollapsed"
+			style="@style/ImageButtonStyle.NoText"
+			android:contentDescription="@string/expand"
+			android:src="@drawable/ic_collapsed"
+			android:visibility="gone" />
+
+	</LinearLayout>
 
 	<View style="@style/LineSeparator.Dark" />
 

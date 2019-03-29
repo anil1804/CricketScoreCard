@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.R;
@@ -49,6 +50,10 @@ public class TournamentGroupScheduleAdapter extends RecyclerView.Adapter<Tournam
 		String groupName = tournamentFormat == TournamentFormat.BILATERAL ? context.getResources().getString(R.string.matches) : holder.group.getName();
 		holder.tvGroupName.setText(groupName);
 
+		if (holder.group.isComplete()) {
+			holder.mView.performClick();
+		}
+
 		holder.rcvGroupTeamList.setHasFixedSize(false);
 
 		holder.rcvGroupTeamList.setLayoutManager(new LinearLayoutManager(context));
@@ -80,15 +85,60 @@ public class TournamentGroupScheduleAdapter extends RecyclerView.Adapter<Tournam
 	class ViewHolder extends RecyclerView.ViewHolder {
 		final View mView;
 		final TextView tvGroupName;
+		final ImageView ivExpanded, ivCollapsed;
 		final RecyclerView rcvGroupTeamList;
+		boolean isExpanded = true;
 		Group group;
 
 		ViewHolder(View view) {
 			super(view);
 			mView = view;
 			tvGroupName = view.findViewById(R.id.tvGroupName);
+			ivExpanded = view.findViewById(R.id.ivVTHIExpanded);
+			ivCollapsed = view.findViewById(R.id.ivVTHICollapsed);
 			rcvGroupTeamList = view.findViewById(R.id.rcvGroupTeamList);
+
+			tvGroupName.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					toggleView();
+				}
+			});
+
+			mView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					toggleView();
+				}
+			});
+
+			ivCollapsed.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					toggleView();
+				}
+			});
+
+			ivExpanded.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					toggleView();
+				}
+			});
+		}
+
+		private void toggleView() {
+			if (isExpanded) {
+				rcvGroupTeamList.setVisibility(View.GONE);
+				ivExpanded.setVisibility(View.GONE);
+				ivCollapsed.setVisibility(View.VISIBLE);
+			} else {
+				rcvGroupTeamList.setVisibility(View.VISIBLE);
+				ivCollapsed.setVisibility(View.GONE);
+				ivExpanded.setVisibility(View.VISIBLE);
+			}
+
+			isExpanded = !isExpanded;
 		}
 	}
-
 }

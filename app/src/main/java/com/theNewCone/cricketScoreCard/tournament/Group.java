@@ -22,6 +22,7 @@ public class Group implements Serializable {
 	private List<MatchInfo> matchInfoList;
 	private Stage stage;
 	private boolean isScheduled = false;
+	private boolean isComplete = false;
 
 	public Group(String name, @NonNull Stage stage) {
 		this.name = name;
@@ -132,6 +133,14 @@ public class Group implements Serializable {
 			//DO NOTHING
 		}
 		addToSchedule(matchInfo);
+	}
+
+	public boolean isComplete() {
+		return isComplete;
+	}
+
+	public void setComplete(boolean complete) {
+		isComplete = complete;
 	}
 
 	public void clearSchedule() {
