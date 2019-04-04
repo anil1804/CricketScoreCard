@@ -35,7 +35,7 @@ public class TournamentTest_RoundRobin {
 	}
 
 	@Test
-	public void testTriNationSeries1RKO() {
+	public void testTriNationSeries1RndKO() {
 		String[] teams = {
 				"Australia",
 				"India",
@@ -45,7 +45,7 @@ public class TournamentTest_RoundRobin {
 	}
 
 	@Test
-	public void testTriNationSeries2RNone() {
+	public void testTriNationSeries2RndNone() {
 		String[] teams = {
 				"Australia",
 				"India",
@@ -55,7 +55,7 @@ public class TournamentTest_RoundRobin {
 	}
 
 	@Test
-	public void testSixNationSeries1RKO() {
+	public void testSixNationSeries1RndRKO() {
 		String[] teams = {
 				"Australia",
 				"India",

@@ -25,7 +25,6 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
-import static android.support.test.espresso.matcher.ViewMatchers.withChild;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
@@ -45,7 +44,7 @@ public class TournamentTestUtils {
 				withParent(
 						allOf(
 								hasDescendant(withText(matchNumberText)),
-								isDescendantOfA(withChild(withText(currentRoundText)))
+								isDescendantOfA(hasDescendant(withText(currentRoundText)))
 						)),
 				withText("Start")
 		))) {
@@ -54,7 +53,7 @@ public class TournamentTestUtils {
 					.getView(
 							allOf(
 									hasDescendant(withText(matchNumberText)),
-									isDescendantOfA(withChild(withText(currentRoundText)))
+									isDescendantOfA(hasDescendant(withText(currentRoundText)))
 							),
 							withText("Start")
 					)
