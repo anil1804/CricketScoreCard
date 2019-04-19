@@ -101,4 +101,15 @@ public class GroupsDBHandler extends DatabaseHandler {
 
 		return groupList;
 	}
+
+	public void completeGroup(int groupID) {
+		if (groupID > 0) {
+			SQLiteDatabase db = this.getWritableDatabase();
+
+			ContentValues values = new ContentValues();
+			values.put(TBL_GROUP_IS_COMPLETED, 1);
+
+			db.update(TBL_GROUP, values, TBL_GROUP_ID + " = ?", new String[]{String.valueOf(groupID)});
+		}
+	}
 }
