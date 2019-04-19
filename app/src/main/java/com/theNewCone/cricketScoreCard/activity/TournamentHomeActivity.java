@@ -97,7 +97,7 @@ public class TournamentHomeActivity extends AppCompatActivity
 		if (tournamentID > 0) {
 			tournament = new TournamentDBHandler(this).getTournamentContent(tournamentID);
 			TournamentUtils utils = new TournamentUtils(this);
-			utils.checkTournamentStageComplete(tournament);
+			utils.checkTournamentStagesComplete(tournament);
 		}
 
 		super.onStart();

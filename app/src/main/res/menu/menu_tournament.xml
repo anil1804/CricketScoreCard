@@ -10,5 +10,5 @@
 		android:id="@+id/menu_home"
 		android:icon="@drawable/ic_home"
 		android:title="@string/nav_drawer_home"
-		app:showAsAction="ifRoom" />
+		app:showAsAction="always" />
 </menu>

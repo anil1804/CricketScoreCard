@@ -10,10 +10,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.R;
+import com.theNewCone.cricketScoreCard.enumeration.Stage;
 import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.intf.ListInteractionListener;
 import com.theNewCone.cricketScoreCard.match.CricketCardUtils;
 import com.theNewCone.cricketScoreCard.tournament.MatchInfo;
+import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
 import com.theNewCone.cricketScoreCard.utils.database.MatchDBHandler;
 
 import java.util.List;
@@ -24,12 +26,14 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
 	private final Context context;
 	private final ListInteractionListener listener;
 	private final TournamentFormat format;
+	private final Stage stage;
 
-	ScheduleViewAdapter(Context context, TournamentFormat format, List<MatchInfo> matchInfoList, ListInteractionListener listener) {
+	ScheduleViewAdapter(Context context, TournamentFormat format, Stage stage, List<MatchInfo> matchInfoList, ListInteractionListener listener) {
 		this.context = context;
 		this.matchInfoList = matchInfoList;
 		this.listener = listener;
 		this.format = format;
+		this.stage = stage;
 	}
 
 	@Override
@@ -51,13 +55,9 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
 		holder.tvVersus.setText(versusText);
 
 		int resultColor;
-		String groupName;
-		if (format == TournamentFormat.BILATERAL || format == TournamentFormat.ROUND_ROBIN || format == TournamentFormat.KNOCK_OUT) {
-			groupName = context.getResources().getString(R.string.matchPrefix) + (holder.matchInfo.getMatchNumber());
-		} else {
-			groupName = "Grp-" + holder.matchInfo.getGroupNumber() + ", Match-" + holder.matchInfo.getMatchNumber();
-		}
-		holder.tvGroupName.setText(groupName);
+		String matchTag = new TournamentUtils(context)
+				.getScheduleMatchTag(format, stage, holder.matchInfo.getGroupNumber(), holder.matchInfo.getMatchNumber());
+		holder.tvMatchIdentifier.setText(matchTag);
 
 		final String matchResult;
 
@@ -119,7 +119,7 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
 
 	class ViewHolder extends RecyclerView.ViewHolder {
 		final View mView;
-		final TextView tvVersus, tvGroupName, tvResult, tvMatchDate;
+		final TextView tvVersus, tvMatchIdentifier, tvResult, tvMatchDate;
 		final Button btnMatchStart, btnMatchOpen;
 		MatchInfo matchInfo;
 
@@ -128,7 +128,7 @@ public class ScheduleViewAdapter extends RecyclerView.Adapter<ScheduleViewAdapte
 			mView = view;
 
 			tvVersus = view.findViewById(R.id.tvScheduleVersus);
-			tvGroupName = view.findViewById(R.id.tvScheduleGroupName);
+			tvMatchIdentifier = view.findViewById(R.id.tvScheduleMatchIdentifier);
 			tvResult = view.findViewById(R.id.tvScheduleMatchResult);
 			tvMatchDate = view.findViewById(R.id.tvScheduleMatchDate);
 

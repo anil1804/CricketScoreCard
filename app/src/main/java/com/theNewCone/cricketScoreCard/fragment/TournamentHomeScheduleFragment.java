@@ -68,7 +68,7 @@ public class TournamentHomeScheduleFragment extends Fragment
 				List<Group> groupListForSchedule = new ArrayList<>();
 				Group newGroup = new Group(prevGroup.getStage().enumString(), prevGroup.getStage());
 
-				boolean isStageComplete = true;
+				boolean isStageComplete = prevGroup.isComplete();
 				for (int i = 0; i < groupList.size(); i++) {
 					Group currGroup = groupList.get(i);
 					if (!prevGroup.isComplete())
@@ -78,7 +78,7 @@ public class TournamentHomeScheduleFragment extends Fragment
 						newGroup.setComplete(isStageComplete);
 						groupListForSchedule.add(newGroup);
 						newGroup = new Group(currGroup.getStage().enumString(), currGroup.getStage());
-						isStageComplete = true;
+						isStageComplete = currGroup.isComplete();
 					}
 
 					List<MatchInfo> matchInfoList = newGroup.getMatchInfoList();

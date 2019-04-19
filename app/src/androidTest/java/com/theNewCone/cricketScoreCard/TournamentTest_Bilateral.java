@@ -1,14 +1,18 @@
 package com.theNewCone.cricketScoreCard;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingPolicies;
 import android.support.test.rule.ActivityTestRule;
 
 import com.theNewCone.cricketScoreCard.activity.HomeActivity;
+import com.theNewCone.cricketScoreCard.enumeration.Stage;
 import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.utils.CommonTestUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentTestUtils;
+import com.theNewCone.cricketScoreCard.utils.TournamentUtils;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -105,7 +109,10 @@ public class TournamentTest_Bilateral {
 		Resources resources = testRule.getActivity().getResources();
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentSchedule)).perform(click());
 
-		TournamentTestUtils.triggerMatch(TeamEnum.AUS, TeamEnum.IND, matchNumber,
-				null, resources.getString(R.string.matches));
+		Context context = CommonTestUtils.getCurrentActivity();
+		String matchTag = new TournamentUtils(context)
+				.getScheduleMatchTag(TournamentFormat.BILATERAL, Stage.NONE, 0, matchNumber);
+
+		TournamentTestUtils.triggerMatch(TeamEnum.AUS, TeamEnum.IND, matchTag, Stage.NONE);
 	}
 }

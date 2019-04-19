@@ -334,7 +334,7 @@ public class CommonTestUtils {
 		}
 	}
 
-	static Activity getCurrentActivity() {
+	public static Activity getCurrentActivity() {
 		final Activity[] currentActivity = new Activity[1];
 		InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
 			@Override

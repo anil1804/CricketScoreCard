@@ -7,6 +7,7 @@ import android.support.test.rule.ActivityTestRule;
 
 import com.theNewCone.cricketScoreCard.activity.HomeActivity;
 import com.theNewCone.cricketScoreCard.enumeration.Stage;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.enumeration.TournamentStageType;
 import com.theNewCone.cricketScoreCard.utils.CommonTestUtils;
 import com.theNewCone.cricketScoreCard.utils.TournamentTestUtils;
@@ -55,7 +56,7 @@ public class TournamentTest_RoundRobin {
 	}
 
 	@Test
-	public void testSixNationSeries1RndRKO() {
+	public void testSixNationSeries1RndKO() {
 		String[] teams = {
 				"Australia",
 				"India",
@@ -65,6 +66,66 @@ public class TournamentTest_RoundRobin {
 				"South Africa"
 		};
 		testRoundRobinSeries(teams, 1, TournamentStageType.KNOCK_OUT, "6 Nation Cup - 1R KO");
+	}
+
+	@Test
+	public void testSixNationSeries1RndQEE() {
+		String[] teams = {
+				"Australia",
+				"India",
+				"New Zealand",
+				"Pakistan",
+				"West Indies",
+				"South Africa"
+		};
+		testRoundRobinSeries(teams, 1, TournamentStageType.QUALIFIER, "6 Nation Cup - 1R QE");
+	}
+
+	@Test
+	public void testSixNationSeries1RndS4() {
+		String[] teams = {
+				"Australia",
+				"India",
+				"New Zealand",
+				"Pakistan",
+				"West Indies",
+				"South Africa"
+		};
+		testRoundRobinSeries(teams, 1, TournamentStageType.SUPER_FOUR, "6 Nation Cup - 1R S4");
+	}
+
+	@Test
+	public void test12NationSeries1RndKO() {
+		String[] teams = {
+				"Australia",
+				"India",
+				"New Zealand",
+				"Pakistan",
+				"West Indies",
+				"South Africa",
+				"India Women",
+				"Pakistan Women",
+				"Sri Lanka",
+				"England",
+				"Bangladesh",
+				"Afghanistan"
+		};
+		testRoundRobinSeries(teams, 1, TournamentStageType.KNOCK_OUT, "12 Nation Cup - 1R KO");
+	}
+
+	@Test
+	public void test8NationSeries1RndS6() {
+		String[] teams = {
+				"Australia",
+				"India",
+				"New Zealand",
+				"Pakistan",
+				"West Indies",
+				"South Africa",
+				"Sri Lanka",
+				"England",
+		};
+		testRoundRobinSeries(teams, 1, TournamentStageType.SUPER_SIX, "8 Nation Cup - 1R S6");
 	}
 
 	private void testRoundRobinSeries(String[] teams, int numRounds, TournamentStageType stageType, String tournamentName) {
@@ -81,6 +142,8 @@ public class TournamentTest_RoundRobin {
 		for (int matchNum = 1; matchNum <= (rrMatches * numRounds); matchNum++)
 			triggerMatch(Stage.ROUND_ROBIN, groupNumber, matchNum);
 
+		TournamentTestUtils.goHome();
+		openTournamentScheduleScreen(tournamentName);
 		if (stageType == TournamentStageType.KNOCK_OUT) {
 			if (numTeams >= 12) {
 				++groupNumber;
@@ -92,23 +155,32 @@ public class TournamentTest_RoundRobin {
 				for (int matchNum = 1; matchNum <= 2; matchNum++)
 					triggerMatch(Stage.SEMI_FINAL, groupNumber, matchNum);
 			}
-			triggerMatch(Stage.FINAL, ++groupNumber, 1);
 		} else if (stageType == TournamentStageType.QUALIFIER) {
 			triggerMatch(Stage.QUALIFIER, ++groupNumber, 1);
+
+			TournamentTestUtils.goHome();
+			openTournamentScheduleScreen(tournamentName);
 			triggerMatch(Stage.ELIMINATOR_1, ++groupNumber, 1);
+
+			TournamentTestUtils.goHome();
+			openTournamentScheduleScreen(tournamentName);
 			triggerMatch(Stage.ELIMINATOR_2, ++groupNumber, 1);
-			triggerMatch(Stage.FINAL, ++groupNumber, 1);
 		} else if (stageType == TournamentStageType.SUPER_FOUR) {
 			++groupNumber;
 			for (int matchNum = 1; matchNum <= 6; matchNum++)
 				triggerMatch(Stage.SUPER_FOUR, groupNumber, matchNum);
-			triggerMatch(Stage.FINAL, ++groupNumber, 1);
 		} else if (stageType == TournamentStageType.SUPER_SIX) {
 			++groupNumber;
 			for (int matchNum = 1; matchNum <= 15; matchNum++)
-				triggerMatch(Stage.SUPER_FOUR, groupNumber, matchNum);
-			triggerMatch(Stage.FINAL, ++groupNumber, 1);
+				triggerMatch(Stage.SUPER_SIX, groupNumber, matchNum);
+		} else {
+			return;
 		}
+
+		TournamentTestUtils.goHome();
+		openTournamentScheduleScreen(tournamentName);
+		triggerMatch(Stage.FINAL, ++groupNumber, 1);
+
 	}
 
 	private void createRoundRobinSeries(String[] teams, int numRounds, TournamentStageType stageType, String tournamentName) {
@@ -130,7 +202,7 @@ public class TournamentTest_RoundRobin {
 			CommonTestUtils.getDisplayedView(R.id.btnSelectTournamentTeams).perform(click());
 
 			for (String team : teams)
-				CommonTestUtils.getDisplayedView(team).perform(click());
+				CommonTestUtils.goToView(team).perform(click());
 			CommonTestUtils.getDisplayedView(resources.getString(R.string.ok)).perform(click());
 
 			CommonTestUtils.getDisplayedView(resources.getString(R.string.roundRobin)).perform(click());
@@ -166,7 +238,6 @@ public class TournamentTest_RoundRobin {
 		CommonTestUtils.getDisplayedView(resources.getString(R.string.tournamentSchedule)).perform(click());
 
 		groupIndex--;
-		String currentRoundText = stage.enumString();
-		TournamentTestUtils.triggerMatch(groupIndex, matchNumber, null, currentRoundText);
+		TournamentTestUtils.triggerMatch(groupIndex, matchNumber, TournamentFormat.ROUND_ROBIN, stage);
 	}
 }

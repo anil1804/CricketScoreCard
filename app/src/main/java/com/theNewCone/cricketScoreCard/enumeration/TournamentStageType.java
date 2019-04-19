@@ -17,7 +17,7 @@ public enum TournamentStageType implements Serializable {
 				return "Knock-Out";
 
 			case QUALIFIER:
-				return "Qualifiers";
+				return "Qualifier-Eliminator";
 
 			case ROUND_ROBIN:
 				return "Round-Robin";

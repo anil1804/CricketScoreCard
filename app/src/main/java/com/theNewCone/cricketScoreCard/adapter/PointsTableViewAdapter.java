@@ -43,8 +43,10 @@ public class PointsTableViewAdapter extends RecyclerView.Adapter<PointsTableView
 
 		holder.tvGroupName.setText(holder.group.getName());
 
-		if (holder.group.isComplete()) {
-			holder.mView.performClick();
+		if (holder.group.isComplete() && adapterPosition < (getItemCount() - 1)) {
+			holder.collapseView();
+		} else {
+			holder.expandView();
 		}
 
 		holder.rcvGroupTeamList.setLayoutManager(new LinearLayoutManager(context));
@@ -111,18 +113,26 @@ public class PointsTableViewAdapter extends RecyclerView.Adapter<PointsTableView
 			});
 		}
 
-		private void toggleView() {
+		void toggleView() {
 			if (isExpanded) {
-				rcvGroupTeamList.setVisibility(View.GONE);
-				ivExpanded.setVisibility(View.GONE);
-				ivCollapsed.setVisibility(View.VISIBLE);
+				collapseView();
 			} else {
-				rcvGroupTeamList.setVisibility(View.VISIBLE);
-				ivCollapsed.setVisibility(View.GONE);
-				ivExpanded.setVisibility(View.VISIBLE);
+				expandView();
 			}
+		}
 
-			isExpanded = !isExpanded;
+		void expandView() {
+			rcvGroupTeamList.setVisibility(View.VISIBLE);
+			ivCollapsed.setVisibility(View.GONE);
+			ivExpanded.setVisibility(View.VISIBLE);
+			isExpanded = true;
+		}
+
+		void collapseView() {
+			rcvGroupTeamList.setVisibility(View.GONE);
+			ivExpanded.setVisibility(View.GONE);
+			ivCollapsed.setVisibility(View.VISIBLE);
+			isExpanded = false;
 		}
 	}
 }

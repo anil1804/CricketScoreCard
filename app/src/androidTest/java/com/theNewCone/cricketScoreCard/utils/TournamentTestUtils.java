@@ -11,7 +11,9 @@ import android.widget.TextView;
 
 import com.theNewCone.cricketScoreCard.Constants;
 import com.theNewCone.cricketScoreCard.R;
+import com.theNewCone.cricketScoreCard.enumeration.Stage;
 import com.theNewCone.cricketScoreCard.enumeration.TeamEnum;
+import com.theNewCone.cricketScoreCard.enumeration.TournamentFormat;
 import com.theNewCone.cricketScoreCard.enumeration.TournamentStageType;
 import com.theNewCone.cricketScoreCard.match.Team;
 import com.theNewCone.cricketScoreCard.utils.database.ManageDBData;
@@ -25,26 +27,23 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
 public class TournamentTestUtils {
 
-	private static void triggerMatch(int matchNumber, MatchRunInfo info, String matchNumberText, String currentRoundText) {
+	private static void triggerMatch(MatchRunInfo info, String matchTag, String currentRoundText, boolean isEliminator) {
 		Activity currentActivity = CommonTestUtils.getCurrentActivity();
-		Resources resources = currentActivity.getResources();
 
 		currentRoundText = currentRoundText.toUpperCase();
-		matchNumberText = matchNumberText == null
-				? resources.getString(R.string.matchPrefix) + String.valueOf(matchNumber)
-				: matchNumberText;
 
 		if (CommonTestUtils.checkViewExists(allOf(
 				withParent(
 						allOf(
-								hasDescendant(withText(matchNumberText)),
-								isDescendantOfA(hasDescendant(withText(currentRoundText)))
+								hasDescendant(withText(matchTag)),
+								isDescendantOfA(hasDescendant(allOf(withId(R.id.tvGroupName), withText(currentRoundText))))
 						)),
 				withText("Start")
 		))) {
@@ -52,20 +51,21 @@ public class TournamentTestUtils {
 			CommonTestUtils
 					.getView(
 							allOf(
-									hasDescendant(withText(matchNumberText)),
-									isDescendantOfA(hasDescendant(withText(currentRoundText)))
+									hasDescendant(withText(matchTag)),
+									isDescendantOfA(hasDescendant(allOf(withId(R.id.tvGroupName), withText(currentRoundText))))
 							),
 							withText("Start")
 					)
 					.perform(scrollTo()).perform(click());
 
 			MatchSimulator simulator = new MatchSimulator(currentActivity);
-			String csvFile = "csv/templates/5Overs/" + CommonUtils.generateRandomInt(1, 5) + ".csv";
+			int matchNumber = isEliminator ? CommonUtils.generateRandomInt(1, 5) : CommonUtils.generateRandomInt(1, 6);
+			String csvFile = "csv/templates/5Overs/" + matchNumber + ".csv";
 			Log.i(Constants.LOG_TAG, "CSV File being used to simulate match is " + csvFile);
 
 			simulator.simulateCSV(csvFile, info);
 		} else {
-			Log.i(Constants.LOG_TAG, String.format("Match-%d is already running/complete", matchNumber));
+			Log.i(Constants.LOG_TAG, String.format("%s is already running/complete", matchTag));
 		}
 	}
 
@@ -77,6 +77,10 @@ public class TournamentTestUtils {
 		} catch (NoMatchingViewException ex) {
 			//Do Nothing
 		}
+	}
+
+	public static void goHome() {
+		CommonTestUtils.getDisplayedView(R.id.menu_home).perform(click());
 	}
 
 	private static String getFullTeamName(String teamName) {
@@ -119,7 +123,7 @@ public class TournamentTestUtils {
 		return teamsPlaying;
 	}
 
-	public static void triggerMatch(TeamEnum team1Enum, TeamEnum team2Enum, int matchNumber, String matchNumberText, String currentRoundText) {
+	public static void triggerMatch(TeamEnum team1Enum, TeamEnum team2Enum, String matchTag, Stage stage) {
 		Activity currentActivity = CommonTestUtils.getCurrentActivity();
 		Resources resources = currentActivity.getResources();
 
@@ -136,9 +140,13 @@ public class TournamentTestUtils {
 			info.setTeam1(getTeamInfo(team1));
 			info.setTeam2(getTeamInfo(team2));
 
-			Log.i(Constants.LOG_TAG, String.format("Stage: %s, Match-%d, %s: %s won the toss and chose to %s", currentRoundText, matchNumber, (team1 + " vs " + team2), tossWonBy, resources.getString(choseTo)));
+			Log.i(Constants.LOG_TAG,
+					String.format("Stage: %s, %s, %s: %s won the toss and chose to %s",
+							stage.enumString(), matchTag, (team1 + " vs " + team2),
+							tossWonBy, resources.getString(choseTo)));
 
-			TournamentTestUtils.triggerMatch(matchNumber, info, matchNumberText, currentRoundText);
+			String roundTag = stage == Stage.NONE ? resources.getString(R.string.matches) : stage.enumString();
+			TournamentTestUtils.triggerMatch(info, matchTag, roundTag, isAnEliminator(stage));
 		}
 	}
 
@@ -167,14 +175,31 @@ public class TournamentTestUtils {
 			case SL:
 				teamInfo.setPlayerInfo(TeamPlayers.SL_PLAYERS, TeamPlayers.SL_PLAYERS[0], TeamPlayers.SL_PLAYERS[2]);
 				break;
+			case INDW:
+				teamInfo.setPlayerInfo(TeamPlayers.INDW_PLAYERS, TeamPlayers.INDW_PLAYERS[3], TeamPlayers.INDW_PLAYERS[5]);
+				break;
+			case PAKW:
+				teamInfo.setPlayerInfo(TeamPlayers.PAKW_PLAYERS, TeamPlayers.PAKW_PLAYERS[1], TeamPlayers.PAKW_PLAYERS[8]);
+				break;
+			case ENG:
+				teamInfo.setPlayerInfo(TeamPlayers.ENG_PLAYERS, TeamPlayers.ENG_PLAYERS[3], TeamPlayers.ENG_PLAYERS[5]);
+				break;
+			case BAN:
+				teamInfo.setPlayerInfo(TeamPlayers.BAN_PLAYERS, TeamPlayers.BAN_PLAYERS[3], TeamPlayers.BAN_PLAYERS[9]);
+				break;
+			case AFG:
+				teamInfo.setPlayerInfo(TeamPlayers.AFG_PLAYERS, TeamPlayers.AFG_PLAYERS[1], TeamPlayers.AFG_PLAYERS[7]);
+				break;
 		}
 
 		return teamInfo;
 	}
 
-	public static void triggerMatch(int groupIndex, int matchNumber, String matchNumberText, String currentRoundText) {
+	public static void triggerMatch(int groupIndex, int matchNumber, TournamentFormat format, Stage stage) {
 		String[] teamsPlaying = TournamentTestUtils.getPlayingTeams(groupIndex, matchNumber);
-		triggerMatch(TeamEnum.valueOf(teamsPlaying[0]), TeamEnum.valueOf(teamsPlaying[1]), matchNumber, matchNumberText, currentRoundText);
+		String matchTag = new TournamentUtils(CommonTestUtils.getCurrentActivity())
+				.getScheduleMatchTag(format, stage, groupIndex, matchNumber);
+		triggerMatch(TeamEnum.valueOf(teamsPlaying[0]), TeamEnum.valueOf(teamsPlaying[1]), matchTag, stage);
 	}
 
 	public static void deleteTournament(String tournamentName, Context context) {
@@ -205,5 +230,25 @@ public class TournamentTestUtils {
 				break;
 		}
 		return buttonID;
+	}
+
+	private static boolean isAnEliminator(Stage stage) {
+		boolean isEliminator = false;
+
+		switch (stage) {
+			case ROUND_1:
+			case ROUND_2:
+			case ROUND_3:
+			case QUARTER_FINAL:
+			case SEMI_FINAL:
+			case QUALIFIER:
+			case ELIMINATOR_1:
+			case ELIMINATOR_2:
+			case FINAL:
+				isEliminator = true;
+				break;
+		}
+
+		return isEliminator;
 	}
 }

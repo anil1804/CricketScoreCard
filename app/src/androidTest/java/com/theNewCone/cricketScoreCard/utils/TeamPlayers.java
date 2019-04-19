@@ -92,4 +92,69 @@ class TeamPlayers {
 			"Umar Gul",
 			"Mohammad Asif"
 	};
+	static final String[] ENG_PLAYERS = {
+			"Jason Roy",
+			"Jonny Bairstow",
+			"Joe Root",
+			"Eoin Morgan",
+			"Ben Stokes",
+			"Jos Buttler",
+			"Moeen Ali",
+			"Chris Woakes",
+			"Adil Rashid",
+			"Liam Plunkett",
+			"Mark Wood"
+	};
+	static final String[] BAN_PLAYERS = {
+			"Tamim Iqbal",
+			"Liton Das",
+			"Soumya Sarkar",
+			"Mushfiqur Rahim",
+			"Mohammad Mithun",
+			"Mahmudullah",
+			"Sabbir Rahman",
+			"Mehidy Hasan",
+			"Mohammad Saifuddin",
+			"Mashrafe Mortaza",
+			"Mustafizur Rahman"
+	};
+	static final String[] AFG_PLAYERS = {
+			"Hazratullah Zazai",
+			"Asghar Afghan",
+			"Samiullah Shenwari",
+			"Karim Janat",
+			"Mohammad Nabi",
+			"Sharafuddin Ashraf",
+			"Najibullah Zadran",
+			"Shafiqullah Shafiq",
+			"Rashid Khan",
+			"Mujeeb Ur Rahman",
+			"Fareed Malik"
+	};
+	static final String[] INDW_PLAYERS = {
+			"Mithali Raj",
+			"Smriti Mandhana",
+			"Jemimah Rodrigues",
+			"Harmanpreet Kaur",
+			"Veda Krishnamurthy",
+			"Taniya Bhatia",
+			"Dayalan Hemalatha",
+			"Deepti Sharma",
+			"Radha Yadav",
+			"Arundhati Reddy",
+			"Poonam Yadav"
+	};
+	static final String[] PAKW_PLAYERS = {
+			"Ayesha Zafar",
+			"Javeria Khan",
+			"Umaima Sohail",
+			"Bismah Maroof",
+			"Nida Dar",
+			"Aliya Riaz",
+			"Nahida Khan",
+			"Sana Mir",
+			"Sidra Nawaz",
+			"Diana Baig",
+			"Anam Amin"
+	};
 }

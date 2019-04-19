@@ -50,14 +50,16 @@ public class TournamentGroupScheduleAdapter extends RecyclerView.Adapter<Tournam
 		String groupName = tournamentFormat == TournamentFormat.BILATERAL ? context.getResources().getString(R.string.matches) : holder.group.getName();
 		holder.tvGroupName.setText(groupName);
 
-		if (holder.group.isComplete()) {
-			holder.mView.performClick();
+		if (holder.group.isComplete() && adapterPosition < (getItemCount() - 1)) {
+			holder.collapseView();
+		} else {
+			holder.expandView();
 		}
 
 		holder.rcvGroupTeamList.setHasFixedSize(false);
 
 		holder.rcvGroupTeamList.setLayoutManager(new LinearLayoutManager(context));
-		ScheduleViewAdapter adapter = new ScheduleViewAdapter(context, tournamentFormat, holder.group.getMatchInfoList(), this);
+		ScheduleViewAdapter adapter = new ScheduleViewAdapter(context, tournamentFormat, holder.group.getStage(), holder.group.getMatchInfoList(), this);
 		holder.rcvGroupTeamList.setAdapter(adapter);
 
 		LinearLayoutManager llm = new LinearLayoutManager(context);
@@ -127,18 +129,26 @@ public class TournamentGroupScheduleAdapter extends RecyclerView.Adapter<Tournam
 			});
 		}
 
-		private void toggleView() {
+		void toggleView() {
 			if (isExpanded) {
-				rcvGroupTeamList.setVisibility(View.GONE);
-				ivExpanded.setVisibility(View.GONE);
-				ivCollapsed.setVisibility(View.VISIBLE);
+				collapseView();
 			} else {
-				rcvGroupTeamList.setVisibility(View.VISIBLE);
-				ivCollapsed.setVisibility(View.GONE);
-				ivExpanded.setVisibility(View.VISIBLE);
+				expandView();
 			}
+		}
 
-			isExpanded = !isExpanded;
+		void expandView() {
+			rcvGroupTeamList.setVisibility(View.VISIBLE);
+			ivCollapsed.setVisibility(View.GONE);
+			ivExpanded.setVisibility(View.VISIBLE);
+			isExpanded = true;
+		}
+
+		void collapseView() {
+			rcvGroupTeamList.setVisibility(View.GONE);
+			ivExpanded.setVisibility(View.GONE);
+			ivCollapsed.setVisibility(View.VISIBLE);
+			isExpanded = false;
 		}
 	}
 }

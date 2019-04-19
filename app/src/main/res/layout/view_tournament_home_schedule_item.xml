@@ -24,7 +24,7 @@
             android:layout_weight="1" />
 
         <TextView
-            android:id="@+id/tvScheduleGroupName"
+			android:id="@+id/tvScheduleMatchIdentifier"
             style="@style/TextViewStyle.Medium"
             android:layout_width="0dp"
             android:layout_weight="1" />
